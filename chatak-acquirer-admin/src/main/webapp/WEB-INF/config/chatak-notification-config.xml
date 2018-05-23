@@ -1,0 +1,86 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/aop	http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        	http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-4.1.xsd
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+        http://www.springframework.org/schema/oxm 
+        http://www.springframework.org/schema/oxm/spring-oxm-4.1.xsd
+        http://www.springframework.org/schema/jee 
+        http://www.springframework.org/schema/jee/spring-jee-4.1.xsd">
+
+	<jee:jndi-lookup id="chatakAcquirerSysConfigId"
+		jndi-name="java:comp/env/java/chatakAcquirerSysConfig" resource-ref="true" />
+
+	<!-- bean declaration to read properties file -->
+	<bean id="chatakAcquirerProperties"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="location" ref="chatakAcquirerSysConfigId" />
+	</bean>
+
+	<bean id="propertyConfigurerr"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<ref bean="chatakAcquirerSysConfigId" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<!-- <property name="host" value="mail.girmiti.com"></property> <property 
+			name="port" value="587"></property> <property name="protocol" value="smtp"></property> 
+			<property name="username" value="stylopay@girmiti.com"></property> <property 
+			name="password" value="Girmiti@1234"></property> -->
+		<!-- <property name="host" value="smtp.gmail.com"></property> <property 
+			name="port" value="587"></property> <property name="protocol" value="smtp"></property> 
+			<property name="username" value="chatakacquirer@gmail.com"></property> <property 
+			name="password" value="Girmiti@1234"></property> -->
+
+		<property name="host" value="${mail.smtp.host}"></property>
+		<property name="port" value="${mail.smtp.port}"></property>
+		<property name="protocol" value="${mail.smtp.protocol}"></property>
+		<property name="username" value="${prepaid.email.username}"></property>
+		<property name="password" value="${prepaid.email.password}"></property>
+
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtp.quitwait">true</prop>
+				<prop key="mail.smtp.ssl.trust">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- <bean id="javSMSSender" class="com.chatak.smssender.service.SMSProps"> 
+		<property name="smsGatewayServiceBaseUrl" value="${sms.gateway.base.url}"></property> 
+		<property name="smsGatewayServiceApiKey" value="${sms.gateway.base.api.key}"></property> 
+		<property name="smsGatewayServiceApiSecret" value="${sms.gateway.base.api.secret}"></property> 
+		<property name="smsGatewayServiceFrom" value="${sms.gateway.base.api.from}"></property> 
+		<property name="smsGatewaySenderId" value="${sms.gateway.base.api.sender.id}"></property> 
+		<property name="smsGatewayServiceConTimeout" value="${sms.gateway.base.req.timeout}"></property> 
+		<property name="smsGatewayServiceSoTimeout" value="${sms.gateway.base.soc.timeout}"></property> 
+		</bean> -->
+
+	<bean id="forkAdvice" class="com.chatak.mailsender.service.impl.ForkAdvice" />
+
+	<aop:config>
+		<aop:aspect ref="forkAdvice">
+			<aop:around method="fork"
+				pointcut="execution(* org.springframework.mail.javamail.JavaMailSenderImpl.send(..))" />
+		</aop:aspect>
+	</aop:config>
+
+</beans>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="chatak-pay">
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <dependent-module archiveName="chatak-dao-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/chatak-dao/chatak-dao">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="chatak-switch-sb-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/chatak-switch-sb/chatak-switch-sb">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="chatak-library-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/chatak-library/chatak-library">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="acquirer-notifications-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/acquirer-notifications/acquirer-notifications">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="chatak-pay"/>
+        <property name="java-output-path" value="/chatak-pay/target/classes"/>
+    </wb-module>
+</project-modules>

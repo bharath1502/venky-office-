@@ -1,0 +1,16 @@
+<html>
+<body>
+Welcome <b>$firstName</b>, <br/><br/>
+
+Your Prepaid Agent User has been created.<br/>
+Your User Name is <b>$userName</b><br/>
+Your temporary password is <b>$tempPassword</b><br/>
+Your security key is <b>$securityKey</b><br/>
+Please <a href="$agentUserUrl"> Click here </a> to login.
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<html>
+<body>
+Welcome <b>$firstName</b>, <br/><br/>
+
+Your Admin user account has been created.<br/>
+Your User Name is <b>$userName</b><br/>
+Your temporary password is <b>$tempPassword</b>
+<br/><br/>
+Please <a href="$hLink"> Click here </a> to login.
+<br/><br/>
+Thanks,<br/>
+Chatak Team.
+
+</body>
+</html>

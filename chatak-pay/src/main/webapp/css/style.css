@@ -1,0 +1,343 @@
+@font-face {
+	font-family: 'segoe-ui-regular';
+	src: url('../fonts/segoe-ui-regular/segoe-ui-regular.ttf')
+		format('truetype');
+	src: url('../fonts/segoe-ui-regular/segoe-ui-regular.woff')
+		format('woff'), url('../fonts/segoe-ui-regular/segoe-ui-regular.eot'),
+		url('../fonts/segoe-ui-regular/segoe-ui-regular.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+body {
+	font-family: segoe-ui-regular, sans-serif, "Helvetica Neue", Helvetica,
+		Arial;
+	font-size: 13px;
+}
+/* Page Wrapper and container Start */
+/* Changes to make page responsive 04122015 */
+.wrapper {
+  margin: 0 auto;
+  padding: 0;
+}
+
+
+.container-fluid {
+	margin-right: auto;
+	margin-left: auto;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+/* Page Wrapper End */
+/* Common Style definitions start*/
+.required-field {
+	color: red;
+}
+
+.discriptionErrorMsg {
+	height: 12px;
+	line-height: 12px;
+}
+
+.red-error {
+	color: red;
+	font-size: 12px;
+}
+
+.green-error {
+	color: green;
+}
+
+.form-control {
+	border-radius: 0;
+	font-size: 13px;
+	height: 30px;
+	padding: 0 5px;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+}
+
+.btn {
+	border-radius: 0;
+	padding: 2px 5px 1px;
+	font-size: 13px;
+}
+/* Common Style definitions End*/
+/* Header Style definaition Start*/
+.all-page-header {
+	background-color: #ffffff;
+	padding: 10px 5px;
+	box-shadow: 0px 0px 6px #909090;
+}
+/* Header Style definition End*/
+/* Footer content Style Definition Start*/
+.footer {
+	float: left;
+	margin-top: 20px;
+	width: 100%;
+}
+
+.footer .footer-txt {
+	padding: 9px 10px 0 10px;
+	text-align: center;
+	font-size: 13px;
+	color: #333;
+}
+/* Footer content Style Definition End*/
+/* Registration Panel Definition Start */
+.button {
+	background-color: #15264b;
+	color: #FFF;
+	border: none;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 20%;
+	margin-left: 10px;
+	height: 35px;
+}
+
+.button:hover {
+	text-decoration: none;
+}
+/* Registration Panel Definition End */
+/*Bread Crumb Style Definition Start*/
+.breadCrumb {
+	background-color: #f0f0f0;
+	display: block;
+	padding: 5px 10px;
+	margin: 16px 0;
+	font-weight: bold;
+}
+/*Bread Crumb Style Definition End*/
+/* Custom Input type file style Definition Start */
+.btn-file {
+	position: relative;
+	overflow: hidden;
+}
+
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 100px;
+	text-align: right;
+	filter: alpha(opacity = 0);
+	opacity: 0;
+	background: red;
+	cursor: inherit;
+	display: block;
+}
+
+input[readonly] {
+	background-color: white !important;
+	cursor: text !important;
+}
+
+.btn-primary {
+	background: -webkit-linear-gradient(rgb(231, 231, 231),
+		rgb(196, 196, 196)); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(rgb(231, 231, 231), rgb(196, 196, 196));
+	/* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(rgb(231, 231, 231), rgb(196, 196, 196));
+	/* For Firefox 3.6 to 15 */
+	background: linear-gradient(rgb(231, 231, 231), rgb(196, 196, 196));
+	/* Standard syntax */
+	color: inherit;
+	border: 1px solid #ccc;
+}
+
+.btn-primary:hover {
+	background: -webkit-linear-gradient(rgb(196, 196, 196),
+		rgb(231, 231, 231)); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(rgb(196, 196, 196), rgb(231, 231, 231));
+	/* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(rgb(196, 196, 196), rgb(231, 231, 231));
+	/* For Firefox 3.6 to 15 */
+	background: linear-gradient(rgb(196, 196, 196), rgb(231, 231, 231));
+	/* Standard syntax */
+	color: inherit;
+	border: 1px solid #ccc;
+}
+/* Custom Input type file style Definition End */
+/* Side Navigation Bar Style Definition Start */
+.side-nav-content {
+	background-color: #f4f4f4;
+	border-right: 1px solid #ddd;
+	padding: 0;
+	height: 300px;
+}
+
+.side-nav ul {
+	list-style: none;
+	padding-left: 0;
+	margin-bottom: 0;
+}
+
+.side-nav ul li {
+	padding: 10px 0 10px 10px;
+	border-top: 1px solid #fff;
+	border-bottom: 1px solid #dbdbdb;
+	cursor: pointer;
+}
+
+.side-nav ul li .fa {
+	font-size: 13px;
+	margin-right: 10px;
+}
+
+.side-nav ul li:active,.side-nav ul li:focus,.side-nav ul li:hover {
+	background-color: #f9f9f9;
+	color: #0b5c9f;
+	/*border-right: 1px solid #787878;*/
+}
+
+.left-arrow {
+	width: 0;
+	height: 0;
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	border-right: 10px solid #787878;
+	float: right;
+}
+
+.side-nav ul li:hover>.left-arrow {
+	display: block;
+}
+
+.active {
+	background-color: #f9f9f9;
+	color: #0b5c9f;
+	border-right: 1px solid #787878;
+}
+
+.middle-content {
+	padding: 0;
+	margin-top: 15px;
+}
+
+.right-content {
+	padding-left: 0;
+	margin-top: 15px;
+}
+/* Side Navigation Bar Style Definition End */
+/* Main Content Start */
+.content-wrapper {
+	display: block;
+	padding: 0;
+	margin: 0;
+	background-color: #ffffff;
+	box-shadow: 0px 0px 6px #999;
+	-moz-box-shadow: 0px 0px 6px #999;
+	-webkit-box-shadow: 0px 0px 6px #999;
+	min-height: 100px;
+}
+
+.main-content-holder {
+	border: 1px solid #bfbfbf;
+	display: block;
+	margin: 0 20px 20px;
+	padding: 10px 20px;
+}
+
+label {
+	font-weight: normal;
+}
+
+.cards-info {
+	background: url("../images/cardtype.png") no-repeat;
+	height: 25px;
+	width: 40px;
+}
+
+.header-cards-info {
+	background: url("../images/creditvisamaster.png") no-repeat;
+	height: 32px;
+	width: 52px;
+	display: inline-block;
+}
+
+.header-cards-info-all {
+	background: url("../images/creditvisamaster.png") no-repeat;
+	height: 32px;
+	width: 76%;
+	margin: 0 auto 15px auto;
+}
+
+.card-details-table {
+	border: 1px solid #ddd;
+	width: 100%;
+}
+
+.card-details-table tr td {
+	padding-left: 5px;
+	padding-right: 5px;
+	vertical-align: top;
+	word-break: break-all;
+}
+
+.card-details-table tr td:first-child {
+	width: 40%;
+}
+
+.card-details-table tr:first-child td {
+	padding-top: 2px;
+	padding-bottom: 10px;
+	font-weight: bold;
+}
+
+.total-amt-row {
+	border-top: 1px solid #ddd;
+	background-color: #f9f9f9;
+	font-weight: bold;
+}
+
+.total-amt-row td {
+	padding: 10px 5px;
+}
+
+.pay-button {
+	width: 100%;
+	margin-left: 0;
+}
+
+.process-icon {
+	background: url("../images/islem.gif") no-repeat;
+	width: 40px;
+	height: 40px;
+	margin: 30px auto 0 auto;
+}
+/* Main Content End */
+/* Free Style Definition Start */
+.padding0 {
+	padding: 0;
+}
+
+.paddingT20 {
+	padding-top: 20px;
+}
+
+.paddingTB15 {
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.margin0 {
+	margin: 0;
+}
+
+.marginT15 {
+	margin-top: 15px;
+}
+/* Free Style Definition End */
+
+/* Changes to make page responsive 04122015 */
+@media (min-width: 1000px)  {
+  .wrapper {
+    width: 1005px;
+  }
+}

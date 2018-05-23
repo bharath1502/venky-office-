@@ -1,0 +1,16 @@
+<html>
+<body>
+Welcome <b>$firstName</b>, <br/><br/>
+
+Your Chatak merchant user account has been created.<br/>
+Use below credentials to login into merchant portal<br/>
+User Name : <b>$userName</b><br/>
+Password : <b>$tempPassword</b>
+<br/><br/>
+Please <a href="$hLink"> Click here </a> to login.
+<br/><br/>
+Thanks,<br/><br/>
+Chatak Team.
+
+</body>
+</html>

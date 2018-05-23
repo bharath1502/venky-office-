@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.chatak.acquirer.admin</groupId>
+	<artifactId>chatak-acquirer-builder</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>chatak-acquirer-builder</name>
+	<description>Getting Started with Spring 4.0 on JBoss</description>
+	<modules>
+		<module>../../chatak-library</module>
+		<module>../../chatak-dao</module>
+		<module>../../acquirer-notifications</module>
+		<module>../../chatak-merchant</module>
+	</modules>
+</project>

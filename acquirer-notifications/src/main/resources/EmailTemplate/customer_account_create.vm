@@ -1,0 +1,13 @@
+<html>
+<body>
+Welcome <b>$customerFirstName</b>, <br/><br/>
+
+Your Prepaid Customer account has been created.<br/>
+Account Number : <b>$accountNumber</b>
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

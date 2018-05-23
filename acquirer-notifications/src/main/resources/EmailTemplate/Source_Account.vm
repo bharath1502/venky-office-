@@ -1,0 +1,18 @@
+<html>
+<body>
+Dear <b>$custFirstName</b>, <br/><br/>
+
+The transaction is successful from <b>$SourceAccount</b> to <b>$TragetAccount</b>.<br/>
+
+Recipient name : <b>$recptName</b> <br/>
+Transaction reference number : <b>$txnRefNumb</b><br/>
+Amount  : $<b>$txnAmount</b><br/>
+Date : <b>$dateTime</b>
+
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

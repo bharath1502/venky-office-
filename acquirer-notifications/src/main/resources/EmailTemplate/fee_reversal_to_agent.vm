@@ -1,0 +1,17 @@
+<html>
+<body>
+Dear <b>$agentName</b>, <br/><br/>
+
+The fee reversal is successful.
+
+Amount reversed : $<b>$txnAmount</b>
+<br/>
+Date : <b>$dateTime</b>
+
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

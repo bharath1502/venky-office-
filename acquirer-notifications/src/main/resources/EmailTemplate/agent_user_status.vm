@@ -1,0 +1,13 @@
+<html>
+<body>
+Welcome <b>$firstName</b>, <br/><br/>
+
+Dear Prepaid Agent user your account status has been changed from <b>$previousStatus</b> to <b>$changedStatus</b>
+<br/>
+<br/><br/>
+Thanks,
+<br/>
+Prepaid Team.
+
+</body>
+</html>

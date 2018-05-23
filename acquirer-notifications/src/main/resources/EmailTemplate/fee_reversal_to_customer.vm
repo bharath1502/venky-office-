@@ -1,0 +1,19 @@
+<html>
+<body>
+Dear <b>$custFirstName</b>, <br/><br/>
+
+The fee reversal is successful.
+
+Card/Account Number : <b>$cardOrAccountNumber</b>
+<br/>
+Amount reversed : $<b>$txnAmount</b>
+<br/>
+Date : <b>$dateTime</b>
+
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

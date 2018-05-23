@@ -1,0 +1,88 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+	<security:http auto-config="true" use-expressions="true"
+		disable-url-rewriting="true" access-denied-page="/admin/access-invalid"
+		entry-point-ref="authenticationEntryPoint">
+
+		<security:intercept-url pattern="/admin/badRequest*"
+			access="permitAll" />
+		<security:intercept-url pattern="/admin/footer*"
+			access="permitAll" />
+		<security:intercept-url pattern="/admin/header*"
+			access="permitAll" />
+		<security:intercept-url pattern="/admin/session-invalid"
+			access="permitAll" />
+		<security:intercept-url pattern="/admin/access-invalid"
+			access="permitAll" />
+		<security:intercept-url pattern="/admin/inactive-account"
+			access="permitAll" />
+		<security:intercept-url pattern="/admin/password-reset"
+			access="permitAll" />
+
+		<security:intercept-url pattern="/admin/logout"
+			access="permitAll" />
+
+		<security:custom-filter ref="concurrencyFilter"
+			position="CONCURRENT_SESSION_FILTER" />
+
+		<security:session-management
+			session-authentication-strategy-ref="sas" invalid-session-url="/admin/session-invalid"
+			session-authentication-error-url="/admin/login">
+		</security:session-management>
+
+	</security:http>
+
+	<beans:bean id="sas"
+		class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy"
+		p:maximumSessions="1">
+		<beans:constructor-arg name="sessionRegistry"
+			ref="sessionRegistry" />
+	</beans:bean>
+
+	<beans:bean id="sessionRegistry"
+		class="org.springframework.security.core.session.SessionRegistryImpl" />
+
+	<beans:bean id="concurrencyFilter"
+		class="org.springframework.security.web.session.ConcurrentSessionFilter"
+		p:sessionRegistry-ref="sessionRegistry" p:expiredUrl="/admin/session-invalid" />
+
+	<beans:bean id="authenticationEntryPoint"
+		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
+		p:loginFormUrl="/admin/login" />
+
+
+
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider
+			ref="chatakAuthenticationProvider" />
+	</security:authentication-manager>
+
+	<beans:bean id="chatakAuthenticationProvider"
+		class="com.chatak.acquirer.admin.spring.util.ChatakAuthenticationProvider">
+		<beans:property name="sessionRegistry" ref="sessionRegistry" />
+	</beans:bean>
+
+
+	<beans:bean id="authenticationFilter"
+		class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter"
+		p:sessionAuthenticationStrategy-ref="sas" p:authenticationManager-ref="authenticationManager"
+		p:authenticationFailureHandler-ref="customAuthenticationFailureHandler"
+		p:authenticationSuccessHandler-ref="customAuthenticationSuccessHandler" />
+
+	<beans:bean id="customAuthenticationFailureHandler"
+		class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"
+		p:defaultFailureUrl="/admin/login" />
+
+	<beans:bean id="customAuthenticationSuccessHandler"
+		class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler"
+		p:defaultTargetUrl="/admin/login" />
+
+
+</beans:beans>

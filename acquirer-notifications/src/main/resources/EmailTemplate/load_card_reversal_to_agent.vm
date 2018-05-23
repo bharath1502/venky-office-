@@ -1,0 +1,23 @@
+<html>
+<body>
+Dear <b>$agentName</b>, <br/><br/>
+
+The load card reversal transaction is successful.
+
+Customer : <b>$custFirstName</b>
+<br/>
+Card/Account Number : <b>$cardOrAccountNumber</b>
+<br/>
+Original transaction reference number : <b>$txnRefNumb</b>
+<br/>
+Amount reversed : $<b>$txnAmount</b>
+<br/>
+Date : <b>$dateTime</b>
+
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+package com.chatak.pg.bean;
+
+import java.sql.Timestamp;
+
+public class ExchangeRate extends SearchRequest{
+
+  private static final long serialVersionUID = -1468223768123135970L;
+  
+  private Long id;
+  
+  private String sourceCurrency;
+  
+  private String destCurrency;
+  
+  private Double exchangeRate;
+  
+  private Long souCurDecPos;
+  
+  private Long destCurDecPos;
+  
+  private Timestamp createdDate;
+  
+  private Timestamp updatedDate;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getSourceCurrency() {
+    return sourceCurrency;
+  }
+
+  public void setSourceCurrency(String sourceCurrency) {
+    this.sourceCurrency = sourceCurrency;
+  }
+
+  public String getDestCurrency() {
+    return destCurrency;
+  }
+
+  public void setDestCurrency(String destCurrency) {
+    this.destCurrency = destCurrency;
+  }
+
+  public Double getExchangeRate() {
+    return exchangeRate;
+  }
+
+  public void setExchangeRate(Double exchangeRate) {
+    this.exchangeRate = exchangeRate;
+  }
+
+  public Long getSouCurDecPos() {
+    return souCurDecPos;
+  }
+
+  public void setSouCurDecPos(Long souCurDecPos) {
+    this.souCurDecPos = souCurDecPos;
+  }
+
+  public Long getDestCurDecPos() {
+    return destCurDecPos;
+  }
+
+  public void setDestCurDecPos(Long destCurDecPos) {
+    this.destCurDecPos = destCurDecPos;
+  }
+
+  public Timestamp getCreatedDate() {
+    return createdDate;
+  }
+
+  public void setCreatedDate(Timestamp createdDate) {
+    this.createdDate = createdDate;
+  }
+
+  public Timestamp getUpdatedDate() {
+    return updatedDate;
+  }
+
+  public void setUpdatedDate(Timestamp updatedDate) {
+    this.updatedDate = updatedDate;
+  }
+
+}

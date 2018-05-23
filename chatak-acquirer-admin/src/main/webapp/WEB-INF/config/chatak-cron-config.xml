@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+	<!-- <context:component-scan base-package="com/chatak/acquirer/admin/scheduler/tasks" /> -->
+	<context:component-scan base-package="com" />
+
+	<bean id="chatakAcqSchedulerTask"
+		class="com.chatak.acquirer.admin.spring.scheduler.ChatakSchedulerTask" />
+
+	<task:scheduled-tasks scheduler="releaseInActiveUserSessionSchedulers">
+		<!-- ref: Scheduler Class Name with Java notation, method: Method/Task 
+			to be executed when scheduler triggers. -->
+		<task:scheduled ref="chatakAcqSchedulerTask" method="processReleaseUserSessionTask"
+			cron="${scheduler.session.release.reminder.cron}" />
+	</task:scheduled-tasks>
+
+	<!-- Scheduler pool size settings -->
+	<task:scheduler id="releaseInActiveUserSessionSchedulers"
+		pool-size="${scheduler.session.release.scheduler.pool.size}" />
+
+
+
+	<bean id="payoutSchedulerTask"
+		class="com.chatak.acquirer.admin.spring.scheduler.MerchantPayoutScheduler" />
+
+	<task:scheduled-tasks scheduler="processAutoPaymentSchedulerTask">
+		<!-- ref: Scheduler Class Name with Java notation, method: Method/Task 
+			to be executed when scheduler triggers. -->
+		<task:scheduled ref="payoutSchedulerTask" method="processAutoPayment"
+			cron="${scheduler.payout.reminder.cron}" />
+	</task:scheduled-tasks>
+
+	<!-- Scheduler pool size settings payoutScheduler -->
+	<task:scheduler id="processAutoPaymentSchedulerTask"
+		pool-size="${scheduler.session.release.scheduler.pool.size}" />
+
+</beans>

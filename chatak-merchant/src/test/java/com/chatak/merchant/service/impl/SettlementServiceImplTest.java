@@ -402,10 +402,11 @@ public class SettlementServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateAccountCCTransactionsCCAcquirerFeeCredit() {   //ReBrand
+	public void testUpdateAccountCCTransactionsCCFeeCredit() {
 		List<PGAccountTransactions> accountTxns = new ArrayList<>();
 		PGAccountTransactions pGAccountTransactions = new PGAccountTransactions();
-		pGAccountTransactions.setTransactionCode("CC_ACQUIRER_FEE_CREDIT");  //ReBrand
+		//ReBrand
+		pGAccountTransactions.setTransactionCode("CC_FEE_CREDIT");
 		pGAccountTransactions.setStatus("Executed");
 		accountTxns.add(pGAccountTransactions);
 		PGAccount account = new PGAccount();

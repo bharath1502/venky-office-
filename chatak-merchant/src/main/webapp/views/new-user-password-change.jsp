@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><spring:message code="common.lable.title"/></title>
     <!-- Bootstrap -->
-    <link rel="icon" href="../images/favicon.png" type="image/png">
+    <link rel="icon" href="../images/favicons.png" type="image/png">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->

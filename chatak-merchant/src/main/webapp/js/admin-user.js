@@ -60,11 +60,11 @@ function validPhone() {
 
 	var phone = getVal('phone').trim();
 	if (isEmpty(phone)) {
-		setDiv('phoneDiv', 'Please enter Mobile Number');  //ReBrand
+		setDiv('phoneDiv', 'Please enter Phone Number');
 		return false;
 	} else if (!isDigit(phone) || phone.length < 10 || phone.length > 13
 			|| phone == 0) {
-		setDiv('phoneDiv', 'Invalid Mobile Number');  //ReBrand
+		setDiv('phoneDiv', 'Invalid Phone Number');
 		return false;
 	} else if (phone.charAt(parseInt("0")) == "0") {
 		setDiv('phoneDiv', 'Phone cannot start with zero');
@@ -228,7 +228,7 @@ function doAjaxFetchMailIdAvailable() {
 				setError(get('emailId'), '');
 				usernameFlag = false;
 			} else {
-				setError(get('emailId'), 'Email id already in use');
+				setError(get('emailId'), 'Email ID already in use');
 				usernameFlag = true;
 			}
 		},

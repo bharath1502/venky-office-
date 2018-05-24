@@ -444,7 +444,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 	  txnCodeList.add(AccountTransactionCode.CC_AMOUNT_DEBIT);
 	  txnCodeList.add(AccountTransactionCode.EFT_DEBIT);
 	  txnCodeList.add(AccountTransactionCode.FT_CHECK);
-	  txnCodeList.add(AccountTransactionCode.CC_FEE_CREDIT);
+	  txnCodeList.add(AccountTransactionCode.CC_FEE_CREDIT); 
 	  txnCodeList.add(AccountTransactionCode.CC_FEE_DEBIT);
 	  txnCodeList.add(AccountTransactionCode.FT_BANK);
 	  txnCodeList.add(AccountTransactionCode.ACCOUNT_CREDIT);

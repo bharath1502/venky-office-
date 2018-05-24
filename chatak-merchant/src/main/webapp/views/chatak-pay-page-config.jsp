@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="icon" href="../images/favicons.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/jquery.Jcrop.css" rel="stylesheet">
 <link type="text/css" media="screen" rel="stylesheet" href="../css/jquery.cropbox.css">

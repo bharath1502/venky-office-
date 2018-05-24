@@ -10,7 +10,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="icon" href="../images/favicons.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
@@ -563,7 +563,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title="">Home Phone<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Mobile Number(Home)<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="legalHomePhone"
 															onkeypress="return amountValidate(this,event)"  maxlength="12"
 															id="legalHomePhone" />

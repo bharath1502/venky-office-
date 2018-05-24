@@ -4,7 +4,7 @@
 <header class="col-sm-12 all-page-header">
 	<!--Header Logo Start -->
 	<div class="col-sm-4">
-		<img src="../images/Chatak-logo.jpg" height="63px" alt="Logo" />
+		<img src="../images/logo.jpg" height="63px" alt="Logo" />
 	</div>
 	<!--Header Logo End -->
 	<!--Header Welcome Text and Logout button Start -->

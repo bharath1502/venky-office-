@@ -159,7 +159,7 @@
 						<td><div id="confirmlegalName"></div></td>
 					</tr>
 					<tr>
-						<td>EIN/Tax ID:</td>
+						<td>EIN/Tax ID::</td>
 						<td><div id="confirmlegalTaxId"></div></td>
 					</tr>
 					<tr>
@@ -234,7 +234,7 @@
 						<td><div id="confirmlegalCitizen"></div></td>
 					</tr>
 					<tr>
-						<td>Home Phone:</td>
+						<td>Mobile Number(Home):</td>
 						<td><div id="confirmlegalHomePhone"></div></td>
 					</tr>
 				</table>

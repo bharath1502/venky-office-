@@ -1,16 +1,20 @@
 package com.chatak.merchant.util;
 import com.chatak.pg.util.Constants;
+import java.net.URL;
+
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.Image;
 
 public class TableHeader extends PdfPageEventHelper {
 
@@ -45,6 +49,7 @@ public class TableHeader extends PdfPageEventHelper {
 	 * @see com.itextpdf.text.pdf.PdfPageEventHelper#onEndPage(
 	 *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
 	 */
+	@Override
 	public void onEndPage(PdfWriter writer, Document document) {
 		Rectangle page = document.getPageSize();
 
@@ -68,6 +73,31 @@ public class TableHeader extends PdfPageEventHelper {
 		foot.setTotalWidth(page.getWidth() - document.leftMargin() - document.rightMargin());
 		foot.writeSelectedRows(0, -1, document.leftMargin(), document.bottomMargin(),
 				writer.getDirectContent());
+		
+		try {
+			URL url = getClass().getClassLoader().getResource("chatak_logo_f.png");
+
+			Image image = Image.getInstance(url);
+			image.setAbsolutePosition(0, 325);
+			image.scalePercent(7);
+			image.setAlignment(100);
+			final Font ffont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.ITALIC);
+			final Phrase footer = new Phrase("", ffont);
+			image.scaleToFit(50f, 50f);
+			image.setAbsolutePosition(750, 40);
+			final PdfContentByte cb = writer.getDirectContent();
+			cb.addImage(image);
+			ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT, footer, 490, 15, 0);
+
+			PdfContentByte pdfContentByte = writer.getDirectContent();
+			PdfTemplate pdfTemplate = pdfContentByte.createTemplate(500, 1000);
+
+			pdfTemplate.addImage(image);
+			pdfContentByte.addTemplate(pdfTemplate, 50, 740);
+		} catch (Exception e) {
+			//logger.error("ERROR:: TableHeader:: onEndPage method", e);
+		}
+		
 	}
 
 

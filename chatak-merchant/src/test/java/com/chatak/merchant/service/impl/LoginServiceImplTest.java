@@ -193,7 +193,7 @@ public class LoginServiceImplTest {
 		pgMerchantUsers.setMerPassword("900150983CD24FB0D6963F7D28E17F72");
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
 		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class), Matchers.any(Locale.class))).thenReturn("12");
-		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));  //ReBrand
+		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));
 	}
 
 	@Test
@@ -204,7 +204,7 @@ public class LoginServiceImplTest {
 		pgMerchantUsers.setPreviousPasswords("E8CE7A0A002060AAADC0ACF3C4158339");
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
 		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class), Matchers.any(Locale.class))).thenReturn("12");
-		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));  //ReBrand
+		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));
 	}
 
 	@Test(expected = ChatakMerchantException.class)
@@ -224,7 +224,7 @@ public class LoginServiceImplTest {
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
 		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class), Matchers.any(Locale.class)))
 				.thenThrow(new NullPointerException());
-		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));  //ReBrand
+		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));
 	}
 
 	@Test

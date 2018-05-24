@@ -451,7 +451,7 @@ public class SettlementServiceImpl implements SettlementService {
         feeProgramDao.getAcquirerFeeValueByMerchantIdAndCardType(merchantCode, cardType);
     if (CommonUtil.isListNotNullAndEmpty(acquirerFeeValueList)) {
 
-      logger.info(
+      logger.info(                                                                
           " SettlementServiceImpl:: getProcessingFee method :: Applying this merchant fee code ");
       for (PGAcquirerFeeValue acquirerFeeValue : acquirerFeeValueList) {
         calculatedProcessingFee = 0.00;
@@ -604,7 +604,7 @@ public class SettlementServiceImpl implements SettlementService {
             accTxn.setProcessedTime(currentTime);
             accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
             break;
-          case AccountTransactionCode.CC_FEE_DEBIT:
+          case AccountTransactionCode.CC_FEE_DEBIT:  
             updateFeeDebitCase(accTxn);
             accTxn.setProcessedTime(currentTime);
             accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
@@ -614,8 +614,10 @@ public class SettlementServiceImpl implements SettlementService {
             accTxn.setProcessedTime(currentTime);
             accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
             break;
-          case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:  //ReBrand
-            updateAcquirerFeeCreditCase(accTxn);  //ReBrand
+            
+            case AccountTransactionCode.CC_FEE_CREDIT:
+            //ReBrand
+        	updateFeeCreditCase(accTxn);
             accTxn.setProcessedTime(currentTime);
             accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
             break;
@@ -627,8 +629,8 @@ public class SettlementServiceImpl implements SettlementService {
 
     logger.info("Exiting:: SettlementServiceImpl:: updateAccountCCTransactions method ");
   }
-
-  private void updateAcquirerFeeCreditCase(PGAccountTransactions accTxn) {  //ReBrand
+//ReBrand
+  private void updateFeeCreditCase(PGAccountTransactions accTxn) {
     logger.info(
         "SettlementServiceImpl:: updateAccountCCTransactions method :: fetching currencyConfig for fee credit with numeric code: "
             + accTxn.getTxnCurrencyCode());

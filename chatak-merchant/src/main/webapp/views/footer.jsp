@@ -9,7 +9,7 @@
 <footer class="footer">
 	<div class="col-sm-3 pull-right footer-logo no-padding">
 		<b class="footer-logo"><spring:message code="footer.poweredby"/> </b> <img
-			src="../images/Chatak-lofo-f.png" class="footer-logo-size" alt="Logo" />
+			src="../images/chatak_logo_f.png" class="footer-logo-size" alt="Logo" />
 	</div>
 			<div class="col-sm-9 pull-right no-padding"><p class="footer-txt">
 			<spring:message code="footer.copyright1" /><%=year%> <spring:message code="footer.copyright2" />

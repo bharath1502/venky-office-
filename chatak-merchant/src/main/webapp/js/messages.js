@@ -8,8 +8,8 @@ C_MERCHANT_MSG = {
 		invalidfirstname : "Invalid First Name",
 		pleasenterlastname : "Please enter Last Name",
 		invalidlastname : "Invalid Last Name",
-		pleasenterphonenumber : "Please enter Mobile Number",  //ReBrand
-		invalidphonenumber : "Invalid Mobile Number",  //ReBrand
+		pleasenterphonenumber : "Please enter Phone Number",
+		invalidphonenumber : "Invalid Phone Number",
 		phonecannotstartwithzero : "Phone cannot start with zero",
 		pleasenterfax : "Please enter Fax",
 		invalidfax : "Invalid fax",

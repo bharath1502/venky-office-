@@ -135,7 +135,7 @@ public class DashBoardController implements URLMappingConstants {
 
         List<String> txnCodeList = new ArrayList<>(Constants.ELEVEN);
         txnCodeList.add(AccountTransactionCode.CC_FEE_CREDIT);
-        txnCodeList.add(AccountTransactionCode.CC_FEE_DEBIT);
+        txnCodeList.add(AccountTransactionCode.CC_FEE_DEBIT); 
         txnCodeList.add(AccountTransactionCode.CC_AMOUNT_CREDIT);
         txnCodeList.add(AccountTransactionCode.CC_AMOUNT_DEBIT);
         txnCodeList.add(AccountTransactionCode.FT_BANK);

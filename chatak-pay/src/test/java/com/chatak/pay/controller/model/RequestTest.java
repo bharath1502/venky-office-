@@ -21,7 +21,7 @@ public class RequestTest {
 	public void setUp() {
 		request.setCreatedBy("45");
 		request.setOriginChannel("45");
-		request.setMerchantId("45");
+		request.setMerchantCode("45");
 		request.setTerminalId("45");
 		request.setTransactionType(TransactionType.AUTH);
 		request.setEntryMode(EntryModeEnum.BARCODE);
@@ -36,7 +36,7 @@ public class RequestTest {
 	public void testRequest() {
 		Assert.assertEquals("45", request.getCreatedBy());
 		Assert.assertEquals("45", request.getOriginChannel());
-		Assert.assertEquals("45", request.getMerchantId());
+		Assert.assertEquals("45", request.getMerchantCode());
 		Assert.assertEquals("45", request.getTerminalId());
 		Assert.assertEquals(TransactionType.AUTH, request.getTransactionType());
 		Assert.assertEquals(EntryModeEnum.BARCODE, request.getEntryMode());

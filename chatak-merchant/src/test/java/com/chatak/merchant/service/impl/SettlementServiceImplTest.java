@@ -1,10 +1,14 @@
 package com.chatak.merchant.service.impl;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.http.client.methods.HttpPost;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -40,11 +44,11 @@ import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.SettlementActionDTOList;
 import com.chatak.pg.model.SettlemetActionDTO;
-import com.sun.jersey.api.client.ClientResponse;
-
-import junit.framework.Assert;
+import com.chatak.pg.util.HttpClient;
+import com.chatak.pg.util.Properties;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementServiceImplTest {
@@ -102,6 +106,17 @@ public class SettlementServiceImplTest {
 
 	@Mock
 	PGMerchant pgMerchant;
+	
+	@Mock
+	HttpClient httpClient;
+	
+	@Before
+	public void properties() throws IOException {
+		java.util.Properties properties = new java.util.Properties();
+		properties.setProperty("chatak-issuance.virtual.reverse.fee", "https://dev.ipsidy.net/gateway-admin");
+		properties.setProperty("chatak-issuance.oauth.service.url", "https://dev.ipsidy.net/gateway-admin");
+		Properties.mergeProperties(properties);
+	}
 
 	@Test
 	public void testUpdateSettlementStatusExecuted() throws ChatakMerchantException {
@@ -127,7 +142,7 @@ public class SettlementServiceImplTest {
 
 	}
 
-	@Test
+	@Test 
 	public void testUpdateSettlementStatusProcessing() throws ChatakMerchantException {
 		PGTransaction pgTransaction = new PGTransaction();
 		PGOnlineTxnLog pgOnlineTxnLog = new PGOnlineTxnLog();
@@ -302,17 +317,15 @@ public class SettlementServiceImplTest {
 	}
 
 	@Test
-	public void testPostVirtualAccFeeReversal() throws IOException, ChatakMerchantException {
+	public void testPostVirtualAccFeeReversal() throws IOException, HttpClientException, ChatakMerchantException {
 		PGAccountFeeLog pgAccountFeeLog = new PGAccountFeeLog();
 		Assert.assertNotNull(settlementServiceImpl.postVirtualAccFeeReversal(pgAccountFeeLog, "a", "b", "c"));
 
 	}
 
 	@Test
-	public void testPostVirtualAccFeeReversalElse() throws IOException, ChatakMerchantException {
+	public void testPostVirtualAccFeeReversalElse() throws IOException,HttpClientException, ChatakMerchantException {
 		PGAccountFeeLog pgAccountFeeLog = new PGAccountFeeLog();
-		ClientResponse response = new ClientResponse(null, null, null, null);
-		response.setStatus(Integer.parseInt("200"));
 		Assert.assertNotNull(settlementServiceImpl.postVirtualAccFeeReversal(pgAccountFeeLog, "a", "b", "c"));
 
 	}
@@ -402,11 +415,10 @@ public class SettlementServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateAccountCCTransactionsCCFeeCredit() {
+	public void testUpdateAccountCCTransactionsCCAcquirerFeeCredit() {
 		List<PGAccountTransactions> accountTxns = new ArrayList<>();
 		PGAccountTransactions pGAccountTransactions = new PGAccountTransactions();
-		//ReBrand
-		pGAccountTransactions.setTransactionCode("CC_FEE_CREDIT");
+		pGAccountTransactions.setTransactionCode("CC_ACQUIRER_FEE_CREDIT");
 		pGAccountTransactions.setStatus("Executed");
 		accountTxns.add(pGAccountTransactions);
 		PGAccount account = new PGAccount();

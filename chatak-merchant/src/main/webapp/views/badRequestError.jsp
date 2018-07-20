@@ -1,9 +1,10 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html>
 <head>
 <link href="../css/pg.css" rel="stylesheet">
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<div
 		style="text-align: center; width: 100%; margin: 0; top: 40%; left: 0;"
 		class="login">

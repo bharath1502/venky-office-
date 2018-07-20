@@ -279,6 +279,8 @@ function validRoleName() {
 		setDiv("roleNameEr", webMessages.pleaseEntertheRoleName);
 		loadMsgTitleText();
 		return false;
+	} else if(!alphanumericwithenterspace(roleName)) {
+			 return false;	
 	} else {
 		doAjaxRoleNameDuplicate();
 		return !roleNameDup;
@@ -365,6 +367,8 @@ function validRoleDescription(id, divId, failureMessage1, failureMessage2) {
 	if (isEmpty(description)) {
 			setDiv(divId, webMessages.pleaseEntertheDescription);
 			loadMsgTitleText();
+		return false;
+	} else if(!alphanumericwithpointspace(description,divId)) {
 		return false;
 	}
 	setDiv(divId, "&nbsp;");

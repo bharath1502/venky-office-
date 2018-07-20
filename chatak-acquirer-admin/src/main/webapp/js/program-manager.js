@@ -19,22 +19,18 @@ function ProgramManagerValidation() {
 	var flag = true;
 
 	if (!readPartnerLogo(imageData, 'programManagerLogoErrorDiv')
-			| !clientValidation('bankName', 'bank_name_dropdown',
-					'pgmmgrbankiderrormsg')
-			| !clientValidation('programManagerEmailId', 'email',
-					'programManagerEmailIdEmailId_ErrorDiv')
-			| !clientValidation('contactPhone', 'partner_phone',
-					'pgmmgrcontactphoneerrormsg')
-			| !clientValidation('contactPerson', 'contact_person',
-					'pgmmgrcontactpersonerrormsg')
-			| !clientValidation('businessEntityName', 'business_entity_name',
-					'pgmmgrbusinessentityerrormsg')
-			| !clientValidation('companyName', 'company_name',
-					'pgmmgrcompanynameerrormsg')
-			| !clientValidation('programManagerName', 'program_manager_name',
-					'pgmmgrnameerrormsg')
-			| !clientValidation('currencyName', 'orderType',
-					'currencyNameErrormsg')) {
+			| !clientValidation('programManagerEmailId', 'email','programManagerEmailIdEmailId_ErrorDiv')
+			| !clientValidation('contactPhone', 'partner_phone','pgmmgrcontactphoneerrormsg')
+			| !clientValidation('contactPerson', 'contact_person','pgmmgrcontactpersonerrormsg')
+			| !clientValidation('businessEntityName', 'business_entity_name','pgmmgrbusinessentityerrormsg')
+			| !clientValidation('companyName','company_name','pgmmgrcompanynameerrormsg')
+			| !clientValidation('country','country','countryNameErrormsg')
+	        | !clientValidation('state','state','stateNameErrormsg')
+	        | !clientValidation('timezone','state','timezone_ErrorDiv')
+	        | !clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')
+	        | !clientValidation('schedulerRunTime','txn_date','pgmmgrschedulerRunTimeerrormsg')
+			| !clientValidation('programMangerName', 'program_manager_name','pgmmgrNameErrormsg')
+			| !validateByPmType()) {
 		clearValidationType();
 		flag = false;
 		return flag;
@@ -48,6 +44,60 @@ function ProgramManagerValidation() {
 		document.forms["programManagerDetailsForm"].submit();
 	}
 	return flag;
+}
+
+function validateByPmType(){
+	var pmType = $('#programManagerType :selected').val();
+	if(pmType =='' || pmType == 'onboarded'){
+		if(!clientValidation('currencyName', 'orderType','currencyNameErrormsg')
+				| !validateCardProgram('cardprogramId','OnboardCardProgramerrormsg')
+				| !validateBank('bankName','pgmmgrbankiderrormsg')
+				| !validateProgramManagerId('programManagerId','programManagerIdEr'))
+			return false;
+	}else if(pmType =='' || pmType == 'CreateIndependent'){
+		if(!clientValidation('acquirerCurrencyName','orderType','acquirerCurrencyNameErrormsg')
+				| !validateCardProgram('acquirerCardprogramId','pgmmgrCardProgramerrormsg')
+				| !validateBank('acquirerBankName','acquirerBankNameerrormsg'))
+			return false;
+	}
+	return true;
+}
+
+function validateBank(fieldId, errorId) {
+	if ($('#' + fieldId).has('option').length <= 0) {
+		setDiv(errorId, webMessages.validationthisfieldismandatory);
+		return false;
+	}
+	if ($('select#' + fieldId).val() == null) {
+		setDiv(errorId, webMessages.select_bank);
+		return false;
+	}
+	setDiv(errorId, '');
+	return true;
+}
+
+function validateCardProgram(fieldId, errorId) {
+	if ($('#' + fieldId).has('option').length <= 0) {
+		setDiv(errorId, webMessages.validationthisfieldismandatory);
+		return false;
+	}
+	if ($('select#' + fieldId).val() == null) {
+		setDiv(errorId, webMessages.select_card_program);
+		return false;
+	}
+	setDiv(errorId, '');
+	return true;
+}
+
+function validateProgramManagerId(fieldId,errorId) {
+	var programManagerId = $('#'+fieldId+' :selected').val();
+	if (isEmpty(programManagerId)) {
+		$('#'+errorId).text(webMessages.validationthisfieldismandatory);
+		return false;
+	} else {
+		$('#'+errorId).text('');
+		return true;
+	}
 }
 
 function readPartnerLogo(input, div_id) {
@@ -130,20 +180,18 @@ function editProgramManagerValidation() {
 	return flag;
 
 }
+
 function editPMValidation() {
 
 	var imageData = get('programManagerLogo');
 	var flag = true;
 
-	if (!readPartnerLogoedit(imageData, 'programManagerLogoErrorDiv')
-			| !clientValidation('bankName', 'bank_name_dropdown',
-					'bankiderrormsg')
+	if (!readPartnerLogo(imageData, 'programManagerLogoErrorDiv')
+			| !validateBank('bankName','pgmmgrbankiderrormsg')
 			| !clientValidation('programManagerEmailId', 'email',
 					'programManagerEmailIdEmailId_ErrorDiv')
 			| !clientValidation('contactPhone', 'partner_phone',
 					'pgmmgrcontactphoneerrormsg')
-			| !clientValidation('contactPerson', 'contact_person',
-					'pgmmgrcontactpersonerrormsg')
 			| !clientValidation('contactPerson', 'contact_person',
 					'pgmmgrcontactpersonerrormsg')
 			| !clientValidation('businessEntityName', 'business_entity_name',
@@ -152,16 +200,29 @@ function editPMValidation() {
 					'pgmmgrcompanynameerrormsg')
 			| !clientValidation('programManagerName', 'program_manager_name',
 					'pgmmgrnameerrormsg')
-			| !clientValidation('currencyName', 'orderType',
-					'currencyNameErrormsg')) {
+			| !clientValidation('accountCurrency', 'program_manager_name',
+					'currencyNameErrormsg')
+					
+			| !clientValidation('schedulerRunTime','txn_date','pgmmgrschedulerRunTimeerrormsg')
+			| !clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')
+			| !clientValidation('timezone','state','timezone_ErrorDiv')
+			| !clientValidation('state','state','stateNameErrormsg')
+			| !clientValidation('country','country','countryNameErrormsg')
+			| !validateCardProgram('cardprogramId','pgmmgrCardProgramerrormsg')) {
 		clearValidationType();
 		flag = false;
 		return flag;
-
 	}
-	editProgramManager();
-	return flag;
+	if (flag = true) {
+		var obj = programManagerEditDetailsForm.bankName, options = obj.options, selected = [], i;
 
+		for (i = 0; i < options.length; i++) {
+			options[i].selected && selected.push(obj[i].value);
+		}
+		document.forms["programManagerEditDetailsForm"].submit();
+	}
+	return flag;
+	editProgramManager();
 }
 function editProgramManagerAccountValidation() {
 
@@ -622,22 +683,42 @@ function doAjaxForState(countryId) {
 }
 
 function fetchPmDetailsByPmType(programManagerType) {
-	if (programManagerType == 'OnBoardFromIssuance') {
-		doAjaxFetchAllIssunacePMDetails(programManagerType);
+	resetAllFields();
+	if (programManagerType == 'onboarded') {
 		$(".issuanceProgramManager").show();
 		$(".issuancePMlogo").show();
 		$(".acquirerCurrencyNames").hide();
+		$(".acquirerCardProgram").hide();
+		$(".issuanceCardProgram").show();
 		$(".acquirerBankNames").hide();
 		$(".currencyNames").show();
 		$(".bankNames").show();
+		/*document.getElementById('country').options.length = 0;
+		var selectOption = document.createElement("option");
+		selectOption.innerHTML = "..:Select:..";
+		selectOption.value = "";
+		$("#country").append(selectOption);*/
+		document.getElementById('state').options.length = 0;
+		var selectOption = document.createElement("option");
+		selectOption.innerHTML = "..:Select:..";
+		selectOption.value = "";
+		$("#state").append(selectOption);
+		document.getElementById('timezone').options.length = 0;
+		var selectOption = document.createElement("option");
+		selectOption.innerHTML = "..:Select:..";
+		selectOption.value = "";
+		$("#timezone").append(selectOption);
+		doAjaxFetchAllIssunacePMDetails(programManagerType);
 	} else if(programManagerType == 'CreateIndependent') {
-		getIndependentPMDetails(programManagerType);
 		$(".acquirerCurrencyNames").show();
 		$(".acquirerBankNames").show();
+		$(".acquirerCardProgram").show();
+		$(".issuanceCardProgram").hide();
 		$(".issuanceProgramManager").hide();
 		$(".issuancePMlogo").hide();
 		$(".currencyNames").hide();
 		$(".bankNames").hide();
+		getIndependentPMDetails(programManagerType);
 		document.getElementById('programManagerId').options.length = 0;
 		var selectOption = document.createElement("option");
 		selectOption.innerHTML = "..:Select:..";
@@ -672,6 +753,11 @@ function getIndependentPMDetails(programManagerType) {
 				$("#contactPhone").val('');
 				$("#extension").val('');
 				$("#programManagerEmailId").val('');
+				$("#country").val('');
+				$("#state").val('');
+				$("#timezone").val('');
+				$("#batchPrefix").val('');
+				$("#schedulerRunTime").val('');
 				$("#LogoDiv").val('');
 				// Remove previous options from the dropdown
 				document.getElementById('acquirerCurrencyName').options.length = 0;
@@ -767,6 +853,7 @@ function doAjaxFetchAllIssunacePMDetails(programManagerType) {
 
 function fetchPmDetailsByPmId(programManagerId) {
 	if (programManagerId == '') {
+		resetAllFields();
 		return;
 	}
 	doAjaxFetchIssunacePMDetailsById(programManagerId);
@@ -774,6 +861,8 @@ function fetchPmDetailsByPmId(programManagerId) {
 }
 
 function doAjaxFetchIssunacePMDetailsById(programManagerId) {
+	document.getElementById('bankName').options.length = 0;
+	document.getElementById('cardprogramId').options.length = 0;
 	$.ajax({
 
 		type : "GET",
@@ -789,9 +878,36 @@ function doAjaxFetchIssunacePMDetailsById(programManagerId) {
 				$("#contactPerson").val(obj[0].contactName);
 				$("#contactPhone").val(obj[0].contactPhone);
 				$("#extension").val(obj[0].extension);
+				$("#batchPrefix").val(obj[0].batchPrefix);
+				$("#schedulerRunTime").val(obj[0].schedulerRunTime);
+				$("#standardTimeOffset").val(obj[0].standardTimeOffset);
 				$("#programManagerEmailId").val(obj[0].contactEmail);
 				$("#LogoDiv").val(obj[0].issuanceProgramManagerLogo);
 				$("#currencyName").val(obj[0].currencyConfigRequest.currencyCodeAlpha);
+				document.getElementById('country').options.length = 0;
+				var country = obj[0].country;
+				{
+					var newOption = document.createElement("option");
+					newOption.value = country;
+					newOption.innerHTML = country;
+					$("#country").append(newOption);
+				}
+				document.getElementById('state').options.length = 0;
+				var state = obj[0].state;
+				{
+					var newOption = document.createElement("option");
+					newOption.value = state;
+					newOption.innerHTML = state;
+					$("#state").append(newOption);
+				}
+				document.getElementById('timezone').options.length = 0;
+				var pmTimeZone = obj[0].pmTimeZone;
+				{
+					var newOption = document.createElement("option");
+					newOption.value = pmTimeZone;
+					newOption.innerHTML = pmTimeZone;
+					$("#timezone").append(newOption);
+				}
 				document.getElementById('currencyName').options.length = 0;
 					var currencyCodeAlpha = obj[0].currencyConfigRequest.currencyCodeAlpha;
 					{
@@ -818,6 +934,21 @@ function doAjaxFetchIssunacePMDetailsById(programManagerId) {
 		failure : function(e) {
 		}
 	});
+}
+
+function resetAllFields() {
+	setValue('programMangerName', '');
+	setValue('companyName', '');
+	setValue('businessEntityName', '');
+	setValue('contactPerson', '');
+	setValue('contactPhone', '');
+	setValue('extension', '');
+	setValue('programManagerEmailId', '');
+	setValue('load', '');
+	document.getElementById('bankName').options.length = 0;
+	document.getElementById('cardprogramId').options.length = 0;
+	document.getElementById('currencyName').options.length = 0;
+	$('#currencyName').text('');
 }
 
 function fetchPmCardProgramByPmId(programManagerId) {
@@ -873,7 +1004,6 @@ function doAjaxFetchBankDetailsByCurrency(currency) {
 			// we have the response
 			if (response != "") {
 				var obj = JSON.parse(response);
-			
 				document.getElementById('acquirerBankName').options.length = 0;
 				for (var i = 0; i < obj.length; i++) {
 					var cardProgramId = obj[i].cardProgramId;
@@ -890,4 +1020,163 @@ function doAjaxFetchBankDetailsByCurrency(currency) {
 		failure : function(e) {
 		}
 	});
+}
+
+function fetchAcquirerCardProgramDetailsByBankId(bankId) {
+	if (bankId == '') {
+		return;
+	}
+	doAjaxFetchAcquirerCardProgramDetailsByBankId(bankId);
+	
+}
+
+function doAjaxFetchAcquirerCardProgramDetailsByBankId(bankId) {
+	$.ajax({
+
+		type : "GET",
+		url : "getAcquirerCardProgramDetailsByBankId?bankId=" + bankId,
+		success : function(response) {
+			// we have the response
+			if (response != "") {
+				var obj = JSON.parse(response);
+			
+				document.getElementById('acquirerCardprogramId').options.length = 0;
+				for (var i = 0; i < obj.length; i++) {
+					var cardProgramId = obj[i].cardProgramId;
+					var cardProgramName = obj[i].cardProgramName;
+					{
+						var newOption = document.createElement("option");
+						newOption.value = obj[i].cardProgramId;
+						newOption.innerHTML = obj[i].cardProgramName;
+						$("#acquirerCardprogramId").append(newOption);
+					}
+				}
+			}
+		},
+		failure : function(e) {
+		}
+	});
+}
+
+function fetchTimeZone(id) {
+	if(id == '') {
+		return;
+	}
+	doAjaxForTimeZone(id);
+}
+
+function doAjaxForTimeZone(countryId) {
+	
+	$.ajax({
+			type : "GET",
+			url : "fetchTimeZone?countryId="+countryId,
+			
+			success : function(response) {
+						
+					var obj = JSON.parse(response);
+
+					if (response != "") {
+						var obj = JSON.parse(response);
+					
+						document.getElementById('timezone').options.length = 0;
+						var selectOption = document.createElement("option");
+						selectOption.innerHTML = "..:Select:..";
+						selectOption.value = "";
+						$("#timezone").append(selectOption);
+						for (var i = 0; i < obj.length; i++) {
+							var cardProgramId = obj[i].cardProgramId;
+							var cardProgramName = obj[i].cardProgramName;
+							{
+								var newOption = document.createElement("option");
+								newOption.value = obj[i].id;
+								newOption.innerHTML = obj[i].standardTimeOffset;
+								$("#timezone").append(newOption);
+							}
+						}
+					}
+		},
+		failure :	function(e) {
+		  }
+				
+	});
+}
+function goToDashBoard() {
+	window.location.href = 'home';
+}
+
+function updateFileAndReadFileSettlementReport(input, div_id){
+	updateFileName();
+	readFileData(input, div_id);
+}
+
+function updateFileName() {
+	var fileData = get('browseFile');
+	if (document.getElementById('fileData' == null)) {
+		setDiv('dataFile_errDiv', webMessages.feeProgramMandatory);
+
+	}
+	var fileName = $('input[type=file]').val().split('/').pop().split('\\')
+			.pop();
+	$('#dataFile').val(fileName);
+}
+
+function validateUserBulkFormData() {
+	var fileData = get('browseFile');
+	var flag = true;
+	if (!readFileData(fileData, 'dataFile_errDiv')) {
+		flag = false;
+		return flag;
+	}
+	return flag;
+}
+
+var MAX_FILE_SIZE = 1024 * 1024 * 3;
+
+function readFileData(input, div_id) {
+
+	if (!mandatorytrue(input.value, div_id)) {
+		return false;
+	}
+
+	if (!isValidFile(input.value)) {
+		document.getElementById(div_id).innerHTML =  webMessages.WRONG_FILE_FORMATE;
+		return false;
+	}
+	document.getElementById(div_id).innerHTML = '';
+	if (input.files && input.files[0]) {
+		if (parseInt(MAX_FILE_SIZE) < parseInt(input.files[0].size)) {
+			document.getElementById(div_id).innerHTML = webMessages.FILE_SIZE;
+			return;
+		}
+	}
+	return true;
+}
+
+function isValidFile(fileSrc) {
+	var value = fileSrc.toUpperCase();
+	if (value.indexOf('.CSV') != -1) {
+		return true;
+	}
+	return false;
+}
+function validateIncomingSettlementReportData() {
+	var fileData = get('browseFile');
+	var flag = true;
+	if (!readFileData(fileData, 'dataFile_errDiv')){
+	    	flag = false;
+			return flag;
+	    }
+	document.getElementById(div_id).innerHTML = '';
+	return flag;
+}
+
+function showSettlementPage() {
+	window.location.href = 'show-incoming-settlement-report';
+}
+
+function setTimeZone() {
+	setValue('timeZoneOffset', new Date().toString().match(
+			/([A-Z]+[\+-][0-9]+)/)[1]);
+	setValue('timeZoneRegion', jstz.determine().name());
+	return true;
 }

@@ -24,6 +24,7 @@
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
     <!--Body Wrapper block Start -->
     <div id="wrapper">
       <!--Container block Start -->
@@ -37,7 +38,7 @@
             <div class="breadCrumb">
               <span class="breadcrumb-text"><spring:message code="header.label.dashboard" /></span> <span
                 class="glyphicon glyphicon-play icon-font-size"></span> <span
-                class="breadcrumb-text"><a href="showResetPasswordUnblock"><spring:message code="header.label.unblockusers" /> </a></span> <span
+                class="breadcrumb-text"><spring:message code="header.label.unblockusers" /></span> <span
                 class="glyphicon glyphicon-play icon-font-size"></span> <span
                 class="breadcrumb-text"><spring:message code="reports.label.searchbutton" /></span>
             </div>
@@ -48,6 +49,7 @@
               method="post">
               <input type="hidden" id="pageNumberId" name="bankPageData" /> 
               <input type="hidden" id="totalRecordsId" name="totalRecords" />
+              <input type="hidden" name="CSRFToken" value="${tokenval}">
             </form:form>
             <div class="main-content-holder">
               <div class="row">
@@ -66,16 +68,19 @@
                   <form:form action="performUserUnblock" name="performUserUnblockForm" method="post">
                   	<input type="hidden" name="userName" id="userName">
                  	<input type="hidden" name="entityType" id="entityType">
+                 	<input type="hidden" name="CSRFToken" value="${tokenval}">
                   </form:form>
                   <form:form action="unblockUser" modelAttribute="userDataDto" method="post">
+                  <input type="hidden" name="CSRFToken" value="${tokenval}">
                     <div class="col-sm-12">
                       <div class="row">
                         <div class="field-element-row">
                           <fieldset class="col-md-3 col-sm-6"> 
 								<label><spring:message code="users.label.usertype" /><span class="required-field">*</span></label>
 								<form:select  id="userType" path="userType" cssClass="form-control">
-										<form:option value="Admin"><spring:message code="roles.label.admin"/></form:option>
-										<form:option value="Merchant"><spring:message code="roles.label.merchant"/></form:option>
+										<c:forEach items="${roleLevelList}" var="roleLevelList">
+															         <form:option value="${roleLevelList.value}">${roleLevelList.value}</form:option>
+														        </c:forEach>
 								</form:select>
 								<input type="hidden" id="userType" value=${userType}>
 								<div class="discriptionErrorMsg">
@@ -178,9 +183,7 @@
    <script src="../js/utils.js"></script>
 	<script src="../js/messages.js" type="text/javascript"></script>
 	<script type="text/javascript" src="../js/admin-user.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	
@@ -216,6 +219,21 @@
       $(".table-hide-btn").click(function() {
       	$(".search-results-table").slideUp();
       });
+      $(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
     </script>
   </body>
 </html>

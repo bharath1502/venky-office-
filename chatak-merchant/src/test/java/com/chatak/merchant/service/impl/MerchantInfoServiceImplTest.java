@@ -45,7 +45,6 @@ import com.chatak.pg.user.bean.FeeProgramNameListDTO;
 import com.chatak.pg.user.bean.GetMerchantListRequest;
 import com.chatak.pg.user.bean.GetMerchantListResponse;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
-import com.sun.jersey.api.client.ClientResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MerchantInfoServiceImplTest {
@@ -91,9 +90,6 @@ public class MerchantInfoServiceImplTest {
 
 	@Mock
 	PrepaidNotificationException prepaidNotificationException;
-
-	@Mock
-	ClientResponse clientResponse;
 
 	@Mock
 	DataAccessException dataAccessException;
@@ -337,8 +333,7 @@ public class MerchantInfoServiceImplTest {
 	@Test
 	public void testGetMerchantCodeAndName() throws ChatakMerchantException {
 		List<String> merchantCodes = new ArrayList<>();
-		String string = new String();
-		merchantCodes.add(string);
+		merchantCodes.add("");
 		List<Option> merchantNames = new ArrayList<>();
 		Option merchantData = new Option();
 		PGMerchant pgMerchant = new PGMerchant();
@@ -355,9 +350,8 @@ public class MerchantInfoServiceImplTest {
 
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testGetPartnerList() throws ChatakMerchantException, IOException {
-	  clientResponse.setStatus(1);
 		Assert.assertNull(merchantInfoServiceImpl.getPartnerList("987654321"));
 
 	}
@@ -373,19 +367,7 @@ public class MerchantInfoServiceImplTest {
 		Assert.assertNotNull(merchantInfoServiceImpl.getlinkedAgents("4321"));
 
 	}
-
-	@Test
-	public void testGetlinkedPartners() {
-		Assert.assertNotNull(merchantInfoServiceImpl.getlinkedPartners());
-
-	}
-
-	@Test
-	public void testGetPartnerLinkedToMerchant() {
-		Assert.assertNull(merchantInfoServiceImpl.getPartnerLinkedToMerchant(Long.parseLong("54321")));
-
-	}
-
+	
 	@Test
 	public void testGetFeeProgramNamesForEdit() {
 		feeProgramNameListDTO = new FeeProgramNameListDTO();

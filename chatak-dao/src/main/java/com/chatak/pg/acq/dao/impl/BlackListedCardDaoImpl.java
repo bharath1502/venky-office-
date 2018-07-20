@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -181,7 +182,7 @@ public class BlackListedCardDaoImpl implements BlackListedCardDao {
 	 * @param cardNumber
 	 * @return
 	 */
-	private BooleanExpression isCardNumberEq(Long cardNumber) {
+	private BooleanExpression isCardNumberEq(BigInteger cardNumber) {
 		return (cardNumber != null && !"".equals(cardNumber.toString())) ? QPGBlackListedCard.pGBlackListedCard.cardNumber.eq(cardNumber) : null;
 	}
 
@@ -209,7 +210,7 @@ public class BlackListedCardDaoImpl implements BlackListedCardDao {
 	  }
 	
 	@Override
-	public Response getCardDataByCardNumber(long cardNumber) {
+	public Response getCardDataByCardNumber(BigInteger cardNumber) {
 		Response response = new Response();
 		PGBlackListedCard blackListedCard = blackListedCardRepository.findByCardNumberAndStatusNotLike(cardNumber, Constants.TWO);
 		if (blackListedCard != null) {
@@ -230,7 +231,7 @@ public class BlackListedCardDaoImpl implements BlackListedCardDao {
 	 * @return
 	 */
 	@Override
-	public PGBlackListedCard getCardNumber(Long cardNumber) {
+	public PGBlackListedCard getCardNumber(BigInteger cardNumber) {
 		return blackListedCardRepository.findByCardNumber(cardNumber);
 	}
 

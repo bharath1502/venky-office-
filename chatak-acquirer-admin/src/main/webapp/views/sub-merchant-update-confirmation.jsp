@@ -6,43 +6,10 @@
 <section class="field-element-row atm-transaction-content"
 	style="display: none;">
 	<fieldset class="col-sm-12">
-		<fieldset class="col-sm-12">
-			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.autosettlementoptions" /><span
-				class="required-field">*</span></label><br> <input type="radio"
-				id="allowAutoSettlement" name="autoSettlement" value="1"
-				onclick="validateRadio()">
-			<spring:message code="manage.option.radio.sub-merchant.yes" />
-			<input type="radio" id="noAutoSettlement" name="autoSettlement"
-				value="0" onclick="validateRadio()">
-			<spring:message code="manage.option.radio.sub-merchant.no" />
-			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-				<span id="noAutoSettlementEr" class="red-error">&nbsp;</span>
-			</div>
-		</fieldset>
-		<fieldset class="col-sm-3">
-			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.feeprogram" /><span
-				class="required-field">*</span></label>
-			<form:select cssClass="form-control" path="feeProgram"
-				id="feeProgram" onblur="validatefeeProgram()">
-				<form:option value="">..:<spring:message
-						code="manage.option.sub-merchant.select" />:..</form:option>
-				<c:forEach items="${feeprogramnames}" var="feename">
-					<form:option value="${feename.label}">${feename.label}</form:option>
-				</c:forEach>
-			</form:select>
-			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-				<span id="feeProgramEr" class="red-error">&nbsp;</span>
-			</div>
-		</fieldset>
 		<fieldset class="col-sm-3">
 			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 					code="manage.label.sub-merchant.processor" /><span
 				class="required-field">*</span></label>
-			<!-- <select class="form-control">
-															<option>..:Select:..</option>
-														</select> -->
 			<form:select cssClass="form-control" path="processor" id="processor"
 				onblur="validateProcessor()">
 				<form:option value="">..:<spring:message
@@ -287,78 +254,6 @@
 			</div>
 		</fieldset>
 		
-		<!-- Add Issuance Agent Configuration START -->
-													
-			<fieldset class="col-sm-12" id="issuanceAgentSettings">
-				<fieldset class="col-sm-12 padding0 border-style-section">
-					<fieldset class="col-sm-12">
-						<div class="container-heading-separator">
-							<span><spring:message code="merchant.label.issuer.agent.configuration"/></span>
-						</div>
-						<div id="agentErrorId" class="red-error">&nbsp;</div>
-						<div class="row">
-							<div class="field-element-row">
-								<fieldset class="col-sm-3">
-									<label data-toggle="tooltip" data-placement="top" title="">
-										<spring:message code="common.label.agentName"/>
-										
-									</label>
-									<form:select cssClass="form-control" path="agentId"
-										id="agentId" 
-										onchange="fetchAgentData(this.value)">
-										<form:option value=""><spring:message code="reports.option.select"/></form:option>
-										<c:forEach items="${agentnamesList}" var="agentnames">
-											<form:option value="${agentnames.label}">${agentnames.value}</form:option>
-										</c:forEach>
-									</form:select>
-									<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-										<span id="agentIdErr" class="red-error">&nbsp;</span>
-									</div>
-								</fieldset>
-								<fieldset class="col-sm-4">
-									<label>
-									<spring:message code="merchant.label.issuer.agent.accnumber"/></label>
-									<form:input cssClass="form-control" maxlength="19" onkeypress="return numbersonly(this,event)"
-												path="agentAccountNumber" id="agentAccountNumber"  readonly="true"/>
-									<div class="discriptionErrorMsg">
-												<span id="agentAccountNumberErrorDiv"
-													class="red-error">&nbsp;</span>
-									</div>
-									
-								</fieldset>
-								<fieldset class="col-sm-4">
-									<label>
-									<spring:message code="merchant.label.issuer.agent.clientid"/></label>
-									<form:input cssClass="form-control" maxlength="20" onkeypress="return numbersonly(this,event)"
-												path="agentClientId" id="agentClientId"  readonly="true"/>
-									<div class="discriptionErrorMsg">
-												<span id="agentClientIdErrorDiv"
-													class="red-error">&nbsp;</span>
-									</div>
-									
-								</fieldset>
-								<fieldset class="col-sm-4">
-									<label>
-									<spring:message code="merchant.label.issuer.agent.ani"/></label>
-									<form:input cssClass="form-control" maxlength="20" onkeypress="return numbersonly(this,event)"
-												path="agentANI" id="agentANI"  readonly="true"/>
-									<div class="discriptionErrorMsg">
-												<span id="agentANIErrorDiv"
-													class="red-error">&nbsp;</span>
-									</div>
-									
-								</fieldset>
-
-
-								
-							</div>
-						</div>
-					</fieldset>
-				</fieldset>
-			</fieldset>
-													
-			<!-- Add Issuance Agent Configuration END-->
-
 		<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS START-->
 
 		<fieldset class="col-sm-12" id="">
@@ -463,23 +358,6 @@
 				</fieldset>
 			</fieldset>
 		</fieldset>
-
-		<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS END-->
-
-		<%-- <fieldset class="col-sm-3">
-			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.agentdetails" /></label>
-			<form:select cssClass="form-control" path="agentId" id="agentId">
-				<form:option value="">..:<spring:message
-						code="manage.option.sub-merchant.select" />:..</form:option>
-				<c:forEach items="${agents}" var="agent">
-																<form:option value="${agent.value}">${agent.label}</form:option>
-															</c:forEach>
-			</form:select>
-			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-				<span id="agentIdErrorDiv" class="red-error">&nbsp;</span>
-			</div>
-		</fieldset> --%>
 		<fieldset class="col-sm-3" style="display: none;">
 			<form:input cssClass="form-control" path="issuancePartnerId"
 				id="issuancePartnerId" />
@@ -497,7 +375,7 @@
 				value="<spring:message code="manage.buttton.sub-merchant.previous" />">
 			<input type="button" class="form-control button pull-right marginL10"
 				value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-				onclick="goToMerchantSearch()">
+				onclick="openCreateCancelConfirmationPopup()">
 		</fieldset>
 	</div>
 	<div class="col-sm-12 button-content subMerchantDiv1"
@@ -510,7 +388,7 @@
 				value="<spring:message code="manage.buttton.sub-merchant.previous" />">
 			<input type="button" class="form-control button pull-right marginL10"
 				value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-				onclick="goToSubMerchantSearch()">
+				onclick="openCreateCancelConfirmationPopup()">
 		</fieldset>
 	</div>
 	<!--Panel Action Button End -->
@@ -609,15 +487,6 @@
 								code="show-account-transfer.label.accountnumber" />:</td>
 						<td>${accountNumber}</td>
 					</tr>
-				</table>
-			</fieldset>
-		</fieldset>
-		<fieldset class="col-sm-6">
-			<fieldset class="fieldset contact-content">
-				<legend class="legend content-space">
-					<spring:message code="manage.label.sub-merchant.additionalinfo" />
-				</legend>
-				<table class="confirm-info-table">
 					<tr>
 						<td><spring:message code="manage.label.sub-merchant.username" />:</td>
 						<td><div id="confirmMuserName"></div></td>
@@ -689,121 +558,11 @@
 			</fieldset>
 		</fieldset>
 		<fieldset class="col-sm-6">
-			<fieldset class="fieldset merchant-content">
-				<legend class="legend content-space">
-					<spring:message
-						code="manage.label.sub-merchant.legalentityrepresentative" />
-				</legend>
-				<table class="confirm-info-table">
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.ssn" />:</td>
-						<td><div id="confirmlegalSSN"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.firstname" />:</td>
-						<td><div id="confirmlegalFirstName"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.lastname" />:</td>
-						<td><div id="confirmlegalLastName"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.mobilephone" />:</td>
-						<td><div id="confirmlegalMobilePhone"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.dateofbirth" />:</td>
-						<td><div id="confirmlegalDOB"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.passportnumber" />:</td>
-						<td><div id="confirmlegalPassport"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.countryofresidence" />:</td>
-						<td><div id="confirmlegalCountryResidence"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.countryofcitizenship" />:</td>
-						<td><div id="confirmlegalCitizen"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.homephone" />:</td>
-						<td><div id="confirmlegalHomePhone"></div></td>
-					</tr>
-				</table>
-			</fieldset>
-		</fieldset>
-		<fieldset class="col-sm-6">
-			<fieldset class="fieldset merchant-content">
-				<legend class="legend content-space">
-					<spring:message code="manage.label.sub-merchant.legalentity" />
-				</legend>
-				<table class="confirm-info-table">
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.entitylegalname" />:</td>
-						<td><div id="confirmlegalName"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.EINorTaxID" />:</td>
-						<td><div id="confirmlegalTaxId"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.type" />:</td>
-						<td><div id="confirmlegalType"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.expectedsnnualcardsales" />:</td>
-						<td><div id="confirmlegalAnnualCard"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.address1" />:</td>
-						<td><div id="confirmlegalAddress1"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.address2" />:</td>
-						<td><div id="confirmlegalAddress2"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.city" />:</td>
-						<td><div id="confirmlegalCity"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.country" />:</td>
-						<td><div id="confirmlegalCountry"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.state" />:</td>
-						<td><div id="confirmlegalState"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="manage.label.sub-merchant.zipcode" />:</td>
-						<td><div id="confirmlegalPin"></div></td>
-					</tr>
-				</table>
-			</fieldset>
-		</fieldset>
-		<fieldset class="col-sm-6">
 			<fieldset class="fieldset bank-content">
 				<legend class="legend content-space">
 					<spring:message code="manage.label.sub-merchant.configurations" />
 				</legend>
 				<table class="confirm-info-table">
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.autosettlementoptions" />:</td>
-						<td><div id="confirmMautoSettlement"></div></td>
-					</tr>
 					<tr>
 						<td><spring:message
 								code="manage.label.sub-merchant.merchantcallbackURL" />:</td>
@@ -846,51 +605,19 @@
 					</tr>
 					<tr>
 						<td><spring:message
-								code="manage.label.sub-merchant.feeprogram" />:</td>
-						<td><div id="confirmMfeeProgram"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
 								code="manage.label.sub-merchant.processor" />:</td>
 						<td><div id="confirmMprocessor"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="common.label.agentName" />:</td>
-						<td><div id="confirmAgentName"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.issuer.agent.accnumber"/>:</td>
-						<td><div id="confirmAgentAccountNumber"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.issuer.agent.clientid"/>:</td>
-						<td><div id="confirmAgentClientid"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.issuer.agent.ani"/>:</td>
-						<td><div id="confirmAgentANI"></div></td>
 					</tr>
 					<tr>
 						<td><spring:message
 								code="manage.label.sub-merchant.virtualterminaloptions" />:</td>
 						<td><div id="confirmMvirtualTerminalList"></div></td>
 					</tr>
-
-					<%-- <tr>
-						<td><spring:message code="manage.label.sub-merchant.pos" />:</td>
-						<td><div id="confirmMposTerminal"></div></td>
-					</tr> --%>
-
 					<tr>
 						<td><spring:message code="manage.label.sub-merchant.online" />:</td>
 						<td><div id="confirmMwebSiteAddress"></div>
 							<div id="confirmMreturnURL"></div>
 							<div id="confirmMcancelURL"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.agentdetails" />:</td>
-						<td><div id="confirmAgent"></div></td>
 					</tr>
 				</table>
 			</fieldset>

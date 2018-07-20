@@ -84,17 +84,26 @@ public class LoginServiceImpl implements LoginService {
   public LoginResponse authenticate(LoginDetails loginDetails) throws NoSuchAlgorithmException, ReflectiveOperationException {
     try {
       LoginResponse loginResponse = new LoginResponse();
-      PGAdminUser adminUser = adminUserDao.findByUserNameAndUserType(loginDetails.getAcqU(), Constants.ADMIN_USER_TYPE);
-      if (null != adminUser) {
-        PGUserRoles role = roleDao.findByUserRoleId(adminUser.getUserRoleId());
-        
-        processLogin(loginDetails, loginResponse, adminUser, role);
-      } else {
-        loginResponse.setStatus(false);
-        loginResponse.setMessage(messageSource.getMessage("admin.service.login.error.message", null,
-            LocaleContextHolder.getLocale()));
+      List<PGAdminUser> adminUser = adminUserDao.findByUserName(loginDetails.getAcqU());
+      
+			if (StringUtil.isListNotNullNEmpty(adminUser)) {
+				PGAdminUser pGAdminUser = adminUser.get(0);
+				if (pGAdminUser.getUserType().equalsIgnoreCase(Constants.ADMIN_USER_TYPE)
+						|| pGAdminUser.getUserType().equalsIgnoreCase(Constants.ISO_USER_TYPE)
+						|| pGAdminUser.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+					PGUserRoles role = roleDao.findByUserRoleId(pGAdminUser.getUserRoleId());
 
-      }
+					processLogin(loginDetails, loginResponse, pGAdminUser, role);
+				} else {
+					loginResponse.setStatus(false);
+					loginResponse.setMessage(messageSource.getMessage("admin.service.login.error.message", null,
+							LocaleContextHolder.getLocale()));
+				}
+			} else {
+				loginResponse.setStatus(false);
+				loginResponse.setMessage(messageSource.getMessage("admin.service.login.error.message", null,
+						LocaleContextHolder.getLocale()));
+			}
       loginResponse.setErrorCode(Constants.SUCESS);
       return loginResponse;
     } catch (Exception e) {
@@ -122,9 +131,11 @@ public class LoginServiceImpl implements LoginService {
 				if (EncryptionUtil.encodePassword(loginDetails.getAcqP()).equalsIgnoreCase(adminUser.getPassword())) {
 					adminUser.setPassRetryCount(Constants.ACTIVE_STATUS);
 					adminUser.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-					adminUserDao.createOrUpdateUser(adminUser);
 					// Check if new user
 					setLoginResponse(loginResponse, adminUser);
+					// updating user details on success login
+                    adminUser.setLastLonginTime(loginDetails.getCurrentLoginTime());
+                    adminUserDao.createOrUpdateUser(adminUser);
 				} else {
 					setAdminUser(passRetryCount, loginResponse, adminUser);
 				}
@@ -181,6 +192,8 @@ public class LoginServiceImpl implements LoginService {
 			loginResponse.setEmailVerified(adminUser.getEmailVerified());
 			loginResponse.setUserType(adminUser.getUserType());
 			loginResponse.setUserName(adminUser.getUserName());
+			loginResponse.setEntityId(adminUser.getEntityId());
+			loginResponse.setLastLonginTime(adminUser.getLastLonginTime());
 		} else {
 			loginResponse.setStatus(false);
 			loginResponse.setUserId(adminUser.getAdminUserId());
@@ -215,8 +228,9 @@ private void setAdminUser(int passRetryCount, LoginResponse loginResponse, PGAdm
 	  int retryCount = (Constants.PASS_RETRY_COUNT - adminUser.getPassRetryCount());
 
 	  loginResponse.setMessage(
-	      Properties.getProperty("admin.service.login.password.count.error.message")
-	          + " You have " + retryCount + " attempt(s) left.");
+			  messageSource.getMessage("admin.service.login.password.count.error.message", null, LocaleContextHolder.getLocale())
+	          + messageSource.getMessage("admin.service.login.youhave.error.message", null, LocaleContextHolder.getLocale()) 
+			  + retryCount +" "+ messageSource.getMessage("admin.service.login.attemptleft..error.message", null, LocaleContextHolder.getLocale()));
 	  if (passRetryCount + 1 == Constants.PASS_RETRY_COUNT) {
 	    adminUser.setStatus(PGConstants.STATUS_SUSPENDED);
 	    adminUser.setReason(PGConstants.USER_LOCKED_ERROR_MSG_FOR_REASON);

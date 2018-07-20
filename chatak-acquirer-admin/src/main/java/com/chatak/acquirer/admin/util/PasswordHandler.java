@@ -37,7 +37,7 @@ public final class PasswordHandler {
   private static final String TEMP_SECURE_WORD = "@@CHATAK_ACQ@@";
 
   private static final String PASS_WORD_PATTERN =
-      "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@,£^*?€\"!$]).{8,16})";
+      "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@,^*?\"!$]).{8,16})";
 
   public PasswordHandler() {
     pattern = Pattern.compile(PASS_WORD_PATTERN);
@@ -120,7 +120,8 @@ public final class PasswordHandler {
   public static String generateRandomNumber(int length) {
     StringBuilder sb = new StringBuilder();
     Random random = new Random();
-    for (int n = 0; n < length; n++) {
+    int n;
+    for (n = 0; n < length; n++) {
       int j = (random.nextInt() % Constants.TEN);
       // If First digit is "0", skip that and get next random
       if (n == 0 && j == 0) {

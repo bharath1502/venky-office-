@@ -6,6 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%@page pageEncoding="UTF-8"%>
 <%
 	int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -22,8 +23,25 @@
 <link href="../css/style.css" rel="stylesheet">
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css">
+	<!-- Global declaration for pmIDs and cardProgramIds -->	
+	<script type="text/javascript">
+	var entitiesId = [];
+	var entityNameArr = [];
+	var cardProgramIdList = [];
+	var cardProgramArr = [];
+	var selectedCpId = [];
+	function setEntityId(pmId,entityName){
+		entitiesId.push(pmId);
+		entityNameArr.push(entityName);
+	}
+	function setCardProgramId(cpId,cpName,entityId){
+		cardProgramIdList.push(cpId+'@'+entityId);
+		selectedCpId.push(cpId);
+		cardProgramArr.push(cpName);
+	}
+	</script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -83,29 +101,13 @@
 												code="merchant.label.bankinfo" /></label>
 										<div class="arrow-down bank-info-arrow"></div>
 									</li>
-									<li class="legal-entiy-list">
+									<li class="pm-iso-carprogram-list">
 										<div class="circle-div">
 											<div class="hr"></div>
-											<span class="legal-circle-tab"></span>
+											<span class="pic-circle-tab"></span>
 										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
-												code="merchant.label.legalentityrep" /></label>
-										<div class="arrow-down legal-arrow"></div>
-									</li>
-									<li class="legal-entiy-rep-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="legal-circle-rep-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
-												code="merchant.label.legalentity" /></label>
-										<div class="arrow-down legal-rep-arrow"></div>
-									</li>
-									<li class="free-transactions-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="contact-circle-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
-												code="merchant.label.additonalinfo" /></label>
-										<div class="arrow-down contact-arrow"></div>
+												code="merchant.label.pmisoandcardprogram" /></label>
+										<div class="arrow-down pic-arrow"></div>
 									</li>
 									<li class="atm-transactions-list">
 										<div class="circle-div">
@@ -141,258 +143,23 @@
 								<form:form action="updateMerchant" commandName="merchant"
 									name="merchant">
 									<input type="hidden" id="currencyCode" name="currencyCode">
+									<input type="hidden" id="cardProgramIds" name="cardProgramIds">
+									<input type="hidden" id="entitiesId" name="entitiesId">
+									<form:hidden path="id" id="getMerchantId"/>
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Account Details Content Start -->
 											<jsp:include page="merchant-update-remaning.jsp"></jsp:include>
 											<!-- Account Details Content End -->
-
-											<!-- Legal Details Content Start -->
-											<section class="field-element-row legal-details-rep-content"
-												style="display: none;">
-												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="merchant.label.entityLegalName" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalName"
-															id="legalName" maxlength="101"
-															onblur="this.value=this.value.trim();return clientValidation('legalName','first_name_SplChar','legalNameErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalNameErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="merchant.label.EIN/TaxID" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalTaxId"
-															id="legalTaxId" maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('legalTaxId', 'eIN_taxId','legalTaxIdErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalTaxIdErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="merchant.label.type" /><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalType"
-															id="legalType"
-															onblur="return clientValidation('legalType', 'state','legalTypeErrorDiv');">
-															<form:option value="">
-																<spring:message code="reports.option.select" />
-															</form:option>
-															<form:option value="1">
-																<spring:message code="merchant.label.association" />
-															</form:option>
-															<form:option value="2">
-																<spring:message code="merchant.label.corporation" />
-															</form:option>
-															<form:option value="3">
-																<spring:message code="merchant.label.governmentagency" />
-															</form:option>
-															<form:option value="4">
-																<spring:message
-																	code="merchant.label.individualsoleproprietorship" />
-															</form:option>
-															<form:option value="5">
-																<spring:message
-																	code="merchant.label.internationalorginization" />
-															</form:option>
-															<form:option value="6">
-																<spring:message
-																	code="merchant.label.limitedliabilitycompany(LLC)" />
-															</form:option>
-															<form:option value="7">
-																<spring:message code="merchant.label.partnership" />
-															</form:option>
-															<form:option value="8">
-																<spring:message
-																	code="merchant.label.taxexemptorganization(501C)" />
-															</form:option>
-															<form:option value="11">
-																<spring:message code="merchant.label.testing" />
-															</form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalTypeErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="merchant.label.expectedannualcardsales" /><span
-															class="required-field">*</span></label> 
-															<fmt:formatNumber type="currency" value="${merchant.legalAnnualCard}" pattern="<%=Constants.AMOUNT_FORMAT%>" var="legalAnnualCard" />
-														<input name="legalAnnualCard" id="legalAnnualCard"
-															cssClass="form-control" value="${ legalAnnualCard}" maxlength="12"
-															onblur="this.value=this.value.trim();appendDollarSymbol();return clientValidation('legalAnnualCard', 'dollar_amount','legalAnnualCardErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalAnnualCardErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="common.label.address1" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalAddress1"
-															id="legalAddress1"
-															onblur="this.value=this.value.trim();return clientValidation('legalAddress1', 'bank_address1','legalAddress1ErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalAddress1ErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="common.label.address2" /></label>
-														<form:input cssClass="form-control" path="legalAddress2"
-															id="legalAddress2"
-															onblur="this.value=this.value.trim();return clientValidation('legalAddress2', 'bank_address2','legalAddress2ErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalAddress2ErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="common.label.city" /><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalCity"
-															id="legalCity"
-															onblur="this.value=this.value.trim();return clientValidation('legalCity', 'bank_city','legalCityErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalCityErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="common.label.country" /><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalCountry"
-															id="legalCountry"
-															onblur="return clientValidation('legalCountry', 'country','legalCountryErrorDiv');"
-															onchange="fetchMerchantState(this.value, 'legalState')">
-															<form:option value="">
-																<spring:message code="reports.option.select" />
-															</form:option>
-															<c:forEach items="${countryList}" var="country">
-																<form:option value="${country.label}">${country.label}</form:option>
-															</c:forEach>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalCountryErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="common.label.state" /><span class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalState"
-															id="legalState"
-															onblur="return clientValidation('legalState', 'state','legalStateErrorDiv');">
-															<form:option value="">
-																<spring:message code="reports.option.select" />
-															</form:option>
-															<c:forEach items="${legalStateList}" var="state">
-																<form:option value="${state.label}">${state.label}</form:option>
-															</c:forEach>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalStateErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="common.label.zipcode" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalPin"
-															onkeypress="generalZipCode()" id="legalPin" maxlength="7"
-															onblur="this.value=this.value.trim();return zipCodeNotEmpty(id)" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="legalPinEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												<!--Panel Action Button Start -->
-												<div class="col-sm-12 button-content">
-													<fieldset class="col-sm-7 pull-right">
-														<input type="button"
-															value='<spring:message code="common.label.continue"/>'
-															class="form-control button pull-right legal-rep-next"
-															onclick="return zipCodeNotEmpty('legalPin')">
-														<input type="button"
-															value='<spring:message code="common.label.previous"/>'
-															class="form-control button pull-right marginL10 legal-rep-prev">
-														<input type="button"
-															class="form-control button pull-right marginL10"
-															value='<spring:message code="common.label.cancel"/>'
-															onclick="openCancelConfirmationPopup()">
-													</fieldset>
-												</div>
-												<!--Panel Action Button End -->
-											</section>
-											<!-- Free Transactions Content Start -->
-											<section class="field-element-row free-transactions-content"
-												style="display: none;">
-												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="merchant.label.username" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="userName"
-															id="userName" maxlength="50" readonly="true" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="userNameEr" class="red-error">&nbsp;</span> <span
-																id="userNamegreenEr" class="green-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												<!--Panel Action Button Start -->
-												<div class="col-sm-12 button-content">
-													<fieldset class="col-sm-7 pull-right">
-														<input type="button"
-															value='<spring:message code="common.label.continue"/>'
-															class="form-control button pull-right free-next">
-														<input type="button"
-															value='<spring:message code="common.label.previous"/>'
-															class="form-control button pull-right marginL10 free-prev">
-														<input type="button"
-															class="form-control button pull-right marginL10"
-															value='<spring:message code="common.label.cancel"/>'
-															onclick="openCancelConfirmationPopup()">
-													</fieldset>
-												</div>
-												<!--Panel Action Button End -->
-											</section>
-											<!-- Free Transactions Content End -->
+											<!-- PG ISO CardProgram Content Start -->
+											<jsp:include page="merchant-edit-PmIsoCardProgram.jsp"></jsp:include>
+											<!-- PG ISO CardProgram Content End -->
 											<!-- ATM Transactions Content Start -->
 											<section class="field-element-row atm-transaction-content"
 												style="display: none;">
 												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-12">
-														<fieldset class="col-sm-4">
-															<label data-toggle="tooltip" data-placement="top"
-																title=""><spring:message
-																	code="merchant.label.autosettlementoptions" /><span
-																class="required-field">*</span></label><br> <input
-																type="radio" id="allowAutoSettlement"
-																name="autoSettlement" value="1"
-																onclick="validateRadio()">Yes <input
-																type="radio" id="noAutoSettlement" name="autoSettlement"
-																value="0" onclick="validateRadio()">No
-															<div class="discriptionErrorMsg" data-toggle="tooltip"
-																data-placement="top" title="">
-																<span id="noAutoSettlementEr" class="red-error">&nbsp;</span>
-															</div>
-														</fieldset>
 														<%-- <fieldset class="col-sm-3">
 														<form:checkbox path="dccEnable" id="dcc_enable" />
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.DCCenable"/></label>
@@ -427,24 +194,6 @@
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
 														<span id="merchantCategoryEr" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-															code="merchant.label.feeprogram" /><span
-														class="required-field">*</span></label>
-													<form:select cssClass="form-control" path="feeProgram"
-														id="feeProgram" onblur="validatefeeProgram()">
-														<form:option value="">
-															<spring:message code="reports.option.select" />
-														</form:option>
-														<c:forEach items="${feeprogramnames}" var="feename">
-															<form:option value="${feename.label}">${feename.label}</form:option>
-														</c:forEach>
-													</form:select>
-													<div class="discriptionErrorMsg" data-toggle="tooltip"
-														data-placement="top" title="">
-														<span id="feeProgramEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -657,19 +406,6 @@
 														<span class="red-error" id="bankIdEr">&nbsp;</span>
 													</div>
 												</fieldset>
-												<%-- <fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.reseller"/> </label>
-													<form:select cssClass="form-control" path="resellerId"
-														id="resellerId">
-														<form:option value=""><spring:message code="reports.option.select"/></form:option>
-														<c:forEach items="${resellerList}" var="resellerData">
-															<form:option value="${resellerData.value}">${resellerData.label}</form:option>
-														</c:forEach>
-													</form:select>
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="resellerIdEr">&nbsp;</span>
-													</div>
-												</fieldset> --%>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="merchant.label.merchantcategorycode" /> <span
@@ -702,94 +438,6 @@
 														<span id="localCurrencyEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-
-
-												<!-- Add Issuance Agent Configuration START -->
-
-												<fieldset class="col-sm-12" id="issuanceAgentSettings">
-													<fieldset class="col-sm-12 padding0 border-style-section">
-														<fieldset class="col-sm-12">
-															<div class="container-heading-separator">
-																<span><spring:message
-																		code="merchant.label.issuer.agent.configuration" /></span>
-															</div>
-															<div id="agentErrorId" class="red-error">&nbsp;</div>
-															<div class="row">
-																<div class="field-element-row">
-																	<fieldset class="col-sm-3">
-																		<label data-toggle="tooltip" data-placement="top"
-																			title=""> <spring:message
-																				code="common.label.agentName" />
-																		</label>
-																		<form:select cssClass="form-control" path="agentId"
-																			id="agentId"
-																			
-																			onchange="fetchAgentData(this.value)">
-																			<form:option value="">
-																				<spring:message code="reports.option.select" />
-																			</form:option>
-																			<c:forEach items="${agentnamesList}" var="agentnames">
-																				<form:option value="${agentnames.label}">${agentnames.value}</form:option>
-																			</c:forEach>
-																			<%-- <form:option value="${merchant.agentId}">${merchant.agentName}</form:option> --%>
-																		</form:select>
-																		<div class="discriptionErrorMsg" data-toggle="tooltip"
-																			data-placement="top" title="">
-																			<span id="agentIdErr" class="red-error">&nbsp;</span>
-																		</div>
-																	</fieldset>
-																	<fieldset class="col-sm-4">
-																		<label data-toggle="tooltip" data-placement="top"
-																			title=""> <spring:message
-																				code="merchant.label.issuer.agent.accnumber" /></label>
-																		<form:input cssClass="form-control" maxlength="19"
-																			onkeypress="return numbersonly(this,event)"
-																			path="agentAccountNumber" id="agentAccountNumber"
-																			readonly="true" />
-																		<div class="discriptionErrorMsg" data-toggle="tooltip"
-																			data-placement="top" title="">
-																			<span id="agentAccountNumberErrorDiv"
-																				class="red-error">&nbsp;</span>
-																		</div>
-
-																	</fieldset>
-																	<fieldset class="col-sm-4">
-																		<label data-toggle="tooltip" data-placement="top"
-																			title=""> <spring:message
-																				code="merchant.label.issuer.agent.clientid" /></label>
-																		<form:input cssClass="form-control" maxlength="20"
-																			onkeypress="return numbersonly(this,event)"
-																			path="agentClientId" id="agentClientId"
-																			readonly="true" />
-																		<div class="discriptionErrorMsg" data-toggle="tooltip"
-																			data-placement="top" title="">
-																			<span id="agentClientIdErrorDiv" class="red-error">&nbsp;</span>
-																		</div>
-
-																	</fieldset>
-																	<fieldset class="col-sm-4">
-																		<label data-toggle="tooltip" data-placement="top"
-																			title=""> <spring:message
-																				code="merchant.label.issuer.agent.ani" /></label>
-																		<form:input cssClass="form-control" maxlength="20"
-																			onkeypress="return numbersonly(this,event)"
-																			path="agentANI" id="agentANI" readonly="true" />
-																		<div class="discriptionErrorMsg" data-toggle="tooltip"
-																			data-placement="top" title="">
-																			<span id="agentANIErrorDiv" class="red-error">&nbsp;</span>
-																		</div>
-
-																	</fieldset>
-
-
-
-																</div>
-															</div>
-														</fieldset>
-													</fieldset>
-												</fieldset>
-
-												<!-- Add Issuance Agent Configuration END-->
 
 												<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS START-->
 
@@ -975,27 +623,6 @@
 														</fieldset>
 													</fieldset>
 												</div>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-															code="merchant.label.payOutat" /><span
-														class="required-field">*</span></label>
-													<form:select cssClass="form-control" path="payOutAt"
-														id="payOutAt" onblur="doCheckPayoutAt()">
-														<form:option value="">
-															<spring:message code="reports.option.select" />
-														</form:option>
-														<form:option value="Merchant">
-															<spring:message code="merchant.label.merchant" />
-														</form:option>
-														<form:option value="Sub-Merchant">
-															<spring:message code="merchant.label.submerchant" />
-														</form:option>
-													</form:select>
-													<div class="discriptionErrorMsg" data-toggle="tooltip"
-														data-placement="top" title="">
-														<span id="payOutAtEr" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
 												<fieldset class="col-sm-3" style="display: none;">
 													<form:input cssClass="form-control" path="programManagerId"
 														id="programManagerId" />
@@ -1117,16 +744,7 @@
 																			code="show-account-transfer.label.accountnumber" />:</td>
 																	<td>${accountNumber}</td>
 																</tr>
-															</table>
-														</fieldset>
-													</fieldset>
-													<fieldset class="col-sm-6">
-														<fieldset class="fieldset contact-content">
-															<legend class="legend content-space">
-																<spring:message code="merchant.label.additonalinfo" />
-															</legend>
-															<table class="confirm-info-table">
-																<tr>
+																	<tr>
 																	<td><spring:message code="merchant.label.username" />:</td>
 																	<td><div id="confirmMuserName"></div></td>
 																</tr>
@@ -1196,103 +814,20 @@
 													<fieldset class="col-sm-6">
 														<fieldset class="fieldset merchant-content">
 															<legend class="legend content-space">
-																<spring:message code="merchant.label.legalentityrep" />
+																<spring:message code="merchant.label.pmisoandcardprogram" />
 															</legend>
 															<table class="confirm-info-table">
 																<tr>
-																	<td><spring:message code="merchant.label.SSN" />:</td>
-																	<td><div id="confirmlegalSSN"></div></td>
+																	<td><spring:message code="merchant.label.associatedto"/>:</td>
+																	<td><div id="confirmAssociatedTo"></div></td>
 																</tr>
 																<tr>
-																	<td><spring:message
-																			code="merchant.label.firstname" />:</td>
-																	<td><div id="confirmlegalFirstName"></div></td>
+																	<td><spring:message code="admin.cardprogramname"/>:</td>
+																	<td><div id="confirmCardProgramNames"></div></td>
 																</tr>
 																<tr>
-																	<td><spring:message code="merchant.label.lastname" />:</td>
-																	<td><div id="confirmlegalLastName"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.mobilephone" />:</td>
-																	<td><div id="confirmlegalMobilePhone"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.dateofbirth" />:</td>
-																	<td><div id="confirmlegalDOB"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.passportnumber" />:</td>
-																	<td><div id="confirmlegalPassport"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.countryresidence" />:</td>
-																	<td><div id="confirmlegalCountryResidence"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.countrycitizenship" />:</td>
-																	<td><div id="confirmlegalCitizen"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.homephone" />:</td>
-																	<td><div id="confirmlegalHomePhone"></div></td>
-																</tr>
-															</table>
-														</fieldset>
-													</fieldset>
-													<fieldset class="col-sm-6">
-														<fieldset class="fieldset merchant-content">
-															<legend class="legend content-space">
-																<spring:message code="merchant.label.legalentity" />
-															</legend>
-															<table class="confirm-info-table">
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.entityLegalName" />:</td>
-																	<td><div id="confirmlegalName"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.EIN/TaxID" />:</td>
-																	<td><div id="confirmlegalTaxId"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="merchant.label.type" />:</td>
-																	<td><div id="confirmlegalType"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.expectedannualcardsales" />:</td>
-																	<td><div id="confirmlegalAnnualCard"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="common.label.address1" />:</td>
-																	<td><div id="confirmlegalAddress1"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="common.label.address2" />:</td>
-																	<td><div id="confirmlegalAddress2"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="common.label.city" />:</td>
-																	<td><div id="confirmlegalCity"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="common.label.country" />:</td>
-																	<td><div id="confirmlegalCountry"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="common.label.state" />:</td>
-																	<td><div id="confirmlegalState"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="common.label.zipcode" />:</td>
-																	<td><div id="confirmlegalPin"></div></td>
+																	<td><spring:message code="merchant.label.entityname"/>:</td>
+																	<td><div id="confirmEntityNames"></div></td>
 																</tr>
 															</table>
 														</fieldset>
@@ -1359,11 +894,11 @@
 																			code="merchant.label.merchanttype" />:</td>
 																	<td><div id="confirmMmerchantCategory"></div></td>
 																</tr>
-																<tr>
+																<%-- <tr>
 																	<td><spring:message
 																			code="merchant.label.feeprogram" />:</td>
 																	<td><div id="confirmMfeeProgram"></div></td>
-																</tr>
+																</tr> --%>
 																<tr>
 																	<td><spring:message
 																			code="merchant.label.processor" />:</td>
@@ -1387,53 +922,15 @@
 																	<td><div id="confirmlocalCurrency"></div></td>
 																</tr>
 																<tr>
-																	<td><spring:message code="common.label.agentName" />:</td>
-																	<td><div id="confirmAgentName"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.issuer.agent.accnumber" />:</td>
-																	<td><div id="confirmAgentAccountNumber"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.issuer.agent.clientid" />:</td>
-																	<td><div id="confirmAgentClientid"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message
-																			code="merchant.label.issuer.agent.ani" />:</td>
-																	<td><div id="confirmAgentANI"></div></td>
-																</tr>
-
-																<%-- <tr>
-																	<td><spring:message code="merchant.label.reseller"/>:</td>
-																	<td><div id="confirmResellerName"></div></td>
-																</tr> --%>
-
-																<tr>
 																	<td><spring:message
 																			code="merchant.label.virtualterminaloptions" />:</td>
 																	<td><div id="confirmMvirtualTerminalList"></div></td>
 																</tr>
-
-																<%-- <tr>
-																	<td><spring:message code="merchant.label.pos"/>:</td>
-																	<td><div id="confirmMposTerminal"></div></td>
-																</tr> --%>
-
 																<tr>
 																	<td><spring:message code="merchant.label.online" />:</td>
 																	<td><div id="confirmMwebSiteAddress"></div>
 																		<div id="confirmMreturnURL"></div>
 																		<div id="confirmMcancelURL"></div></td>
-
-																	<!-- <td><div id="payPageConfiguration"></div></td> -->
-
-																</tr>
-																<tr>
-																	<td><spring:message code="merchant.label.payOutat" />:</td>
-																	<td><div id="confirmMpayOutAt"></div></td>
 																</tr>
 															</table>
 														</fieldset>
@@ -1518,7 +1015,16 @@
 		/* DatePicker Javascript Strat*/
 		$(document).ready(
 				function() {
-					
+					if(associatedTo.defaultValue == "Program Manager"){
+						document.getElementById("entityType").innerHTML = "PM Name";
+						document.getElementById("associatedID").innerHTML = "Associated with PM Name";
+						document.getElementById("userType").innerHTML = "PM Name";
+					}else{
+						document.getElementById("entityType").innerHTML = "ISO Name";
+						document.getElementById("associatedID").innerHTML = "Associated with ISO Name";
+						document.getElementById("userType").innerHTML = "ISO Name";
+					}
+					fetchCardProgramByMerchantId($('#getMerchantId').val());
 					validateMcc();
 					validateVirtualTerminal();
 					validateOnlineOptions();
@@ -1561,7 +1067,7 @@
 						$('#weeklySettlement').show();
 					}
 
-					loadRadio('${merchant.autoSettlement}');
+					/* loadRadio('${merchant.autoSettlement}'); */
 					if ($('#status').val() != 1) {
 						$('#status').children('option[value="1"]').css(
 								'display', 'none');
@@ -1599,30 +1105,30 @@
 				});
 		/* DatePicker Javascript End*/
 		$(
-				".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content")
+				".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content, .pm-iso-carprogram-content")
 				.hide();
 		$(".account-details-content").show();
 		$(".merchant-arrow").show();
 		$(
-				".contact-arrow, .bank-info-arrow, .legal-arrow, .legal-rep-arrow, .bank-legal-arrow, .bank-arrow, .configuration-arrow, .final-arrow")
+				".contact-arrow, .bank-info-arrow, .legal-arrow, .legal-rep-arrow, .bank-legal-arrow, .bank-arrow, .configuration-arrow, .final-arrow, .pic-arrow")
 				.hide();
 		$(".account-details-list, .bank-prev")
 				.click(
 						function() {
 							$(".merchant-circle-tab").addClass("active-circle");
 							$(
-									".bank-info-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab")
+									".bank-info-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab, .pic-circle-tab")
 									.removeClass("active-circle");
 							$(".merchant-arrow").show();
 							$(
-									".bank-info-arrow, .legal-arrow, .legal-rep-arrow, .contact-arrow, .bank-arrow, .final-arrow")
+									".bank-info-arrow, .legal-arrow, .legal-rep-arrow, .contact-arrow, .bank-arrow, .final-arrow, .pic-arrow")
 									.hide();
 							$(".account-details-content").show();
 							$(
-									".atm-transaction-content,.bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .free-transactions-content")
+									".atm-transaction-content,.bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .free-transactions-content, .pm-iso-carprogram-content")
 									.hide();
 						});
-		$(".bank-list, .acc-next, .legal-prev")
+		$(".bank-list, .acc-next, .pic-prev")
 				.click(
 						function() {
 							if (!validateCreateMerchantStep1edit()) {
@@ -1631,129 +1137,80 @@
 							$(".bank-info-circle-tab")
 									.addClass("active-circle");
 							$(
-									".merchant-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab")
+									".merchant-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab, .pic-circle-tab")
 									.removeClass("active-circle");
 							$(".bank-info-arrow").show();
 							$(
-									".merchant-arrow, .legal-arrow, .legal-rep-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow")
+									".merchant-arrow, .legal-arrow, .legal-rep-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow, .pic-arrow")
 									.hide();
 							$(".bank-info-details-content").show();
 							$(
-									".account-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content")
+									".account-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content, .pm-iso-carprogram-content")
 									.hide();
 						});
-		$(".legal-entiy-list, .bank-next, .legal-rep-prev")
+		$(".pm-iso-carprogram-list, .bank-next, .atm-prev")
+		.click(
+				function() {
+					if (!validateCreateMerchantStep2edit()
+							| !validateCreateMerchantStep1edit()) {
+						return false;
+					}
+					$(".pic-circle-tab").addClass("active-circle");
+					$(
+							".merchant-circle-tab,.bank-info-circle-tab, .bank-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab, .contact-circle-tab")
+							.removeClass("active-circle");
+					$(".pic-arrow").show();
+					$(
+							".merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .configuration-arrow, .bank-arrow, .final-arrow, .contact-arrow")
+							.hide()
+					$(".pm-iso-carprogram-content").show();
+					$(
+							".atm-transaction-content, .legal-details-content, .legal-details-rep-content, .bank-info-details-content, .pos-transaction-content, .account-details-content, .free-transactions-content")
+							.hide();
+				});
+		$(".atm-transactions-list, .pic-next, .pos-prev")
 				.click(
 						function() {
-							if (!validateCreateMerchantStep2edit()
-									| !validateCreateMerchantStep1edit()) {
-								return false;
-							}
-							$(".legal-circle-tab").addClass("active-circle");
-							$(
-									".merchant-circle-tab, .bank-info-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab")
-									.removeClass("active-circle");
-							$(".legal-arrow").show();
-							$(
-									".merchant-arrow, .legal-rep-arrow, .bank-info-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow")
-									.hide();
-							$(".legal-details-content").show();
-							$(
-									".account-details-content, .legal-details-rep-content, .bank-info-details-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content")
-									.hide();
-						});
-		$(".legal-entiy-rep-list, .legal-next, .free-prev")
-				.click(
-						function() {
-							if (!validateLegalEntity() | !ssnValidation()
+							if (!validateEditPmIsoCardprogram()
 									| !validateCreateMerchantStep2edit()
-									| !validateCreateMerchantStep1edit()
-									| !validateLegalDOB()
-									| resetLegalEntityInfoErrorMsg()) {
-								return false;
-							}
-							$(".legal-circle-rep-tab")
-									.addClass("active-circle");
-							$(
-									".merchant-circle-tab, .bank-info-circle-tab, .legal-circle-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab")
-									.removeClass("active-circle");
-							$(".legal-rep-arrow").show();
-							$(
-									".merchant-arrow, .bank-info-arrow, .legal-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow")
-									.hide();
-							$(".legal-details-rep-content").show();
-							$(
-									".account-details-content, .bank-info-details-content, .legal-details-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content")
-									.hide();
-						});
-		$(".free-transactions-list, .legal-rep-next, .atm-prev")
-				.click(
-						function() {
-							if (!validateCreateMerchantStep3edit()
-									| !validateCreateMerchantStep2edit()
-									| !validateLegalEntity()
-									| !validateCreateMerchantStep1edit()) {
-								return false;
-							}
-							$(".contact-circle-tab").addClass("active-circle");
-							$(
-									".merchant-circle-tab,.bank-info-circle-tab, .bank-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab")
-									.removeClass("active-circle");
-							$(".contact-arrow").show();
-							$(
-									".merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .configuration-arrow, .bank-arrow, .final-arrow")
-									.hide()
-							$(".free-transactions-content").show();
-							$(
-									".atm-transaction-content, .legal-details-content, .legal-details-rep-content, .bank-info-details-content, .pos-transaction-content, .account-details-content")
-									.hide();
-						});
-		$(".atm-transactions-list, .free-next, .pos-prev")
-				.click(
-						function() {
-							if (!validateCreateMerchantStep4edit()
-									| !validateCreateMerchantStep3edit()
-									| !validateCreateMerchantStep2edit()
-									| !validateLegalEntity()
+									| !checkAmbiguity() 
 									| !validateCreateMerchantStep1edit()) {
 								return false;
 							}
 							$(".bank-circle-tab").addClass("active-circle");
 							$(
-									".merchant-circle-tab,.bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab")
+									".merchant-circle-tab,.bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab, .pic-circle-tab")
 									.removeClass("active-circle");
 							$(".configuration-arrow").show();
 							$(
-									".contact-arrow, .merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .final-arrow")
+									".contact-arrow, .merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .final-arrow, .pic-arrow")
 									.hide()
 							$(".atm-transaction-content").show();
 							$(
-									".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .account-details-content")
+									".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .account-details-content, .pm-iso-carprogram-content")
 									.hide();
-							//populatePartnerAndAgentDetails($('#appMode').val(),'merchant','update');
 						});
 		$(".pos-transactions-list, .atm-next")
 				.click(
 						function() {
 							if (!validateCreateMerchantStep5()
-									| !validateCreateMerchantStep4edit()
-									| !validateCreateMerchantStep3edit()
+									| !validateEditPmIsoCardprogram()
+									| !checkAmbiguity() 
 									| !validateCreateMerchantStep2edit()
-									| !validateLegalEntity()
 									| !validateCreateMerchantStep1edit()) {
 								return false;
 							}
 							$(".final-circle-tab").addClass("active-circle");
 							$(
-									".merchant-circle-tab, .bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .bank-circle-tab")
+									".merchant-circle-tab, .bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .bank-circle-tab, .pic-circle-tab")
 									.removeClass("active-circle");
 							$(".final-arrow").show();
 							$(
-									".contact-arrow, .bank-arrow,.configuration-arrow, .bank-info-arrow, .legal-arrow, .legal-rep-arrow, .merchant-arrow")
+									".contact-arrow, .bank-arrow,.configuration-arrow, .bank-info-arrow, .legal-arrow, .legal-rep-arrow, .merchant-arrow, .pic-arrow")
 									.hide()
 							$(".pos-transaction-content").show();
 							$(
-									".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .account-details-content")
+									".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .account-details-content, .pm-iso-carprogram-content")
 									.hide();
 						});
 
@@ -1774,14 +1231,13 @@
 							if (!validateCreateMerchantStep5()
 									| !validateCreateMerchantStep1()
 									| !validateCreateMerchantStep2()
-									| !validateCreateMerchantStep3()
-									| !validateLegalEntity()
-									| !validateCreateMerchantStep4()) {
+									| !validateEditPmIsoCardprogram()
+									| !checkAmbiguity()) {
 								return false
 							}
 							$(".final-circle-tab").addClass("active-circle");
 							$(
-									".merchant-circle-tab, .bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .bank-circle-tab")
+									".merchant-circle-tab, .bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .bank-circle-tab, .pic-circle-tab")
 									.removeClass("active-circle");
 							$(".final-arrow").show();
 							$(
@@ -1789,19 +1245,10 @@
 									.hide()
 							$(".pos-transaction-content").show();
 							$(
-									".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .account-details-content")
+									".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .account-details-content, .pm-iso-carprogram-content")
 									.hide();
 						});
 
-		function loadRadio(data) {
-			if (data == '0') {
-				$("#noAutoSettlement").prop("checked", true);
-				$("#allowAutoSettlement").prop("checked", false);
-			} else if (data == '1') {
-				$("#noAutoSettlement").prop("checked", false);
-				$("#allowAutoSettlement").prop("checked", true);
-			}
-		}
 		function showAddSubMerchant() {
 			if (checkStatusAndMerchantType()) {
 				$('#subMerchant').show();
@@ -1857,6 +1304,157 @@
 		$('#my_popup1').popup({
 			blur : false
 		});
+		/* Select Services moving form Left to Right and Right to Left functionality Start */
+        function SelectMoveRows(left, right, action) {
+        	var tempProgramManagerIds = [];
+        	var tempEntityName = [];
+			var j=0;
+            var SelID = '';
+            var SelText = '';
+            // Move rows from left to right from bottom to top
+            if(action == 'ADD'){
+				for (i = left.options.length - 1; i >= 0; i--) {
+					if (left.options[i].selected == true) {
+						SelID = left.options[i].value;
+						SelText = left.options[i].text;
+						var newRow = new Option(SelText, SelID);
+						right.options[right.length] = newRow;
+						left.options[i] = null;
+						getCardProgramByPmId(SelID);
+						entitiesId.push(SelID);
+						entityNameArr.push(SelText);
+					}
+				}				
+			}else if(action == 'REMOVE'){
+				for (i = left.options.length - 1; i >= 0; i--) {
+					if (left.options[i].selected == true) {
+						SelID = left.options[i].value;
+						SelText = left.options[i].text;
+						var newRow = new Option(SelText, SelID);
+						right.options[right.length] = newRow;
+						left.options[i] = null;
+						removeCardProgramFromList(SelID);
+						for(var k=0; k < entitiesId.length; k++){
+							if(entitiesId[k] != SelID){
+								tempProgramManagerIds[j] = entitiesId[k];
+								tempEntityName[j]=entityNameArr[i];
+								j++;
+							}
+						}
+						entitiesId = tempProgramManagerIds;
+						entityNameArr = tempEntityName;
+						j=0;
+						tempProgramManagerIds = [];
+						tempEntityName = [];
+						
+					}
+				}
+			}
+			SelectSort(right);
+        }
+        function SelectSort(SelList) {
+            var ID = '';
+            var Text = '';
+            for (x = 0; x < SelList.length - 1; x++) {
+                for (y = x + 1; y < SelList.length; y++) {
+                    if (SelList[x].text > SelList[y].text) {
+                        // Swap rows
+                        ID = SelList[x].value;
+                        Text = SelList[x].text;
+                        SelList[x].value = SelList[y].value;
+                        SelList[x].text = SelList[y].text;
+                        SelList[y].value = ID;
+                        SelList[y].text = Text;
+                    }
+                }
+            }
+        }
+        /* Select Services moving form Left to Right and Right to Left functionality End */
+		function addCardProgram(cardProgramId,cardProgramName,entityName,entityId){
+			var tempCardProgramIds = [];
+			var tempCardProgramArr = [];
+			var j=0;
+			var selectedId = 'cpId'  + cardProgramId + entityId;
+			
+			if($('#' + selectedId).is(":checked")){
+				cardProgramIdList.push(cardProgramId+'@'+entityId);
+				cardProgramArr.push(cardProgramName);
+				selectedCpId.push(cardProgramId);
+			}else if(!($('#' + selectedId).is(":checked"))){
+				for(var i=0; i < cardProgramIdList.length; i++){
+					if(cardProgramIdList[i] != cardProgramId+'@'+entityId){
+						tempCardProgramIds[j] = cardProgramIdList[i];
+						tempCardProgramArr[j] = cardProgramArr[i];
+						j++;
+					}
+				}
+				cardProgramIdList = tempCardProgramIds;	
+				cardProgramArr = tempCardProgramArr;
+					var index = selectedCpId.indexOf(cardProgramId);
+					if (index > -1) {
+						selectedCpId.splice(index, 1);
+					}
+			}
+		}
+		
+		function setSelectedPmAndCpId() {
+			//set selected pm ids
+			$('#entitiesId').val(entitiesId);
+			$('#confirmEntityNames').text(entityNameArr.toString());
+			//set selected card pogram ids
+			$('#cardProgramIds').val(cardProgramIdList);
+			$('#confirmCardProgramNames').text(cardProgramArr.toString());
+		}
+		function doUnCheckedToCardProgram(cardProgramId,cardProgramName,entityId) {
+			var tempCardProgramIds = [];
+			var tempCardProgramName = [];
+			var j = 0;
+			for (var i = 0; i < cardProgramIdList.length; i++) {
+				if (cardProgramIdList[i] != cardProgramId+'@'+entityId && cardProgramArr[i] != cardProgramName) {
+					tempCardProgramIds[j] = cardProgramIdList[i];
+					tempCardProgramName[j] = cardProgramArr[i];
+					j++;
+				}
+			}
+			cardProgramIdList = tempCardProgramIds;
+			cardProgramArr = tempCardProgramName;
+			var index = selectedCpId.indexOf(cardProgramId);
+			if (index > -1) {
+				selectedCpId.splice(index, 1);
+			}
+		}
+		
+		
+		function checkAmbiguity() {
+			if (!validateSelectedCardProgram()) {
+				return false;
+			}
+			var sortedCardProgramIdList = selectedCpId.sort();
+			for (var i = 0; i < sortedCardProgramIdList.length; i++) {
+				for (var j = i + 1; j < sortedCardProgramIdList.length; j++) {
+					if (sortedCardProgramIdList[i] == sortedCardProgramIdList[j]) {
+						$('#ambiguityFlag').text(webMessages.DUPLICATE_CARD_RPOGRAM);
+						return false;
+					}
+				}
+			}
+			$('#ambiguityFlag').text('');
+			return true;
+
+		}
+		function validateSelectedCardProgram() {
+			var selectedCardProgramIdList = selectedCpId;
+			if (selectedCardProgramIdList === undefined
+					|| selectedCardProgramIdList.length == 0) {
+				$('#ambiguityFlag').text(webMessages.SELECT_CARD_PROGRAM);
+				return false;
+			} else {
+				$('#ambiguityFlag').text('');
+				return true;
+			}
+		}
+		document.getElementById('lookingFor').setAttribute('maxlength', '100');
+		
 	</script>
 </body>
 </html>

@@ -20,7 +20,7 @@
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -68,17 +68,20 @@
 								<form:form action="merchant-category-code-view" name="viewMCCForm"
 									method="post">
 									<input type="hidden" id="viewId" name="viewId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="merchant-category-code-edit" name="editMCCForm"
 									method="post">
 									<input type="hidden" id="editId" name="editId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="merchant-category-code-pagination"
 									name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 										type="hidden" id="totalRecordsId" name="totalRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="get-mcc-report" name="downloadReport"method="post">
@@ -86,15 +89,18 @@
 									<input type="hidden"id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="deleteMCC" name="deleteMCCForm" method="post">
 						            <input type="hidden" id="getDeleteMCCId" name="getDeleteMCCId" /> 
+						            <input type="hidden" name="CSRFToken" value="${tokenval}">
 					            </form:form>
 
 								<!-- Page Form Start -->
 								<form:form action="merchant-category-code-search"
 									commandName="mcc" name="mcc" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -305,6 +311,7 @@
 		<form:form action="merchantCategoryCodeActivationSuspention" name="merchantCategoryCodeActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="merchantCategoryCodeId" /> <input
 				type="hidden" id="suspendActiveStatus" name="merchantCategoryCodeStatus" /> 
+				<input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -329,9 +336,7 @@
 <script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/messages.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
@@ -365,6 +370,22 @@
 		function openPopup() {
 			$('#merchantCategoryCodePopupDiv').popup("show");
 		}
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

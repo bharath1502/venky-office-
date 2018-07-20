@@ -174,11 +174,6 @@ public class FeeCodeServiceImplTest {
 	}
 	
 	@Test
-	public void testGetAcquirerFeeCodeTemplatesByPartnerId() throws ChatakAdminException{
-		feeCodeServiceImpl.getAcquirerFeeCodeTemplatesByPartnerId(Long.parseLong("654"));
-	}
-	
-	@Test
 	public void testAddAcquirerFeeCode() throws ChatakAdminException{
 		AcquirerFeeCodeDTO pgAcquirerFeeCode=new AcquirerFeeCodeDTO();
 		pgAcquirerFeeCode.setFlatFee(Double.parseDouble("877"));

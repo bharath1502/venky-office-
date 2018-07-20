@@ -1,6 +1,7 @@
 package com.chatak.acquirer.admin.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,29 +24,40 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.acquirer.admin.constants.FeatureConstants;
+import com.chatak.acquirer.admin.constants.StatusConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
+import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
+import com.chatak.acquirer.admin.model.MerchantCreateResponse;
 import com.chatak.acquirer.admin.model.MerchantData;
 import com.chatak.acquirer.admin.model.MerchantSearchResponse;
 import com.chatak.acquirer.admin.service.BankService;
 import com.chatak.acquirer.admin.service.CurrencyConfigService;
+import com.chatak.acquirer.admin.service.IsoService;
 import com.chatak.acquirer.admin.service.MerchantCategoryCodeService;
 import com.chatak.acquirer.admin.service.MerchantService;
 import com.chatak.acquirer.admin.service.MerchantUpdateService;
 import com.chatak.acquirer.admin.service.MerchantValidateService;
 import com.chatak.acquirer.admin.service.PartnerService;
+import com.chatak.acquirer.admin.service.ProgramManagerService;
+import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
-import com.chatak.acquirer.admin.util.MerchantFileExportUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.AgentDTOResponse;
+import com.chatak.pg.model.Bank;
 import com.chatak.pg.model.Merchant;
+import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 
 @SuppressWarnings({"rawtypes", "unchecked", "unused"})
@@ -77,6 +89,12 @@ public class MerchantValidationController implements URLMappingConstants {
 
   @Autowired
   private PartnerService partnerService;
+  
+  @Autowired
+  private ProgramManagerService programManagerService;
+  
+  @Autowired
+  private IsoService isoService;
 
   MerchantController merchantController = new MerchantController();
 
@@ -362,6 +380,7 @@ public class MerchantValidationController implements URLMappingConstants {
       merchantValidateService.getMerchant(merchant);
       merchant.setStatus(PGConstants.STATUS_DECLINED);
       merchant.setDeclineReason(declineReason);
+      merchant.setProcess(PGConstants.PG_TXN_DECLILNED);
       UpdateMerchantResponse updateMerchantResponse = merchantService.updateMerchant(merchant);
       if (updateMerchantResponse.isUpdated()
           && updateMerchantResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_00)) {
@@ -423,6 +442,7 @@ public class MerchantValidationController implements URLMappingConstants {
           + Properties.getProperty("chatak.merchant.portal");
       merchant.setMerchantLink(merchantLink);
       merchant.setStatus(PGConstants.ZERO.intValue());
+      merchant.setProcess(PGConstants.ACTION_ACTIVE);
       UpdateMerchantResponse updateMerchantResponse = merchantService.updateMerchant(merchant);
       if (updateMerchantResponse.isUpdated()
           && updateMerchantResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_00)) {
@@ -559,22 +579,17 @@ public class MerchantValidationController implements URLMappingConstants {
         merchant.setPageSize(totalRecords);
       }
       searchResponse = merchantUpdateService.searchMerchant(merchant);
-      List<MerchantData> list = searchResponse.getMerchants();
+      List<MerchantCreateResponse> list = searchResponse.getMerchantCreateResponses();
+      ExportDetails exportDetails = new ExportDetails();
       if (StringUtil.isListNotNullNEmpty(list)) {
-        if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-
-          MerchantFileExportUtil.downloadMerchantXl(list, response, messageSource
-              .getMessage("chatak.header.merchant.messages", null, LocaleContextHolder.getLocale()),
-              messageSource);
-
+        if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
+          exportDetails.setExportType(ExportType.PDF);
+        } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
+          exportDetails.setExportType(ExportType.XLS);
+          exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
         }
-        else if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-
-            MerchantFileExportUtil.downloadMerchantPdf(list, response, messageSource
-                .getMessage("chatak.header.merchant.messages", null, LocaleContextHolder.getLocale()),
-                messageSource);
-
-          } 
+        setExportDetailsDataForDownloadRoleReport(list, exportDetails);
+        ExportUtil.exportData(exportDetails, response, messageSource);
       }
       merchant.setPageSize(pageSize);
     } catch (Exception e) {
@@ -586,6 +601,61 @@ public class MerchantValidationController implements URLMappingConstants {
     return null;
   }
 
+  private void setExportDetailsDataForDownloadRoleReport(List<MerchantCreateResponse> list,
+      ExportDetails exportDetails) {
+    exportDetails.setReportName("Merchant_");
+    exportDetails.setHeaderMessageProperty("chatak.header.merchant.messages");
+    exportDetails.setHeaderList(getRoleHeaderList());
+    exportDetails.setFileData(getRoleFileData(list));
+  }
+  
+  private List<String> getRoleHeaderList() {
+    String[] headerArr = {
+        messageSource.getMessage("manage.label.sub-merchant.merchantcode", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant.label.merchantname", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("currency-search-page.label.currencycode", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant.label.entitytype", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant.label.entityname", null,
+                LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant-file-exportutil-phone", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant-file-exportutil-email", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("admin.cardprogramname", null, LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant-file-exportutil-country", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant-file-exportutil-status", null,
+            LocaleContextHolder.getLocale())};
+    return new ArrayList<String>(Arrays.asList(headerArr));
+  }
+
+  private static List<Object[]> getRoleFileData(List<MerchantCreateResponse> merchantData) {
+    List<Object[]> fileData = new ArrayList<Object[]>();
+    for (MerchantCreateResponse merData : merchantData) {
+      Object[] rowData = new Object[Integer.parseInt("10")];
+      rowData[0] = merData.getMerchantCode();
+      rowData[1] = merData.getBusinessName();
+      rowData[Integer.parseInt("2")] = merData.getLocalCurrency();
+      rowData[Integer.parseInt("3")] = merData.getEntityType();
+      rowData[Integer.parseInt("4")] = merData.getEntityName();
+      if (merData.getPhone() != null) {
+        rowData[Integer.parseInt("5")] = merData.getPhone();
+      } else {
+        rowData[Integer.parseInt("5")] = " ";
+      }
+      rowData[Integer.parseInt("6")] = merData.getEmailId();
+      rowData[Integer.parseInt("7")] = merData.getCardProgramName();
+      rowData[Integer.parseInt("8")] = merData.getCountry();
+      rowData[Integer.parseInt("9")] = merData.getStatus();
+      fileData.add(rowData);
+    }
+    return fileData;
+  }
+  
   @RequestMapping(value = GET_PARTNERS_BY_PROGRAM_MANAGER_ID, method = RequestMethod.GET)
   public @ResponseBody String getPartnersByProgramManagerId(Map model, HttpServletRequest request,
       HttpServletResponse response, HttpSession session) {
@@ -604,4 +674,57 @@ public class MerchantValidationController implements URLMappingConstants {
     logger.info("Exiting :: MerchantValidationController :: getPartnersByProgramManagerId method");
     return null;
   }
+  
+  @RequestMapping(value = GET_ENTITY_DETAILS_BY_ENTITY_NAME, method = RequestMethod.GET)
+  public @ResponseBody String getEntityName(Map model, HttpServletRequest request,
+      HttpServletResponse response, HttpSession session,@FormParam("entityType")String entityType,@FormParam("currencyId") String currencyId) {
+
+    ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_CREATE_MERCHANT_PAGE);
+    modelAndView.addObject(Constants.ERROR, null);
+    logger.info("Entering :: MerchantValidationController :: getEntityName method");
+    Response programManagerResponse = null;
+    String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
+    LoginResponse loginResponse = (LoginResponse)session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+    try {
+      if(userType.equals(Constants.ADMIN_USER_TYPE)){
+        if(null != entityType && entityType.equals(PGConstants.PROGRAM_MANAGER_NAME)){
+          programManagerResponse = programManagerService.findProgramManagerNameByAccountCurrency(currencyId);
+       } else {
+           programManagerResponse = isoService.findISONameByAccountCurrency(currencyId);
+       }        
+      }else if(userType.equals(Constants.PM_USER_TYPE)){
+        programManagerResponse = programManagerService.findByProgramManagerIdAndAccountCurrency(loginResponse.getEntityId(), currencyId);
+      }
+      
+      if (programManagerResponse != null) {
+        return JsonUtil.convertObjectToJSON(programManagerResponse);
+      }
+    } catch (ChatakAdminException e) {
+      logger.error("ERROR:: MerchantValidationController:: getEntityName method", e);
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+    }
+    logger.info("Exiting:: MerchantValidationController:: getEntityName method");
+    return null;
+  }
+  
+  @RequestMapping(value = FETCH_CARD_PROGRAM_BY_MERCHANTID, method = RequestMethod.GET)
+	public @ResponseBody String fetchCardProgramByMerchantId(Map model, HttpSession session, @FormParam("merchantId") Long merchantId,
+			@FormParam("entityType") String entityType) {
+		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		CardProgramResponse cardProgramResponse = null;
+		try {
+			if (null != entityType && entityType.equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+				cardProgramResponse = programManagerService.findPMCardprogramByMerchantId(merchantId);
+			} else {
+				cardProgramResponse = isoService.fetchIsoCardProgramByMerchantId(merchantId);
+			}
+			cardProgramResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
+			return JsonUtil.convertObjectToJSON(cardProgramResponse);
+		} catch (Exception e) {
+			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+		}
+		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		return null;
+	}   	
 }

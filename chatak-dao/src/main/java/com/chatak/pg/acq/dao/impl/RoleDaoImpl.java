@@ -134,4 +134,15 @@ public class RoleDaoImpl implements RoleDao {
         .list(qPGUserRoles);
   }
 
+	/**
+	 * @param featureIds
+	 * @return
+	 */
+	@Override
+	public List<PGFeature> getFeatureDataByIds(List<Long> featureIds) {
+		JPAQuery query = new JPAQuery(entityManager);
+		QPGFeature qPGFeatures = QPGFeature.pGFeature;
+		return query.from(qPGFeatures).where(qPGFeatures.featureId.in(featureIds)).list(qPGFeatures);
+	}
+
 }

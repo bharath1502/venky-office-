@@ -2,10 +2,10 @@ package com.chatak.pg.constants;
 
 public enum CurrencyAlpha {
   USD("USD"), CAD("CAD"), COP("COP");
-  private String currencyAlpha;
+  private String currencyAlphaCode;
 
-  public String getCurrencyAlpha() {
-    return currencyAlpha;
+  public String getCurrencyAlphaCode() {
+    return currencyAlphaCode;
   }
 
   private CurrencyAlpha() {
@@ -13,6 +13,6 @@ public enum CurrencyAlpha {
   }
 
   private CurrencyAlpha(String s) {
-    this.currencyAlpha = s;
+    this.currencyAlphaCode = s;
   }
 }

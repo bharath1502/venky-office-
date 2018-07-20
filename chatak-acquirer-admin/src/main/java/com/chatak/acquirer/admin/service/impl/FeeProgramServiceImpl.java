@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +16,10 @@ import com.chatak.acquirer.admin.model.FeeProgramResponseDetails;
 import com.chatak.acquirer.admin.service.FeeProgramService;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.acq.dao.AcquirerFeeValueDao;
+import com.chatak.pg.acq.dao.CardProgramDao;
 import com.chatak.pg.acq.dao.FeeCodeDao;
 import com.chatak.pg.acq.dao.FeeProgramDao;
+import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAcquirerFeeValue;
 import com.chatak.pg.acq.dao.model.PGFeeProgram;
@@ -52,6 +56,12 @@ public class FeeProgramServiceImpl implements FeeProgramService {
 
   @Autowired
   MerchantRepository merchantRepository;
+  
+  @Autowired
+  MessageSource messageSource;
+  
+  @Autowired
+  CardProgramDao cardProgramDao;
 
   @Override
   public Response createFeeProgram(FeeProgramDTO feeProgramDTO) throws ChatakAdminException {
@@ -63,7 +73,13 @@ public class FeeProgramServiceImpl implements FeeProgramService {
     PGOtherFeeValue otherFeeValue = new PGOtherFeeValue();
 
     try {
-
+      List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(feeProgramDTO.getCardProgramId());
+      if(StringUtil.isListNotNullNEmpty(feeProgram)){
+        response.setErrorCode(Constants.CARD_PROGRAM_ALREADY_MAPPED);
+        response.setErrorMessage(messageSource.getMessage(response.getErrorCode(), null, LocaleContextHolder.getLocale()));
+        return response;
+      }
+      
       PGFeeProgram feeProgramDaoDetails = CommonUtil.copyBeanProperties(feeProgramDTO, PGFeeProgram.class);
       feeProgramDaoDetails.setCreatedDate(new Timestamp(System.currentTimeMillis()));
       feeProgramDaoDetails.setStatus(Constants.ACTIVE);
@@ -83,13 +99,6 @@ public class FeeProgramServiceImpl implements FeeProgramService {
         feeProgramValueDaoDetails.add(feeProgramValue);
       }
       feeProgramDaoDetails.setAcquirerFeeValueList(feeProgramValueDaoDetails);
-      otherFeeValue.setChargeBackFee(
-          CommonUtil.getLongAmountFromDoubleString(feeProgramDTO.getOtherFee().getChargeBacKFee()));
-      otherFeeValue.setChargeFrequency(feeProgramDTO.getOtherFee().getChargeFrequency());
-      otherFeeValue.setSetupFee(
-          CommonUtil.getLongAmountFromDoubleString(feeProgramDTO.getOtherFee().getSetupFee()));
-      otherFeeValue.setSettlementFee(
-          CommonUtil.getLongAmountFromDoubleString(feeProgramDTO.getOtherFee().getSettlementFee()));
       otherFeeValue.setCreatedBy(feeProgramDTO.getCreatedBy());
       otherFeeValue.setCreatedDate(new Timestamp(System.currentTimeMillis()));
       feeProgramDaoDetails.setPgOtherFeeValue(otherFeeValue);
@@ -145,23 +154,18 @@ public class FeeProgramServiceImpl implements FeeProgramService {
           feeProgramDao.getByFeeProgramId(feeProgramDTO.getFeeProgramId());
 
       if (StringUtil.isListNotNullNEmpty(feeProgramModel)) {
-
+        CardProgram cardProgram = cardProgramDao.findByCardProgramId(feeProgramModel.get(0).getCardProgramId());
+        feeProgram.setCardProgramId(cardProgram.getCardProgramId());
+        feeProgram.setCardProgramName(cardProgram.getCardProgramName());
         feeProgram.setFeeProgramId(feeProgramModel.get(0).getFeeProgramId());
         feeProgram.setFeeProgramName(feeProgramModel.get(0).getFeeProgramName());
         feeProgram.setFeeProgramDescription(feeProgramModel.get(0).getFeeProgramDescription());
         feeProgram.setStatus(feeProgramModel.get(0).getStatus());
         feeProgram.setProcessor(feeProgramModel.get(0).getProcessor());
+        feeProgram.setPmShare(feeProgramModel.get(0).getPmShare());
+        feeProgram.setIsoShare(feeProgramModel.get(0).getIsoShare());
         // Setting other fee
         OtherFeesDTO otherFeesDTO = new OtherFeesDTO();
-        otherFeesDTO.setChargeBacKFee(String.format("%.2f", CommonUtil.getDoubleAmountNotNull(
-            feeProgramModel.get(0).getPgOtherFeeValue().getChargeBackFee())));
-        otherFeesDTO
-            .setChargeFrequency(feeProgramModel.get(0).getPgOtherFeeValue().getChargeFrequency());
-        otherFeesDTO.setId(feeProgramModel.get(0).getPgOtherFeeValue().getId());
-        otherFeesDTO.setSettlementFee(String.format("%.2f", CommonUtil.getDoubleAmountNotNull(
-            feeProgramModel.get(0).getPgOtherFeeValue().getSettlementFee())));
-        otherFeesDTO.setSetupFee(String.format("%.2f", CommonUtil
-            .getDoubleAmountNotNull(feeProgramModel.get(0).getPgOtherFeeValue().getSetupFee())));
         feeProgram.setOtherFee(otherFeesDTO);
         // Setting Acquirer fee values
         List<PGAcquirerFeeValue> acquirerFeeValueModels =
@@ -253,15 +257,9 @@ public class FeeProgramServiceImpl implements FeeProgramService {
         setFeeProgramValue(feeProgramDTO, feeProgramValueDaoDetails, acquirerFeeValueModels);
         feeProgramDaoDetails.setAcquirerFeeValueList(feeProgramValueDaoDetails);
         otherFeeValue = feeProgramDetails.get(0).getPgOtherFeeValue();
-        otherFeeValue.setChargeBackFee(CommonUtil
-            .getLongAmount(Double.valueOf(feeProgramDTO.getOtherFee().getChargeBacKFee())));
-        otherFeeValue.setChargeFrequency(feeProgramDTO.getOtherFee().getChargeFrequency());
-        otherFeeValue.setSetupFee(
-            CommonUtil.getLongAmount(Double.valueOf(feeProgramDTO.getOtherFee().getSetupFee())));
-        otherFeeValue.setSettlementFee(CommonUtil
-            .getLongAmount(Double.valueOf(feeProgramDTO.getOtherFee().getSettlementFee())));
         otherFeeValue.setUpdatedBy(feeProgramDTO.getUpdatedBy());
         otherFeeValue.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+        feeProgramDaoDetails.setCardProgramId(feeProgramDetails.get(0).getCardProgramId());
         feeProgramDaoDetails.setPgOtherFeeValue(otherFeeValue);
         feeProgramDao.createFeeProgram(feeProgramDaoDetails);
         response.setErrorCode(Constants.SUCCESS_CODE);
@@ -298,11 +296,6 @@ private void setFeeProgramValue(FeeProgramDTO feeProgramDTO, List<PGAcquirerFeeV
 	    feeProgramValue.setCreatedDate(acquirerFeeValueModels.get(0).getCreatedDate());
 	    feeProgramValue.setUpdatedBy(feeProgramDTO.getUpdatedBy());
 	    feeProgramValue.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-	    feeProgramValue.setCardType(feeValue.getCardType());
-	    feeProgramValue.setAccountType(feeValue.getAccountType());
-	    if (Constants.ACCOUNT_TYPE_OTHER.equals(feeValue.getAccountType())) {
-	      feeProgramValue.setAccountNumber(feeValue.getAccountNumber());
-	    }
 	    feeProgramValueDaoDetails.add(feeProgramValue);
 	  }
 	}

@@ -6,6 +6,7 @@ package com.chatak.acquirer.admin.controller;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +30,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
+import com.chatak.acquirer.admin.model.MerchantCreateResponse;
 import com.chatak.acquirer.admin.model.MerchantData;
 import com.chatak.acquirer.admin.model.MerchantSearchResponse;
 import com.chatak.acquirer.admin.service.BankService;
 import com.chatak.acquirer.admin.service.CurrencyConfigService;
+import com.chatak.acquirer.admin.service.IsoService;
 import com.chatak.acquirer.admin.service.MerchantCategoryCodeService;
 import com.chatak.acquirer.admin.service.MerchantService;
 import com.chatak.acquirer.admin.service.MerchantUpdateService;
@@ -50,7 +54,10 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.model.MerchantCurrencyMapping;
+import com.chatak.pg.model.MerchantRequest;
 import com.chatak.pg.user.bean.AddMerchantResponse;
+import com.chatak.pg.user.bean.MerchantResponse;
+import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
@@ -97,6 +104,9 @@ public class MerchantController implements URLMappingConstants {
 
   @Autowired
   private ProgramManagerService programManagerService;
+  
+  @Autowired
+  private IsoService isoService;
 
   /**
    * Method to show create merchant page
@@ -150,10 +160,6 @@ public class MerchantController implements URLMappingConstants {
       modelAndView.addObject("currencyCodeList", currencyCodeList);
       session.setAttribute("currencyCodeList", currencyCodeList);
 
-      List<Option> programManagersList = programManagerService.getActiveProgramManagers();
-      modelAndView.addObject("programManagersList", programManagersList);
-      session.setAttribute("programManagersList", programManagersList);
-
     } catch (ChatakAdminException e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -196,32 +202,16 @@ public class MerchantController implements URLMappingConstants {
       String merchantLink = url.substring(0, url.length() - uri.length()) + "/"
           + Properties.getProperty("chatak.merchant.portal");
       merchant.setMerchantLink(merchantLink);
-
-      // Check if currency is being prepended to the amount.
-      if (merchant.getLegalAnnualCard().startsWith(PGConstants.DOLLAR_SYMBOL)) {
-        merchant.setLegalAnnualCard(merchant.getLegalAnnualCard().substring(1));
-      } else {
-        merchant.setLegalAnnualCard(merchant.getLegalAnnualCard());
+      Map<Long, Long> cardProgramAndEntityId = new HashMap<Long, Long>();
+      String ids[];
+      for(String id : merchant.getCardProgramIds()){
+        ids = id.split("@");
+        cardProgramAndEntityId.put(Long.valueOf(ids[0]), Long.valueOf(ids[1]));
       }
-
-      NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale());
-      Number number = format.parse(merchant.getLegalAnnualCard());
-      double d = number.doubleValue();
-      merchant.setLegalAnnualCard(Double.toString(d));
-
+      merchant.setCardProgramAndEntityId(cardProgramAndEntityId);
       validateIssuancePartnerId(merchant);
       merchant.setMerchantType(PGConstants.MERCHANT);
-      if (!StringUtil.isNullAndEmpty(currencyCode)) {
-        String[] currencyCodeArray = currencyCode.split(",");
-
-        List<MerchantCurrencyMapping> merchantCurrencyMappingList =
-            new ArrayList<>();
-        if (currencyCodeArray != null) {
-          setcurrencyCodeArray(merchant, currencyCodeArray, merchantCurrencyMappingList);
-        }
-
-        merchant.setSelectedCurrencyMapping(merchantCurrencyMappingList);
-      }
+      currencyCodeValidation(merchant, currencyCode);
 
       String currencyCodeAlpha = merchant.getCurrencyId();
       Response currencyCodes = currencyConfigService.getCurrencyCodeNumeric(currencyCodeAlpha);
@@ -351,11 +341,21 @@ public class MerchantController implements URLMappingConstants {
     merchant.setPageIndex(Constants.ONE);
     session.setAttribute(Constants.PAGE_NUMBER, Constants.ONE);
     try {
-      MerchantSearchResponse searchResponse = merchantUpdateService.searchMerchant(merchant);
-      List<MerchantData> merchants = new ArrayList<>();
+    	MerchantSearchResponse searchResponse = null;
+    	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+    	getMerchantIdsMappedToEntity(merchant, loginResponse);
+		if((loginResponse.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE)
+				|| loginResponse.getUserType().equalsIgnoreCase(Constants.ISO_USER_TYPE))
+				&& !StringUtil.isListNullNEmpty(merchant.getEntitiesId())) {
+				searchResponse = merchantUpdateService.searchMerchant(merchant);
+		}
+		if(loginResponse.getUserType().equalsIgnoreCase(Constants.ADMIN_USER_TYPE)) {
+			searchResponse = merchantUpdateService.searchMerchant(merchant);
+		}
+      List<MerchantCreateResponse> merchants = new ArrayList<>();
       List<MerchantData> subMerchants = new ArrayList<>();
-      if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMerchants())) {
-        merchants = searchResponse.getMerchants();
+      if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMerchantCreateResponses())) {
+        merchants = searchResponse.getMerchantCreateResponses();
         session.setAttribute(Constants.TOTAL_RECORDS, searchResponse.getTotalNoOfRows());
         modelAndView.addObject(Constants.PAGE_SIZE, merchant.getPageSize());
         modelAndView = PaginationUtil.getPagenationModel(modelAndView, searchResponse.getTotalNoOfRows());
@@ -413,12 +413,27 @@ public class MerchantController implements URLMappingConstants {
       modelAndView.addObject(Constants.CURRENCY_LIST, currencyList);
       session.setAttribute(Constants.CURRENCY_LIST, currencyList);
       // currency list End
-      Merchant selectedCurrencyList = merchantUpdateService.findByMerchantId(getMerchantId);
+      MerchantResponse selectedCurrencyList = merchantUpdateService.findByMerchantId(getMerchantId);
       processCurrencyList(model, currencyList, selectedCurrencyList);
       if (StringUtil.isListNotNullNEmpty(currencyList)) {
         List<Option> allcurrencyLists = getAllCurrencyLists(currencyList, selectedCurrencyList);
         model.put("currencyListData", allcurrencyLists);
       }
+      merchant.setAssociatedTo(selectedCurrencyList.getMerchant().getAssociatedTo());
+      if(merchant.getAssociatedTo() != null && merchant.getAssociatedTo().equals(PGConstants.PROGRAM_MANAGER_NAME)){
+    	  Response  programManagerResponse = programManagerService.findProgramManagerNameByCurrencyAndId(getMerchantId,merchant.getLocalCurrency());
+    	  model.put("selectedCardProgramList", selectedCurrencyList.getCardProgramRequests());
+    	  model.put("selectedEntityList", selectedCurrencyList.getProgramManagerRequests());
+    	  model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
+    	  model.put("EntityList", programManagerResponse.getResponseList());
+      } else{
+    	  Response  programManagerResponse = isoService.findIsoNameByCurrencyAndId(getMerchantId, merchant.getLocalCurrency());
+    	  model.put("selectedCardProgramList", selectedCurrencyList.getCardProgramRequests());
+    	  model.put("selectedEntityList", selectedCurrencyList.getIsoRequests());
+    	  model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
+    	  model.put("EntityList", programManagerResponse.getResponseList());
+      }
+      
       if (null == merchant) {
         merchant = new Merchant();
         throw new ChatakAdminException();
@@ -436,13 +451,8 @@ public class MerchantController implements URLMappingConstants {
         modelAndView.addObject(Constants.BANK_STATE_LIST, stateList.getResponseList());
         session.setAttribute(Constants.BANK_STATE_LIST, stateList.getResponseList());
 
-        stateList = merchantUpdateService.getStatesByCountry(merchant.getLegalCountry());
-        modelAndView.addObject(Constants.LEGAL_STATE_LIST, stateList.getResponseList());
-        session.setAttribute(Constants.LEGAL_STATE_LIST, stateList.getResponseList());
-
         session.setAttribute(Constants.UPDATE_MERCHANT_ID, getMerchantId);
         modelAndView.addObject(Constants.MERCHANT, merchant);
-        session.setAttribute(Constants.PREVIOUS_CI_PARTNER_ID, merchant.getIssuancePartnerId());
 
         processorNames = merchantValidateService.getProcessorNames();
         List<Option> bankOptions = bankService.getBankData();
@@ -451,10 +461,6 @@ public class MerchantController implements URLMappingConstants {
         modelAndView.addObject("resellerList", resellerOptions);
         List<String> mccList = merchantCategoryCodeService.getAllMCC();
         modelAndView.addObject("mccList", mccList);
-        
-        List<Option> partnersList = partnerService.getActivePartners();
-        modelAndView.addObject("partnerList", partnersList);
-        session.setAttribute("partnerList", partnersList);
       }
     } catch (ChatakAdminException e) {
       modelAndView = showSearchMerchantPage(request, response, merchant,
@@ -471,15 +477,16 @@ public class MerchantController implements URLMappingConstants {
     modelAndView.addObject(Constants.PROCESSOR_NAMES, processorNames);
     logger.info("EXITING :: MerchantController :: showEditMerchant");
     modelAndView.addObject(Constants.MERCHANT, merchant);
+    
     return modelAndView;
   }
 
   private List<Option> getAllCurrencyLists(List<Option> currencyList,
-      Merchant selectedCurrencyList) {
+		  MerchantResponse selectedCurrencyList) {
     List<Option> allcurrencyLists = new ArrayList<>();
     for (int i = 0; i < currencyList.size(); i++) {
       boolean isExists = false;
-      if (StringUtil.isListNotNullNEmpty(selectedCurrencyList.getSelectedCurrencyMapping())) {
+      if (StringUtil.isListNotNullNEmpty(selectedCurrencyList.getMerchant().getSelectedCurrencyMapping())) {
         isExists = getMerchantCurrencyMapping(currencyList, selectedCurrencyList, i, isExists);
       }
       if (!isExists)
@@ -489,8 +496,8 @@ public class MerchantController implements URLMappingConstants {
   }
 
   private boolean getMerchantCurrencyMapping(List<Option> currencyList,
-      Merchant selectedCurrencyList, int i, boolean isExists) {
-    for (MerchantCurrencyMapping merchantCurrencyMapping : selectedCurrencyList
+		  MerchantResponse selectedCurrencyList, int i, boolean isExists) {
+    for (MerchantCurrencyMapping merchantCurrencyMapping : selectedCurrencyList.getMerchant()
         .getSelectedCurrencyMapping()) {
       if (currencyList.get(i).getLabel()
           .equals(merchantCurrencyMapping.getCurrencyCode())) {
@@ -502,7 +509,7 @@ public class MerchantController implements URLMappingConstants {
   }
 
   private void processCurrencyList(Map model, List<Option> currencyList,
-      Merchant selectedCurrencyList) {
+		  MerchantResponse selectedCurrencyList) {
     if (StringUtil.isListNotNullNEmpty(currencyList)) {
       List<Option> currencyLists = new ArrayList<>();
       getCurrencyList(currencyList, selectedCurrencyList, currencyLists);
@@ -510,11 +517,11 @@ public class MerchantController implements URLMappingConstants {
     }
   }
 
-  private void getCurrencyList(List<Option> currencyList, Merchant selectedCurrencyList,
+  private void getCurrencyList(List<Option> currencyList, MerchantResponse selectedCurrencyList,
       List<Option> currencyLists) {
     for (int i = 0; i < currencyList.size(); i++) {
       boolean isExists = false;
-      if (StringUtil.isListNotNullNEmpty(selectedCurrencyList.getSelectedCurrencyMapping())) {
+      if (StringUtil.isListNotNullNEmpty(selectedCurrencyList.getMerchant().getSelectedCurrencyMapping())) {
         isExists = getMerchantCurrencyMapping(currencyList, selectedCurrencyList, i, isExists);
       }
       if (isExists)
@@ -544,28 +551,38 @@ public class MerchantController implements URLMappingConstants {
       model.put(Constants.MERCHANT, merchant);
       merchant.setPageIndex(pageNumber);
       merchant.setNoOfRecords(totalRecords);
-      try {
-        searchResponse = merchantUpdateService.searchMerchant(merchant);
-        if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMerchants())) {
-          merchants = searchResponse.getMerchants();
-          modelAndView.addObject(Constants.PAGE_SIZE, merchant.getPageSize());
-          modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
-              searchResponse.getTotalNoOfRows());
-          session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
-          session.setAttribute(Constants.TOTAL_RECORDS, totalRecords);
-          modelAndView.addObject(Constants.MERCHANTS_MODEL, merchants);
-        }
-      } catch (Exception e) {
-        modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
-            null, LocaleContextHolder.getLocale()));
-        logger.error("ERROR:: MerchantController:: searchMerchant method", e);
-      }
+      modelAndView =
+          validateMerchantSearchResponse(session, pageNumber, totalRecords, modelAndView, merchant);
     } catch (Exception e) {
       logger.error("ERROR:: MerchantController:: getPaginationList method", e);
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting:: MerchantController:: getPaginationList method");
+    return modelAndView;
+  }
+
+  private ModelAndView validateMerchantSearchResponse(final HttpSession session,
+      final Integer pageNumber, final Integer totalRecords, ModelAndView modelAndView,
+      Merchant merchant) {
+    MerchantSearchResponse searchResponse;
+    List<MerchantCreateResponse> merchants;
+    try {
+      searchResponse = merchantUpdateService.searchMerchant(merchant);
+      if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMerchantCreateResponses())) {
+        merchants = searchResponse.getMerchantCreateResponses();
+        modelAndView.addObject(Constants.PAGE_SIZE, merchant.getPageSize());
+        modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
+            searchResponse.getTotalNoOfRows());
+        session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
+        session.setAttribute(Constants.TOTAL_RECORDS, totalRecords);
+        modelAndView.addObject(Constants.MERCHANTS_MODEL, merchants);
+      }
+    } catch (Exception e) {
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+      logger.error("ERROR:: MerchantController:: searchMerchant method", e);
+    }
     return modelAndView;
   }
 
@@ -615,7 +632,7 @@ public class MerchantController implements URLMappingConstants {
 
   @RequestMapping(value = CHATAK_ADMIN_UPDATE_MERCHANT, method = RequestMethod.POST)
   public ModelAndView updateMerchant(HttpServletRequest request, HttpServletResponse response,
-      Merchant merchant, BindingResult bindingResult, HttpSession session, Map model,
+		  Merchant merchant, BindingResult bindingResult, HttpSession session, Map model,
       @FormParam("currencyCode") final String currencyCode) {
     logger.info("Entering :: MerchantController :: updateMerchant method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_MERCHANT);
@@ -641,31 +658,21 @@ public class MerchantController implements URLMappingConstants {
       if (null != prevCiPartnerId && !merchant.getIssuancePartnerId().equals(prevCiPartnerId)) {
         isSameCiPartner = false;
       }
+      Map<Long, Long> cardProgramAndEntityId = new HashMap<Long, Long>();
+      String ids[];
+      for(String id : merchant.getCardProgramIds()){
+        ids = id.split("@");
+        cardProgramAndEntityId.put(Long.valueOf(ids[0]), Long.valueOf(ids[1]));
+      }
+      merchant.setCardProgramAndEntityId(cardProgramAndEntityId);
       setIssuancePartnerId(merchant);
-      // Check if currency is being prepended to the amount.
-      if (merchant.getLegalAnnualCard().startsWith(PGConstants.DOLLAR_SYMBOL)) {
-        merchant.setLegalAnnualCard(merchant.getLegalAnnualCard().substring(1));
-      } else {
-        merchant.setLegalAnnualCard(merchant.getLegalAnnualCard());
-      }
       setSessionStatus(merchant, session);
-      NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale());
-      Number number = format.parse(merchant.getLegalAnnualCard());
-      double d = number.doubleValue();
-      merchant.setLegalAnnualCard(Double.toString(d));
-      if (!StringUtil.isNullAndEmpty(currencyCode)) {
-        String[] currencyCodeArray = currencyCode.split(",");
-
-        List<MerchantCurrencyMapping> merchantCurrencyMappingList =
-            new ArrayList<>();
-        if (currencyCodeArray != null) {
-          setcurrencyCodeArray(merchant, currencyCodeArray, merchantCurrencyMappingList);
-        }
-        merchant.setSelectedCurrencyMapping(merchantCurrencyMappingList);
-      }
+      currencyCodeValidation(merchant, currencyCode);
       MerchantSearchResponse merchant2 =
           merchantUpdateService.getMerchantCode(merchant.getMerchantCode());
       merchant.setStatus(merchant2.getMerchantData().getStatus());
+      merchant.setId(merchant2.getMerchantData().getId());
+      merchant.setProcess(PGConstants.UPDATE);
       String currencyCodeAlpha = merchant.getCurrencyId();
       Response currencyCodes = currencyConfigService.getCurrencyCodeNumeric(currencyCodeAlpha);
       merchant.setBankCurrencyCode(currencyCodes.getCurrencyCodeNumeric());
@@ -696,6 +703,22 @@ public class MerchantController implements URLMappingConstants {
     logger.info("Exiting:: MerchantController:: updateMerchant method");
     return modelAndView;
   }
+
+	/**
+	 * @param merchant
+	 * @param currencyCode
+	 */
+	private void currencyCodeValidation(Merchant merchant, final String currencyCode) {
+		if (!StringUtil.isNullAndEmpty(currencyCode)) {
+			String[] currencyCodeArray = currencyCode.split(",");
+
+			List<MerchantCurrencyMapping> merchantCurrencyMappingList = new ArrayList<>();
+			if (currencyCodeArray != null) {
+				setcurrencyCodeArray(merchant, currencyCodeArray, merchantCurrencyMappingList);
+			}
+			merchant.setSelectedCurrencyMapping(merchantCurrencyMappingList);
+		}
+	}
 
   private void setSessionStatus(Merchant merchant, HttpSession session) {
     Integer sessionStatus;
@@ -736,5 +759,23 @@ public class MerchantController implements URLMappingConstants {
     }
     logger.info("Exiting:: MerchantController:: getProgramManagerDetailsByPartner method");
     return null;
+  }
+  
+  private void getMerchantIdsMappedToEntity(Merchant merchant, LoginResponse loginResponse) throws ChatakAdminException{
+	  List<Long> entityIds = new ArrayList<>();
+		if(loginResponse.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+			entityIds.add(loginResponse.getEntityId());
+  		List<Long> merchantIds = merchantUpdateService.findByEntityIdAndEntitytype(entityIds, Constants.PM_USER_TYPE);
+  		List<Long> entityIsoIds = new ArrayList<>();
+  		List<Long> isoIds = isoService.findByPmId(loginResponse.getEntityId());
+  		entityIsoIds.addAll(isoIds);
+  		List<Long> merchantIsoIds = merchantUpdateService.findByEntityIdAndEntitytype(entityIsoIds, Constants.ISO_USER_TYPE);
+  		merchantIds.addAll(merchantIsoIds);
+  		merchant.setEntitiesId(merchantIds);
+		} else if(loginResponse.getUserType().equalsIgnoreCase(Constants.ISO_USER_TYPE)) {
+			entityIds.add(loginResponse.getEntityId());
+			List<Long> merchantIds = merchantUpdateService.findByEntityIdAndEntitytype(entityIds, Constants.ISO_USER_TYPE);
+		    		merchant.setEntitiesId(merchantIds);
+		}
   }
 }

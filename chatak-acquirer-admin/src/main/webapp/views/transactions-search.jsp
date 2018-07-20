@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ page import="com.chatak.pg.constants.PGConstants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -31,7 +32,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
@@ -73,27 +74,32 @@
 									<input type="hidden" name="downloadReportObject" id="downloadReportId" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 							        <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+							        <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="process-bulk-settlement-action" method="post" name="bulkSettlement">
 									<input type="hidden" name="requestObject" id="requestObjectId" />
 									<input type="hidden" name="status" id="statusId" />
 									<input type="hidden" id="removedTxns" name="removedTxns" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="do-transaction-void" method="post" name="voidIndividualTransaction">
 									<input type="hidden" name="transactionID" id="transactionID" />
 									<input type="hidden" name="merchantID" id="merchantID" />
+								    <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="do-transaction-refund" name="doRefundForm" method="post">
 									<input type="hidden" id="getRefundMerchantId" name="getRefundMerchantId" /> 
 									<input type="hidden" id="getRefundTxnId" name="getRefundTxnId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="searchTransaction" commandName="transaction"
 									name="transaction">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -234,12 +240,15 @@
 						<input type="hidden" id="totalRecordsId" name="totalRecords" />
 						<input type="hidden" id="selectedTxnsReqObj" name="requestObject" />
 						<input type="hidden" id="removedTxns" name="removedTxns" />
+					    <input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="editMerchant" name="editMercahntForm" method="post">
 						<input type="hidden" id="getMerchantId" name="getMerchantId" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 					<form:form action="process-settlement-action" commandName="settlementDto" name="processAction" method="post">
+					 <input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="merchantId" id="merchantId" />
 						<form:hidden path="terminalId" id="terminalId" />
 						<form:hidden path="txnId" id="txnId" />
@@ -257,15 +266,15 @@
 
 							<!-- Search Table Header Start -->
 							<tr>
-								<td class="search-table-header-column"><span
-									class="glyphicon glyphicon-search search-table-icon-text"></span></td>
-								<td colspan="6" class="search-table-header-column">
+								<td colspan="10" class="search-table-header-column">
+								<span class="glyphicon glyphicon-search search-table-icon-text"></span><span><spring:message code="common.label.search"/></span>
 									<span class="pull-right">
+									<spring:message code="common.label.totalcount"/> : <label id="totalCount">${totalRecords}</label>
 										<input type="button" class="txn-button executeAll" value="<spring:message code="reports.label.transactions.executeall" />" />
 										<input type="button" class="txn-button processAll" value="<spring:message code="reports.label.transactions.processall" />" />
 										<input type="button" class="txn-button cancelAll" value="<spring:message code="reports.label.transactions.cancelall" />" />
 										
-									</span>
+								</span>
 								</td>
 							</tr>
 						</table>
@@ -489,9 +498,7 @@
 	<script src="../js/transactions.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -665,6 +672,21 @@
 			$('#removedTxns').val(removedTxn);
 		}
 		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 	
 </body>

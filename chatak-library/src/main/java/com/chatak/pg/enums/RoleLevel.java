@@ -8,15 +8,17 @@ public enum RoleLevel {
   
   CP_MERCHANT("Merchant"),
   CP_RESELLER("Reseller"),
-  CP_TMS("Tms");
+  CP_TMS("Tms"),
+  CP_PM("Program Manager"),
+  CP_ISO("ISO");
   
-  private final String value;
+  private String value;
 
   RoleLevel(String v) {
-      value = v;
+      this.value = v;
   }
 
-  public String value() {
+  public String getValue() {
       return value;
   }
 

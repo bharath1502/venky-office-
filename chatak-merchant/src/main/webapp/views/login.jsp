@@ -4,7 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@page import="java.util.Calendar"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -25,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body onload="noBack();" onpageshow="if (event.persisted) noBack();"
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)" onload="noBack();" onpageshow="if (event.persisted) noBack();"
 	onunload="">
 	
 	<form action="login" name="login" method="get"></form>
@@ -45,7 +45,7 @@
 				<!--Header Logo Start -->
 				<div class="col-sm-4"></div>
 				<div class="col-sm-6 form-group">
-					<img src="../images/logo.jpg"alt="Logo" />
+					<img src="../images/Chatak-logo.jpg"alt="Logo" />
 				</div>
 				<!--Header Logo End -->
 			</header>
@@ -66,9 +66,11 @@
 							</div>
 							<form:form action="authenticate" commandName="loginDetails"
 								name="loginDetails">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12 login-elements-holder">
 
 									<fieldset class="col-sm-12">
+									<form:hidden path="currentLoginTime" id = "currentDateId"/>
 										<div class="input-group">
 											<span class="input-group-addon"><img
 												src="../images/user_icon.png"></span>
@@ -122,7 +124,7 @@
 			<footer class="footer1 col-sm-8 no-padding">
 	            <div class="col-sm-3 pull-right footer-logo no-padding" >
 		         <b class="footer-logo"><spring:message code="footer.poweredby"/> </b> <img
-		         	src="../images/chatak_logo_f.png" class="footer-logo-size" alt="Logo" />
+		         	src="../images/Chatak-lofo-f.png" class="footer-logo-size" alt="Logo" />
 	            </div>
 			    <div class="col-sm-6 pull-right no-padding"><p class="footer-txt">
 			         <spring:message code="footer.copyright1" /><%=year%> <spring:message code="footer.copyright2" />
@@ -145,6 +147,8 @@
 	 <script src="../js/jquery.cookie.js"></script>
 	 <script src="../js/messages.js"></script>
 	 <script type="text/javascript" src="../js/browser-close.js"></script>
+	 <script src='https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js'></script>
+	 <script src="../js/backbutton.js"></script>
 	<script>
 		/* Select li full area function Start */
 		$("li").click(function() {
@@ -179,6 +183,8 @@
 		 $(document).ready(function() {
 				var cookieVal = getUserLocale();
 				$('#localeSelectId').val(cookieVal);
+				var offset = new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
+				$('#currentDateId').val(offset);
 			});
 		 
 		 
@@ -200,6 +206,6 @@
 		function noBack() {
 			window.history.forward();
 		}
-	</script>	
+	</script>
 </body>
 </html>

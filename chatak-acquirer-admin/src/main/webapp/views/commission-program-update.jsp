@@ -4,6 +4,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -101,7 +102,7 @@
 }
 </style>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -137,6 +138,7 @@
 					<!-- Content Block Start -->
 					<form:form action="commissionProgramUpdate" modelAttribute="commissionDTO" name="commissionDTO">
 					<form:hidden path="commissionProgramId" />
+					<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<div class="col-sm-12">
 							<!-- Page Form Start -->
 							<div class="form-horizontal main-content-holder bck-color">

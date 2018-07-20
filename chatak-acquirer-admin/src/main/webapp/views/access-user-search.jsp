@@ -28,7 +28,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -62,18 +62,21 @@
 						<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 							type="hidden" id="totalRecordsId" name="totalRecords" /> <input
 							type="hidden" id="paginationRequestType" name="requestType" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 					<form:form action="access-user-view" name="userViewForm" method="post">
 						<input type="hidden" id="userViewIdData" name="userIdData" /> <input
 							type="hidden" id="usersViewGroupType" name="usersGroupType" /> <input
 							type="hidden" id="viewRequestType" name="requestType" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 					<form:form action="access-user-edit" name="userEditForm" method="post">
 						<input type="hidden" id="userIdData" name="userIdData" /> <input
 							type="hidden" id="usersGroupType" name="usersGroupType" /> <input
 							type="hidden" id="editRequestType" name="requestType" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 					<form:form action="downloadUserport" name="downloadReport"
@@ -84,6 +87,7 @@
 							id="downloadRequestType" name="requestType" /> <input
 							type="hidden" id="totalRecords" name="totalRecords" /> <input
 							type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 					<form:form action="deleteMerchantUser" name="deleteMercahntUserForm"
@@ -92,6 +96,7 @@
 							name="getMerchantUserId" /> <input type="hidden"
 							id="usersGroupTypes" name="usersGroupTypes" /> <input
 							type="hidden" id="deleteRequestType" name="requestType" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 					<!-- Breadcrumb End -->
@@ -125,7 +130,7 @@
 								<!-- Page Form Start -->
 								<form:form action="access-user-search"
 									modelAttribute="userDataDto" method="post">
-
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<form:hidden path="requestType" id="requestType" />
 									<div class="col-sm-12">
 										<div class="row">
@@ -135,19 +140,9 @@
 															code="users.label.usertype" /></label>
 													<form:select path="userType" id="roleType"
 														cssClass="form-control" onchange="populatemerchantcode(this.value)">
-														<%-- <form:option value=""><spring:message code="reports.option.select"/></form:option> --%>
-														<form:option value="Admin">
-															<spring:message code="roles.label.admin" />
-														</form:option>
-														<%-- <form:option value="Reseller"><spring:message code="roles.label.reseller"/></form:option> --%>
-														<form:option value="Merchant">
-															<spring:message code="roles.label.merchant" />
-														</form:option>
-														<%-- <form:option value="Tms"><spring:message code="roles.label.tms"/></form:option> --%>
-
-														<%-- <c:forEach items="${roleLevelList}" var="roleLevelList">
-															         <form:option value="${roleLevelList.name()}">${roleLevelList.value}</form:option>
-														        </c:forEach>  --%>
+														<c:forEach items="${roleLevelList}" var="roleLevelList">
+															         <form:option value="${roleLevelList.value}">${roleLevelList.value}</form:option>
+														        </c:forEach>
 
 													</form:select>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
@@ -478,6 +473,7 @@
 		<form:form action="userActivationSuspention" name="userActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="userId" /> 
 			<input type="hidden" id="suspendActiveStatus" name="userStatus" /> 
+			<input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -502,11 +498,9 @@
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js" type="text/javascript"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/admin-user.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -556,6 +550,21 @@
 				$('#merchantDivId').hide();
 			}
 		}
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

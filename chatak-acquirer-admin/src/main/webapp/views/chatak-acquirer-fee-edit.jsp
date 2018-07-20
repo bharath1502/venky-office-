@@ -4,6 +4,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -20,7 +21,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
@@ -67,6 +68,7 @@
 								<!-- Page Form Start -->
 								<form:form action="processChatakAquirerFeeEdit"
 									commandName="pgAcquirerFeeCode" method="post">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<form:hidden path="merchantCode" />
 									<form:hidden path="partnerId" />
 									<form:hidden path="updatedBy" />

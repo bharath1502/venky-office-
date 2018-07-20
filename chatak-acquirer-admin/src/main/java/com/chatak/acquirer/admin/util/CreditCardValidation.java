@@ -60,28 +60,14 @@ public class CreditCardValidation {
 
     public static boolean prefixMatched(long number, int d) {
 
-        if ((getPrefix(number, d) == Constants.THREE)
-                || (getPrefix(number, d) == Constants.FOUR)
-                || (getPrefix(number, d) == Constants.FIVE)
-                || (getPrefix(number, d) == Constants.SIX)) {
+		if ((getPrefix(number, d) != 0)) {
+			logger.info("\nChatak Prepaid Card ! ");
+			return true;
+		} else {
+			logger.info("prefixMatched :: unknown card");
+			return false;
 
-            if (getPrefix(number, d) == Constants.THREE) {
-                logger.info("\nAmerican Express Card ! ");
-            } else if (getPrefix(number, d) == Constants.FOUR) {
-                logger.info("\nVisa Card ! ");
-            } else if (getPrefix(number, d) == Constants.FIVE) {
-                logger.info("\nMaster Card !");
-            } else if (getPrefix(number, d) == Constants.SIX) {
-                logger.info("\nDiscover Card !");
-            }
-
-            return true;
-        
-        } else {
-
-            return false;
-
-        }
+		}
     }
 
     public static int getSize(long d) {

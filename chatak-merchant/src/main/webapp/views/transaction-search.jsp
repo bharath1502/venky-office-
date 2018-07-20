@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -10,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><spring:message code="common.lable.title"/></title>
     <!-- Bootstrap -->
-    <link rel="icon" href="../images/favicons.png" type="image/png">
+    <link rel="icon" href="../images/favicon.png" type="image/png">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -20,7 +21,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->	
     <div id="wrapper">
 		<!--Container block Start -->
@@ -64,6 +65,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="searchTransaction" commandName="transaction"  name="transaction">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">

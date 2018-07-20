@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -27,7 +28,7 @@ Include all compiled plugins (below), or include individual files as needed
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -97,30 +98,6 @@ Include all compiled plugins (below), or include individual files as needed
 												code="manage.label.sub-merchant.bankinfo" /> </label>
 										<div class="arrow-down bank-info-arrow"></div>
 									</li>
-									<li class="legal-entiy-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="legal-circle-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
-												code="manage.label.sub-merchant.legalentityrepresentative" /></label>
-										<div class="arrow-down legal-arrow"></div>
-									</li>
-									<li class="legal-entiy-rep-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="legal-circle-rep-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
-												code="manage.label.sub-merchant.legalentity" /></label>
-										<div class="arrow-down legal-rep-arrow"></div>
-									</li>
-									<li class="free-transactions-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="contact-circle-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
-												code="manage.label.sub-merchant.additionalinfo" /></label>
-										<div class="arrow-down contact-arrow"></div>
-									</li>
 									<li class="atm-transactions-list">
 										<div class="circle-div">
 											<div class="hr"></div>
@@ -154,6 +131,7 @@ Include all compiled plugins (below), or include individual files as needed
 								<!-- Page Form Start -->
 								<form:form action="createSubMerchant" commandName="subMerchant"
 									name="subMerchant">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Account Details Content Start -->
@@ -302,24 +280,6 @@ Include all compiled plugins (below), or include individual files as needed
 															<span id="pinEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
-													<%-- <fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.status" /><span class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="status" id="status" onblur="validateStatus()">
-															<form:option value="1">
-																<spring:message code="manage.option.sub-merchant.pending" />
-															</form:option>
-															<form:option value="0">
-																<spring:message code="manage.option.sub-merchant.active" />
-															</form:option>
-															<form:option value="2">
-																<spring:message code="manage.option.sub-merchant.in-active" />
-															</form:option>
-														</form:select>
-														<form:hidden path="merchantType" id="merchantType" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="statusEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset> --%>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.applicationmode" /><span
@@ -477,7 +437,7 @@ Include all compiled plugins (below), or include individual files as needed
 															class="required-field">*</span></label>
 														<form:select cssClass="form-control"
 															path="parentMerchantId" id="parentMerchantId"
-															onblur="validateParentMerchantId();" onchange="fetchMerchantCurrency(this.value); fetchPartnerName(this.value)">
+															onblur="validateParentMerchantId();" onchange="fetchMerchantCurrency(this.value);">
 															<form:option value="">..:<spring:message
 																	code="manage.option.sub-merchant.select" />:..</form:option>
 															<c:forEach items="${mainMerchantList}" var="mainMerchant">
@@ -488,26 +448,16 @@ Include all compiled plugins (below), or include individual files as needed
 															<span id="parentMerchantIdEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
-													<fieldset class="col-sm-3">
+														<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="admin.pm.Name.message" /></label>
-														<form:input cssClass="form-control"
-															path="programManagerId" id="programManagerId"
-															readonly="true" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="programManagerIdEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="admin.PartnerName.message" /></label>
-														<form:select cssClass="form-control" path="partnerId"
-															id="partnerId" readonly="true" >
-															</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="partnerIdEr" class="red-error">&nbsp;</span>
+																code="manage.label.sub-merchant.username" /><span
+															class="required-field">*</span></label>
+														<form:input cssClass="form-control" path="userName"
+															id="userName" maxlength="50"
+															onblur="this.value=this.value.trim();vlalidateUserName()" />
+														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+															<span id="userNameEr" class="red-error">&nbsp;</span> <span
+																id="userNamegreenEr" class="green-error">&nbsp;</span>
 														</div>
 													</fieldset>
 												</fieldset>
@@ -518,10 +468,10 @@ Include all compiled plugins (below), or include individual files as needed
 															value="<spring:message code="manage.buttton.sub-merchant.continue" />">
 														<input type="button" class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="openCancelConfirmationPopup1()">
+															onclick="openCreateCancelConfirmationPopup()">
                                              		    <input type="button" class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.reset" />"
-															onclick="resetBasicInfo()">
+															onclick="resetBasicInfoSub()">
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->
@@ -701,386 +651,16 @@ Include all compiled plugins (below), or include individual files as needed
 														<input type="button"
 															class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="openCancelConfirmationPopup1()">
+															onclick="openCreateCancelConfirmationPopup()">
 														<input type="button"
 															class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.reset" />"
-															onclick="resetBankInfo()">
+															onclick="resetBankInfoSub()">
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->
 											</section>
 											<!-- Bank Details Content End -->
-											<!-- Legal Entity Content Starts  -->
-											<section class="field-element-row legal-details-content"
-												style="display: none;">
-												<fieldset class="col-sm-12">
-
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.ssn" />
-															<!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalSSN"
-															id="legalSSN" maxlength="11"
-															onblur="return ssnValidation()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalSSNErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.firstname" />
-															<!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalFirstName"
-															id="legalFirstName" maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('legalFirstName', 'first_name_NotMand','legalFirstNameErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalFirstNameErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.lastname" />
-															<!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalLastName"
-															id="legalLastName" maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('legalLastName', 'first_name_NotMand','legalLastNameErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalLastNameErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.mobilephone" />
-															<!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control"
-															path="legalMobilePhone" maxlength="10"
-															id="legalMobilePhone"
-															onblur="this.value=this.value.trim();return clientValidation('legalMobilePhone', 'mobile_optional','legalMobilePhoneErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalMobilePhoneErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""> <spring:message
-																code="manage.label.sub-merchant.dateofbirth" />
-															<!-- <span class="required-field">*</span> --></label>
-														<div class="input-group focus-field">
-															<form:input cssClass="form-control effectiveDate"
-																path="legalDOB" id="legalDOB" />
-															<%-- onblur="return clientValidation('legalDOB', 'startDate','legalDOBErrorDiv');" --%>
-															<span class="input-group-addon"><span
-																class="glyphicon glyphicon-calendar"></span></span>
-														</div>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalDOBErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.passportnumber" />
-															<!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalPassport"
-															id="legalPassport" maxlength="20"
-															onblur="this.value=this.value.trim();return clientValidation('legalPassport', 'passport_number','legalPassportErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalPassportErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.countryofresidence" />
-															<!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control"
-															path="legalCountryResidence" id="legalCountryResidence"
-															maxlength="50" onblur="this.value=this.value.trim();" />
-														<%-- onblur="return clientValidation('legalCountryResidence', 'bank_country','legalCountryResidenceErrorDiv');" --%>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalCountryResidenceErrorDiv"
-																class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.countryofcitizenship" />
-															<!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalCitizen"
-															maxlength="50" id="legalCitizen"
-															onblur="this.value=this.value.trim();" />
-														<%-- onblur="return clientValidation('legalCitizen', 'bank_country','legalCitizenErrorDiv');" --%>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalCitizenErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.homephone" />
-															<!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalHomePhone"
-															onkeypress="return amountValidate(this,event)"
-															maxlength="12" id="legalHomePhone"
-															onblur="this.value=this.value.trim();" />
-														<%-- onblur="return clientValidation('legalHomePhone', 'contact_phone','legalHomePhoneErrorDiv');" --%>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalHomePhoneErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												<!--Panel Action Button Start -->
-												<div class="col-sm-12 button-content">
-													<fieldset class="col-sm-7 pull-right">
-														<input type="button"
-															class="form-control button pull-right legal-next"
-															value="<spring:message code="manage.buttton.sub-merchant.continue" />">
-														<input type="button"
-															class="form-control button pull-right marginL10 legal-prev"
-															value="<spring:message code="manage.buttton.sub-merchant.previous" />">
-														<input
-															type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="openCancelConfirmationPopup1()">
-														<input type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="manage.buttton.sub-merchant.reset" />"
-															onclick="resetLegalEntityInfo()">
-													</fieldset>
-												</div>
-												<!--Panel Action Button End -->
-											</section>
-											<!--Legal Entity Content Ends  -->
-											<!-- Legal Details Content Start -->
-											<section class="field-element-row legal-details-rep-content"
-												style="display: none;">
-												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.entitylegalname" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalName"
-															id="legalName" maxlength="101"
-															onblur="this.value=this.value.trim();return clientValidation('legalName', 'first_name_SplChar','legalNameErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalNameErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.EINorTaxID" />:<span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalTaxId"
-															id="legalTaxId" maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('legalTaxId', 'eIN_taxId','legalTaxIdErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalTaxIdErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.type" /><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalType"
-															id="legalType"
-															onblur="return clientValidation('legalType', 'state','legalTypeErrorDiv');">
-															<form:option value="">..:<spring:message
-																	code="manage.option.sub-merchant.select" />:..</form:option>
-															<form:option value="1">
-																<spring:message
-																	code="manage.option.sub-merchant.associationestatetrust" />
-															</form:option>
-															<form:option value="2">
-																<spring:message
-																	code="manage.option.sub-merchant.corporation" />
-															</form:option>
-															<form:option value="3">
-																<spring:message
-																	code="manage.option.sub-merchant.governmentagency" />
-															</form:option>
-															<form:option value="4">
-																<spring:message
-																	code="manage.option.sub-merchant.individualorsoleproprietorship" />
-															</form:option>
-															<form:option value="5">
-																<spring:message
-																	code="manage.option.sub-merchant.internationalorginization" />
-															</form:option>
-															<form:option value="6">
-																<spring:message
-																	code="manage.option.sub-merchant.limitedliabilitycompany" />
-															</form:option>
-															<form:option value="7">
-																<spring:message
-																	code="manage.option.sub-merchant.partnership" />
-															</form:option>
-															<form:option value="8">
-																<spring:message
-																	code="manage.option.sub-merchant.taxexemptorganization501C" />
-															</form:option>
-															<form:option value="11">
-																<spring:message
-																	code="manage.option.sub-merchant.testing" />
-															</form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalTypeErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.expectedsnnualcardsales" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalAnnualCard"
-															id="legalAnnualCard" maxlength="12"
-															onblur="this.value=this.value.trim();appendDollarSymbol();return clientValidation('legalAnnualCard', 'dollar_amount','legalAnnualCardErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalAnnualCardErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.address1" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalAddress1"
-															id="legalAddress1"
-															onblur="this.value=this.value.trim();return clientValidation('legalAddress1', 'bank_address1','legalAddress1ErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalAddress1ErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.address2" /></label>
-														<form:input cssClass="form-control" path="legalAddress2"
-															id="legalAddress2"
-															onblur="this.value=this.value.trim();return clientValidation('legalAddress2', 'bank_address2','legalAddress2ErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalAddress2ErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.city" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalCity"
-															id="legalCity"
-															onblur="this.value=this.value.trim();return clientValidation('legalCity', 'bank_city','legalCityErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalCityErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.country" /><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalCountry"
-															id="legalCountry"
-															onblur="return clientValidation('legalCountry', 'country','legalCountryErrorDiv');"
-															onchange="fetchMerchantState(this.value, 'legalState')">
-															<form:option value="">..:<spring:message
-																	code="manage.option.sub-merchant.select" />:..</form:option>
-															<c:forEach items="${countryList}" var="country">
-																<form:option value="${country.label}">${country.label}</form:option>
-															</c:forEach>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalCountryErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.state" /><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalState"
-															id="legalState"
-															onblur="return clientValidation('legalState', 'state','legalStateErrorDiv');">
-															<form:option value="">..:<spring:message
-																	code="manage.option.sub-merchant.select" />:..</form:option>
-
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalStateErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.zipcode" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalPin"
-															onkeypress="generalZipCode()" id="legalPin" maxlength="7"
-															onblur="this.value=this.value.trim();return zipCodeNotEmpty(id)" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalPinEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												<!--Panel Action Button Start -->
-												<div class="col-sm-12 button-content">
-													<fieldset class="col-sm-7 pull-right">
-														<input type="button"
-															class="form-control button pull-right legal-rep-next"
-															onclick="return zipCodeNotEmpty('legalPin')"
-															value="<spring:message code="manage.buttton.sub-merchant.continue" />">
-														<input type="button"
-															class="form-control button pull-right marginL10 legal-rep-prev"
-															value="<spring:message code="manage.buttton.sub-merchant.previous" />">
-														<input
-															type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="openCancelConfirmationPopup1()">
-														<input type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="manage.buttton.sub-merchant.reset" />"
-															onclick="resetLegalEntityRepInfo()">
-													</fieldset>
-												</div>
-												<!--Panel Action Button End -->
-											</section>
-											<!-- Legal Details Content End -->
-											<!-- Free Transactions Content Start -->
-											<section class="field-element-row free-transactions-content"
-												style="display: none;">
-												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.username" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="userName"
-															id="userName" maxlength="50"
-															onblur="this.value=this.value.trim();vlalidateUserName()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="userNameEr" class="red-error">&nbsp;</span> <span
-																id="userNamegreenEr" class="green-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												<!--Panel Action Button Start -->
-												<div class="col-sm-12 button-content">
-													<fieldset class="col-sm-7 pull-right">
-														<input type="button"
-															class="form-control button pull-right free-next"
-															value="<spring:message code="manage.buttton.sub-merchant.continue" />">
-														<input type="button"
-															class="form-control button pull-right marginL10 free-prev"
-															value="<spring:message code="manage.buttton.sub-merchant.previous" />">
-														<input
-															type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="openCancelConfirmationPopup1()">
-														<input type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="manage.buttton.sub-merchant.reset" />"
-															onclick="resetAdditionalInfo()">
-													</fieldset>
-												</div>
-												<!--Panel Action Button End -->
-											</section>
-											<!-- Free Transactions Content End -->
-											<!-- ATM Transactions Content Start -->
-
-											<!-- ATM Transactions Content End -->
 											<!-- POS Transactions Content Start -->
 											<jsp:include page="sub-merchant-create-confirmation.jsp"></jsp:include>
 											<!-- POS Transactions Content End -->
@@ -1245,7 +825,7 @@ Include all compiled plugins (below), or include individual files as needed
 									.hide();
 						});
 
-		$(".bank-list, .acc-next, .legal-prev")
+		$(".bank-list, .acc-next, .atm-prev")
 				.click(
 						function() {
 							if (!validateCreateSubMerchantStep1()
@@ -1265,86 +845,13 @@ Include all compiled plugins (below), or include individual files as needed
 							$(
 									".account-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content")
 									.hide();
-							/* populatePartnerAndAgentDetails($('#appMode').val(),
-									'sub-merchant', 'create', false); */
 						});
 
-		$(".legal-entiy-list, .bank-next, .legal-rep-prev")
+		$(".atm-transactions-list, .bank-next, .pos-prev")
 				.click(
 						function() {
 							if (!validateCreateMerchantStep2()
 									| !validateCreateSubMerchantStep1()
-									| resetLegalEntityErrorMsg()) {
-								return false;
-							}
-							$(".legal-circle-tab").addClass("active-circle");
-							$(
-									".merchant-circle-tab, .bank-info-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab")
-									.removeClass("active-circle");
-							$(".legal-arrow").show();
-							$(
-									".merchant-arrow, .legal-rep-arrow, .bank-info-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow")
-									.hide();
-							$(".legal-details-content").show();
-							$(
-									".account-details-content, .legal-details-rep-content, .bank-info-details-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content")
-									.hide();
-						});
-		$(".legal-entiy-rep-list, .legal-next, .free-prev")
-				.click(
-						function() {
-							if (!validateLegalEntity() | !ssnValidation()
-									| !validateCreateMerchantStep2()
-									| !validateCreateSubMerchantStep1()
-									| resetLegalEntityInfoErrorMsg()) {
-								return false;
-							}
-							$(".legal-circle-rep-tab")
-									.addClass("active-circle");
-							$(
-									".merchant-circle-tab, .bank-info-circle-tab, .legal-circle-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab")
-									.removeClass("active-circle");
-							$(".legal-rep-arrow").show();
-							$(
-									".merchant-arrow, .bank-info-arrow, .legal-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow")
-									.hide();
-							$(".legal-details-rep-content").show();
-							$(
-									".account-details-content, .bank-info-details-content, .legal-details-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content")
-									.hide();
-						});
-
-		$(".free-transactions-list, .legal-rep-next, .atm-prev")
-				.click(
-						function() {
-							if (!validateCreateMerchantStep3()
-									| !validateCreateSubMerchantStep1()
-									| !validateCreateMerchantStep2()
-									| !validateLegalEntity()
-									| resetAdditionalInfoErrorMsg()) {
-								return false;
-							}
-							$(".contact-circle-tab").addClass("active-circle");
-							$(
-									".merchant-circle-tab,.bank-info-circle-tab, .bank-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab")
-									.removeClass("active-circle");
-							$(".contact-arrow").show();
-							$(
-									".merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .configuration-arrow, .bank-arrow, .final-arrow")
-									.hide()
-							$(".free-transactions-content").show();
-							$(
-									".atm-transaction-content, .legal-details-content, .legal-details-rep-content, .bank-info-details-content, .pos-transaction-content, .account-details-content")
-									.hide();
-						});
-		$(".atm-transactions-list, .free-next, .pos-prev")
-				.click(
-						function() {
-							if (!validateCreateMerchantStep4()
-									| !validateCreateMerchantStep2()
-									| !validateCreateMerchantStep3()
-									| !validateCreateSubMerchantStep1()
-									| !validateLegalEntity()
 									| resetConfigurationsInfoErrorMsg()) {
 								return false;
 							}
@@ -1366,10 +873,7 @@ Include all compiled plugins (below), or include individual files as needed
 						function() {
 							if (!validateCreateSubMerchantStep5()
 									| !validateCreateSubMerchantStep1()
-									| !validateCreateMerchantStep2()
-									| !validateCreateMerchantStep3()
-									| !validateLegalEntity()
-									| !validateCreateMerchantStep4()) {
+									| !validateCreateMerchantStep2()) {
 								return false
 							}
 							$(".final-circle-tab").addClass("active-circle");
@@ -1414,6 +918,7 @@ Include all compiled plugins (below), or include individual files as needed
 			newVal += val;
 			this.value = newVal;
 		});
+		document.getElementById('lookingFor').setAttribute('maxlength', '100');
 	</script>
 </body>
 </html>

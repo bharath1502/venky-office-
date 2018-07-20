@@ -17,7 +17,7 @@ public class LitleEFTRequest implements Serializable{
 	  
 	private Integer noOfRecords;
 	
-	List<LitleEFTDTO> litleEFTDTOs;
+	private List<LitleEFTDTO> litleEFTDTOs;
 
 	public Integer getPageIndex() {
 		return pageIndex;

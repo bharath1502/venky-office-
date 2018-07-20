@@ -127,6 +127,20 @@ public class PGAdminUser implements Serializable {
 	@Column(name = "USER_ROLE_TYPE")
 	private String userRoleType;
 	
+	@Column(name = "ENTITY_ID")
+	private Long entityId;
+	
+    @Column(name = "LAST_LOGIN_TIME")
+    private String lastLonginTime;
+
+
+    public String getLastLonginTime() {
+      return lastLonginTime;
+    }
+
+    public void setLastLonginTime(String lastLonginTime) {
+      this.lastLonginTime = lastLonginTime;
+    }
 	
 	/**
 	 * @return the adminUserId
@@ -591,6 +605,20 @@ public class PGAdminUser implements Serializable {
 	 */
 	public String getUserType() {
 		return userType;
+	}
+
+	/**
+	 * @return the entityId
+	 */
+	public Long getEntityId() {
+		return entityId;
+	}
+
+	/**
+	 * @param entityId the entityId to set
+	 */
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
 	}
 
 }

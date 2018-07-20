@@ -869,10 +869,11 @@ $(document).ready(function() {
 	});
 
 	$('body').on('click', '.t-txn-id', function() {
+		var csrfToken = $("input[name=CSRFToken]").val();
 		$.ajax({
 			type : "POST",
 			url : "get-transaction-popup",
-			data: {accountTransactionId: $(this).text().trim()},
+			data: {accountTransactionId: $(this).text().trim(), CSRFToken: csrfToken},
 			success : function(response) {
 
 				if(undefined != response) {
@@ -1048,4 +1049,15 @@ function setUserLocale(selectedValue) {
 
 function closePopup() {
 	$('#deletePopup').popup("hide");
+}
+
+function disableRightClick(data){
+	if(data == true){
+		return true;
+	}else{
+		window.oncontextmenu = function () {
+			alert(webMessages.RIGHT_CLICK_NOT_ALLOWED);
+			return false;
+	 };
+	}
 }

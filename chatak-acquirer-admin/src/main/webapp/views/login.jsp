@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@page import="java.util.Calendar"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -30,7 +31,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
 <form:form action="login" name="login" method="get"></form:form>
 
@@ -74,9 +75,11 @@
 							<!-- Page Form Start -->
 							<form:form action="authenticate" commandName="loginDetails"
 								name="loginDetails">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12 login-elements-holder">
 
 									<fieldset class="col-sm-12">
+									<form:hidden path="currentLoginTime" id = "currentDateId"/>
 										<div class="input-group">
 											<span class="input-group-addon"><img
 												src="../images/user_icon.png"></span>
@@ -156,6 +159,7 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="../js/backbutton.js" type="text/javascript"></script>
     <script src="../js/messages.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js'></script>
 	
 	<script>		
 		onloadLogin = function() {
@@ -176,6 +180,8 @@
 	     $(document).ready(function() {
 			var cookieVal = getUserLocale();
 			$('#localeSelectId').val(cookieVal);
+			var offset = new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
+			$('#currentDateId').val(offset);
 		});
 		/* Common Navigation Include End */
 		

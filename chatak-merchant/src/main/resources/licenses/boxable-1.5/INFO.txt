@@ -1,0 +1,7 @@
+Project homepage: 	 https://mvnrepository.com/artifact/com.github.dhorions/boxable/1.5
+
+Sources: https://mvnrepository.com/artifact/com.github.dhorions/boxable
+
+License:
+Licensed under Apache License 2.0
+                      

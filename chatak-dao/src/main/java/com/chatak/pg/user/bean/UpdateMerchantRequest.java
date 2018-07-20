@@ -1,5 +1,8 @@
 package com.chatak.pg.user.bean;
 
+import java.util.List;
+import java.util.Map;
+
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.util.CommonUtil;
 
@@ -55,6 +58,18 @@ public class UpdateMerchantRequest extends MerchantRequest {
   private String lastName;
   
   private String emailId;
+  
+  private List<String> cardProgramIds;
+
+  private List<Long> entitiesId;
+  
+  private String associatedTo;
+  
+  private String merchantType;
+  
+  private String process;
+  
+  private Map<Long, Long> cardProgramAndEntityId;
 
   public String validate() {
     String message = "";
@@ -266,4 +281,58 @@ public class UpdateMerchantRequest extends MerchantRequest {
     this.emailId = emailId;
   }
 
+  public List<String> getCardProgramIds() {
+		return cardProgramIds;
+  }
+
+  public void setCardProgramIds(List<String> cardProgramIds) {
+		this.cardProgramIds = cardProgramIds;
+  }
+
+  public List<Long> getEntitiesId() {
+		return entitiesId;
+  }
+
+  public void setEntitiesId(List<Long> entitiesId) {
+		this.entitiesId = entitiesId;
+  }
+
+  public String getAssociatedTo() {
+		return associatedTo;
+  }
+
+  public void setAssociatedTo(String associatedTo) {
+		this.associatedTo = associatedTo;
+  }
+
+  public String getMerchantType() {
+		return merchantType;
+  }
+
+  public void setMerchantType(String merchantType) {
+		this.merchantType = merchantType;
+  }
+
+  public String getProcess() {
+		return process;
+  }
+
+  public void setProcess(String process) {
+		this.process = process;
+  }
+
+  /**
+   * @return the cardProgramAndEntityId
+   */
+  public Map<Long, Long> getCardProgramAndEntityId() {
+    return cardProgramAndEntityId;
+  }
+
+  /**
+   * @param cardProgramAndEntityId the cardProgramAndEntityId to set
+   */
+  public void setCardProgramAndEntityId(Map<Long, Long> cardProgramAndEntityId) {
+    this.cardProgramAndEntityId = cardProgramAndEntityId;
+  }
+  
 }

@@ -40,7 +40,7 @@ function validateCreateMerchantStep1() {
 			| !validatePhone()// | !validateFax()
 			| !validateAddress1()
 			| !validateCity() | !validateEmailId() | !validateState()
-			| !validateCountry() | !validatePin() /*|!validateStatus()*/ | !validateAppMode() |!validateURL()) {
+			| !validateCountry() | !validatePin() /*|!validateStatus()*/ | !validateAppMode() |!validateURL() |!vlalidateUserName()) {
 		return false;
 	}else{
 		var faxValue = getVal('fax').trim();
@@ -50,7 +50,11 @@ function validateCreateMerchantStep1() {
 			setLable('confirmMfax', getVal('fax').trim());
 		}else{
 			setLable('confirmMfax', "");
-		}if(lookingForValue != ""){
+		}if (!isCharacter(lookingForValue)) {
+			setError(get('lookingFor'), webMessages.cancontainonlyalphabetsandnumerics);
+			loadMsgTitleText();
+			return false;
+		} else if(lookingForValue != ""){
 			setLable('confirmLookingFor', lookingForValue);
 		}else{
 			setLable('confirmLookingFor', "");
@@ -60,7 +64,7 @@ function validateCreateMerchantStep1() {
 			setLable('confirmBusinessType', "");
 		}
 	}
-
+	setError(get('lookingFor'), " ");
 	return flag;
 }
 
@@ -80,7 +84,11 @@ function validateCreateMerchantStep1SignUp() {
 			setLable('confirmMfax', getVal('fax').trim());
 		}else{
 			setLable('confirmMfax', "");
-		}if(lookingForValue != ""){
+		}if (!isCharacter(lookingForValue)) {
+			setError(get('lookingFor'), webMessages.cancontainonlyalphabetsandnumerics);
+			loadMsgTitleText();
+			return false;
+		} else if(lookingForValue != ""){
 			setLable('confirmLookingFor', lookingForValue);
 		}else{
 			setLable('confirmLookingFor', "");
@@ -90,7 +98,7 @@ function validateCreateMerchantStep1SignUp() {
 			setLable('confirmBusinessType', "");
 		}
 	}
-
+	setError(get('lookingFor'), "");
 	return flag;
 }
 
@@ -222,7 +230,7 @@ function validateCreateMerchantStep1edit() {
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
 			| !validatePhone() | !validateAddress1() | !validateEmailId()
 			| !validateCity() | !validateState() | !validateCountry()
-			| !validatePin() /*| !validateStatus()*/ | !validateAppMode() |!validateURL()) {
+			| !validatePin() /*| !validateStatus()*/ | !validateAppMode() |!validateURL() |!vlalidateUserNameEdit()) {
 		
 		return false;
 	}else{
@@ -233,7 +241,11 @@ function validateCreateMerchantStep1edit() {
 		setLable('confirmMfax', faxValue);
 		}else{
 			setLable('confirmMfax', "");
-		}if(lookingForValue != ""){
+		}if (!isCharacter(lookingForValue)) {
+			setError(get('lookingFor'), webMessages.cancontainonlyalphabetsandnumerics);
+			loadMsgTitleText();
+			return false;
+		} else if(lookingForValue != ""){
 			setLable('confirmLookingFor', lookingForValue);
 		}else{
 			setLable('confirmLookingFor', "");
@@ -243,6 +255,7 @@ function validateCreateMerchantStep1edit() {
 			setLable('confirmBusinessType', "");
 		}
 	}
+	setError(get('lookingFor'), "");
 	return flag;
 }
 
@@ -333,28 +346,16 @@ function validateCreateMerchantStep4edit() {
 function validateCreateMerchantStep5() {
 	var flag = true;
 	if (!validateProcessor() | !validateVirtualTerminal()
-			| !validateOnlineOptions() | !validatefeeProgram()
-			| !validateRadio() | !validateCallbackURL() | !validateCategory()
+			| !validateOnlineOptions() 
+		    | !validateCallbackURL() | !validateCategory()
 			| !validateAutoPaymentMethod() | !validateAutoTransferLimit()
 			| !continueBtnValidateForOnline()
-			| !continueBtnValidateVirtualTerminal()
-			| !validateAgentAccountNumber() | !validateAgentClientId()
-			| !validateAgentANI() |!validateAgentName())
+			| !continueBtnValidateVirtualTerminal())
 			 {
 		if($('#autoTransferDay').prev().find('.required-field').is(':visible')) {
 			validateAutoTransferDayFields();
 		}
 		return false;
-	}
-	if(get('agentId')) {
-		var agentTempValue = get('agentId').value;
-		var agentValue = document.getElementById("agentId");
-		if(agentTempValue == ""){
-			setLable('confirmAgent', "");
-		} else {
-			var agentText = agentValue.options[agentValue.selectedIndex].text;
-			setLable('confirmAgent', agentText);
-	    }
 	}
 	if(get('processor')) {
 		var processor = get('processor').value.trim();
@@ -1344,8 +1345,8 @@ function resetBasicInfo() {
 	setError(get('city'), '');
 	get('businessURL').value = "";
 	setError(get('businessURL'), '');
-	/*get('status').value = "";
-	setError(get('status'), '');*/
+	get('userName').value = "";
+	setError(get('userName'), '');
 	get('lookingFor').value = "";
 	setError(get('lookingFor'), '');
 	get('businessType').value = "";
@@ -1547,12 +1548,12 @@ function resetAdditionalInfoErrorMsg() {
 }
 
 function resetConfigurationsInfo() {
-	get('allowAutoSettlement').checked = false;
+	/*get('allowAutoSettlement').checked = false;
 	get('noAutoSettlement').checked = false;
 	setError(get('noAutoSettlement'), '');
 	get('feeProgram').value = "";
 	setError(get('feeProgram'), '');
-	
+	*/
 	get('processor').value = "";
 	setError(get('processor'), '');
 	get('litleMID').value = "";
@@ -2532,4 +2533,8 @@ function getPartnerName(merchantId) {
 		error : function(e) {
 		}
 	});
+}
+
+function openCreateCancelConfirmationPopup() {
+	$('#my_popup1').popup("show");
 }

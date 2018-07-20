@@ -22,7 +22,7 @@
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 <!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -72,27 +72,32 @@
 								</div>
 								<form:form action="viewBin" name="viewBin" method="post">
 									<input type="hidden" id="getViewBinId" name="getBinId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="editBin" name="editBin" method="post">
 									<input type="hidden" id="getBinId" name="getBinId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="deleteBin" name="deleteBin" method="post">
 									<input type="hidden" id="getBinID" name="getBinID" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="getBinForPagination" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="get-bin-report" name="downloadReport" method="post">
 									<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" /> 
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords"/>
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<!--Success and Failure Message End-->
 									<!-- Page Form Start -->
 								<form:form action="bin-search" modelAttribute="binDTO" method="post">
-								
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -322,6 +327,7 @@
 		<form:form action="binActivationSuspention" name="binActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="binId" /> <input
 				type="hidden" id="suspendActiveStatus" name="binStatus" /> 
+				<input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -347,9 +353,7 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/messages.js"></script>
 	<script src="../js/bin.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -385,5 +389,22 @@
 	function openPopup() {
 		$('#binPopupDiv').popup("show");
 	}
+	
+
+	$(document).ready(function() {
+				/* Table Sorter includes Start*/
+				$(function() {
+					
+						  // call the tablesorter plugin
+						  $('#serviceResults').sortable({
+							
+							 divBeforeTable: '#divbeforeid',
+							divAfterTable: '#divafterid',
+							initialSort: false,
+							locale: 'th',
+							//negativeSort: [1, 2]
+						});
+				});
+				});
 </script>
 </html>

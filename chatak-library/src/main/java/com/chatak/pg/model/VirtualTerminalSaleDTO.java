@@ -60,6 +60,8 @@ public class VirtualTerminalSaleDTO extends SearchRequest {
 	private Double feeAmount;
 	
 	private Boolean successDiv;
+	
+	private String merchantCode;
 
 	/**
 	 * @return the cardNum
@@ -420,6 +422,20 @@ public class VirtualTerminalSaleDTO extends SearchRequest {
 
   public void setSuccessDiv(Boolean successDiv) {
     this.successDiv = successDiv;
+  }
+
+  /**
+   * @return the merchantCode
+   */
+  public String getMerchantCode() {
+    return merchantCode;
+  }
+
+  /**
+   * @param merchantCode the merchantCode to set
+   */
+  public void setMerchantCode(String merchantCode) {
+    this.merchantCode = merchantCode;
   }
 
 }

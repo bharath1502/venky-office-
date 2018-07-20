@@ -90,6 +90,11 @@
 								code="dash-board.label.accountnumber" />:</td>
 						<td>${accountNumber}</td>
 					</tr>
+					<tr>
+						<td><spring:message
+								code="additional-information.label.username" />:</td>
+						<td><div id="confirmMuserName"></div></td>
+					</tr>
 				</table>
 			</fieldset>
 		</fieldset>
@@ -157,134 +162,11 @@
 			</fieldset>
 		</fieldset>
 		<fieldset class="col-sm-6">
-			<fieldset class="fieldset contact-content">
-				<legend class="legend content-space">
-					<spring:message code="sub-merchant-create.label.additionalinfo" />
-				</legend>
-				<table class="confirm-info-table">
-					<tr>
-						<td><spring:message
-								code="additional-information.label.username" />:</td>
-						<td><div id="confirmMuserName"></div></td>
-					</tr>
-				</table>
-			</fieldset>
-		</fieldset>
-		<fieldset class="col-sm-6">
-			<fieldset class="fieldset merchant-content">
-				<legend class="legend content-space">
-					<spring:message code="sub-merchant-create.label.legalentity" />
-				</legend>
-				<table class="confirm-info-table">
-					<tr>
-						<td><spring:message
-								code="sub-merchant-create.label.entitylegalname" />:</td>
-						<td><div id="confirmlegalName"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="sub-merchant-create.label.ein/taxid" />::</td>
-						<td><div id="confirmlegalTaxId"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="dash-board.label.type" />:</td>
-						<td><div id="confirmlegalType"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="sub-merchant-create.label.expectedannualcardsales" />:</td>
-						<td><div id="confirmlegalAnnualCard"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="sub-merchant-create.label.address1" />:</td>
-						<td><div id="confirmlegalAddress1"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="sub-merchant-create.label.address2" />:</td>
-						<td><div id="confirmlegalAddress2"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="search-sub-merchant.label.city" />:</td>
-						<td><div id="confirmlegalCity"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="search-sub-merchant.label.country" />:</td>
-						<td><div id="confirmlegalCountry"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="sub-merchant-create.label.state" />:</td>
-						<td><div id="confirmlegalState"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="sub-merchant-create.label.zipcode" />:</td>
-						<td><div id="confirmlegalPin"></div></td>
-					</tr>
-				</table>
-			</fieldset>
-		</fieldset>
-		<fieldset class="col-sm-6">
-			<fieldset class="fieldset merchant-content">
-				<legend class="legend content-space">
-					<spring:message
-						code="sub-merchant-create.label.legalentityrepresentative" />
-				</legend>
-				<table class="confirm-info-table">
-					<tr>
-						<td><spring:message code="sub-merchant-create.label.ssn" />:</td>
-						<td><div id="confirmlegalSSN"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="search-sub-merchant.label.firstname" />:</td>
-						<td><div id="confirmlegalFirstName"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="search-sub-merchant.label.lastname" />:</td>
-						<td><div id="confirmlegalLastName"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="search-sub-merchant.label.phone" />:</td>
-						<td><div id="confirmlegalMobilePhone"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="sub-merchant-create.label.dateofbirth" />:</td>
-						<td><div id="confirmlegalDOB"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="sub-merchant-create.label.passportnumber" />:</td>
-						<td><div id="confirmlegalPassport"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="sub-merchant-create.label.countryofresidence" />:</td>
-						<td><div id="confirmlegalCountryResidence"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="sub-merchant-create.label.countryofcitizenship" />:</td>
-						<td><div id="confirmlegalCitizen"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="sub-merchant-create.label.homephone" />:</td>
-						<td><div id="confirmlegalHomePhone"></div></td>
-					</tr>
-				</table>
-			</fieldset>
-		</fieldset>
-		<fieldset class="col-sm-6">
 			<fieldset class="fieldset bank-content">
 				<legend class="legend content-space">
 					<spring:message code="sub-merchant-create.label.configurations" />
 				</legend>
 				<table class="confirm-info-table">
-					<tr>
-						<td><spring:message
-								code="configurations.label.autosettlementoptions" />:</td>
-						<td><div id="confirmMautoSettlement"></div></td>
-					</tr>
 					<tr>
 						<td><spring:message
 								code="configurations.label.merchantcallbackURL" />:</td>
@@ -324,11 +206,6 @@
 								code="configurations.label.autopaymentmethod" />:</td>
 						<td><div id="confirmMautoPaymentMethod"></div></td>
 					</tr>
-
-					<tr>
-						<td><spring:message code="configurations.label.feeprogram" />:</td>
-						<td><div id="confirmMfeeProgram"></div></td>
-					</tr>
 					<tr>
 						<td><spring:message code="configurations.label.processor" />:</td>
 						<td><div id="confirmMprocessor"></div></td>
@@ -337,22 +214,6 @@
 						<td><spring:message
 								code="configurations.label.virtualterminaloptions" />:</td>
 						<td><div id="confirmMvirtualTerminalList"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="common.label.agentName" />:</td>
-						<td><div id="confirmAgentName"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.issuer.agent.accnumber"/>:</td>
-						<td><div id="confirmAgentAccountNumber"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.issuer.agent.clientid"/>:</td>
-						<td><div id="confirmAgentClientid"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.issuer.agent.ani"/>:</td>
-						<td><div id="confirmAgentANI"></div></td>
 					</tr>
 					<%-- <tr>
 						<td><spring:message code="configurations.label.pos" />:</td>
@@ -363,10 +224,6 @@
 						<td><div id="confirmMwebSiteAddress"></div>
 							<div id="confirmMreturnURL"></div>
 							<div id="confirmMcancelURL"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="configurations.label.agentdetails" />:</td>
-						<td><div id="confirmAgent"></div></td>
 					</tr>
 				</table>
 			</fieldset>
@@ -382,7 +239,7 @@
 				value="<spring:message code="sub-merchant-create.label.previous"></spring:message>">
 			<input type="button" class="form-control button pull-right marginL10"
 				value="<spring:message code="sub-merchant-create.label.cancel"></spring:message>"
-				onclick="openCancelConfirmationPopup()">
+				onclick="openCreateCancelConfirmationPopup()">
 		</fieldset>
 	</div>
 	<!--Panel Action Button End -->

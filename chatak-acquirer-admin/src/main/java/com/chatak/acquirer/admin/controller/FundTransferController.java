@@ -203,24 +203,8 @@ public class FundTransferController implements URLMappingConstants {
       transferListRequest.setPageSize(Constants.MAX_TRANSACTION_ENTITY_DISPLAY_SIZE);
       transferListRequest.setStatus(status);
       transferListRequest.setTransferMode(transferMode);
-      try {
-        List<PGTransfers> transferRequestsList =
-            fundTransferService.getPGTransfersList(transferListRequest);
-        session.setAttribute(TRANSFER_REQUESTS_LIST, transferRequestsList);
-        transferListResponse.setTotalResultCount(transferListRequest.getNoOfRecords());
-        transferListResponse.setTransferRequestsList(transferRequestsList);
-        if (transferRequestsList != null && !CollectionUtils.isEmpty(transferRequestsList)) {
-          modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
-              transferListResponse.getTotalResultCount());
-          modelAndView.addObject("transferMode", transferListRequest.getTransferMode());
-          modelAndView.addObject("status", transferListRequest.getStatus());
-        }
-        modelAndView.addObject(TRANSFER_REQUESTS_LIST, transferRequestsList);
-      } catch (Exception e) {
-        modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
-            null, LocaleContextHolder.getLocale()));
-        logger.error("ERROR:: MerchantController:: searchMerchant method", e);
-      }
+      modelAndView = validateTransferRequestList(session, pageNumber, transferListRequest,
+          transferListResponse, modelAndView);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -229,6 +213,30 @@ public class FundTransferController implements URLMappingConstants {
     FundTransferActionModel fundTransferActionModel = new FundTransferActionModel();
     modelAndView.addObject("fundTransferActionModel", fundTransferActionModel);
     logger.info("Exiting:: MerchantController:: getPaginationList method");
+    return modelAndView;
+  }
+
+  private ModelAndView validateTransferRequestList(final HttpSession session,
+      final Integer pageNumber, GetTransferListRequest transferListRequest,
+      GetTransferListResponse transferListResponse, ModelAndView modelAndView) {
+    try {
+      List<PGTransfers> transferRequestsList =
+          fundTransferService.getPGTransfersList(transferListRequest);
+      session.setAttribute(TRANSFER_REQUESTS_LIST, transferRequestsList);
+      transferListResponse.setTotalResultCount(transferListRequest.getNoOfRecords());
+      transferListResponse.setTransferRequestsList(transferRequestsList);
+      if (transferRequestsList != null && !CollectionUtils.isEmpty(transferRequestsList)) {
+        modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
+            transferListResponse.getTotalResultCount());
+        modelAndView.addObject("transferMode", transferListRequest.getTransferMode());
+        modelAndView.addObject("status", transferListRequest.getStatus());
+      }
+      modelAndView.addObject(TRANSFER_REQUESTS_LIST, transferRequestsList);
+    } catch (Exception e) {
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+      logger.error("ERROR:: MerchantController:: searchMerchant method", e);
+    }
     return modelAndView;
   }
 
@@ -247,19 +255,10 @@ public class FundTransferController implements URLMappingConstants {
       ExportDetails exportDetails = new ExportDetails();
 
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        if ("EFT".equalsIgnoreCase(transferMode)) {
           exportDetails.setExportType(ExportType.PDF);
-        } else {
-          exportDetails.setExportType(ExportType.PDF);
-        }
       } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        if ("EFT".equalsIgnoreCase(transferMode)) {
           exportDetails.setExportType(ExportType.XLS);
           exportDetails.setExcelStartRowNumber(Integer.parseInt("5"));
-        } else {
-          exportDetails.setExportType(ExportType.XLS);
-          exportDetails.setExcelStartRowNumber(Integer.parseInt("5"));
-        }
       }
       if ("EFT".equalsIgnoreCase(transferMode)) {
         setExportDetailsDataForDownloadEFTBatchReport(transfersList, exportDetails); 

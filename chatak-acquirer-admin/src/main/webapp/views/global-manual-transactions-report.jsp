@@ -6,6 +6,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page  import="java.util.Calendar"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -19,7 +20,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -62,13 +63,16 @@
 							<input type="hidden" id="downloadTypeId" name="downloadType" /> 
 							<input type="hidden" id="totalRecords" name="totalRecords" />
 							<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
 
 						<form:form action="mannual-txn-pagination" name="paginationForm" method="post">
 							<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 							<input type="hidden" id="totalRecordsId" name="totalRecords" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
 						<form:form action="showGlobalManualTransferReport" commandName="getTransactionsListRequest" method="post">
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.manualtransactions.selectdaterange.fromdate" /><span class="required-field">*</span></label>
 													<div class="input-group focus-field">
@@ -255,9 +259,7 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
@@ -266,6 +268,7 @@
 	<script src="../js/messages.js"></script>
 	<script src="../js/validation.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
+	<script src="../js/common-lib.js"></script>
 	<script>
 
 	$(document).ready(function() {
@@ -382,6 +385,22 @@
 						});
 		
 				  /* Common Pagination Include End */
+				  
+				  $(document).ready(function() {
+							/* Table Sorter includes Start*/
+							$(function() {
+								
+									  // call the tablesorter plugin
+									  $('#serviceResults').sortable({
+										
+										 divBeforeTable: '#divbeforeid',
+										divAfterTable: '#divafterid',
+										initialSort: false,
+										locale: 'th',
+										//negativeSort: [1, 2]
+									});
+							});
+							});
 	</script>
 </body>
 </html>

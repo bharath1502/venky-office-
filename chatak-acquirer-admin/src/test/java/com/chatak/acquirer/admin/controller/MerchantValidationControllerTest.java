@@ -305,7 +305,7 @@ public class MerchantValidationControllerTest {
       Mockito
           .when(merchantValidateService.validateAgentDetails(Matchers.anyString(),
               Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
-          .thenReturn(new String());
+          .thenReturn("");
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_VALIDATE_AGENT_DETAILS)
           .param("agentAccountNumber", "agentAccountNumber").param("agentClientId", "agentClientId")
           .param("agentANI", "agentANI").param("currencyCodeAlpha", "currencyCodeAlpha"));

@@ -11,12 +11,17 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 
 import com.chatak.acquirer.admin.constants.StatusConstants;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.pg.bean.Response;
+import com.chatak.pg.user.bean.IsoRequest;
+import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.Constants;
 
 /**
@@ -39,7 +44,8 @@ public final class CommonUtil {
   public static String generateRandomNumber(int length) {
     StringBuilder sb = new StringBuilder();
     Random random = new Random();
-    for (int n = 0; n < length; n++) {
+    int n;
+    for (n = 0; n < length; n++) {
       int j = (random.nextInt() % Constants.MAX_ENTITY_DISPLAY_SIZE);
       // If First digit is "0", skip that and get next random
       if (n == 0 && j == 0) {
@@ -89,7 +95,7 @@ public final class CommonUtil {
     Random randomObj = new Random();
     for (int j = 0; j < length; j++) {
       int rand_int = randomObj.nextInt(Constants.SEVENTYTWO);
-      finalRandString += rand_int;
+      finalRandString += Integer.toString(rand_int);
       if (finalRandString.length() >= length) {
         finalRandString = finalRandString.substring(0, length);
         break;
@@ -299,6 +305,15 @@ public final class CommonUtil {
 
   public static boolean isSetNullNEmpty(Set set) {
     return (set == null || set.isEmpty());
+  }
+  
+  public static void setEntityIdsFromUserType(ProgramManagerRequest programManagerRequest, IsoRequest isoRequest, HttpSession session) {
+	  LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+	  if(loginResponse.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+    		programManagerRequest.setProgramManagerId(loginResponse.getEntityId());
+		}else if(loginResponse.getUserType().equalsIgnoreCase(Constants.ISO_USER_TYPE)) {
+			isoRequest.setId(loginResponse.getEntityId());
+		}
   }
 
 }

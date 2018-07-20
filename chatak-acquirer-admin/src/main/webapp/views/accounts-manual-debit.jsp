@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html>
 <head>
 <meta charset="utf-8">
@@ -22,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -62,6 +63,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="process-manual-debit" commandName="accountBalance" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<form:hidden id="availableBal" path="availableBalance"/>
 								<form:hidden id="currentBal" path="currentBalance"/>
 								<form:hidden id="inputAmt" path="inputAmount"/>

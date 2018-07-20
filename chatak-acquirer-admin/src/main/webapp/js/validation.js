@@ -41,9 +41,9 @@ var ValidationRules = {
 	},
 
 	company_name : {
-		type : "specialchar",
+		type : "all",
 		min : "2",
-		max : "30",
+		max : "50",
 		mandatory : true
 
 	},
@@ -55,7 +55,16 @@ var ValidationRules = {
 		mandatory : true
 
 	},
+	batch_prefix : {
+		type : "alphanumeric",
+		min : "5",
+		max : "5",
+		mandatory : true
 
+	},
+	txn_date : {
+		mandatory : true
+	},
 	last_name : {
 		type : "alpha",
 		min : "1",
@@ -162,6 +171,13 @@ var ValidationRules = {
 	countryResidence : {
 		type : "alpha",
 		min : "0",
+		max : "100",
+		mandatory : true
+	},
+	
+	roleDescription : {
+		type : "alphanumericwithpointspace",
+		min : "1",
 		max : "100",
 		mandatory : true
 	},
@@ -452,9 +468,9 @@ var ValidationRules = {
 	
 
 	business_entity_name : {
-		type : "alpha",
-		min : "6",
-		max : "30",
+		type : "all",
+		min : "2",
+		max : "50",
 		mandatory : true
 
 	},
@@ -477,7 +493,7 @@ var ValidationRules = {
 
 	contact_person : {
 		type : "alpha",
-		min : "1",
+		min : "2",
 		max : "30",
 		mandatory : true
 
@@ -927,7 +943,7 @@ var ValidationRules = {
 		mandatory : true
 	},
 	partner_phone : {
-		type : "mobilenumbertype",
+		type : "mobile",
 		min : "10",
 		max : "15",
 		mandatory : true
@@ -1070,7 +1086,7 @@ function clientValidation(field_id, field_name,div_id) {
 		
 		if(ValidationRules[name].type == "confirmemail") {
 			confirmemail(data,div_id);
-		}else{
+		}else {
 			return true;
 		}
 	}
@@ -1183,6 +1199,30 @@ function alpha(data,div_id) {
 		return true;
 		}else{
 		setDiv(div_id,webMessages.feeProgramOnlyNumber);
+		loadMsgTitleText();
+		   return false;
+		}
+	}
+	
+	function alphanumericwithenterspace(data) {
+		var regex =/^[A-Za-z0-9.-\s]*$/;
+		if(regex.test(data)) {
+		return true;
+		} else {
+			setError(get('roleName'), webMessages.cancontainonlyalphabetsnumerics);
+		loadMsgTitleText();
+		   return false;
+		}
+	}
+	
+	function alphanumericwithpointspace(data,divId) {
+		//var regex =/^[A-Za-z0-9.-\s]*$/;
+		var regex =/^[A-Za-z0-9\s]{1,}[\.]{0,1}[A-Za-z0-9\s]{0,}$/;
+		if(regex.test(data)) {
+		setDiv(divId,"");
+		return true;
+		} else {
+		setDiv(divId,webMessages.cancontain_alphanumerics_dot_space);
 		loadMsgTitleText();
 		   return false;
 		}

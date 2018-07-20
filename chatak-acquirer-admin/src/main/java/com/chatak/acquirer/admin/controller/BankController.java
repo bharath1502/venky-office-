@@ -507,6 +507,7 @@ public class BankController implements URLMappingConstants {
       model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
           LocaleContextHolder.getLocale()));
     }
+    modelAndView.addObject("flag", false);
     logger.info("Exiting:: BankController:: changeBankStatus method");
     return modelAndView;
   }
@@ -515,11 +516,11 @@ public class BankController implements URLMappingConstants {
     String[] headerArr = {
         messageSource.getMessage("bank-file-exportutil-bankname", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("bank-file-exportutil-bankshortname", null,
+        messageSource.getMessage("bank-file-exportutil-bankCode", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("currency-search-page.label.currencycode", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("bank-file-exportutil-acquirerid", null,
+        messageSource.getMessage("bank-file-exportutil-emailAddress", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("switch-file-exportutil-status", null,
             LocaleContextHolder.getLocale())};
@@ -531,8 +532,8 @@ public class BankController implements URLMappingConstants {
 
     for (Bank bankData : bankList) {
 
-      Object[] rowData = {bankData.getBankName(), bankData.getBankShortName(),
-          bankData.getCurrencyCodeAlpha(), bankData.getAcquirerId(), bankData.getStatus()
+      Object[] rowData = {bankData.getBankName(), bankData.getBankCode(),
+          bankData.getCurrencyCodeAlpha(), bankData.getContactPersonEmail(), bankData.getStatus()
 
       };
       fileData.add(rowData);

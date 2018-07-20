@@ -27,6 +27,7 @@ import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.BankCurrencyConfigRepository;
 import com.chatak.pg.acq.dao.repository.BankCurrencyRepository;
+import com.chatak.pg.acq.dao.repository.BankProgramManagerRepository;
 import com.chatak.pg.acq.dao.repository.BankRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.user.bean.BankRequest;
@@ -42,12 +43,14 @@ import com.chatak.pg.user.bean.BankRequest;
 @RunWith(MockitoJUnitRunner.class)
 public class BankDaoImplTest {
 
+  private static final String BANK_NAME = "bankName";
+  
 	@InjectMocks
 	BankDaoImpl bankDaoImpl;
 
 	@Mock
 	private EntityManager entityManager;
-
+	
 	@Mock
 	Query query;
 
@@ -72,6 +75,9 @@ public class BankDaoImplTest {
 	@Mock
 	MessageSource messageSource;
 
+	@Mock
+	BankProgramManagerRepository bankProgramManagerRepository;
+	
 	@Test
 	public void testCreateBank() {
 		BankRequest bankRequest = new BankRequest();
@@ -141,14 +147,14 @@ public class BankDaoImplTest {
 		pgBankList.add(bank);
 		List<Object> tuplelist = new ArrayList<>();
 		Object objects[] = new Object[Integer.parseInt("8")];
-		objects[0] = new String("name");
-		objects[1] = new String("name");
-		objects[Integer.parseInt("2")] = new String("name");
-		objects[Integer.parseInt("3")] = new String("phone");
-		objects[Integer.parseInt("4")] = new Long(Long.parseLong("10"));
-		objects[Integer.parseInt("5")] = new String("status");
-		objects[Integer.parseInt("6")] = new String("status");
-		objects[Integer.parseInt("7")] = new String("phone");
+		objects[0] = "name";
+		objects[1] = "name";
+		objects[Integer.parseInt("2")] = "name";
+		objects[Integer.parseInt("3")] = "phone";
+		objects[Integer.parseInt("4")] = new Long("10");
+		objects[Integer.parseInt("5")] = "status";
+		objects[Integer.parseInt("6")] = "status";
+		objects[Integer.parseInt("7")] = "phone";
 		tuplelist.add(objects);
 
 		Mockito.when(entityManager.getDelegate()).thenReturn(Object.class);
@@ -182,9 +188,9 @@ public class BankDaoImplTest {
 		List<PGMerchant> pgMerchant = new ArrayList<>();
 		PGMerchant merchant = new PGMerchant();
 		pgMerchant.add(merchant);
+		Mockito.when(bankRepository.findByBankName(BANK_NAME)).thenReturn(pgBank);
 		Mockito.when(merchantRepository.findByBankId(Matchers.anyLong())).thenReturn(pgMerchant);
-		Mockito.when(bankRepository.findByBankName(Matchers.anyString())).thenReturn(pgBank);
-		bankDaoImpl.deleteBank("abcd");
+		bankDaoImpl.deleteBank(BANK_NAME);
 	}
 
 	@Test
@@ -198,8 +204,8 @@ public class BankDaoImplTest {
 	public void testGetBankData() {
 		List<Object> tuplelist = new ArrayList<>();
 		Object objects[] = new Object[Integer.parseInt("2")];
-		objects[0] = new Long(Long.parseLong("5"));
-		objects[1] = new String("name");
+		objects[0] = new Long("5");
+		objects[1] = "name";
 		tuplelist.add(objects);
 
 		Mockito.when(entityManager.getDelegate()).thenReturn(Object.class);
@@ -213,8 +219,8 @@ public class BankDaoImplTest {
 	public void testGetCurrencyByBankId() {
 		List<Object> tuplelist = new ArrayList<>();
 		Object objects[] = new Object[Integer.parseInt("3")];
-		objects[0] = new Long(Long.parseLong("5"));
-		objects[1] = new String("name");
+		objects[0] = new Long("5");
+		objects[1] = "name";
 
 		tuplelist.add(objects);
 

@@ -6,6 +6,7 @@
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -13,7 +14,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title" /></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -61,7 +62,7 @@
 <script src="../js/common-lib.js"></script>
 <script src="../js/messages.js"></script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -84,6 +85,7 @@
 							name="downLoadPageNumber" /> <input type="hidden"
 							id="executedTxnDownloadTypeId" name="downloadType" /> <input
 							type="hidden" id="requestFromId" name="requestFrom" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form>
 
 					<form action="processing-transaction-details-report"
@@ -92,6 +94,7 @@
 							name="downLoadPageNumber" /> <input type="hidden"
 							id="processingTxnDownloadTypeId" name="downloadType" /> <input
 							type="hidden" id="requestFromId1" name="requestFrom" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form>
 
 					<form action="manual-transaction-details-report"
@@ -100,13 +103,15 @@
 							name="downLoadPageNumber" /> <input type="hidden"
 							id="downloadManualTxnTypeId" name="downloadType" /> <input
 							type="hidden" id="requestManualTxnFromId" name="totalRecords" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form>
 
 					<!--Success and Failure Message Start-->
 					<div class="search-results-table">
+					<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form name="account" action="merchant-account-history"
 							method="post">
-
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 							<div style="margin-top: 10px; margin-left: 240px;">
 								<label data-toggle="tooltip" data-placement="top" title="" id="entityName"> &nbsp; </label><span
 									class="fontweight">${merchantBusinessName}</span>
@@ -312,7 +317,7 @@
 						</table>
 						<!-- Search Table Header End -->
 						<!-- Search Table Content Start -->
-						<table id="serviceResults"
+						<table id="serviceResults1"
 							class="table table-striped table-bordered table-responsive table-condensed tablesorter">
 							<thead>
 								<tr>
@@ -442,7 +447,7 @@
 						</table>
 						<!-- Search Table Header End -->
 						<!-- Search Table Content Start -->
-						<table id="serviceResults"
+						<table id="serviceResults2"
 							class="table table-striped table-bordered table-responsive table-condensed tablesorter">
 							<thead>
 								<tr>
@@ -725,9 +730,7 @@
 
 	<script src="../js/backbutton.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/changePassword.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -738,6 +741,47 @@
 			window.location = $(this).find("a").attr("href");
 			return false;
 		});
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			$(function() {
+				
+				  // call the tablesorter plugin
+				  $('#serviceResults1').sortable({
+					
+					 divBeforeTable: '#divbeforeid',
+					divAfterTable: '#divafterid',
+					initialSort: false,
+					locale: 'th',
+					//negativeSort: [1, 2]
+				});
+		});
+			$(function() {
+				
+				  // call the tablesorter plugin
+				  $('#serviceResults2').sortable({
+					
+					 divBeforeTable: '#divbeforeid',
+					divAfterTable: '#divafterid',
+					initialSort: false,
+					locale: 'th',
+					//negativeSort: [1, 2]
+				});
+		});
+			});
+		
 		/* Select li full area function End */
 		$(document)
 				.ready(

@@ -228,7 +228,7 @@ function doAjaxFetchMailIdAvailable() {
 				setError(get('emailId'), '');
 				usernameFlag = false;
 			} else {
-				setError(get('emailId'), 'Email ID already in use');
+				setError(get('emailId'), 'Email id already in use');
 				usernameFlag = true;
 			}
 		},

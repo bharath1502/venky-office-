@@ -293,7 +293,6 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 				reportsList.add(reportsDto);
 			}
 		}
-		if(null!=reportsList){
 		List<Tuple> list1 = query.distinct()
 				.from(qpt,s,pp)
 				.where(s.merchantCode.eq(qpt.merchantId
@@ -317,10 +316,8 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 		if (StringUtils.isListNotNullNEmpty(list1)) {
 			validateTupleList(reportsList, s, qpt, list1);
 		}
-		}
 		return reportsList;
-	}
-
+}
 	private void validateTupleList(List<ReportsDTO> reportsList, QPGMerchant s, QPGTransfers qpt, List<Tuple> list1) {
 		for (Tuple t : list1) {
 			ReportsDTO reportsDto = new ReportsDTO();
@@ -346,10 +343,9 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 	private BooleanExpression isValidDate(Timestamp fromDate, Timestamp toDate) {
 		if ((fromDate != null && toDate == null)) {
 			return QPGTransfers.pGTransfers.createdDate.gt(fromDate);
-		} else if ((fromDate == null && toDate != null)) {
+		} else if ((fromDate == null)) {
 			return QPGTransfers.pGTransfers.createdDate.lt(toDate);
-		} else if ((fromDate == null && toDate == null))
-			return null;
+		}
 
 		return QPGTransfers.pGTransfers.createdDate.between(fromDate, toDate);
 

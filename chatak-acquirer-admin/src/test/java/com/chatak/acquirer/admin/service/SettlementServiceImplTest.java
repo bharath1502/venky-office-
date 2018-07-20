@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,6 +46,7 @@ import com.chatak.pg.model.SettlementActionDTOList;
 import com.chatak.pg.model.SettlemetActionDTO;
 import com.chatak.pg.model.TransactionResponse;
 import com.chatak.pg.model.VirtualTerminalVoidDTO;
+import com.chatak.pg.util.Properties;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementServiceImplTest {
@@ -105,7 +107,7 @@ public class SettlementServiceImplTest {
 
 	@Mock
 	MerchantUpdateDao merchantUpdateDao;
-
+	
 	@Test
 	public void testUpdateSettlementStatus() throws ChatakAdminException {
 		PGTransaction pgTransaction = new PGTransaction();
@@ -115,7 +117,7 @@ public class SettlementServiceImplTest {
 		Mockito.when(onlineTxnLogDao.getTransactionOnPgTxnIdAndMerchantId(Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgOnlineTxnLog);
 		settlementServiceImpl.updateSettlementStatus("merchantId", "terminalId", "txnId", "txnType", "status",
-				"comments", "userName");
+				"comments", "userName", "timeZoneOffset", "timeZoneRegion");
 
 	}
 
@@ -134,7 +136,7 @@ public class SettlementServiceImplTest {
 		Mockito.when(currencyCodeRepository.findByCurrencyCodeNumeric(Matchers.anyString())).thenReturn(pGCurrencyCode);
 		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class), Matchers.any(Locale.class))).thenReturn("ABCD");
 		settlementServiceImpl.updateSettlementStatus("merchantId", "terminalId", "txnId", "txnType", "Executed",
-				"comments", "userName");
+				"comments", "userName", "timeZoneOffset", "timeZoneRegion");
 
 	}
 
@@ -152,7 +154,7 @@ public class SettlementServiceImplTest {
 		Mockito.when(accountFeeLogDao.getPGAccountFeeLogOnTransactionId(Matchers.anyString()))
 				.thenReturn(pgAccountFeeLogList);
 		settlementServiceImpl.updateSettlementStatus("merchantId", "terminalId", "txnId", "txnType", "Processing",
-				"comments", "userName");
+				"comments", "userName", "timeZoneOffset", "timeZoneRegion");
 
 	}
 
@@ -170,7 +172,7 @@ public class SettlementServiceImplTest {
 		Mockito.when(accountFeeLogDao.getPGAccountFeeLogOnTransactionId(Matchers.anyString()))
 				.thenReturn(pgAccountFeeLogList);
 		settlementServiceImpl.updateSettlementStatus("merchantId", "terminalId", "txnId", "txnType", "Rejected",
-				"comments", "userName");
+				"comments", "userName", "timeZoneOffset", "timeZoneRegion");
 
 	}
 
@@ -325,21 +327,6 @@ public class SettlementServiceImplTest {
 	}
 
 	@Test
-	public void testPostVirtualAccFee() throws ChatakAdminException, IOException {
-		PGAccountFeeLog pgAccountFeeLog = new PGAccountFeeLog();
-		pgAccountFeeLog.setTxnAmount(Long.parseLong("5435"));
-		pgAccountFeeLog.setChatakFee(Long.parseLong("43"));
-		pgAccountFeeLog.setMerchantFee(Long.parseLong("35"));
-		settlementServiceImpl.postVirtualAccFee(pgAccountFeeLog, "123", "534", "435", "54");
-	}
-
-	@Test
-	public void testPostVirtualAccFeeReversal() throws ChatakAdminException, IOException {
-		PGAccountFeeLog pgAccountFeeLog = new PGAccountFeeLog();
-		settlementServiceImpl.postVirtualAccFeeReversal(pgAccountFeeLog, "123", "534", "435");
-	}
-
-	@Test
 	public void testUpdateAccountCCTransactions() {
 		List<PGAccountTransactions> accountTxns = new ArrayList<>();
 		PGAccountTransactions accountTransactions = new PGAccountTransactions();
@@ -404,14 +391,14 @@ public class SettlementServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateAccountCCTransactionsCcAcquirerFeeCredit() {  //ReBrand
+	public void testUpdateAccountCCTransactionsCcAcquirerFeeCredit() {
 		List<PGAccountTransactions> accountTxns = new ArrayList<>();
 		List<PGTransaction> transactions = new ArrayList<>();
 		PGTransaction value = new PGTransaction();
 		PGCurrencyConfig currencyConfig = new PGCurrencyConfig();
 		PGAccountTransactions accountTransactions = new PGAccountTransactions();
 		PGAccount account = new PGAccount();
-		accountTransactions.setTransactionCode("CC_ACQUIRER_FEE_CREDIT");  //ReBrand
+		accountTransactions.setTransactionCode("CC_ACQUIRER_FEE_CREDIT");
 		account.setAvailableBalance(Long.parseLong("435"));
 		account.setCurrentBalance(Long.parseLong("435"));
 		accountTransactions.setCredit(Long.parseLong("6546"));
@@ -425,7 +412,7 @@ public class SettlementServiceImplTest {
 		Mockito.when(currencyConfigDao.getcurrencyCodeAlpha(Matchers.anyString())).thenReturn(currencyConfig);
 		Mockito.when(accountRepository.findByEntityTypeAndCurrencyAndStatus(Matchers.anyString(), Matchers.anyString(),
 				Matchers.anyString())).thenReturn(account);
-		settlementServiceImpl.updateAccountCCTransactions("5434", "6546", "CC_ACQUIRER_FEE_CREDIT");  //ReBrand
+		settlementServiceImpl.updateAccountCCTransactions("5434", "6546", "CC_ACQUIRER_FEE_CREDIT");
 	}
 
 	@Test

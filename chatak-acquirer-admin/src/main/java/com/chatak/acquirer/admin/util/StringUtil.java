@@ -71,7 +71,7 @@ public final class StringUtil {
     try {
       if (raw.indexOf('/') != -1 || raw.indexOf('-') != -1 || raw.indexOf('.') != -1) {
         String splitVariable =
-            (raw.indexOf('/') != -1) ? "/" : ((raw.indexOf('-') != -1) ? "-" : "\\.");
+            (raw.indexOf('/') != -1) ? "/" : validateRaw(raw);
         String[] raws = raw.split(splitVariable);
         String result = "";
         result = (raws[0].length() < Constants.TWO) ? "0" + raws[0] : raws[0];
@@ -85,6 +85,10 @@ public final class StringUtil {
     }
 
     return null;
+  }
+
+  private static String validateRaw(String raw) {
+    return (raw.indexOf('-') != -1) ? "-" : "\\.";
   }
 
   /**
@@ -133,7 +137,7 @@ public final class StringUtil {
     if (!isNullEmpty(data)) {
       return data.split(",");
     }
-    return null;
+    return new String[0];
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})

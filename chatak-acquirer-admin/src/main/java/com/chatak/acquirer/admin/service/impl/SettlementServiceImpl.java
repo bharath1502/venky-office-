@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.chatak.acquirer.admin.constants.StatusConstants;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.RestPaymentService;
 import com.chatak.acquirer.admin.service.SettlementService;
@@ -32,6 +33,7 @@ import com.chatak.pg.acq.dao.AcquirerFeeCodeDao;
 import com.chatak.pg.acq.dao.CurrencyConfigDao;
 import com.chatak.pg.acq.dao.FeeDetailDao;
 import com.chatak.pg.acq.dao.FeeProgramDao;
+import com.chatak.pg.acq.dao.IssuanceSettlementDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.OnlineTxnLogDao;
@@ -46,15 +48,23 @@ import com.chatak.pg.acq.dao.model.PGCurrencyCode;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGTransaction;
+import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntity;
+import com.chatak.pg.acq.dao.model.settlement.PGSettlementTransaction;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.CurrencyCodeRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
+import com.chatak.pg.bean.settlement.IssuanceSettlementTransactionEntity;
+import com.chatak.pg.bean.settlement.IssuanceSettlementTransactions;
+import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.FeePostingStatus;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ProcessorType;
+import com.chatak.pg.exception.HttpClientException;
+import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.BulkSettlementResponse;
 import com.chatak.pg.model.ProcessingFee;
+import com.chatak.pg.model.Response;
 import com.chatak.pg.model.SettlementActionDTOList;
 import com.chatak.pg.model.SettlemetActionDTO;
 import com.chatak.pg.model.VirtualAccFeeReversalRequest;
@@ -63,13 +73,12 @@ import com.chatak.pg.model.virtualAccFeePostRequest;
 import com.chatak.pg.model.virtualAccFeePostResponse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.EncryptionUtil;
+import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.LogHelper;
 import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
-import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * << Add Comments Here >>
@@ -136,6 +145,9 @@ public class SettlementServiceImpl implements SettlementService {
 
   @Autowired
   MerchantUpdateDao merchantUpdateDao;
+  
+  @Autowired
+  private IssuanceSettlementDao issSettlementDao;
 
   private ObjectMapper mapper = new ObjectMapper();
 
@@ -165,7 +177,7 @@ public class SettlementServiceImpl implements SettlementService {
         pgTransaction.getTransactionId(), pgTransaction.getMerchantId());
     if (status.equals(PGConstants.PG_SETTLEMENT_EXECUTED)) {
       List<Object> objectResult =
-          getProcessingFee(PGUtils.getCCType(EncryptionUtil.decrypt(pgTransaction.getPan())), 1L,
+          getProcessingFee(PGUtils.getCCType(), 1L,
               pgTransaction.getMerchantId(), pgTransaction.getTxnTotalAmount());
       Long chatakFeeAmountTotal = (Long) objectResult.get(1);
       Long totalFeeAmount = pgTransaction.getTxnTotalAmount() - pgTransaction.getTxnAmount();
@@ -375,7 +387,7 @@ public class SettlementServiceImpl implements SettlementService {
           pgTransaction.getTransactionId(), pgTransaction.getMerchantId());
       if (status.equals(PGConstants.PG_SETTLEMENT_EXECUTED)) {
         List<Object> objectResult =
-            getProcessingFee(PGUtils.getCCType(EncryptionUtil.decrypt(pgTransaction.getPan())), 1L,
+            getProcessingFee(PGUtils.getCCType(), 1L,
                 pgTransaction.getMerchantId(), pgTransaction.getTxnTotalAmount());
         Long chatakFeeAmountTotal = (Long) objectResult.get(1);
         Long merchantFeeAmount = 0l;
@@ -510,22 +522,13 @@ public class SettlementServiceImpl implements SettlementService {
         .setTotalTxnAmount(feeLog.getTxnAmount() + feeLog.getChatakFee() + feeLog.getMerchantFee());// sending total txn amount to issuance
     request.setSpecificAccountNumber(pgAccountFeeLog.getSpecificAccNumber());// Setting specific account number from fee program
     /* Start posting fee to issuance */
-    ClientResponse response = new ClientResponse(null, null, null, null);
     try {
-      response = JsonUtil.sendToIssuance(request,
-          Properties.getProperty("chatak-issuance.virtual.post.fee"), mode);
       /* End posting fee to issuance */
-    } catch (Exception exp) {
-      response.setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);// setting if any connectivity exception occurs
-      logger.error("ERROR:: SettlementServiceImpl:: postVirtualAccFee method ", exp);
-    }
     feeLog.setFeeTxnDate(new Timestamp(System.currentTimeMillis()));
-    if (response.getStatus() != HttpStatus.SC_OK) {
-      feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_NETWORK_FAIL);
-    } else {
-      String output = response.getEntity(String.class);
+      String output =  JsonUtil.sendToIssuance(request,
+      Properties.getProperty("chatak-issuance.virtual.post.fee"), mode,String.class);
       virtualAccFeePostResponse feeResponse =
-          mapper.readValue(output, virtualAccFeePostResponse.class);
+      mapper.readValue(output, virtualAccFeePostResponse.class);
       if (feeResponse != null) {
         if (feeResponse.getErrorCode().equals("CEC_0001")) {
           feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_SUCCESS);
@@ -535,7 +538,9 @@ public class SettlementServiceImpl implements SettlementService {
         }
         feeLog.setIssuanceMessage(feeResponse.getErrorMessage());
       }
-    }
+    } catch (HttpClientException exp) {
+        logger.error("ERROR:: SettlementServiceImpl:: postVirtualAccFee method ", exp);
+      }
     return feeLog;
   }
 
@@ -545,35 +550,27 @@ public class SettlementServiceImpl implements SettlementService {
     PGAccountFeeLog feeLog = pgAccountFeeLog;
     VirtualAccFeeReversalRequest request = new VirtualAccFeeReversalRequest();
     request.setCiVirtualAccTxnId(ciVirtualAccTxnId);
-    ClientResponse response = new ClientResponse(null, null, null, null);
     try {
-      /* Start posting fee to issuance */
-      response = JsonUtil.sendToIssuance(request,
-          Properties.getProperty("chatak-issuance.virtual.reverse.fee"), mode);
-      /* End posting fee to issuance */
-    } catch (Exception exp) {
-      response.setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);// setting if any connectivity exception occurs
-      logger.error("ERROR:: SettlementServiceImpl:: postVirtualAccFeeReversal method ", exp);
-    }
-
     feeLog.setFeeTxnDate(new Timestamp(System.currentTimeMillis()));
-    if (HttpStatus.SC_OK != response.getStatus()) {
-      feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_NETWORK_FAIL);
-    } else {
-      String output = response.getEntity(String.class);
+      String output =  JsonUtil.sendToIssuance(request,
+      Properties.getProperty("chatak-issuance.virtual.reverse.fee"), mode,String.class);
       virtualAccFeePostResponse feeResponse =
-          mapper.readValue(output, virtualAccFeePostResponse.class);
+      mapper.readValue(output, virtualAccFeePostResponse.class);
       if (feeResponse != null) {
         if (feeResponse.getErrorCode().equals("CEC_0001")) {
           feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_SUCCESS);
         } else {
           feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_DECLINED);
-
         }
         feeLog.setIssuanceMessage(feeResponse.getErrorMessage());
         feeLog.setFeeTxnDate(new Timestamp(System.currentTimeMillis()));
       }
-
+    } catch (IOException exp) {
+        logger.error("ERROR:: SettlementServiceImpl:: postVirtualAccFeeReversal method ", exp);
+        throw new IOException(exp.getMessage());
+    }catch (Exception exp) {
+        logger.error("ERROR:: SettlementServiceImpl:: postVirtualAccFeeReversal method ", exp);
+        throw new ChatakAdminException(exp.getMessage());
     }
     return feeLog;
   }
@@ -605,8 +602,8 @@ public class SettlementServiceImpl implements SettlementService {
           case AccountTransactionCode.CC_MERCHANT_FEE_CREDIT:
             accTxn = updateAccountForMerchantFeeCredit(currentTime, accTxn);
             break;
-          case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:  //ReBrand
-            accTxn = updateAccountForAcquirerFeeCredit(currentTime, accTxn);  //ReBrand
+          case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
+            accTxn = updateAccountForAcquirerFeeCredit(currentTime, accTxn);
             break;
           default:
         }
@@ -681,7 +678,7 @@ public class SettlementServiceImpl implements SettlementService {
     return accTxn;
   }
 
-  private PGAccountTransactions updateAccountForAcquirerFeeCredit(Timestamp currentTime,  //ReBrand
+  private PGAccountTransactions updateAccountForAcquirerFeeCredit(Timestamp currentTime,
       PGAccountTransactions accTxn) {
     PGAccount account;
     logger.info(
@@ -711,4 +708,142 @@ public class SettlementServiceImpl implements SettlementService {
     accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
     return accTxn;
   }
+  
+	public List<SettlementEntity> getPgTransactions(String merchantId, String terminalId, String issuerTxnRefNum,
+			String transactionId) {
+		return transactionDao.getPgTransactions(merchantId, terminalId, issuerTxnRefNum,
+				transactionId);
+	}
+
+	@Transactional(rollbackFor=ChatakAdminException.class)
+	public Response saveIssuanceSettlementTransaction(IssuanceSettlementTransactionEntity pgSettlementTransaction, Integer batchCount, Integer batchSize) 
+	    throws InstantiationException, IllegalAccessException, ChatakAdminException {
+		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		
+		Response response = new Response();
+		try {
+		    Long START_TIME = System.currentTimeMillis();
+		    PGSettlementEntity pgSettlementEntity = seEntityAndTxnValues(pgSettlementTransaction);
+		    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "seEntityAndTxnValues DB Processing time: " + (System.currentTimeMillis() -  START_TIME));
+		    
+		    START_TIME = System.currentTimeMillis();
+		    issSettlementDao.addIssuanceSettlementTransaction(pgSettlementEntity, batchCount, batchSize);
+	        LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "addIssuanceSettlementTransaction DB Processing time: " + (System.currentTimeMillis() -  START_TIME));
+	        response.setErrorCode(PGConstants.SUCCESS);
+	        response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
+	        LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	        return response;
+	        
+		} catch(Exception ex){
+		  LogHelper.logError(logger, LoggerMessage.getCallerName(), ex, Constants.EXCEPTION);
+          response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
+          response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
+          throw new ChatakAdminException(StatusConstants.STATUS_CODE_FAILED,StatusConstants.STATUS_MESSAGE_FAILED);
+        }
+	}
+
+	private PGSettlementEntity seEntityAndTxnValues(IssuanceSettlementTransactionEntity pgSettlementTransaction) {
+		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		PGSettlementEntity pgSettlementEntity = new PGSettlementEntity();
+		List<PGSettlementTransaction> pgSettlementTransactions = new ArrayList<>();
+		pgSettlementEntity.setMerchantId(pgSettlementTransaction.getMerchantId());
+		pgSettlementEntity.setAcqSaleAmount(pgSettlementTransaction.getAcqSaleAmount());
+		pgSettlementEntity.setIssSaleAmount(pgSettlementTransaction.getIssSaleAmount());
+		pgSettlementEntity.setAcqPmId(pgSettlementTransaction.getAcqPmId());
+		pgSettlementEntity.setIssPmId(pgSettlementTransaction.getIssPmId());
+		pgSettlementEntity.setBatchid(pgSettlementTransaction.getBatchid());
+		pgSettlementEntity.setBatchFileDate(pgSettlementTransaction.getBatchFileDate());
+		pgSettlementEntity.setBatchFileProcessedDate(pgSettlementTransaction.getBatchFileDate());
+		pgSettlementEntity.setStatus(pgSettlementTransaction.getStatus());
+		pgSettlementEntity.setPmAmount(pgSettlementTransaction.getPmAmount());
+		pgSettlementEntity.setMerchantAmount(pgSettlementTransaction.getMerchantAmount());
+		
+		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "IssuanceSettlementTransactions size: " + pgSettlementTransaction.getSettlementTransactionsList());
+		
+		for(IssuanceSettlementTransactions issuanceSettlementTransactions : pgSettlementTransaction.getSettlementTransactionsList()) {
+		  LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Saving transaction with Pg txn ID: " + issuanceSettlementTransactions.getPgTransactionId()
+		      + ", Iss txn Id: " + issuanceSettlementTransactions.getIssuerTxnID());
+		  
+			PGSettlementTransaction pgSettlementTxn = new PGSettlementTransaction();
+			pgSettlementTxn.setIsoAmount(issuanceSettlementTransactions.getIsoAmount());
+			pgSettlementTxn.setIsoId(issuanceSettlementTransactions.getIsoId());
+			pgSettlementTxn.setIssuerTxnID(issuanceSettlementTransactions.getIssuerTxnID());
+			pgSettlementTxn.setPgTransactionId(issuanceSettlementTransactions.getPgTransactionId());
+			pgSettlementTxn.setTerminalId(issuanceSettlementTransactions.getTerminalId());
+			pgSettlementTxn.setTxnDate(issuanceSettlementTransactions.getTxnDate());
+			pgSettlementTransactions.add(pgSettlementTxn);
+		}
+		
+		pgSettlementEntity.setSettlementTransactionsList(pgSettlementTransactions);
+		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Size of the PGSettlementTransaction array is " +pgSettlementTransactions.size());
+		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		return pgSettlementEntity;
+	}
+
+	public void deleteAllIssuanceSettlementData(String programManagerId) throws PrepaidAdminException {
+		issSettlementDao.deleteAllIssuanceSettlementData(programManagerId);
+	}
+
+	public List<PGTransaction> getPGTransactionListNotInAcquiring(String batchId, List<String> pgTxnIds) {
+		return transactionDao.getPGTransactionListNotInAcquiring(batchId, pgTxnIds);
+	}
+	
+	public List<PGAccountTransactions> getPGAccTransactionsByTxnId(String pgTxnId) {
+		return transactionDao.getPGAccTransactionsByTxnId(pgTxnId);
+	}
+	
+	public void logRevenueAccountTransaction(String batchId,
+			Long accountNumber, Long currentBalance, Long entityId, 
+			Long amountToTransfer, String transactionCode, String entityType,
+			String timeZoneOffset, String timeZoneRegion, String accountTransactionId) {
+		logger.info("Entering:: SettlementServiceImpl:: logRevenueAccountTransaction method with Txn Code : " + transactionCode);
+		Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+		
+		PGAccountTransactions pgAccountTransactions = new PGAccountTransactions();
+		pgAccountTransactions.setAccountNumber(accountNumber.toString());
+		pgAccountTransactions.setAccountTransactionId(accountTransactionId);
+		pgAccountTransactions.setCurrentBalance(currentBalance);
+		pgAccountTransactions.setEntityId(entityId);
+		pgAccountTransactions.setEntityType(entityType);
+		pgAccountTransactions.setBatchId(batchId);
+		
+		pgAccountTransactions.setProcessedTime(currentTimestamp);
+		pgAccountTransactions.setTransactionTime(currentTimestamp);
+		pgAccountTransactions.setCreatedDate(currentTimestamp);
+		
+		pgAccountTransactions.setTransactionCode(transactionCode);
+		pgAccountTransactions.setTransactionType(transactionCode);
+		
+		pgAccountTransactions.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
+		pgAccountTransactions.setTimeZoneOffset(timeZoneOffset);
+		pgAccountTransactions.setTimeZoneRegion(timeZoneRegion);
+		
+		logger.info("SettlementServiceImpl:: logRevenueAccountTransaction method::" + transactionCode);
+
+		switch (transactionCode) {
+		case AccountTransactionCode.SYSTEM_REVENUE_CREDIT:
+			pgAccountTransactions.setCredit(amountToTransfer);
+			String amount = StringUtils.amountToString(amountToTransfer);
+			pgAccountTransactions.setDescription("System Revenue Credit : " + amount);
+			pgAccountTransactions.setDeviceLocalTxnTime(
+					DateUtil.convertTimeZone(timeZoneOffset, currentTimestamp.toString()));
+			break;
+		case AccountTransactionCode.SYSTEM_REVENUE_DEBIT:
+			pgAccountTransactions.setDebit(amountToTransfer);
+			String amt = StringUtils.amountToString(amountToTransfer);
+			pgAccountTransactions.setDescription("System Revenue Debit : " + amt);
+			pgAccountTransactions.setDeviceLocalTxnTime(
+					DateUtil.convertTimeZone(timeZoneOffset, currentTimestamp.toString()));
+			break;
+		default:
+			return;
+		}
+		logger.info("Exiting:: SettlementServiceImpl:: logRevenueAccountTransaction method");
+		accountTransactionsDao.createOrUpdate(pgAccountTransactions);
+	}
+
+	@Override
+	public List<PGAccountTransactions> getAccountTransactionsOnTransactionId(String pgTransactionId) {
+		return accountTransactionsDao.getAccountTransactionsOnTransactionId(pgTransactionId);
+	}
 }

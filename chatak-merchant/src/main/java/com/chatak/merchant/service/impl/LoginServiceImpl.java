@@ -95,6 +95,7 @@ public class LoginServiceImpl implements LoginService {
 
         passRetryCount = merchantUsers.getPassRetryCount();
         if (passRetryCount < Constants.PASS_RETRY_COUNT) {
+          loginResponse.setLastLonginTime(merchantUsers.getLastLonginTime());
           usersEncodePassword(loginDetails, passRetryCount, loginResponse, merchantUsers);
         } else {
           loginResponse.setStatus(false);
@@ -126,6 +127,7 @@ public class LoginServiceImpl implements LoginService {
         .equals(merchantUsers.getMerPassword())) {
       merchantUsers.setPassRetryCount(Constants.ACTIVE_STATUS);
       merchantUsers.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+      merchantUsers.setLastLonginTime(loginDetails.getCurrentLoginTime());
       merchantUserDao.createOrUpdateUser(merchantUsers);
 
       // Process existing user

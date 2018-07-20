@@ -13,6 +13,22 @@ public class Constants {
   public static final String CHATAK_PG_LOGIN = "chatakUserAuthenticate";
 
   public static final String CHATAK_PG_HOME = "home";
+  
+  public static final Integer EMAIL_ID = 50;
+  
+  public static final Integer FAX = 17;
+  
+  public static final Integer EXTENSION = 5;
+  
+  public static final Integer PHONE = 17;
+  
+  public static final Integer CONTACT_PERSON_NAME = 50;
+  
+  public static final Integer BANK_ACCOUNT_NUMBER = 16;
+  
+  public static final Integer ACCOUNT_ROUTING_NUMBER = 9;
+  
+  public static final Integer BANK_CODE = 30;
 
   public static final String CHATAK_PG_LOGIN_PAGE = "login";
 
@@ -807,7 +823,7 @@ public class Constants {
 
   public static final Integer SUCCESS_STATUS = 200;
 
-  public static final String PROGRAM_MANAGER_ALREADY_EXISTS_WITH_NAME = "PROGRAM_MANAGER_ALREADY_EXISTS_WITH_NAME";
+  public static final String PROGRAM_MANAGER_ALREADY_EXISTS_WITH_NAME = "Program Manager Already Exist,try with different name";
 
   public static final String PROGRAM_MANAGER_ID_IS_EMPTY = "PROGRAM_MANAGER_ID_IS_EMPTY";
 
@@ -879,4 +895,87 @@ public class Constants {
   
   public static final String TRANSACTION_HISTORY = "transactionHistory";
   
+  public static final String DATA_ACCESS_EXCEPTION = "DataAccessException";
+  
+  public static final String PM_USER_TYPE = "Program Manager";
+  
+  public static final String ISO_USER_TYPE = "ISO";
+
+  public static final String ISO_CREATE_ERROR = "CEC_1544";
+  
+  public static final String ISO_NAME_ALREADY_EXIST = "CEC_1545";
+  
+  public static final String CHATAK_ADMIN_EXCEPTION = "ChatakAdminException";
+  
+  public static final String  CARD_PROGRAM_ERROR = "Invalid Card Program";
+  
+  public static final String  BANK_PM_MAPPING_ERROR = "Invalid Bank";
+  
+  public static final String REVENUE_ACCOUNT = "Revenue Account";
+  
+  public static final String ONBOARDED = "onboarded";
+  
+  public static final String PM_ALREADY_ONBOARDED = "CEC_1546";
+
+  public static final String CREATE_INDEPENDENT = "CreateIndependent";
+  
+  public static final String  ISO_REQUEST_EXPORT_DATA = "isoRequestExportData";
+  
+  public static final Integer INT_TWO = 2;
+  
+  public static final Integer INT_TEN = 2;
+  
+  public static final Integer TWENTY_FIVE = 25;
+  
+  public static final Integer INT_THIRTY = 30;
+  
+  public static final Integer INT_FIFTY = 50;
+  
+  public static final Integer INDEX_ONE = 1;
+  
+  public static final Integer INDEX_TEN = 10;
+  
+  public static final Integer INDEX_FIFTEEN = 15;
+  
+  public static final Integer INDEX_EIGHTEEN = 18;
+  
+  public static final Integer SEVEN_HUNDRED_SIXTY_FIVE = 765;
+  
+  public static final Integer CARD_NUMBER_MIN_LENGTH = 12;
+  
+  public static final String CARD_PROGRAM_ALREADY_MAPPED = "CEC_1547";
+  
+  public static final String FEE_REPORT_REQUEST_LIST_EXPORTDATA = "feeReportRequestListForExport";
+  
+  public static final String FEE_TRANSACTIONS_SEARCH_LIST = "feeTransactionList";
+  
+  public static final String FEE_REPORT_REQUEST = "feeReportRequest";
+
+  public static final String APP_ADMIN_EMAIL = "prepaid@girmiti.com";
+
+  public static final String APP_CLIENT_ADDRESS = "BLR";
+
+  public static final String APP_CLIENT_CITY = "BLR";
+
+  public static final String APP_CLIENT_COUNTRY = "INDIA";
+
+  public static final String APP_CLIENT_ID = "WALLETUSER";
+
+  public static final String APP_CLIENT_ACCESS = "WALLETPASS";
+
+  public static final String APP_CLIENT_NAME = "WALLET";
+
+  public static final String APP_CLIENT_PHONE = "9876543210";
+
+  public static final String APP_CLIENT_ROLE = "WALLET_ADMIN";
+
+  public static final String APP_CLIENT_ZIP = "560037";
+
+  public static final String APP_DESCRIPTION = "PREPAID_PROJECT";
+
+  public static final String APP_NAME = "PREPAID";
+
+  public static final String CREATED_BY = "2";
+
+  public static final String APP_STATUS = "Active";
 }

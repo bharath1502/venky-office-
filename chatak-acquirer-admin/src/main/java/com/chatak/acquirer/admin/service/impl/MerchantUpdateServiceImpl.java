@@ -15,21 +15,29 @@ import org.springframework.util.CollectionUtils;
 
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
+import com.chatak.acquirer.admin.model.MerchantCreateResponse;
 import com.chatak.acquirer.admin.model.MerchantData;
 import com.chatak.acquirer.admin.model.MerchantSearchResponse;
 import com.chatak.acquirer.admin.service.MerchantUpdateService;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.mailsender.service.MailServiceManagement;
+import com.chatak.pg.acq.dao.CardProgramDao;
 import com.chatak.pg.acq.dao.CountryDao;
 import com.chatak.pg.acq.dao.CurrencyConfigDao;
 import com.chatak.pg.acq.dao.CurrencyDao;
+import com.chatak.pg.acq.dao.IsoServiceDao;
+import com.chatak.pg.acq.dao.MerchantCardProgramMapDao;
 import com.chatak.pg.acq.dao.MerchantDao;
+import com.chatak.pg.acq.dao.MerchantEntityMapDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
+import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.SubMerchantDao;
+import com.chatak.pg.acq.dao.model.Iso;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantCurrencyMapping;
+import com.chatak.pg.acq.dao.model.PGMerchantEntityMap;
 import com.chatak.pg.acq.dao.model.PGState;
 import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
@@ -42,12 +50,16 @@ import com.chatak.pg.model.AgentDTOResponse;
 import com.chatak.pg.model.CurrencyDTO;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.model.MerchantCurrencyMapping;
+import com.chatak.pg.model.MerchantRequest;
+import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.DeleteMerchantResponse;
 import com.chatak.pg.user.bean.GetMerchantListRequest;
 import com.chatak.pg.user.bean.GetMerchantListResponse;
+import com.chatak.pg.user.bean.IsoRequest;
+import com.chatak.pg.user.bean.MerchantResponse;
+import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
-import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * << Add Comments Here >>
@@ -96,6 +108,21 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 
   @Autowired
   MerchantUpdateDao merchantUpdateDao;
+  
+  @Autowired
+  MerchantEntityMapDao merchantEntityMapDao;
+  
+  @Autowired
+  ProgramManagerDao ProgramManagerDao;
+  
+  @Autowired
+  MerchantCardProgramMapDao merchantCardProgramMapDao;
+  
+  @Autowired
+  IsoServiceDao isoServiceDao;
+  
+  @Autowired
+  CardProgramDao cardProgramDao;
 
   private ObjectMapper mapper = new ObjectMapper();
 
@@ -110,24 +137,21 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     searchMerchant.setNoOfRecords(merchant.getNoOfRecords());
     searchMerchant.setMerchantCode(merchant.getMerchantCode());
     searchMerchant.setSubMerchantCode(merchant.getSubMerchantCode());
+    searchMerchant.setEntityIds(merchant.getEntitiesId());
     getMerchantListResponse = getMerchantResponse(searchMerchant);
-    List<PGMerchant> pgMerchants = getMerchantListResponse.getMerchants();
+    List<MerchantRequest> pgMerchants = getMerchantListResponse.getMerchantRequests();
     List<PGMerchant> subMerchants = getMerchantListResponse.getSubMerchants();
     MerchantSearchResponse response = new MerchantSearchResponse();
+    List<MerchantCreateResponse> list = new ArrayList<>(pgMerchants.size());
+    MerchantCreateResponse merchantResponse = null;
     if (!CollectionUtils.isEmpty(pgMerchants)) {
-      List<MerchantData> merchants = new ArrayList<>(pgMerchants.size());
-      MerchantData merchantRespObj = null;
-      for (PGMerchant pgMerchant : pgMerchants) {
-        merchantRespObj = new MerchantData();
-        merchantRespObj = setMerchantRespObjData(merchantRespObj, pgMerchant);
-        merchantRespObj.setMcc(pgMerchant.getMcc());
-        merchantRespObj = getMerchantStatus(merchantRespObj, pgMerchant);
-        merchantRespObj.setMerchantCode(pgMerchant.getMerchantCode());
-        merchantRespObj.setLocalCurrency(pgMerchant.getLocalCurrency());
-        merchants.add(merchantRespObj);
-      }
-      response.setTotalNoOfRows(getMerchantListResponse.getNoOfRecords());
-      response.setMerchants(merchants);
+    	  for (MerchantRequest pgMerchant : pgMerchants) {
+    		  merchantResponse = new MerchantCreateResponse();
+    		  setMerchantDetails(merchantResponse, pgMerchant);
+    		  getMerchantCreateStatus(merchantResponse, pgMerchant);
+    		  list.add(merchantResponse);
+    	      }
+    	  response.setMerchantCreateResponses(list);
     }
     if (!CollectionUtils.isEmpty(subMerchants)) {
       List<MerchantData> merchants = new ArrayList<>(subMerchants.size());
@@ -160,18 +184,31 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     merchantRespObj.setLocalCurrency(pgMerchant.getLocalCurrency());
     return merchantRespObj;
   }
+  
+  private MerchantCreateResponse setSubMerchantBasicDetails(MerchantCreateResponse merchantRespObj, MerchantRequest pgMerchant) {
+	    merchantRespObj.setId(pgMerchant.getId());
+	    merchantRespObj.setBusinessName(pgMerchant.getBusinessName());
+	    merchantRespObj.setEntityType(pgMerchant.getEntityType());
+	    merchantRespObj.setEmailId(pgMerchant.getEmailId());
+	    merchantRespObj.setCardProgramName(pgMerchant.getCardProgramName());
+	    merchantRespObj.setCity(pgMerchant.getCity());
+	    merchantRespObj.setCountry(pgMerchant.getCountry());
+	    merchantRespObj.setMerchantCode(pgMerchant.getMerchantCode());
+	    merchantRespObj.setLocalCurrency(pgMerchant.getCurrency());
+	    merchantRespObj.setEntityName(pgMerchant.getEntityName());
+	    return merchantRespObj;
+	  }
 
   private MerchantData setMerchantRespObjData(MerchantData merchantRespObj, PGMerchant pgMerchant) {
     merchantRespObj.setId(pgMerchant.getId());
     merchantRespObj.setBusinessName(pgMerchant.getBusinessName());
-    merchantRespObj.setFirstName(pgMerchant.getFirstName());
-    merchantRespObj.setLastName(pgMerchant.getLastName());
     merchantRespObj.setEmailId(pgMerchant.getEmailId());
+    merchantRespObj.setCountry(pgMerchant.getCountry());
+    merchantRespObj.setState(pgMerchant.getState());
     merchantRespObj.setPhone(pgMerchant.getPhone());
     merchantRespObj.setCity(pgMerchant.getCity());
-    merchantRespObj.setCountry(pgMerchant.getCountry());
-    merchantRespObj.setUserName(pgMerchant.getUserName());
     merchantRespObj.setCreatedDate(pgMerchant.getCreatedDate());
+    merchantRespObj.setUserName(pgMerchant.getUserName());
     return merchantRespObj;
   }
 
@@ -185,6 +222,10 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     searchMerchant.setId(merchant.getId());
     searchMerchant.setLastName(merchant.getLastName());
     searchMerchant.setPhone(merchant.getPhone());
+    searchMerchant.setEntityType(merchant.getEntityType());
+    searchMerchant.setIsoName(merchant.getIsoName());
+    searchMerchant.setCardProgramName(merchant.getCardProgramName());
+    searchMerchant.setProgramManagerName(merchant.getProgramManagerName());
     return searchMerchant;
   }
 
@@ -202,6 +243,21 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     }
     return merchantRespObj;
   }
+  
+  private MerchantCreateResponse getSubMerchantStatus(MerchantCreateResponse merchantRespObj, MerchantRequest pgMerchant) {
+	    if (pgMerchant.getStatus() == STATUS_SUCCESS) {
+	      merchantRespObj.setStatus(S_STATUS_ACTIVE);
+	    } else if (pgMerchant.getStatus() == STATUS_DELETED) {
+	        merchantRespObj.setStatus(S_STATUS_DELETED);
+	    } else if (pgMerchant.getStatus() == STATUS_PENDING) {
+	      merchantRespObj.setStatus(S_STATUS_PENDING);
+	    } else if (pgMerchant.getStatus() == STATUS_SELF_REGISTERATION_PENDING) {
+	        merchantRespObj.setStatus(S_STATUS_SELFREGISTERED);
+	    } else if (pgMerchant.getStatus() == STATUS_SUSPENDED) {
+	      merchantRespObj.setStatus(S_STATUS_SUSPENDED);
+	    }
+	    return merchantRespObj;
+	  }
 
   private GetMerchantListResponse getMerchantResponse(GetMerchantListRequest searchMerchant) {
     GetMerchantListResponse getMerchantListResponse;
@@ -221,7 +277,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 
   @Override
   public List<Option> getActiveMerchants() throws ChatakAdminException {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -411,31 +467,34 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     getSearchMerchantDetails(merchant, searchMerchant);
     searchMerchant.setMerchantCode(merchant.getMerchantCode());
     searchMerchant.setSubMerchantCode(merchant.getSubMerchantCode());
+    searchMerchant.setProgramManagerName(merchant.getProgramManagerName());
+    searchMerchant.setCardProgramName(merchant.getCardProgramName());
     searchMerchant.setId(merchant.getParentMerchantId());
     searchMerchant.setPageIndex(merchant.getPageIndex());
     searchMerchant.setPageSize(merchant.getPageSize());
     searchMerchant.setNoOfRecords(merchant.getNoOfRecords());
+    searchMerchant.setIsoName(merchant.getIsoName());
     getMerchantListResponse = subMerchantDao.getSubMerchantList(searchMerchant);
-    List<PGMerchant> pgMerchants = getMerchantListResponse.getSubMerchants();
+    List<MerchantRequest> pgMerchants = getMerchantListResponse.getMerchantRequestList();
     MerchantSearchResponse response = new MerchantSearchResponse();
     if (!CollectionUtils.isEmpty(pgMerchants)) {
-      List<MerchantData> merchants = new ArrayList<>(pgMerchants.size());
-      MerchantData merchantRespObj = null;
-      for (PGMerchant pgMerchant : pgMerchants) {
-        merchantRespObj = new MerchantData();
-        merchantRespObj = setMerchantListDetails(merchantRespObj, pgMerchant);
+      List<MerchantCreateResponse> merchants = new ArrayList<>(pgMerchants.size());
+      MerchantCreateResponse merchantRespObj = null;
+      for (MerchantRequest pgMerchant : pgMerchants) {
+        merchantRespObj = new MerchantCreateResponse();
+        merchantRespObj = setSubMerchantListDetails(merchantRespObj, pgMerchant);
         
-        merchantRespObj = getMerchantStatus(merchantRespObj, pgMerchant);
+        merchantRespObj = getSubMerchantStatus(merchantRespObj, pgMerchant);
         merchants.add(merchantRespObj);
       }
-      response.setMerchants(merchants);
+      response.setMerchantCreateResponseList(merchants);
     }
     response.setTotalNoOfRows(getMerchantListResponse.getNoOfRecords());
     return response;
   }
 
-  private MerchantData setMerchantListDetails(MerchantData merchantRespObj, PGMerchant pgMerchant) {
-    merchantRespObj = setMerchantBasicDetails(merchantRespObj, pgMerchant);
+  private MerchantCreateResponse setSubMerchantListDetails(MerchantCreateResponse merchantRespObj, MerchantRequest pgMerchant) {
+    merchantRespObj = setSubMerchantBasicDetails(merchantRespObj, pgMerchant);
     return merchantRespObj;
   }
 
@@ -492,8 +551,14 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
   }
 
   @Override
-  public Merchant findByMerchantId(Long getMerchantId)
+  public MerchantResponse findByMerchantId(Long getMerchantId)
       throws InstantiationException, IllegalAccessException {
+	  MerchantResponse merchantResponse = new MerchantResponse();
+	  List<ProgramManagerRequest> programManagerRequests = new ArrayList<>(); 
+	  ProgramManagerRequest programManagerRequest=null;
+	  CardProgramRequest cardProgramRequest = null;
+	  List<IsoRequest> isoRequests = new ArrayList<>();
+	  IsoRequest isoRequest = null;
     Merchant merchant = new Merchant();
     PGMerchant pGMerchant = merchantProfileDao.getMerchantById(getMerchantId);
     List<MerchantCurrencyMapping> merchantCurrencyMapping = new ArrayList<>();
@@ -504,8 +569,57 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
           CommonUtil.copyListBeanProperty(pgMerchantCurrencyMapping, MerchantCurrencyMapping.class);
     }
     merchant.setSelectedCurrencyMapping(merchantCurrencyMapping);
-    return merchant;
+    List<PGMerchantEntityMap> merchantEntityMaps = merchantEntityMapDao.findByMerchantId(getMerchantId);
+    MerchantResponse response;    
+		if (StringUtil.isListNotNullNEmpty(merchantEntityMaps)
+				&& merchantEntityMaps.get(0).getEntitytype().equals(PGConstants.PROGRAM_MANAGER_NAME)){
+    		for(PGMerchantEntityMap entityMap : merchantEntityMaps){
+    			setFindByMerchantId(programManagerRequests, merchant, entityMap);
+        	}
+    		 response = merchantCardProgramMapDao.findByMerchantId(getMerchantId);
+    		if(null != response){
+    			merchantResponse.setCardProgramRequests(response.getCardProgramRequests());
+    		}
+      } else {
+    	for(PGMerchantEntityMap entityMap : merchantEntityMaps){
+			merchant.setEntityId(entityMap.getEntityId());
+			isoRequest = new IsoRequest();
+			merchant.setAssociatedTo(entityMap.getEntitytype());
+			List<Iso> list = isoServiceDao.findByIsoId(merchant.getEntityId());
+				if (StringUtil.isListNotNullNEmpty(list)) {
+					isoRequest.setIsoName(list.get(0).getIsoName());
+					isoRequest.setId(list.get(0).getId());
+					isoRequests.add(isoRequest);
+				}
+			}
+    	 response = isoServiceDao.findByMerchantId(getMerchantId);
+    	 if(null != response){
+ 			merchantResponse.setCardProgramRequests(response.getCardProgramRequests());
+ 		}
+	}
+    merchantResponse.setProgramManagerRequests(programManagerRequests);
+    merchantResponse.setIsoRequests(isoRequests);
+    merchantResponse.setMerchant(merchant);
+    return merchantResponse;
   }
+
+	/**
+	 * @param programManagerRequests
+	 * @param merchant
+	 * @param entityMap
+	 */
+	private void setFindByMerchantId(List<ProgramManagerRequest> programManagerRequests, Merchant merchant,
+			PGMerchantEntityMap entityMap) {
+		ProgramManagerRequest programManagerRequest;
+		merchant.setEntityId(entityMap.getEntityId());
+		merchant.setAssociatedTo(entityMap.getEntitytype());
+		programManagerRequest = ProgramManagerDao.findProgramManagerById(merchant.getEntityId());
+		if (programManagerRequest != null) {
+			programManagerRequest.setProgramManagerName(programManagerRequest.getProgramManagerName());
+			programManagerRequest.setId(programManagerRequest.getId());
+			programManagerRequests.add(programManagerRequest);
+		}
+	}
 
   @Override
   public MerchantSearchResponse getMerchantCode(String merchantCode) {
@@ -532,10 +646,14 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
       return merchants;
     } else {
       Collections.sort(merchants, (Merchant o1, Merchant o2) -> {
-        return o1.getId() < o2.getId() ? 1 : (o1.getId() > o2.getId()) ? -1 : 0;
+        return o1.getId() < o2.getId() ? 1 : validateId(o1, o2);
       });
       return merchants;
     }
+  }
+
+  private static int validateId(Merchant o1, Merchant o2) {
+    return (o1.getId() > o2.getId()) ? -1 : 0;
   }
 
   public Response getAgentNames(String currencyAlpha) {
@@ -544,12 +662,9 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     currency.setCurrencyCodeAlpha(currencyAlpha);
     try {
       List<Option> options = new ArrayList<>();
-      ClientResponse clientResponse = JsonUtil.postIssuanceRequest(currency,
-          "/agentManagementService/agentService/searchAllAgent");
-
-      String output = clientResponse.getEntity(String.class);
+      String output = JsonUtil.postIssuanceRequest(currency,
+              "/agentManagementService/agentService/searchAllAgent",String.class);
       AgentDTOResponse agentDTOlist = mapper.readValue(output, AgentDTOResponse.class);
-
       if (agentDTOlist != null && agentDTOlist.getAgentDTOlist() != null) {
         for (AgentDTO agentRequest : agentDTOlist.getAgentDTOlist()) {
           Option option = new Option();
@@ -563,11 +678,56 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
       response.setErrorCode("00");
       response.setErrorMessage("SUCCESS");
       response.setTotalNoOfRows(options.size());
-
       return response;
     } catch (Exception e) {
       logger.error("Error :: MerchantUpdateServiceImpl :: getAgentNames", e);
     }
     return null;
   }
+
+	@Override
+	public List<Long> findByEntityIdAndEntitytype(List<Long> entityIds, String entityType) {
+		List<Long> merchantIds = new ArrayList<>();
+		List<PGMerchantEntityMap> merchantEntityMaps;
+		for (Long entityId : entityIds) {
+			merchantEntityMaps = merchantUpdateDao.findByEntityIdAndEntitytype(entityId, entityType);
+			for (PGMerchantEntityMap merchantEntityMap : merchantEntityMaps) {
+				merchantIds.add(merchantEntityMap.getMerchantId());
+			}
+		}
+		return merchantIds;
+	}
+
+	private MerchantCreateResponse setMerchantDetails(MerchantCreateResponse merchantRespObj,
+			MerchantRequest pgMerchant) {
+		merchantRespObj.setId(pgMerchant.getId());
+		merchantRespObj.setBusinessName(pgMerchant.getBusinessName());
+		merchantRespObj.setEntityName(pgMerchant.getEntityName());
+		merchantRespObj.setEmailId(pgMerchant.getEmailId());
+		merchantRespObj.setCardProgramName(pgMerchant.getCardProgramName());
+		merchantRespObj.setCity(pgMerchant.getCity());
+		merchantRespObj.setCountry(pgMerchant.getCountry());
+		merchantRespObj.setEntityType(pgMerchant.getEntityType());
+		merchantRespObj.setMerchantCode(pgMerchant.getMerchantCode());
+		merchantRespObj.setId(pgMerchant.getId());
+		merchantRespObj.setLocalCurrency(pgMerchant.getCurrency());
+		merchantRespObj.setPhone(pgMerchant.getPhone());
+		return merchantRespObj;
+	}
+
+	private MerchantCreateResponse getMerchantCreateStatus(MerchantCreateResponse merchantRespObj,
+			MerchantRequest pgMerchant) {
+		if (pgMerchant.getStatus() == STATUS_SUCCESS) {
+			merchantRespObj.setStatus(S_STATUS_ACTIVE);
+		} else if (pgMerchant.getStatus() == STATUS_DELETED) {
+			merchantRespObj.setStatus(S_STATUS_DELETED);
+		} else if (pgMerchant.getStatus() == STATUS_PENDING) {
+			merchantRespObj.setStatus(S_STATUS_PENDING);
+		} else if (pgMerchant.getStatus() == STATUS_HOLD) {
+			merchantRespObj.setStatus(PG_TXN_DECLILNED);
+		} else if (pgMerchant.getStatus() == STATUS_SUSPENDED) {
+			merchantRespObj.setStatus(S_STATUS_SUSPENDED);
+		}
+		return merchantRespObj;
+	}
 }

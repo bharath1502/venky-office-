@@ -1,0 +1,8 @@
+Project homepage:http://servlet-spec.java.net
+
+
+Sources: https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api/3.0.1
+
+License:
+Licensed under GlassFish Community
+

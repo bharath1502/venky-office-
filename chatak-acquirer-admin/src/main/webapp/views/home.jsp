@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -26,7 +27,7 @@
 <script src="../js/common-lib.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js'></script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -146,20 +147,30 @@
 			<!--Article Block Start-->
 			<article>
 				<div class="col-xs-12 content-wrapper">
-					<form:form action="executed-transaction-details-report" name="downloadExecutedTxnReport" method="post">
+					<form action="executed-transaction-details-report" name="downloadExecutedTxnReport" method="post">
 						<input type="hidden" id="executedTxnDownloadPageNumberId" name="downLoadPageNumber" />
 						<input type="hidden" id="executedTxnDownloadTypeId" name="downloadType" />
 						<input type="hidden" id="requestFromId" name="requestFrom" />
-					</form:form>
+						<input type="hidden" id="executedTotalRecords" name="downloadAllRecords" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
+					</form>
 					
-					<form:form action="processing-transaction-details-report" name="downloadProcessingTxnReport" method="post">
+					<form action="processing-transaction-details-report" name="downloadProcessingTxnReport" method="post">
 						<input type="hidden" id="processingTxnDownloadPageNumberId" name="downLoadPageNumber" />
 						<input type="hidden" id="processingTxnDownloadTypeId" name="downloadType" />
 						<input type="hidden" id="requestFromId1" name="requestFrom" />
-					</form:form>
+						<input type="hidden" id="pendingTotalRecords" name="downloadAllRecords" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
+					</form>
 					
 					<form:form action="pending-merchant-show" name="viewPendingMerchant" method="post">
 									<input type="hidden" id="merchantViewId" name="merchantViewId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
+					</form:form>
+					<form:form action="show-incoming-settlement-report" name="getSettlementDetails" method="post">
+									<input type="hidden" id="programViewId" name="programViewId" />
+									<input type="hidden" id="batchDate" name="batchDate" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 						<!--Success and Failure Message Start-->
 						<div class="col-xs-12" style="margin-top: 10px;">
@@ -169,12 +180,69 @@
 						</div>
 						</div>			
 					<div style="margin-top: 30px;">
+					<!-- InComing Settelment Report start -->
+					<div id="incomingsettlementreport" class="dashboard-tab active-background"><spring:message code="home.label.incomingsettlementreport"/></div>
+					<div id="pendingPM" class="dashboard-container">
+					<table class="table table-striped table-bordered table-condensed" style="margin-bottom: 0px;">
+						<tr>
+								<td colspan="6" class="search-table-header-column " style="text-align: left">
+									<spring:message code="home.label.incomingsettlementreport"/>
+								</td>
+							</tr>
+					</table>
+					<table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">
+						<thead>
+							<tr>
+								<th style="width: 150px;"><spring:message code="access-user-create.label.entityname"/></th>
+								<th style="width: 150px;"><spring:message code="home.label.batch.date.time"/></th>
+								<th style="width: 150px;"><spring:message code="home.label.grossamount"/></th>
+								<th style="width: 150px;"><spring:message code="home.label.txncount"/></th>
+								<%-- <th style="width: 150px;"><spring:message code="home.label.status"/></th> --%>
+							</tr>
+						</thead>
+						<tbody>
+							<c:choose>
+								<c:when test="${!(fn:length(settlementDataList) eq 0)}">
+										<c:forEach items="${settlementDataList}" var="settlementData">
+											<tr>
+												<td class="tbl-text-align-center"><a 
+												href="javascript:getDataByPMId('${settlementData.programManagerId}','${settlementData.batchDate}')"
+												style="text-decoration: underline;">${settlementData.programManagerName}
+											    </a></td>
+												<td>${settlementData.batchDate}</td>
+												<td>${settlementData.totalAmount}</td>
+												<td>${settlementData.totalTxnCount}</td>
+											</tr>
+										</c:forEach>
+									</c:when>
+									<c:otherwise>
+										<tr><td colspan="6" style="color: red; text-align: center;"><spring:message code="home.label.norecordsfound"/></td></tr>
+									</c:otherwise>
+							</c:choose>
+						</tbody>
+					</table>
+						<table class="table table-striped table-bordered table-condensed">
+								<tr class="table-footer-main">
+									<td colspan="10" class="search-table-header-column">
+										<div class="col-sm-12">
+											<div class="col-sm-12">
+												<div class="btn-toolbar" role="toolbar">
+															<a href="show-All-incoming-settlement-report"><input type="button" class="form-control button pull-right dashboard-table-btn" value="<spring:message code="home.label.viewall"/>"></a>
+												</div>
+											</div>
+										</div>
+									</td>
+								</tr>
+						</table>
+					</div>
+					
+					<!-- InComing Settelment Report End -->
 					<!-- Pending Merchants starts -->
 					<div class="dashboard-tab active-background"><spring:message code="home.label.pendingmerchants"/></div>
 					<div id="pendingMerchants" class="dashboard-container">
 					<table class="table table-striped table-bordered table-condensed" style="margin-bottom: 0px;">
 						<tr>
-								<td colspan="6" class="search-table-header-column " style="text-align: left">
+								<td colspan="9" class="search-table-header-column " style="text-align: left">
 									<spring:message code="home.label.pendingmerchantstab"/>
 								</td>
 							</tr>
@@ -227,7 +295,7 @@
 										</c:forEach>
 									</c:when>
 									<c:otherwise>
-										<tr><td colspan="6" style="color: red; text-align: center;"><spring:message code="home.label.norecordsfound"/></td></tr>
+										<tr><td colspan="9" style="color: red; text-align: center;"><spring:message code="home.label.norecordsfound"/></td></tr>
 									</c:otherwise>
 							</c:choose>
 						</tbody>
@@ -249,11 +317,11 @@
 					<!-- Pending Merchants Ends -->
 					<!-- Processing txns Starts -->
 					<div class="dashboard-tab active-background"><spring:message code="home.label.processingtransactions"/></div>
-					<div id="processingTnsDiv" class="dashboard-container">
+					<div id="processingTnsDiv" class="dashboard-container" style="overflow-x:auto;">
 						<table class="table table-striped table-bordered table-condensed" style="margin-bottom: 0px;">
 							<!-- Search Table Header Start -->
 							<tr>
-								<td colspan="6" class="search-table-header-column " style="text-align: left">
+								<td colspan="12" class="search-table-header-column " style="text-align: left">
 									<spring:message code="home.label.transactionsummary"/>
 								</td>
 							</tr>
@@ -305,7 +373,7 @@
 										</c:forEach>
 									</c:when>
 									<c:otherwise>
-										<tr><td colspan="6" style="color: red; text-align: center;"><spring:message code="home.label.norecordsfound"/></td></tr>
+										<tr><td colspan="9" style="color: red; text-align: center;"><spring:message code="home.label.norecordsfound"/></td></tr>
 									</c:otherwise>
 								</c:choose>
 							</tbody>
@@ -344,7 +412,7 @@
 					<!-- Processing txns Ends -->
 					<!-- Completed txns Starts -->
 					<div class="dashboard-tab active-background"><spring:message code="home.label.completedtransactions"/></div>
-					<div id="completedTnsDiv" class="dashboard-container">
+					<div id="completedTnsDiv" class="dashboard-container" style="overflow-x:auto;">
 						<table class="table table-striped table-bordered table-condensed" style="margin-bottom: 0px;">
 							<!-- Search Table Header Start -->
 							<tr>
@@ -423,6 +491,10 @@
 														</a> 
 														<a href="javascript:downloadDashboardReport('${portalListPageNumber}', '<%=Constants.PDF_FILE_FORMAT%>', 'exetutedTxn', 'dashobard')">
 															<button type="button" class="btn btn-default"><img src="../images/pdf.png"></button>
+														</a>
+														<a>
+															<input class="autoCheck check" id="totalRecordsDownload" type="checkbox">
+															<spring:message code="manage.label.sub-merchant.downloadall"/>
 														</a>
 													</div>
 													<c:choose>
@@ -569,7 +641,7 @@
 	<script src="../js/tablesorter.js"></script>
 	<script src="../js/tablesorter.widgets.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
-	
+	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script>
 		/* Select li full area function Start */
 		$("li").click(function() {
@@ -579,7 +651,13 @@
 		/* Select li full area function End */
 		$(document).ready(function() {
 			highlightMainContent('navListId1');
-			
+			if('${loginType}' == "ISO"){
+				$('#pendingPM').hide();
+				$('#incomingsettlementreport').hide();
+			}else{
+				$('#pendingPM').show();
+				$('#incomingsettlementreport').show();
+			}
 			$('#imgId').mousedown(function(){return false});
 			
 			$('.txn-action').on('click', function() {
@@ -769,6 +847,11 @@
 				error : function(e) {
 				}
 			});
+		}
+		function getDataByPMId(programManagerId, batchDate) {
+			get('programViewId').value = programManagerId;
+			get('batchDate').value = batchDate;
+			document.forms["getSettlementDetails"].submit();
 		}
 	</script>
 </body>

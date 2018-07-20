@@ -5,7 +5,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -28,7 +28,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<script src="../js/jquery.min.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
@@ -60,6 +60,7 @@
 					
 					<form:form action="chatakUserTypeValue" name="roleTypeForm" method="post">
 				      <input type="hidden" id="rolesType" name="rolesType" />
+				      <input type="hidden" name="CSRFToken" value="${tokenval}">
 			        </form:form>
 					<!-- Tab Buttons Start -->
 					<c:if test="${fn:contains(existingFeatures,usersDelete)||fn:contains(existingFeatures,usersEdit)||fn:contains(existingFeatures,usersCreate)||fn:contains(existingFeatures,usersView)}">
@@ -88,6 +89,7 @@
 								<form:form action="access-user-create" name="resubmitForm" method="get"></form:form>
 								<!-- Page Form Start -->
 								<form:form action="access-user-create" modelAttribute="userData" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<form:hidden path="requestType" id="requestType" />
 									<div class="col-sm-12">
 										<div class="row">
@@ -95,22 +97,29 @@
 											
 											<fieldset class="col-md-3 col-sm-6"> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="users.label.usertype"/></label>
-															<form:select  path="roleType" id="roleType" cssClass="form-control" onchange="validateUserType(this.value)">
-																<form:option value="Admin"><spring:message code="roles.label.admin"/></form:option>
-																<%-- <form:option value="Reseller"><spring:message code="roles.label.reseller"/></form:option> --%>
-																<form:option value="Merchant"><spring:message code="roles.label.merchant"/></form:option>
-																<%-- <form:option value="Tms"><spring:message code="roles.label.tms"/></form:option> --%>
-															
-															  <%-- <c:forEach items="${roleLevelList}" var="roleLevelList">
-															         <form:option value="${roleLevelList.name()}">${roleLevelList.value}</form:option>
-														        </c:forEach>  --%>
+															<form:select  path="roleType" id="roleType" cssClass="form-control" onchange="return validateUserType(this.value);">
+															<c:forEach items="${roleLevelList}" var="roleLevelList">
+															         <form:option value="${roleLevelList.value}">${roleLevelList.value}</form:option>
+														        </c:forEach>
 														        
 															</form:select>
 															<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 																<span class="red-error" id="roleTypeError">&nbsp;</span>
 															</div>
 														</fieldset>
-											
+											<fieldset class="col-sm-3" id="entityNameDiv">
+													<label data-toggle="tooltip" data-placement="top" title="" id="entityLabel"><spring:message code="access-user-create.label.entityname"/><span id="red-color" class="required-field">*</span></label>
+													<form:select cssClass="form-control" path="entityId"
+														id="entityId" onblur="this.value=this.value.trim();validEntityName()">
+														<form:option value=""><spring:message code="reports.option.select" /></form:option>
+														<c:forEach items="${entityList}" var="entity">
+															<form:option value="${entity.key}">${entity.value}</form:option>
+														</c:forEach>
+													</form:select>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span class="red-error" id="entityIdDiv">&nbsp;</span>
+													</div>
+												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="roles.label.rolename"/><span class="required-field">*</span></label>
 													<form:select cssClass="form-control" path="roleId"
@@ -268,12 +277,28 @@
 			if($('#roleType').val() == 'Admin'){
 				$('#merchantDivId').hide();
 				$('#merchantNameId').hide();
+				$('#entityNameDiv').hide();
+			} else if($('#roleType').val() == 'Program Manager' || $('#roleType').val() == 'ISO') {
+				$('#merchantDivId').hide();
+				$('#merchantNameId').hide();
+				$('#entityNameDiv').show();
+				if($('#roleType').val() == 'Program Manager') {
+					document.getElementById("entityLabel").innerHTML=webMessages.entityProgramManager;
+					$("#red-color").addClass("required-field");
+				} else if($('#roleType').val() == 'ISO') {
+					document.getElementById("entityLabel").innerHTML=webMessages.entityIso;
+					$("#red-color").addClass("required-field");
+				}
+			} else if($('#roleType').val() == 'Merchant') {
+				$('#entityNameDiv').hide();
 			}
 			if($('#roleType').val() == 'Tms'){
 				$('#merchantDivId').hide();
+				$('#entityNameDiv').hide();
 			}
 			if($('#roleType').val() == 'Reseller'){
 				$('#merchantDivId').hide();
+				$('#entityNameDiv').hide();
 			}
 			
 			/* if($('#requestType').val() == 'ADMIN') {

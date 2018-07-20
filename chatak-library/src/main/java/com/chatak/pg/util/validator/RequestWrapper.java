@@ -19,7 +19,7 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
     logger.debug("InarameterValues .. parameter .......");
     String[] values = super.getParameterValues(parameter);
     if(values == null) {
-      return null;
+      return new String[0];
     }
     int count = values.length;
     String[] encodedValues = new String[count];

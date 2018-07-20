@@ -6,9 +6,12 @@ package com.chatak.pg.acq.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
+
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantConfig;
+import com.chatak.pg.acq.dao.model.PGMerchantEntityMap;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.user.bean.AddMerchantRequest;
@@ -68,4 +71,7 @@ public interface MerchantUpdateDao {
 
   public UpdateMerchantResponse updateMerchant(UpdateMerchantRequest updateMerchantRequest);
 
+  public Long getMerchantAccountNumberSeries(String accountNumber)throws DataAccessException;
+  
+  public List<PGMerchantEntityMap> findByEntityIdAndEntitytype(Long entityId, String entityType);
 }

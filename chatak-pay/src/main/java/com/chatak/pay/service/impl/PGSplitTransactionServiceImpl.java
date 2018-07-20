@@ -137,7 +137,7 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
     pgSplitTransaction.setSplitMode(transactionRequest.getShareMode().toString());
     pgSplitTransaction.setPgRefTransactionId(transactionResponse.getTxnRefNumber());
     pgSplitTransaction.setMobileNumber(transactionRequest.getSplitTxnData().getRefMobileNumber());//used for split reference
-    pgSplitTransaction.setMerchantId(transactionRequest.getMerchantId());
+    pgSplitTransaction.setMerchantId(transactionRequest.getMerchantCode());
     splitTransactionDao.createOrUpdateTransaction(pgSplitTransaction);
 
   }
@@ -153,7 +153,7 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
     SplitStatusResponse statusResponse = new SplitStatusResponse();
     PGSplitTransaction pgSplitTransaction =
         splitTransactionDao.getPGSplitTransactionByMerchantIdAndPgRefTransactionIdAndSplitAmount(
-            splitStatusRequest.getMerchantId(), splitStatusRequest.getSplitRefNumber(),
+            splitStatusRequest.getMerchantCode(), splitStatusRequest.getSplitRefNumber(),
             splitStatusRequest.getSplitTxnAmount());
     if (null != pgSplitTransaction) {
       if (pgSplitTransaction.getStatus().equals(Long.valueOf(PGConstants.STATUS_SUCCESS))) {
@@ -205,11 +205,11 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
 	  if (null != txnToVoid) {
 	    TransactionRequest voidRequest = new TransactionRequest();
 	    voidRequest.setTerminalId(txnToVoid.getTerminalId());
-	    voidRequest.setMerchantId(txnToVoid.getMerchantId());
+	    voidRequest.setMerchantCode(txnToVoid.getMerchantId());
 	    voidRequest.setCgRefNumber(txnToVoid.getIssuerTxnRefNum());
 	    voidRequest.setTransactionType(TransactionType.VOID);
 	    voidRequest.setTxnRefNumber(txnToVoid.getTransactionId());
-	    pgTransactionService.processTransaction(voidRequest);
+	    pgTransactionService.processTransaction(voidRequest, null); // Sending empty merchant as null
 	  }
 	  pgSplitTransaction.setStatus(Long.valueOf((PGConstants.STATUS_FAILED.toString())));
 	  splitTransactionDao.createOrUpdateTransaction(pgSplitTransaction);
@@ -241,7 +241,7 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
       throws SplitTransactionException {
     PGSplitTransaction pgSplitTransaction =
         splitTransactionDao.getPGSplitTransactionByMerchantIdAndPgRefTransactionIdAndSplitAmount(
-            transactionRequest.getMerchantId(), transactionRequest.getSplitRefNumber(),
+            transactionRequest.getMerchantCode(), transactionRequest.getSplitRefNumber(),
             transactionRequest.getTotalTxnAmount());
 
     if (null != pgSplitTransaction
@@ -281,7 +281,7 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
       TransactionResponse transactionResponse) {
     PGSplitTransaction pgSplitTransaction =
         splitTransactionDao.getPGSplitTransactionByMerchantIdAndPgRefTransactionIdAndSplitAmount(
-            transactionRequest.getMerchantId(), transactionRequest.getSplitRefNumber(),
+            transactionRequest.getMerchantCode(), transactionRequest.getSplitRefNumber(),
             transactionRequest.getTotalTxnAmount());
     if (null != pgSplitTransaction) {
       if (null != transactionRequest.getCardData()) {

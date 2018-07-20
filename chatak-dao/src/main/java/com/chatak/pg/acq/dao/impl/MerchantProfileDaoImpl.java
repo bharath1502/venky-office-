@@ -3,11 +3,14 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,7 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.AccountBalanceReportDTO;
 import com.chatak.pg.model.Merchant;
+import com.chatak.pg.model.MerchantRequest;
 import com.chatak.pg.model.ReportsDTO;
 import com.chatak.pg.user.bean.AddMerchantBankRequest;
 import com.chatak.pg.user.bean.AddMerchantBankResponse;
@@ -106,61 +110,254 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
   public GetMerchantListResponse getMerchantlist(GetMerchantListRequest searchMerchant) {
     logger.info("MerchantDaoImpl | getMerchantlist | Entering");
     GetMerchantListResponse getMerchantListResponse = new GetMerchantListResponse();
-    List<PGMerchant> merchantList = null;
+    List<MerchantRequest> merchantList = new ArrayList<>();
     try {
-      int offset = 0;
-      int limit = 0;
-      Integer totalRecords = searchMerchant.getNoOfRecords();
+    	 int startIndex = 0;
+         int endIndex = 0;
+         Integer totalRecords = searchMerchant.getNoOfRecords();
 
-      if (searchMerchant.getPageIndex() == null || searchMerchant.getPageIndex() == 1) {
-        totalRecords = getTotalNumberOfMerchantRecords(searchMerchant);
-        searchMerchant.setNoOfRecords(totalRecords);
-      }
-      getMerchantListResponse.setNoOfRecords(totalRecords);
-      if (searchMerchant.getPageIndex() == null && searchMerchant.getPageSize() == null) {
-        limit = Constants.DEFAULT_PAGE_SIZE;
-        offset = 0;
-      } else {
-        offset = (searchMerchant.getPageIndex() - 1) * searchMerchant.getPageSize();
-        limit = searchMerchant.getPageSize();
-      }
-      if (!"".equals(searchMerchant.getMerchantCode())
-          && null != searchMerchant.getMerchantCode()) {
-        PGMerchant pgMerchant =
-            merchantRepository.findByMerchantCode(searchMerchant.getMerchantCode());
-        if (pgMerchant != null && null != pgMerchant.getParentMerchantId()) {
-          getMerchantListResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
-          getMerchantListResponse.setErrorMessage(PGConstants.NO_RECORDS_FOUND);
-          return getMerchantListResponse;
-        }
-      }
-      JPAQuery query = new JPAQuery(entityManager);
-      List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant)
-          .where(isBusinessNameLike(searchMerchant.getBusinessName()),
-              isMerchantCodeEq(searchMerchant.getMerchantCode()),
-              isCityLike(searchMerchant.getCity()), isCountryEq(searchMerchant.getCountry()),
-              isEmailLike(searchMerchant.getEmailId()),
-              isFirstNameLike(searchMerchant.getFirstName()),
-              isLastNameLike(searchMerchant.getLastName()), isPhoneEq(searchMerchant.getPhone()),
-              isParentMerchantIdNull(searchMerchant.getStatus()),
-              isStatusEqSelfRegistered(searchMerchant.getStatus()), isMerchantNotEq(),
-              isMerchantStatusNotEq(), isMerchantStatusNotEqDecline())
-          .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .list(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.firstName,
-              QPGMerchant.pGMerchant.lastName, QPGMerchant.pGMerchant.emailId,
-              QPGMerchant.pGMerchant.phone, QPGMerchant.pGMerchant.city,
-              QPGMerchant.pGMerchant.country, QPGMerchant.pGMerchant.status,
-              QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId,
-              QPGMerchant.pGMerchant.id, QPGMerchant.pGMerchant.mcc,
-              QPGMerchant.pGMerchant.agentAccountNumber, QPGMerchant.pGMerchant.agentANI,
-              QPGMerchant.pGMerchant.agentClientId,QPGMerchant.pGMerchant.localCurrency);
-      if (!CollectionUtils.isEmpty(tupleList)) {
-        merchantList = new ArrayList<>();
-        for (Tuple tuple : tupleList) {
-          validateTupleList(merchantList, tuple);
-        }
-      }
-      validateMerchantList(getMerchantListResponse, merchantList);
+         if (searchMerchant.getPageIndex() == null || searchMerchant.getPageIndex() == 1) {
+           totalRecords = getTotalNumberOfMerchantRecords(searchMerchant);
+           searchMerchant.setNoOfRecords(totalRecords);
+         }
+         getMerchantListResponse.setNoOfRecords(totalRecords);
+         if (searchMerchant.getPageIndex() == null && searchMerchant.getPageSize() == null) {
+        	 startIndex = 0;
+         } else {
+        	 startIndex = (searchMerchant.getPageIndex() - 1) * searchMerchant.getPageSize();
+        	 endIndex = searchMerchant.getPageSize() + startIndex;
+         }
+         	int resultIndex = endIndex - startIndex;
+			StringBuilder query = new StringBuilder(" SELECT e.MerchantCode,")
+					  .append(" e.MerchantName,")
+					  .append("   e.EntityType,")
+					  .append("   e.IsoName ,")
+					  .append("   e.ProgramManager ,")
+					  .append("   f.CardProgramName,")
+					  .append("   e.Email,")
+					  .append("   e.Country,")
+					  .append("   e.State,")
+					  .append("   e.Status,")
+					  .append("   e.CreatedDate,")
+					  .append("   e.Id,")
+					  .append("   e.Currency,e.PHONE")
+					  .append(" FROM ")
+					  .append("   (SELECT d.MerchantCode,")
+					  .append("     d.MerchantName,")
+					  .append("     d.EntityType,")
+					  .append("     d.IsoName ,")
+					  .append("     group_concat(d.ProgramManager) AS ProgramManager ,")
+					  .append("     d.Email,")
+					  .append("     d.Country,")
+					  .append("     d.State,")
+					  .append("     d.Status,")
+					  .append("     d.CreatedDate,")
+					  .append("     d.Id,")
+					  .append("     d.Currency,d.PHONE")
+					  .append("   FROM")
+					  .append("     (SELECT c.MerchantCode,")
+					  .append("       c.MerchantName,")
+					  .append("       c.EntityType,")
+					  .append("       group_concat( c.IsoName ) IsoName ,")
+					  .append("       c.ProgramManager ,")
+					  .append("       c.Email,")
+					  .append("       c.Country,")
+					  .append("       c.State,")
+					  .append("       c.Status,")
+					  .append("       c.CreatedDate,")
+					  .append("       c.Id,")
+					  .append("       c.Currency,c.PHONE")
+					  .append("     FROM ")
+					  .append("       ( SELECT DISTINCT b.MerchantCode,")
+					  .append("         b.MerchantName,")
+					  .append("         b.EntityType,")
+					  .append("         b.IsoName ,")
+					  .append("         b.ProgramManager ,")
+					  .append("         b.Email,")
+					  .append("         b.Country,")
+					  .append("         b.State,")
+					  .append("         b.Status,")
+					  .append("         b.CreatedDate,")
+					  .append("         b.Id,")
+					  .append("         b.Currency,b.PHONE")
+					  .append("       FROM")
+					  .append("         (SELECT a.MerchantCode,")
+					  .append("           a.MerchantName,")
+					  .append("           a.EntityType,")
+					  .append("           CASE")
+					  .append("             WHEN a.EntityType='ISO'")
+					  .append("             THEN a.IsoName")
+					   .append("    END AS IsoName ,")
+					  .append("           CASE")
+					  .append("             WHEN a.EntityType='Program Manager'")
+					  .append("             THEN a.IsoName")
+					  .append("           END AS ProgramManager,")
+					  .append("           a.Email,")
+					  .append("           a.CardProgramName,")
+					  .append("           a.Country,")
+					  .append("           a.State,")
+					  .append("           a.Status,")
+					  .append("           a.CreatedDate,")
+					  .append("           a.Id,")
+					   .append("          a.Currency,a.PHONE")
+					  .append("         FROM")
+					  .append("           (SELECT pgm.MERCHANT_CODE AS MerchantCode,")
+					  .append("             pgm.BUSINESS_NAME       AS MerchantName,")
+					  .append("             pgme.ENTITY_TYPE        AS EntityType,")
+					  .append("             pgiso.ISO_NAME          AS IsoName,")
+					  .append("             pgm.EMAIL               AS Email,")
+					  .append("             pgcp.CARD_PROGRAM_NAME  AS CardProgramName,")
+					  .append("             pgm.COUNTRY Country,")
+					  .append("             pgm.STATE State,")
+					  .append("             pgm.STATUS         AS Status,")
+					  .append("             pgm.CREATED_DATE   AS CreatedDate,")
+					  .append("             pgm.ID             AS Id,")
+					  .append("             pgm.LOCAL_CURRENCY AS Currency,pgm.PHONE as PHONE")
+					  .append("           FROM PG_MERCHANT pgm")
+					  .append("           JOIN PG_MERCHANT_CARD_PROGRAM_MAPPING pgmcp")
+					  .append("           ON pgm.id=pgmcp.MERCHANT_ID")
+					  .append("           JOIN PG_CARD_PROGRAM pgcp")
+					  .append("           ON pgcp.ID=pgmcp.CARD_PROGRAM_ID")
+					  .append("           JOIN PG_MERCHANT_ENTITY_MAPPING pgme")
+					  .append("           ON pgme.MERCHANT_ID=pgm.id")
+					  .append("           JOIN PG_ISO pgiso")
+					  .append("           ON pgiso.id=pgme.ENTITY_ID")
+					  .append("           UNION ALL")
+					  .append("           SELECT pgm.MERCHANT_CODE AS MerchantCode,")
+					  .append("             pgm.BUSINESS_NAME      AS MerchantName,")
+					  .append("             pgme.ENTITY_TYPE       AS EntityType,")
+					  .append("             pgiso.PROGRAM_MANAGER_NAME ProgramManager,")
+					  .append("             pgm.EMAIL              AS Email,")
+					  .append("             pgcp.CARD_PROGRAM_NAME AS CardProgramName,")
+					  .append("             pgm.COUNTRY Country,")
+					  .append("             pgm.STATE State,")
+					  .append("             pgm.STATUS         AS Status,")
+					  .append("             pgm.CREATED_DATE   AS CreatedDate,")
+					  .append("             pgm.ID             AS Id,")
+					  .append("             pgm.LOCAL_CURRENCY AS Currency,pgm.PHONE as PHONE")
+					  .append("           FROM PG_MERCHANT pgm")
+					  .append("           JOIN PG_MERCHANT_CARD_PROGRAM_MAPPING pgmcp")
+					  .append("           ON pgm.id=pgmcp.MERCHANT_ID")
+					  .append("           JOIN PG_CARD_PROGRAM pgcp")
+					  .append("           ON pgcp.ID=pgmcp.CARD_PROGRAM_ID")
+					  .append("           JOIN PG_MERCHANT_ENTITY_MAPPING pgme")
+					  .append("           ON pgme.MERCHANT_ID=pgm.id")
+					  .append("           JOIN PG_PROGRAM_MANAGER pgiso")
+					  .append("           ON pgiso.id=pgme.ENTITY_ID")
+					  .append("           )a")
+					  .append("         )b")
+					  .append("       )c")
+					  .append("    GROUP BY c.MerchantCode,")
+					  .append("      c.MerchantName,")
+					  .append("      c.EntityType,")
+					  .append("      c.ProgramManager ,")
+					  .append("      c.Email,")
+					  .append("      c.Country,")
+					  .append("      c.State,")
+					  .append("      c.Status,")
+					  .append("      c.CreatedDate,")
+					  .append("      c.Id,")
+					  .append("      c.Currency,c.PHONE")
+					  .append("    )d")
+					    .append(" GROUP BY d.MerchantCode,")
+					  .append("    d.MerchantName,")
+					  .append("    d.EntityType,")
+					  .append("    d.IsoName ,")
+					  .append("    d.Email,")
+					  .append("    d.Country,")
+					  .append("    d.State,")
+					  .append("    d.Status,")
+					  .append("    d.CreatedDate,")
+					  .append("    d.Id,")
+					  .append("    d.Currency,d.PHONE")
+					  .append("  )e")
+					  .append(" JOIN")
+					  .append("  (SELECT b.MerchantCode,")
+					  .append("    group_concat(b.CardProgramName) AS CardProgramName")
+					  .append("  FROM")
+					  .append("    ( SELECT DISTINCT a.MerchantCode,")
+					  .append("      a.CardProgramName")
+					  .append("    FROM")
+					  .append("      (SELECT pgm.MERCHANT_CODE AS MerchantCode,")
+					  .append("        pgcp.CARD_PROGRAM_NAME  AS CardProgramName")
+					  .append("      FROM PG_MERCHANT pgm")
+					  .append("      JOIN PG_MERCHANT_CARD_PROGRAM_MAPPING pgmcp")
+					  .append("      ON pgm.id=pgmcp.MERCHANT_ID")
+					  .append("      JOIN PG_CARD_PROGRAM pgcp")
+					  .append("      ON pgcp.ID=pgmcp.CARD_PROGRAM_ID")
+					  .append("      JOIN PG_MERCHANT_ENTITY_MAPPING pgme")
+					  .append("      ON pgme.MERCHANT_ID=pgm.id")
+					  .append("      JOIN PG_ISO pgiso")
+					  .append("      ON pgiso.id=pgme.ENTITY_ID")
+					  .append("      UNION ALL")
+					  .append("      SELECT pgm.MERCHANT_CODE AS MerchantCode,")
+					  .append("        pgcp.CARD_PROGRAM_NAME AS CardProgramName")
+					  .append("      FROM PG_MERCHANT pgm")
+					  .append("      JOIN PG_MERCHANT_CARD_PROGRAM_MAPPING pgmcp")
+					  .append("      ON pgm.id=pgmcp.MERCHANT_ID")
+					  .append("      JOIN PG_CARD_PROGRAM pgcp")
+					  .append("      ON pgcp.ID=pgmcp.CARD_PROGRAM_ID")
+					  .append("      JOIN PG_MERCHANT_ENTITY_MAPPING pgme")
+					  .append("      ON pgme.MERCHANT_ID=pgm.id")
+					  .append("      JOIN PG_PROGRAM_MANAGER pgiso")
+					  .append("      ON pgiso.id=pgme.ENTITY_ID")
+					  .append("      )a")
+					  .append("    )b")
+					  .append("  GROUP BY b.MerchantCode")
+					  .append("  )f ON f.MerchantCode=e.MerchantCode")
+							.append(" where  (:entityType is null or e.EntityType=:entityType) ")
+							.append(" and (:programManagerName is null or e.ProgramManager=:programManagerName)")
+							.append(" and (:isoName is null or e.IsoName=:isoName)")
+							.append(" and (:cardProgramName is null or f.CardProgramName=:cardProgramName)")
+							.append(" and (:merchantCode is null or e.MerchantCode=:merchantCode)")
+							.append(" and (:businessName is null or e.MerchantName=:businessName)")
+							.append(" and (:emailId is null or e.Email=:emailId)")
+							.append(" and (:country is null or e.Country=:country)")
+							.append(" and (:status is null or e.Status=:status)")
+							 .append(" ORDER BY e.CreatedDate DESC")
+							.append("  limit :startIndex,:resultSize");
+			Query qry = entityManager.createNativeQuery(query.toString());
+			qry.setParameter("startIndex", startIndex);
+			qry.setParameter("resultSize", resultIndex);
+			qry.setParameter("entityType", getMerchantlistEntityType(searchMerchant));
+			qry.setParameter("programManagerName", getMerchantlistProgramManagerName(searchMerchant));
+			qry.setParameter("isoName", getMerchantlistIsoName(searchMerchant));
+			qry.setParameter("cardProgramName", getMerchantlistCardProgramName(searchMerchant));
+			qry.setParameter("merchantCode", getMerchantlistMerchantCode(searchMerchant));
+			qry.setParameter("businessName", getMerchantlistBusinessName(searchMerchant));
+			qry.setParameter("emailId", getMerchantlistEmailId(searchMerchant));
+			qry.setParameter("country", getMerchantlistCountry(searchMerchant));
+			qry.setParameter("status", getMerchantlistStatus(searchMerchant));
+			List<Object> cardProgramResponse = qry.getResultList();
+			
+			MerchantRequest request = null;
+			if (StringUtil.isListNotNullNEmpty(cardProgramResponse)) {
+				Iterator<Object> itr = cardProgramResponse.iterator();
+				while (itr.hasNext()) {
+					Object[] object = (Object[]) itr.next();
+					request = new MerchantRequest();
+					request.setMerchantCode(object[0].toString());
+					request.setBusinessName(object[1].toString());
+					request.setEntityType(object[2].toString());
+					if(request.getEntityType().equals(Constants.ISO_USER_TYPE)){
+						request.setEntityName(object[3] != null ? object[3].toString() : "");
+					}else {
+						request.setEntityName(object[4] != null ? object[4].toString() : "");
+					}
+					request.setCardProgramName(object[5].toString());
+					request.setEmailId(object[6].toString());
+					request.setCountry(object[7].toString());
+					request.setState(object[8].toString());
+					request.setStatus(Integer.valueOf(object[9].toString()));
+					request.setCreatedDate(object[10].toString());
+					request.setId(((BigInteger)object[11]).longValue());
+					request.setCurrency(object[12].toString());
+					request.setPhone(((BigInteger)object[13]).longValue());
+					merchantList.add(request);
+				}
+			}
+			getMerchantListResponse.setNoOfRecords(searchMerchant.getNoOfRecords());    	
+			getMerchantListResponse.setMerchantRequests(merchantList);
     } catch (Exception e) {
       getMerchantListResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
       getMerchantListResponse
@@ -171,29 +368,77 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
     return getMerchantListResponse;
   }
 
-  private void validateTupleList(List<PGMerchant> merchantList, Tuple tuple) {
-	PGMerchant merchant;
-	if (null == tuple.get(QPGMerchant.pGMerchant.parentMerchantId)
-	      || Integer.parseInt("5") == tuple.get(QPGMerchant.pGMerchant.status)) {// Only parent merchants
-	    merchant = new PGMerchant();
-	    setPGMerchantDetails(merchant, tuple);
-	    merchant.setMcc(tuple.get(QPGMerchant.pGMerchant.mcc));
-	    merchant.setLocalCurrency(tuple.get(QPGMerchant.pGMerchant.localCurrency));
-	    merchantList.add(merchant);
-	  }
-  }
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Integer getMerchantlistStatus(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getStatus() != null ? searchMerchant.getStatus().intValue() : null;
+	}
 
-  private void validateMerchantList(GetMerchantListResponse getMerchantListResponse, List<PGMerchant> merchantList) {
-	if (!merchantList.isEmpty() && merchantList != null) {
-        getMerchantListResponse.setMerchants(merchantList);
-        getMerchantListResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
-        getMerchantListResponse.setErrorMessage(
-            ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
-      } else {
-        getMerchantListResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
-        getMerchantListResponse.setErrorMessage(PGConstants.NO_RECORDS_FOUND);
-      }
-  }
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Object getMerchantlistCountry(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getCountry() != "" ? searchMerchant.getCountry() : null;
+	}
+
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Object getMerchantlistEmailId(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getEmailId() != "" ? searchMerchant.getEmailId() : null;
+	}
+
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Object getMerchantlistBusinessName(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getBusinessName() != "" ? searchMerchant.getBusinessName() : null;
+	}
+
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Object getMerchantlistMerchantCode(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getMerchantCode() != "" ? searchMerchant.getMerchantCode() : null;
+	}
+
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Object getMerchantlistCardProgramName(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getCardProgramName() != "" ? searchMerchant.getCardProgramName() : null;
+	}
+
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Object getMerchantlistIsoName(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getIsoName() != "" ? searchMerchant.getIsoName() : null;
+	}
+
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Object getMerchantlistProgramManagerName(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getProgramManagerName() != "" ? searchMerchant.getProgramManagerName() : null;
+	}
+
+	/**
+	 * @param searchMerchant
+	 * @return
+	 */
+	private Object getMerchantlistEntityType(GetMerchantListRequest searchMerchant) {
+		return searchMerchant.getEntityType() != "" ? searchMerchant.getEntityType() : null;
+	}
 
   private void setPGMerchantDetails(PGMerchant merchant, Tuple tuple) {
 	merchant.setId(tuple.get(QPGMerchant.pGMerchant.id));
@@ -264,7 +509,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
               QPGMerchant.pGMerchant.id, QPGMerchant.pGMerchant.agentAccountNumber,
               QPGMerchant.pGMerchant.agentANI, QPGMerchant.pGMerchant.agentClientId);
       if (!CollectionUtils.isEmpty(tupleList)) {
-        merchantList = validateTupleList(tupleList);
+        merchantList = processTupleList(tupleList);
       }
       if (merchantList != null && !merchantList.isEmpty()) {
         getMerchantListResponse.setMerchants(merchantList);
@@ -286,7 +531,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
     return getMerchantListResponse;
   }
 
-  private List<PGMerchant> validateTupleList(List<Tuple> tupleList) {
+  private List<PGMerchant> processTupleList(List<Tuple> tupleList) {
 	List<PGMerchant> merchantList = new ArrayList<>();
 	PGMerchant merchant = null;
 	for (Tuple tuple : tupleList) {
@@ -455,17 +700,205 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
   }
 
   private int getTotalNumberOfMerchantRecords(GetMerchantListRequest searchMerchant) {
-    JPAQuery query = new JPAQuery(entityManager);
-    List<Long> list = query.from(QPGMerchant.pGMerchant).where(
-        isBusinessNameLike(searchMerchant.getBusinessName()), isCityLike(searchMerchant.getCity()),
-        isCountryEq(searchMerchant.getCountry()), isEmailLike(searchMerchant.getEmailId()),
-        isFirstNameLike(searchMerchant.getFirstName()),
-        isLastNameLike(searchMerchant.getLastName()), isPhoneEq(searchMerchant.getPhone()),
-        isMerchantCodeEq(searchMerchant.getMerchantCode()), isStatusEq(searchMerchant.getStatus()),
-        isParentMerchantIdNull(searchMerchant.getStatus()), isMerchantNotEq(),
-        isMerchantStatusNotEq(), isMerchantStatusNotEqDecline()).list(QPGMerchant.pGMerchant.id);
-
-    return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
+	  StringBuilder query = new StringBuilder(" SELECT e.MerchantCode,")
+			  .append(" e.MerchantName,")
+			  .append("   e.EntityType,")
+			  .append("   e.IsoName ,")
+			  .append("   e.ProgramManager ,")
+			  .append("   f.CardProgramName,")
+			  .append("   e.Email,")
+			  .append("   e.Country,")
+			  .append("   e.State,")
+			  .append("   e.Status,")
+			  .append("   e.CreatedDate,")
+			  .append("   e.Id,")
+			  .append("   e.Currency,e.PHONE")
+			  .append(" FROM ")
+			  .append("   (SELECT d.MerchantCode,")
+			  .append("     d.MerchantName,")
+			  .append("     d.EntityType,")
+			  .append("     d.IsoName ,")
+			  .append("     group_concat(d.ProgramManager) AS ProgramManager ,")
+			  .append("     d.Email,")
+			  .append("     d.Country,")
+			  .append("     d.State,")
+			  .append("     d.Status,")
+			  .append("     d.CreatedDate,")
+			  .append("     d.Id,")
+			  .append("     d.Currency,d.PHONE")
+			  .append("   FROM")
+			  .append("     (SELECT c.MerchantCode,")
+			  .append("       c.MerchantName,")
+			  .append("       c.EntityType,")
+			  .append("       group_concat( c.IsoName ) IsoName ,")
+			  .append("       c.ProgramManager ,")
+			  .append("       c.Email,")
+			  .append("       c.Country,")
+			  .append("       c.State,")
+			  .append("       c.Status,")
+			  .append("       c.CreatedDate,")
+			  .append("       c.Id,")
+			  .append("       c.Currency,c.PHONE")
+			  .append("     FROM ")
+			  .append("       ( SELECT DISTINCT b.MerchantCode,")
+			  .append("         b.MerchantName,")
+			  .append("         b.EntityType,")
+			  .append("         b.IsoName ,")
+			  .append("         b.ProgramManager ,")
+			  .append("         b.Email,")
+			  .append("         b.Country,")
+			  .append("         b.State,")
+			  .append("         b.Status,")
+			  .append("         b.CreatedDate,")
+			  .append("         b.Id,")
+			  .append("         b.Currency,b.PHONE")
+			  .append("       FROM")
+			  .append("         (SELECT a.MerchantCode,")
+			  .append("           a.MerchantName,")
+			  .append("           a.EntityType,")
+			  .append("           CASE")
+			  .append("             WHEN a.EntityType='ISO'")
+			  .append("             THEN a.IsoName")
+			   .append("    END AS IsoName ,")
+			  .append("           CASE")
+			  .append("             WHEN a.EntityType='Program Manager'")
+			  .append("             THEN a.IsoName")
+			  .append("           END AS ProgramManager,")
+			  .append("           a.Email,")
+			  .append("           a.CardProgramName,")
+			  .append("           a.Country,")
+			  .append("           a.State,")
+			  .append("           a.Status,")
+			  .append("           a.CreatedDate,")
+			  .append("           a.Id,")
+			   .append("          a.Currency,a.PHONE")
+			  .append("         FROM")
+			  .append("           (SELECT pgm.MERCHANT_CODE AS MerchantCode,")
+			  .append("             pgm.BUSINESS_NAME       AS MerchantName,")
+			  .append("             pgme.ENTITY_TYPE        AS EntityType,")
+			  .append("             pgiso.ISO_NAME          AS IsoName,")
+			  .append("             pgm.EMAIL               AS Email,")
+			  .append("             pgcp.CARD_PROGRAM_NAME  AS CardProgramName,")
+			  .append("             pgm.COUNTRY Country,")
+			  .append("             pgm.STATE State,")
+			  .append("             pgm.STATUS         AS Status,")
+			  .append("             pgm.CREATED_DATE   AS CreatedDate,")
+			  .append("             pgm.ID             AS Id,")
+			  .append("             pgm.LOCAL_CURRENCY AS Currency,pgm.PHONE as PHONE")
+			  .append("           FROM PG_MERCHANT pgm")
+			  .append("           JOIN PG_MERCHANT_CARD_PROGRAM_MAPPING pgmcp")
+			  .append("           ON pgm.id=pgmcp.MERCHANT_ID")
+			  .append("           JOIN PG_CARD_PROGRAM pgcp")
+			  .append("           ON pgcp.ID=pgmcp.CARD_PROGRAM_ID")
+			  .append("           JOIN PG_MERCHANT_ENTITY_MAPPING pgme")
+			  .append("           ON pgme.MERCHANT_ID=pgm.id")
+			  .append("           JOIN PG_ISO pgiso")
+			  .append("           ON pgiso.id=pgme.ENTITY_ID")
+			  .append("           UNION ALL")
+			  .append("           SELECT pgm.MERCHANT_CODE AS MerchantCode,")
+			  .append("             pgm.BUSINESS_NAME      AS MerchantName,")
+			  .append("             pgme.ENTITY_TYPE       AS EntityType,")
+			  .append("             pgiso.PROGRAM_MANAGER_NAME ProgramManager,")
+			  .append("             pgm.EMAIL              AS Email,")
+			  .append("             pgcp.CARD_PROGRAM_NAME AS CardProgramName,")
+			  .append("             pgm.COUNTRY Country,")
+			  .append("             pgm.STATE State,")
+			  .append("             pgm.STATUS         AS Status,")
+			  .append("             pgm.CREATED_DATE   AS CreatedDate,")
+			  .append("             pgm.ID             AS Id,")
+			  .append("             pgm.LOCAL_CURRENCY AS Currency,pgm.PHONE as PHONE")
+			  .append("           FROM PG_MERCHANT pgm")
+			  .append("           JOIN PG_MERCHANT_CARD_PROGRAM_MAPPING pgmcp")
+			  .append("           ON pgm.id=pgmcp.MERCHANT_ID")
+			  .append("           JOIN PG_CARD_PROGRAM pgcp")
+			  .append("           ON pgcp.ID=pgmcp.CARD_PROGRAM_ID")
+			  .append("           JOIN PG_MERCHANT_ENTITY_MAPPING pgme")
+			  .append("           ON pgme.MERCHANT_ID=pgm.id")
+			  .append("           JOIN PG_PROGRAM_MANAGER pgiso")
+			  .append("           ON pgiso.id=pgme.ENTITY_ID")
+			  .append("           )a")
+			  .append("         )b")
+			  .append("       )c")
+			  .append("    GROUP BY c.MerchantCode,")
+			  .append("      c.MerchantName,")
+			  .append("      c.EntityType,")
+			  .append("      c.ProgramManager ,")
+			  .append("      c.Email,")
+			  .append("      c.Country,")
+			  .append("      c.State,")
+			  .append("      c.Status,")
+			  .append("      c.CreatedDate,")
+			  .append("      c.Id,")
+			  .append("      c.Currency,c.PHONE")
+			  .append("    )d")
+			    .append(" GROUP BY d.MerchantCode,")
+			  .append("    d.MerchantName,")
+			  .append("    d.EntityType,")
+			  .append("    d.IsoName ,")
+			  .append("    d.Email,")
+			  .append("    d.Country,")
+			  .append("    d.State,")
+			  .append("    d.Status,")
+			  .append("    d.CreatedDate,")
+			  .append("    d.Id,")
+			  .append("    d.Currency,d.PHONE")
+			  .append("  )e")
+			  .append(" JOIN")
+			  .append("  (SELECT b.MerchantCode,")
+			  .append("    group_concat(b.CardProgramName) AS CardProgramName")
+			  .append("  FROM")
+			  .append("    ( SELECT DISTINCT a.MerchantCode,")
+			  .append("      a.CardProgramName")
+			  .append("    FROM")
+			  .append("      (SELECT pgm.MERCHANT_CODE AS MerchantCode,")
+			  .append("        pgcp.CARD_PROGRAM_NAME  AS CardProgramName")
+			  .append("      FROM PG_MERCHANT pgm")
+			  .append("      JOIN PG_MERCHANT_CARD_PROGRAM_MAPPING pgmcp")
+			  .append("      ON pgm.id=pgmcp.MERCHANT_ID")
+			  .append("      JOIN PG_CARD_PROGRAM pgcp")
+			  .append("      ON pgcp.ID=pgmcp.CARD_PROGRAM_ID")
+			  .append("      JOIN PG_MERCHANT_ENTITY_MAPPING pgme")
+			  .append("      ON pgme.MERCHANT_ID=pgm.id")
+			  .append("      JOIN PG_ISO pgiso")
+			  .append("      ON pgiso.id=pgme.ENTITY_ID")
+			  .append("      UNION ALL")
+			  .append("      SELECT pgm.MERCHANT_CODE AS MerchantCode,")
+			  .append("        pgcp.CARD_PROGRAM_NAME AS CardProgramName")
+			  .append("      FROM PG_MERCHANT pgm")
+			  .append("      JOIN PG_MERCHANT_CARD_PROGRAM_MAPPING pgmcp")
+			  .append("      ON pgm.id=pgmcp.MERCHANT_ID")
+			  .append("      JOIN PG_CARD_PROGRAM pgcp")
+			  .append("      ON pgcp.ID=pgmcp.CARD_PROGRAM_ID")
+			  .append("      JOIN PG_MERCHANT_ENTITY_MAPPING pgme")
+			  .append("      ON pgme.MERCHANT_ID=pgm.id")
+			  .append("      JOIN PG_PROGRAM_MANAGER pgiso")
+			  .append("      ON pgiso.id=pgme.ENTITY_ID")
+			  .append("      )a")
+			  .append("    )b")
+			  .append("  GROUP BY b.MerchantCode")
+			  .append("  )f ON f.MerchantCode=e.MerchantCode")
+						.append(" where (:entityType is null or e.EntityType=:entityType)")
+						.append(" and (:programManagerName is null or e.ProgramManager=:programManagerName)")
+						.append(" and (:isoName is null or e.IsoName=:isoName)")
+						.append(" and (:cardProgramName is null or f.CardProgramName=:cardProgramName)")
+						.append(" and (:merchantCode is null or e.MerchantCode=:merchantCode)")
+						.append(" and (:businessName is null or e.MerchantName=:businessName)")
+						.append(" and (:emailId is null or e.Email=:emailId)")
+						.append(" and (:country is null or e.Country=:country)")
+						.append(" and (:status is null or e.Status=:status)")
+						.append(" ORDER BY e.CreatedDate DESC");
+		Query qry = entityManager.createNativeQuery(query.toString());
+		qry.setParameter("entityType", getMerchantlistEntityType(searchMerchant));
+		qry.setParameter("programManagerName", getMerchantlistProgramManagerName(searchMerchant));
+		qry.setParameter("isoName", getMerchantlistIsoName(searchMerchant));
+		qry.setParameter("cardProgramName", getMerchantlistCardProgramName(searchMerchant));
+		qry.setParameter("merchantCode", getMerchantlistMerchantCode(searchMerchant));
+		qry.setParameter("businessName", getMerchantlistBusinessName(searchMerchant));
+		qry.setParameter("emailId", getMerchantlistEmailId(searchMerchant));
+		qry.setParameter("country", getMerchantlistCountry(searchMerchant));
+		qry.setParameter("status", getMerchantlistStatus(searchMerchant));
+		List<Object> cardProgramResponse = qry.getResultList();
+    return (StringUtils.isListNotNullNEmpty(cardProgramResponse) ? cardProgramResponse.size() : 0);
   }
 
   @Override

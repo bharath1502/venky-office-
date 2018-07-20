@@ -79,7 +79,7 @@ public class RestPaymentServiceImplTest {
 		terminalSaleDTO = new VirtualTerminalSaleDTO();
 		Response blackListedCardResponse = new Response();
 		terminalSaleDTO.setCardNum(Constants.CARD_NUM_MAXLEN);
-		Mockito.when(blackListedCardDao.getCardDataByCardNumber(Matchers.anyLong()))
+		Mockito.when(blackListedCardDao.getCardDataByCardNumber(Matchers.any()))
 				.thenReturn(blackListedCardResponse);
 		Assert.assertNotNull(restPaymentServiceImpl.doSale(terminalSaleDTO));
 	}
@@ -90,7 +90,7 @@ public class RestPaymentServiceImplTest {
 		Response blackListedCardResponse = new Response();
 		blackListedCardResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
 		terminalSaleDTO.setCardNum(Constants.CARD_NUM_MAXLEN);
-		Mockito.when(blackListedCardDao.getCardDataByCardNumber(Matchers.anyLong()))
+		Mockito.when(blackListedCardDao.getCardDataByCardNumber(Matchers.any()))
 				.thenReturn(blackListedCardResponse);
 		Assert.assertNotNull(restPaymentServiceImpl.doSale(terminalSaleDTO));
 	}

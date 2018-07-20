@@ -90,8 +90,7 @@ public class StringUtilTest {
 	@Test
 	public void testConvertListToString() {
 		List<String> featureList = new ArrayList<>();
-		String s = new String();
-		featureList.add(s);
+		featureList.add("");
 		stringUtil.convertListToString(featureList);
 	}
 
@@ -143,8 +142,7 @@ public class StringUtilTest {
 	@Test
 	public void testListToString() {
 		List<String> featureList = new ArrayList<>();
-		String s = new String();
-		featureList.add(s);
+		featureList.add("");
 		stringUtil.listToString(featureList);
 	}
 

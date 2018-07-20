@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -21,7 +22,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -85,6 +86,7 @@
 								<!-- Page Form Start -->
 								<form:form action="createTerminal" commandName="terminal"
 									name="terminal">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Account Details Content Start -->
@@ -368,6 +370,7 @@
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
+	<script src="../js/common-lib.js"></script>
 	<script>
 		$(document).ready(function() {
 			highlightMainContent('navListId3');

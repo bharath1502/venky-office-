@@ -16,8 +16,8 @@ import com.chatak.pg.acq.dao.model.PGMerchant;
  */
 public interface PGTransactionService {
 
-  public Response processTransaction(TransactionRequest transactionRequest);
-  
   public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant);
+  
+  public Response processLoadFundTransaction(TransactionRequest transactionRequest, PGMerchant merchant);
 
 }

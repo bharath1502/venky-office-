@@ -85,7 +85,7 @@ public class EncryptionUtil {
     Random randomObj = new Random();
     for(int j = 0; j < length; j++) {
       int rand_int = randomObj.nextInt(Constants.SEVENTYTWO);
-      finalRandString += rand_int;
+      finalRandString += Integer.toString(rand_int);
       if(finalRandString.length() >= length) {
         finalRandString = finalRandString.substring(0, length);
         break;

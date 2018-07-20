@@ -20,9 +20,17 @@ public class SpringDAOBeanFactory {
  // Do nothing
   }
 
-  public static ApplicationContext appContext = null;
+  private static ApplicationContext appContext;
   
   public static ApplicationContext getSpringContext() {
     return appContext;
   }
+
+public static ApplicationContext getAppContext() {
+	return appContext;
+}
+
+public static void setAppContext(ApplicationContext appContext) {
+	SpringDAOBeanFactory.appContext = appContext;
+}
 }

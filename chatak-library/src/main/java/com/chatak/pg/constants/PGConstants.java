@@ -220,14 +220,6 @@ public interface PGConstants {
 
   String SUB_MERCHANT_CREATE_BLOCK = "Cannot allow merchant creation for Sub merchant";
 
-  String VISA = "VISA";
-
-  String MASTER = "MASTER";
-
-  String AMEX = "AMEX";
-
-  String DISCOVER = "DISCOVER";
-
   String FUND_TRANSFER_EFT = "FT_BANK";
 
   String FUND_TRANSFER_CHECK = "FT_CHECK";
@@ -308,4 +300,54 @@ public interface PGConstants {
   String DD_MM_YYYY = "dd/MM/yyyy";
   
   String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+  
+  String PROGRAM_MANAGER_NAME = "Program Manager";
+  
+  String UPDATE = "Update";
+  
+  String BATCH_STATUS_ASSIGNED = "ASSIGNED";
+  
+  String BATCH_STATUS_PROCESSING = "PROCESSING";
+  
+  String BATCH_STATUS_COMPLETED = "COMPLETED";
+  
+   String REGEX_TIME = "(00|[0-9]|1[0-9]|2[0-3])-([0-9]|[0-5][0-9])-([0-9]|[0-5][0-9])$";
+   
+   String REGEX_DATE =  "\\d{2}-\\d{2}-\\d{4}";
+   
+   public static final Integer INDEX_ONE = 1;
+   
+   public static final Integer INDEX_TWO = 2;
+   
+   public static final Integer INDEX_THREE = 3;
+
+   public static final Integer INDEX_FOUR = 4;
+   
+   public static final Integer INDEX_FIVE = 5;
+   
+   public static final Integer INDEX_SIX = 6;
+   
+   public static final Integer INDEX_SEVEN = 7;
+   
+   public static final Integer INDEX_EIGHT = 8;
+   
+   public static final Integer INDEX_NINE = 9;
+   
+   public static final Integer INDEX_TEN = 10;
+   
+   public static final Integer INDEX_ELEVEN = 11;
+   
+   public static final Integer INDEX_TWELVE = 12;
+   
+   public static final String REGULAR_EXPRESSION_ALPHANUMERIC_AND_SPACE = "^[a-zA-Z0-9][a-zA-Z0-9,\\s#.\\-]*";
+   
+   public static final Integer INDEX_THIRTEEN = 13;
+   
+   public static final Integer INDEX_FOURTEEN = 14;
+   
+   public static final Integer INDEX_FIFTEEN = 15;
+   
+   public static final Integer INDEX_SIXTEEN =16;
+   
+   String DATE_TIME_ZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 }

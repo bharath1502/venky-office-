@@ -23,7 +23,7 @@ public class ProcessorConfigTest {
 		params.setParamName("MAG_TEK_KEY");
 		params.setParamValue("MD5");
 		pgParams.add(params);
-		processorConfig.setProcessorConfig(pgParams);
+		processorConfig.setProcessorConfiguration(pgParams);
 	}
 
 	@Test
@@ -32,7 +32,7 @@ public class ProcessorConfigTest {
 		PGParams params = new PGParams();
 		params.setParamName("543");
 		pgParams.add(params);
-		processorConfig.setProcessorConfig(pgParams);
+		processorConfig.setProcessorConfiguration(pgParams);
 	}
 
 	@Test

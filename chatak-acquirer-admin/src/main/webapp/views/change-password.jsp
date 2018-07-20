@@ -5,7 +5,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 
 <html lang="en">
 <head>
@@ -24,7 +24,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -55,6 +55,7 @@
 							<!-- Page Form Start -->
 							<form:form action="change-password"
 								commandName="changePasswordRequest" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-9 login-elements-holder" style="width: 72%;">
 								<fieldset class="col-sm-5"></fieldset>
 									<fieldset class="col-sm-7">
@@ -154,7 +155,9 @@
 			$( "#navListId9" ).addClass( "active-background" );						
 		});
 		
-			
+		$(document).ready(function() {
+			$('#navListId9').hide();
+		});
 	</script>
 </body>
 </html>

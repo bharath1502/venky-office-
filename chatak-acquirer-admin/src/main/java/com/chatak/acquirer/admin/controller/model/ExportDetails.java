@@ -1,6 +1,7 @@
 package com.chatak.acquirer.admin.controller.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.chatak.pg.enums.ExportType;
 
@@ -13,6 +14,7 @@ public class ExportDetails {
   private List<String> headerList;
   private List<Object[]> fileData;
   private Integer excelStartRowNumber;
+  private Map<String, String> map;
 
   public String getReportName() {
     return reportName;
@@ -68,6 +70,15 @@ public class ExportDetails {
 
   public void setExcelStartRowNumber(Integer excelStartRowNumber) {
     this.excelStartRowNumber = excelStartRowNumber;
+  }
+
+
+  public Map<String, String> getMap() {
+	 return map;
+  }
+
+  public void setMap(Map<String, String> map) {
+	  this.map = map;
   }
 
 }

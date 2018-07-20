@@ -12,7 +12,9 @@ package com.chatak.pg.enums;
  */
 public enum AccountType {
 
-  S("Savings"), C("Current");
+  S("Savings"), C("Current"),
+  SYSTEM_ACCOUNT("System Account"),
+  REVENUE_ACCOUNT("Revenue Account");
 
   private final String value;
 

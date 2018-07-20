@@ -435,28 +435,12 @@ public class MerchantDaoImpl implements MerchantDao {
   }
 
   @Override
-  public List<String> getExistingPartnerList() {
-    JPAQuery query = new JPAQuery(entityManager);
-    return query.distinct().from(QPGMerchant.pGMerchant)
-        .where(QPGMerchant.pGMerchant.issuancePartnerId.isNotNull()
-            .and(QPGMerchant.pGMerchant.status.ne(PGConstants.STATUS_DELETED))
-            .and(QPGMerchant.pGMerchant.merchantType.upper().eq("Merchant".toUpperCase())))
-        .list(QPGMerchant.pGMerchant.issuancePartnerId);
-  }
-
-  @Override
   public List<String> getExistingAgentList(String partnerId) {
     JPAQuery query = new JPAQuery(entityManager);
     return query.distinct().from(QPGMerchant.pGMerchant)
         .where(QPGMerchant.pGMerchant.agentId.isNotNull()
-            .and(QPGMerchant.pGMerchant.issuancePartnerId.eq(partnerId))
             .and(QPGMerchant.pGMerchant.status.ne(PGConstants.STATUS_DELETED)))
         .list(QPGMerchant.pGMerchant.agentId);
-  }
-
-  @Override
-  public String getPartnerId(String merchantCode) {
-    return merchantRepository.getPartnerId(merchantCode);
   }
 
   /**
@@ -466,16 +450,6 @@ public class MerchantDaoImpl implements MerchantDao {
   @Override
   public String getApplicationMode(String merchantCode) {
     return merchantRepository.getApplicationMode(merchantCode);
-  }
-
-  /**
-   * @param parentMerchantId
-   * @return
-   */
-  @Override
-  public String getPartnerLinkedToMerchant(Long parentMerchantId) {
-    String issuancePartnerId = merchantRepository.isPartnerLinkedToMerchant(parentMerchantId);
-    return (StringUtil.isNullAndEmpty(issuancePartnerId)) ? "" : issuancePartnerId;
   }
 
   /**

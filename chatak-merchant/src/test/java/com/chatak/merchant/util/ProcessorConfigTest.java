@@ -23,7 +23,7 @@ public class ProcessorConfigTest {
 		List<PGParams> pgParams=new ArrayList<>();
 		PGParams params=new PGParams();
 		pgParams.add(params);
-		processorConfig.setProcessorConfig(pgParams);
+		processorConfig.setProcessorConfiguration(pgParams);
 	}
 	
 	@Test

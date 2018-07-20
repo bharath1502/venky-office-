@@ -410,30 +410,38 @@ public class MerchantCategoryCodeController implements URLMappingConstants {
       mcc.setPageIndex(pageNumber);
       mcc.setNoOfRecords(totalRecords);
       mcc.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
-      try {
-        MerchantCategoryCodeSearchResponse searchResponse =
-            mccService.searchMerchantCategoryCode(mcc);
-        List<MerchantCategoryCode> mccs = new ArrayList<>();
-        if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMccs())) {
-          mccs = searchResponse.getMccs();
-          modelAndView.addObject("pageSize", mcc.getPageSize());
-          modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
-              searchResponse.getTotalNoOfRows());
-          session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
-          session.setAttribute(Constants.TOTAL_RECORDS, totalRecords);
-        }
-        modelAndView.addObject("mccs", mccs);
-      } catch (Exception e) {
-        modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
-            null, LocaleContextHolder.getLocale()));
-        logger.error("ERROR:: MerchantCategoryCodeController:: getPaginationList method", e);
-      }
+      modelAndView =
+          validateMCCSearchResponse(session, pageNumber, totalRecords, modelAndView, mcc);
     } catch (Exception e) {
       logger.error("ERROR:: MerchantCategoryCodeController:: getPaginationList method", e);
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting:: MerchantCategoryCodeController:: getPaginationList method");
+    return modelAndView;
+  }
+
+  private ModelAndView validateMCCSearchResponse(final HttpSession session,
+      final Integer pageNumber, final Integer totalRecords, ModelAndView modelAndView,
+      MerchantCategoryCode mcc) {
+    try {
+      MerchantCategoryCodeSearchResponse searchResponse =
+          mccService.searchMerchantCategoryCode(mcc);
+      List<MerchantCategoryCode> mccs = new ArrayList<>();
+      if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMccs())) {
+        mccs = searchResponse.getMccs();
+        modelAndView.addObject("pageSize", mcc.getPageSize());
+        modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
+            searchResponse.getTotalNoOfRows());
+        session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
+        session.setAttribute(Constants.TOTAL_RECORDS, totalRecords);
+      }
+      modelAndView.addObject("mccs", mccs);
+    } catch (Exception e) {
+      modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
+          null, LocaleContextHolder.getLocale()));
+      logger.error("ERROR:: MerchantCategoryCodeController:: getPaginationList method", e);
+    }
     return modelAndView;
   }
 
@@ -566,8 +574,8 @@ public class MerchantCategoryCodeController implements URLMappingConstants {
     for (MerchantCategoryCode merchantCategoryCodeData : list) {
 
       Object[] rowData = {
-          merchantCategoryCodeData.getMerchantCategoryCode() != null
-              ? merchantCategoryCodeData.getMerchantCategoryCode() : " " + "",
+          merchantCategoryCodeData.getMcc() != null
+              ? merchantCategoryCodeData.getMcc() : " " + "",
           merchantCategoryCodeData.getSelectedTcc() != null
               ? merchantCategoryCodeData.getSelectedTcc() : " " + "",
           merchantCategoryCodeData.getDescription() != null

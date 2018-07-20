@@ -37,8 +37,6 @@ public class PGBank implements Serializable {
 	private static final long serialVersionUID = 1964828793299447235L;
 
 	@Id
-	/*@SequenceGenerator(name = "SEQ_PG_BANK_ID", sequenceName = "SEQ_PG_BANK")
-	@GeneratedValue(generator = "SEQ_PG_BANK_ID")*/
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID")
 	private Long id;
@@ -47,12 +45,15 @@ public class PGBank implements Serializable {
 	@JoinColumn(name = "BANK_ID")	
 	private List<PGBankCurrencyMapping> pgBankCurrencyMapping;
 
+	@Column(name = "ISSUANCE_BANK_ID")
+	private Long issuanceBankId;
+	
 	@Column(name = "BANK_NAME")
 	private String bankName;
 
 	@Column(name = "BANK_SHORT_NAME")
 	private String bankShortName;
-
+	
 	@Column(name = "STATUS")
 	private String status;
 
@@ -97,6 +98,33 @@ public class PGBank implements Serializable {
 	
 	@Column(name="REASON")
 	private String reason;
+	
+	@Column(name = "SETTL_ROUTING_NUMBER")
+	private String settlRoutingNumber;
+	
+	@Column(name = "BANK_CODE")
+	private String bankCode;
+	
+	@Column(name="EXTENSION")
+	private String extension;
+	
+	@Column(name = "SETTL_ACCOUNT_NUMBER")
+	private String settlAccountNumber;
+	
+	@Column(name = "CONTACT_PERSON_PHONE")
+	private String contactPersonPhone;
+	
+	@Column(name = "CONTACT_PERSON_CELL")
+	private String contactPersonCell;
+	
+	@Column(name = "CONTACT_PERSON_NAME")
+	private String contactPersonName;
+	
+	@Column(name = "CONTACT_PERSON_FAX")
+	private String contactPersonFax;
+	
+	@Column(name = "CONTACT_PERSON_EMAIL")
+	private String contactPersonEmail;
 
 	public Long getCurrencyId() {
 		return currencyId;
@@ -250,6 +278,121 @@ public class PGBank implements Serializable {
 
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+
+	public String getBankCode() {
+		return bankCode;
+	}
+
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+
+
+	public String getExtension() {
+		return extension;
+	}
+
+
+	public void setExtension(String extension) {
+		this.extension = extension;
+	}
+
+
+	/**
+	 * @return the issuanceBankId
+	 */
+	public Long getIssuanceBankId() {
+		return issuanceBankId;
+	}
+
+
+	/**
+	 * @param issuanceBankId the issuanceBankId to set
+	 */
+	public void setIssuanceBankId(Long issuanceBankId) {
+		this.issuanceBankId = issuanceBankId;
+	}
+
+
+	/**
+	 * @return the settlRoutingNumber
+	 */
+	public String getSettlRoutingNumber() {
+		return settlRoutingNumber;
+	}
+
+
+	/**
+	 * @param settlRoutingNumber the settlRoutingNumber to set
+	 */
+	public void setSettlRoutingNumber(String settlRoutingNumber) {
+		this.settlRoutingNumber = settlRoutingNumber;
+	}
+
+
+	/**
+	 * @return the settlAccountNumber
+	 */
+	public String getSettlAccountNumber() {
+		return settlAccountNumber;
+	}
+
+
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+
+	public String getContactPersonCell() {
+		return contactPersonCell;
+	}
+
+
+	public void setContactPersonCell(String contactPersonCell) {
+		this.contactPersonCell = contactPersonCell;
+	}
+
+
+	public String getContactPersonName() {
+		return contactPersonName;
+	}
+
+
+	public void setContactPersonName(String contactPersonName) {
+		this.contactPersonName = contactPersonName;
+	}
+
+
+	public String getContactPersonFax() {
+		return contactPersonFax;
+	}
+
+
+	public void setContactPersonFax(String contactPersonFax) {
+		this.contactPersonFax = contactPersonFax;
+	}
+
+
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
+	}
+	/**
+	 * @param settlAccountNumber the settlAccountNumber to set
+	 */
+	public void setSettlAccountNumber(String settlAccountNumber) {
+		this.settlAccountNumber = settlAccountNumber;
 	}
 	
 }

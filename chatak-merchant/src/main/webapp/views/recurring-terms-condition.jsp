@@ -5,6 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -20,7 +21,7 @@
 
 </script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 <div style="text-align: center; width:100%; margin:0; top:40%; left: 0;">
 	<h1><spring:message code="recurring-terms-condition.label.recurringbilltermsandconditionstobedefined"/>
 </h1>

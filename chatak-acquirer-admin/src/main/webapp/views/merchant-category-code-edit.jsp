@@ -5,7 +5,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -22,7 +22,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<script src="../js/jquery.min.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
@@ -76,6 +76,7 @@
 								<!-- Page Form Start -->
 								<form:form action="merchant-category-code-update"
 									commandName="mcc" name="mcc" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">

@@ -577,7 +577,17 @@ var ValidationRules = {
 		mandatory : true
 
 	},
-
+	
+	batch_prefix : {
+		type : "alphanumeric",
+		min : "5",
+		max : "5",
+		mandatory : true
+	},
+	
+	txn_date : {
+		mandatory : true
+	},
 	remarks : {
 		type : "alpha",
 		min : "",

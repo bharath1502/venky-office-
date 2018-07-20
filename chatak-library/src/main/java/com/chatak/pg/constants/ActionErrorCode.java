@@ -168,6 +168,12 @@ public class ActionErrorCode {
   public static final String ERROR_CODE_CURRENCY_LINKED = "C2";
   public static final String ERROR_CODE_CURRENCY_CREATE = "C3";
   
+  //TimeZone
+  public static final String ERROR_CODE_TIME_ZONE_02  =  "T02";
+  public static final String ERROR_CODE_TIME_ZONE_03  =  "T03";
+  public static final String ERROR_CODE_TIME_ZONE_04  =  "T04";
+  public static final String ERROR_CODE_TIME_ZONE_05  =  "T05";
+  
 
 	/**
 	 * This method get the message based on code
@@ -227,7 +233,7 @@ public class ActionErrorCode {
 		 mMessages.put(ERROR_CODE_27 ,"RETRY # 27");
 		 mMessages.put(ERROR_CODE_26 ,"DECLINE # 26");
 		 mMessages.put(ERROR_CODE_28 ,"RETRY # 28");
-		 mMessages.put(ERROR_CODE_30 ,"RETRY # 30");
+		 mMessages.put(ERROR_CODE_30 ,"Format error");
 		 mMessages.put(ERROR_CODE_29 ,"RETRY # 29");
 		 mMessages.put(ERROR_CODE_31 ,"RETRY # 31");
 		 mMessages.put(ERROR_CODE_33 ,"Expired card, pick-up");
@@ -262,9 +268,9 @@ public class ActionErrorCode {
 		 mMessages.put(ERROR_CODE_69 ,"Reserved for ISO");
 		 mMessages.put(ERROR_CODE_77 ,"RETRY # 77");
 		 mMessages.put(ERROR_CODE_70 ,"Reserved for ISO");
-		 mMessages.put(ERROR_CODE_78 ,"Original transaction not found");
+		 mMessages.put(ERROR_CODE_78 ,"Customer not eligible for POS");
 		 mMessages.put(ERROR_CODE_71 ,"Reserved for ISO");
-		 mMessages.put(ERROR_CODE_79 ,"BATCH OPEN");
+		 mMessages.put(ERROR_CODE_79 ,"Invalid Digital Signature");
 		 mMessages.put(ERROR_CODE_72 ,"Reserved for ISO");
 		 mMessages.put(ERROR_CODE_80 ,"Bad Batch NO");
 		 mMessages.put(ERROR_CODE_73 ,"Reserved for ISO");
@@ -285,7 +291,7 @@ public class ActionErrorCode {
 		 mMessages.put(ERROR_CODE_93 ,"DECLINED # 93");
 		 mMessages.put(ERROR_CODE_94 ,"Duplication transaction");
 		 mMessages.put(ERROR_CODE_95 ,"Total Mismatch Reconcile error");//Only for Settlements
-		 mMessages.put(ERROR_CODE_96 ,"Format Error"); //If Mandatory fields are absent OR the Packet contains invalid characters
+		 mMessages.put(ERROR_CODE_96 ,"System Malfunction"); //If Mandatory fields are absent OR the Packet contains invalid characters
 		 mMessages.put(ERROR_CODE_97 ,"Reserved for national use");
 		 mMessages.put(ERROR_CODE_98 ,"Reserved for national use");
 		 mMessages.put(ERROR_CODE_99 ,"Reserved for national use");
@@ -340,6 +346,11 @@ public class ActionErrorCode {
 		 mMessages.put(ERROR_CODE_F1 ,"There exists a Fee Program with the same name, please choose a different name");
 		 mMessages.put(ERROR_CODE_F2 ,"FeeProgram has been deleted successfully");
 		 mMessages.put(ERROR_CODE_F3 ,"FeeProgram deletion error");
+		 
+		 mMessages.put(ERROR_CODE_TIME_ZONE_02 ,"Time Zone Id is NULL");
+		 mMessages.put(ERROR_CODE_TIME_ZONE_03 ," Error in retrieving all the time zone");
+		 mMessages.put(ERROR_CODE_TIME_ZONE_04 ," Error in Merchant Category Code Updation");
+		 mMessages.put(ERROR_CODE_TIME_ZONE_05 ," Error in Merchant Category Code Updation");
 	}
 
 	/**

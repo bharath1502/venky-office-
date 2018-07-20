@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.chatak.merchant.constants.FeatureConstants;
 import com.chatak.merchant.constants.URLMappingConstants;
 import com.chatak.merchant.controller.model.ExportDetails;
@@ -35,8 +34,6 @@ import com.chatak.merchant.service.TransactionService;
 import com.chatak.merchant.util.ExportUtil;
 import com.chatak.merchant.util.JsonUtil;
 import com.chatak.merchant.util.StringUtil;
-import com.chatak.merchant.util.SystemReportsFileExportsUtil;
-import com.chatak.merchant.util.TransactionFileExportUtil;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
 import com.chatak.pg.acq.dao.model.PGMerchant;
@@ -55,7 +52,6 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
-import com.itextpdf.text.DocumentException;
 
 import jxl.write.WriteException;
 
@@ -241,13 +237,15 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
     List<ReportsDTO> revenueGeneratedList =
         (List<ReportsDTO>) session.getAttribute(Constants.REVENUE_GENERATED_REPORT_LIST);
     try {
+      ExportDetails exportDetails = new ExportDetails();
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        SystemReportsFileExportsUtil.downloadRevenueGeneratedPdf(revenueGeneratedList, response,
-            messageSource);
+        exportDetails.setExportType(ExportType.PDF);
       } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        SystemReportsFileExportsUtil.downloadRevenueGeneratedXl(revenueGeneratedList, response,
-            messageSource);
+        exportDetails.setExportType(ExportType.XLS);
+        exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
       }
+      setExportDetailsDataForDownloadRoleReport(revenueGeneratedList, exportDetails);
+      ExportUtil.exportData(exportDetails, response, messageSource);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -255,6 +253,74 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
     }
     logger.info("Exiting:: ReportsController:: downloadRevenueGeneratedReport method");
     return modelAndView;
+  }
+  
+  private void setExportDetailsDataForDownloadRoleReport(List<ReportsDTO> list,
+      ExportDetails exportDetails) {
+    exportDetails.setReportName("Revenue");
+    exportDetails.setHeaderMessageProperty("chatak.admin.revenue.generated.header.message");
+    exportDetails.setHeaderList(getRoleHeaderList());
+    exportDetails.setFileData(getRoleFileData(list));
+  }
+  
+  private List<String> getRoleHeaderList() {
+    String[] headerArr = {
+        messageSource.getMessage("dash-board.label.transactiontime", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant.common-deviceLocalTxnTime", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.user.name", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.company", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.account.number", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.transaction.id", null, LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.transaction.description", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.total.amount", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.currency", null, LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.rapid.revenue", null, LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.merchant.revenue", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.amt.to.merchant.ac", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reportFileExportUtil.amt.to.submerchant.ac", null, LocaleContextHolder.getLocale()),
+};
+    return new ArrayList<String>(Arrays.asList(headerArr));
+  }
+
+  private static List<Object[]> getRoleFileData(List<ReportsDTO> reportData) {
+    List<Object[]> fileData = new ArrayList<Object[]>();
+    for (ReportsDTO repData : reportData) {
+      if (!"".equals(repData.getTimeZoneOffset())
+          && null != repData.getTimeZoneOffset()) {
+        repData.setTimeZoneOffset("(" + repData.getTimeZoneOffset() + ")");
+      }
+      Object[] rowData = new Object[Integer.parseInt("13")];
+      rowData[Integer.parseInt("0")] = repData.getDateTime();
+      rowData[Integer.parseInt("1")] = repData.getDeviceLocalTxnTime()+repData.getTimeZoneOffset();
+      rowData[Integer.parseInt("2")] = repData.getUserName();
+      rowData[Integer.parseInt("3")] = repData.getCompanyName();
+      rowData[Integer.parseInt("4")] = repData.getAccountNumber().toString();
+      rowData[Integer.parseInt("5")] = repData.getTransactionId();
+      rowData[Integer.parseInt("6")] = repData.getDescription();
+      rowData[Integer.parseInt("7")] = repData.getAmount();
+      rowData[Integer.parseInt("8")] = repData.getCurrency();
+      rowData[Integer.parseInt("9")] = repData.getChatakFee();
+      rowData[Integer.parseInt("10")] = repData.getFee();
+      
+      if (StringUtils.isValidString(repData.getParentMerchantId())) {
+        rowData[Integer.parseInt("11")] = "NA";
+        rowData[Integer.parseInt("12")] = repData.getTotalTxnAmount();
+      } else {
+        rowData[Integer.parseInt("11")] = repData.getTotalTxnAmount();
+        rowData[Integer.parseInt("12")] = "NA";
+      }
+      fileData.add(rowData);
+    }
+    return fileData;
   }
 
   @RequestMapping(value = CHATAK_ADMIN_SPECIFIC_USER_EFT_TRANSFERS, method = RequestMethod.GET)
@@ -444,7 +510,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 	  txnCodeList.add(AccountTransactionCode.CC_AMOUNT_DEBIT);
 	  txnCodeList.add(AccountTransactionCode.EFT_DEBIT);
 	  txnCodeList.add(AccountTransactionCode.FT_CHECK);
-	  txnCodeList.add(AccountTransactionCode.CC_FEE_CREDIT); 
+	  txnCodeList.add(AccountTransactionCode.CC_FEE_CREDIT);
 	  txnCodeList.add(AccountTransactionCode.CC_FEE_DEBIT);
 	  txnCodeList.add(AccountTransactionCode.FT_BANK);
 	  txnCodeList.add(AccountTransactionCode.ACCOUNT_CREDIT);
@@ -453,7 +519,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 
   private void processDownloadReport(HttpServletResponse response, final String downloadType,
       final boolean downloadAllRecords, GetTransactionsListRequest transactionRequest,
-      TransactionListResponse transactionResponse, List<AccountTransactionDTO> processingTxnList) throws WriteException, IOException, DocumentException {
+      TransactionListResponse transactionResponse, List<AccountTransactionDTO> processingTxnList) throws WriteException, IOException {
     if (downloadAllRecords) {
       processingTxnList = fetchProcessingTxnList(transactionRequest, transactionResponse,
     processingTxnList);
@@ -555,7 +621,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 
   private void processDownloadReport(HttpServletResponse response, final String downloadType,
       final boolean downloadAllRecords, List<AccountTransactionDTO> executedTxnsList,
-      GetTransactionsListRequest transaction, TransactionListResponse transactionResponse) throws WriteException, IOException, DocumentException {
+      GetTransactionsListRequest transaction, TransactionListResponse transactionResponse) throws WriteException, IOException {
     if (downloadAllRecords) {
       executedTxnsList = fetchExecutedTxnList(executedTxnsList, transaction, transactionResponse);
     }
@@ -618,7 +684,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
     manualTransactionRequest.setTransactionCodeList(manualTxnCodeList);
     manualTransactionRequest.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
     try {
-      
+    	 ExportDetails exportDetails = new ExportDetails();
       if (downloadAll) {
         manualTransactionRequest.setPageIndex(Constants.ONE);
         PGMerchant parentMerchant = merchantProfileDao.getMerchantById(merchantId);
@@ -642,12 +708,13 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
         }
       }
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        TransactionFileExportUtil.downloadManualTransactionsPdf(manualTransferDownloadList,
-            response, messageSource);
+    	  exportDetails.setExportType(ExportType.PDF);
       } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        TransactionFileExportUtil.downloadManualTransactionsXl(manualTransferDownloadList, response,
-            messageSource);
+    	  exportDetails.setExportType(ExportType.XLS);
+		  exportDetails.setExcelStartRowNumber(Integer.parseInt("5"));
       }
+          setExportDetailsDataForDownloadRoleReports(manualTransferDownloadList, exportDetails);	
+	 	  ExportUtil.exportData(exportDetails, response, messageSource);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -658,7 +725,108 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
     return null;
   }
 
-  private void getSubMerchantCodes(List<PGMerchant> subMerchantList,
+  private void setExportDetailsDataForDownloadRoleReports(List<AccountTransactionDTO> transactionDTO,
+	      ExportDetails exportDetails) {
+	        exportDetails.setReportName("Manual_Transactions");
+	        exportDetails.setHeaderMessageProperty("chatak.header.manual.transactions.reports");
+	        exportDetails.setHeaderList(getRoleHeaderLists());
+	        exportDetails.setFileData(getRoleFilesData(transactionDTO));
+	  }
+  
+  private List<String> getRoleHeaderLists() {
+	    String[] headerArr = {
+	        messageSource.getMessage("dash-board.label.transactiontime", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("merchant.common-deviceLocalTxnTime", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("reports.label.balancereports.manualtransactions.description", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("reports.label.balancereports.manualtransactions.merchantorsubmerchantcode", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("reports.label.balancereports.manualtransactions.transactionID", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("search-sub-merchant.label.currencycode", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("reports.label.balancereports.manualtransactions.availableBalance", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("reports.label.balancereports.manualtransactions.credit", null,
+		        LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("reports.label.balancereports.manualtransactions.debit", null,
+	            LocaleContextHolder.getLocale())};
+	    return new ArrayList<String>(Arrays.asList(headerArr));
+	  }
+  
+  private static List<Object[]> getRoleFilesData(List<AccountTransactionDTO> list) {
+	    List<Object[]> fileData = new ArrayList<Object[]>();
+	    for (AccountTransactionDTO transactionData : list) {
+	    	Object[] rowData = new Object[Integer.parseInt("9")];
+			  rowData[0] =(transactionData.getTransactionTime() != null)
+					    ? transactionData.getTransactionTime() : " ";
+			  rowData[1] = (transactionData.getDeviceLocalTxnTime() != null
+			            && transactionData.getTimeZoneOffset() != null)
+		                ? transactionData.getDeviceLocalTxnTime() + "( "
+		                    + transactionData.getTimeZoneOffset() + " )"
+		                : " ";
+			  rowData[Integer.parseInt("2")]= descriptionData(transactionData);
+			  rowData[Integer.parseInt("3")]= merchantCodeData(transactionData);
+			  rowData[Integer.parseInt("4")]= transactionIdData(transactionData);
+			  rowData[Integer.parseInt("5")]= currencyData(transactionData);
+			  rowData[Integer.parseInt("6")]= currentBalanceData(transactionData);
+			  if ("MANUAL_DEBIT".equalsIgnoreCase(transactionData.getTransactionCode())) {
+			  rowData[Integer.parseInt("7")]="";
+			  rowData[Integer.parseInt("8")]= (transactionData.getDebit() !=null) ? Double.parseDouble(transactionData.getDebit()): 0d;
+			  }
+			  else {
+			  rowData[Integer.parseInt("7")]= (transactionData.getCredit() !=null) ? Double.parseDouble(transactionData.getCredit()): 0d;
+			  rowData[Integer.parseInt("8")]="";
+			  }
+	      fileData.add(rowData);
+	    }
+	    return fileData;
+	  }
+
+	/**
+	 * @param transactionData
+	 * @return
+	 */
+	private static double currentBalanceData(AccountTransactionDTO transactionData) {
+		return (transactionData.getCurrentBalance() != null) ? Double.parseDouble(transactionData.getCurrentBalance())
+				: 0d;
+	}
+
+	/**
+	 * @param transactionData
+	 * @return
+	 */
+	private static Object currencyData(AccountTransactionDTO transactionData) {
+		return (transactionData.getCurrency() != null) ? transactionData.getCurrency() : " ";
+	}
+
+	/**
+	 * @param transactionData
+	 * @return
+	 */
+	private static Object transactionIdData(AccountTransactionDTO transactionData) {
+		return (transactionData.getTransactionId() != null) ? transactionData.getTransactionId() : " ";
+	}
+
+	/**
+	 * @param transactionData
+	 * @return
+	 */
+	private static Object merchantCodeData(AccountTransactionDTO transactionData) {
+		return (transactionData.getMerchantCode() != null) ? transactionData.getMerchantCode() : " ";
+	}
+
+	/**
+	 * @param transactionData
+	 * @return
+	 */
+	private static Object descriptionData(AccountTransactionDTO transactionData) {
+		return (transactionData.getDescription() != null) ? transactionData.getDescription() : " ";
+	}
+
+	  private void getSubMerchantCodes(List<PGMerchant> subMerchantList,
       List<String> merchantCodeList) {
     for (PGMerchant subMerchant : subMerchantList) {
       merchantCodeList.add(subMerchant.getMerchantCode());

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
+import com.chatak.pg.acq.dao.model.PGAccountTransactions;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 
 /**
@@ -160,5 +161,6 @@ public interface TransactionRepository extends
   
   @Query("select sum(t.merchantFeeAmount) from PGTransaction t where t.merchantId=:merchantId")
   public Long getMerchantFeeByMerchantId(@Param("merchantId") String merchantId);
-  
+    
+  public List<PGTransaction> findByBatchId(String batchId);
 }

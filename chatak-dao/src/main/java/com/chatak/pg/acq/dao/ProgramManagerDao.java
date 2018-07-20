@@ -3,90 +3,99 @@ package com.chatak.pg.acq.dao;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.dao.DataAccessException;
-
 import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
+import com.chatak.pg.acq.dao.model.PmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
+import com.chatak.pg.bean.Response;
 import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.user.bean.BankRequest;
+import com.chatak.pg.user.bean.CardProgramResponse;
+import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 
 public interface ProgramManagerDao {
 
-  public Long getProgramManagerAccountNumber() throws DataAccessException;
+  public Long getProgramManagerAccountNumber();
 
-  public Long getRevenueProgramManagerAccountNumber() throws DataAccessException;
+  public Long getRevenueProgramManagerAccountNumber();
 
-  public ProgramManager saveOrUpdateProgramManager(ProgramManager programManager)
-      throws DataAccessException;
+  public ProgramManager saveOrUpdateProgramManager(ProgramManager programManager);
 
   public ProgramManagerAccount saveOrUpdateProgramManagerAccount(
-      ProgramManagerAccount programManagerAccount) throws DataAccessException;
+      ProgramManagerAccount programManagerAccount);
 
-  public void deleteBankProgramManager(Set<BankProgramManagerMap> bankProgramManagerMap)
-      throws DataAccessException;
+  public void deleteBankProgramManagerMap(Long pmId);
 
   public Set<BankProgramManagerMap> findBankProgramManagerMapByProgramManagerId(
-      Long programManagerId) throws DataAccessException;
+      Long programManagerId);
 
-  public List<ProgramManager> findByProgramManagerName(String programManagerName)
-      throws DataAccessException;
+  public List<ProgramManager> findByProgramManagerName(String programManagerName);
 
   public ProgramManagerRequest findProgramManagerById(ProgramManagerRequest programManagerRequest)
       throws PrepaidAdminException;
 
   public List<ProgramManagerRequest> searchProgramManagers(
-      ProgramManagerRequest programManagerRequest) throws DataAccessException;
+      ProgramManagerRequest programManagerRequest);
 
   public List<ProgramManagerRequest> searchProgramManagersAccounts(
-      ProgramManagerRequest programManagerRequest) throws DataAccessException;
+      ProgramManagerRequest programManagerRequest);
 
-  public List<BankRequest> getAllBanksForProgramManager(ProgramManagerRequest programManagerRequest)
-      throws DataAccessException;
+  public List<BankRequest> getAllBanksForProgramManager(ProgramManagerRequest programManagerRequest);
 
-  public void changeStatus(ProgramManager programManager) throws DataAccessException;
+  public void changeStatus(ProgramManager programManager);
 
   public List<ProgramManagerRequest> getAllProgramManagers(
-      ProgramManagerRequest programManagerRequest) throws DataAccessException;
+      ProgramManagerRequest programManagerRequest);
 
-  public ProgramManagerAccount getProgramManagerAccountById(Long programManagerAccountId)
-      throws DataAccessException;
+  public ProgramManagerAccount getProgramManagerAccountById(Long programManagerAccountId);
 
   public ProgramManagerAccount getProgramManagerAccountByIdAndAccountType(
-      Long programManagerAccountId, String accountType) throws DataAccessException;
+      Long programManagerAccountId, String accountType);
 
-  public ProgramManager searchSystemProgramManager(ProgramManagerRequest programManagerRequest)
-      throws DataAccessException;
+  public ProgramManager searchSystemProgramManager(ProgramManagerRequest programManagerRequest);
 
-  public Set<BankProgramManagerMap> findByBankId(Long bankId) throws DataAccessException;
+  public Set<BankProgramManagerMap> findByBankId(Long bankId);
 
-  public ProgramManagerAccount findByProgramManagerIdAndAccountNumber(Long pmId, Long accountNumber)
-      throws DataAccessException;
+  public ProgramManagerAccount findByProgramManagerIdAndAccountNumber(Long pmId, Long accountNumber);
 
-  public List<ProgramManagerAccount> findByAccountNumber(Long accountNumber)
-      throws DataAccessException;
+  public List<ProgramManagerAccount> findByAccountNumber(Long accountNumber);
 
-  public List<Long> getProgramManagerAllAccountsByPmId(Long programManagerId)
-      throws DataAccessException;
+  public List<Long> getProgramManagerAllAccountsByPmId(Long programManagerId);
 
-  public List<ProgramManager> findAllProgramManagerDetails() throws DataAccessException;
+  public List<ProgramManager> findAllProgramManagerDetails();
 
-  public List<ProgramManagerAccountRequest> findPMAccountsToAutoSweep() throws DataAccessException;
+  public List<ProgramManagerAccountRequest> findPMAccountsToAutoSweep();
 
   public ProgramManagerAccount findByProgramManagerIdAndAccountType(Long programManagerAccountId,
-      String accountType) throws DataAccessException;
+      String accountType);
 
-  public ProgramManagerAccount findByAccountId(Long accountId) throws DataAccessException;
+  public ProgramManagerAccount findByAccountId(Long accountId);
 
   public ProgramManagerAccountRequest findBankDetailsByPMId(
-      ProgramManagerAccountRequest programManagerAccountRequest) throws DataAccessException;
+      ProgramManagerAccountRequest programManagerAccountRequest);
 
   public ProgramManagerRequest findProgramManagerById(Long id);
 
   public List<ProgramManagerAccount> getProgramManagerAccountByProgramManagerId(
-      Long programManagerAccountId) throws DataAccessException;
+      Long programManagerAccountId);
 
-  public void changeStatusPMAccnt(ProgramManager programManager) throws DataAccessException;
+  public void changeStatusPMAccnt(ProgramManager programManager);
+
+  public List<ProgramManager> getProgramManagerNameByAccountCurrency(String currencyId);
+
+  public MerchantResponse getProgramManagerNameByCurrencyAndId(Long id, String currencyId);
+
+  public void deleteCpProgramManagerMap(Long pmId);
+
+  public List<ProgramManager> findByIssuancePmid(Long issuancePmId);
+  
+  public List<ProgramManager> findByProgramManagerIdAndAccountCurrency(Long pmId,String currencyId);
+  
+  public List<ProgramManager> findByBatchTime(String pmSystemConvertedTime);
+  
+  public CardProgramResponse fetchPMCardProgramByMerchantId(Long merchantId);
+  
+  public PmCardProgamMapping findByCardProgramId(Long cardProgramId);
 }

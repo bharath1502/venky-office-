@@ -22,8 +22,6 @@ public class DateUtils {
 
   private static Logger logger = Logger.getLogger(DateUtils.class);
 
-  private static final SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
-
   private static final int TWO_DIGITS = Constants.TWO;
   
   private static final int DECEMBER = Constants.TWELVE;
@@ -139,6 +137,7 @@ public class DateUtils {
    */
   public static String getCurrentDateInMMddyyyy() {
     Calendar cal = Calendar.getInstance();
+    SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
     String currentDate = mmddyyyyformatter.format(cal.getTime());
     return currentDate;
   }
@@ -152,6 +151,7 @@ public class DateUtils {
    */
   public static String getDateOfDaysBeforeCurrentDateInMMddyyyy(int days) {
     Calendar cal = Calendar.getInstance();
+    SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
     String currentDate = "";
     if (days > 0) {
       cal.add(Calendar.DATE, days * -1);
@@ -203,7 +203,8 @@ public class DateUtils {
    */
   public static Timestamp getTimestamp(String date) {
     try {
-      return (new Timestamp(mmddyyyyformatter.parse(date).getTime()));
+    	SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
+    	return (new Timestamp(mmddyyyyformatter.parse(date).getTime()));
     } catch (ParseException e) {
       logger.error("Error :: DateUtils :: getTimestamp", e);
     }
@@ -230,7 +231,7 @@ public class DateUtils {
    */
   public static boolean validateStEndDate(String startDate, String endDate) {
     boolean validFlag = true;
-    if (startDate.equals("") || startDate == null || startDate.length() != Constants.EIGHT) {
+    if (startDate.length() != Constants.EIGHT) {
       validFlag = false;
     }
     try {
@@ -278,14 +279,10 @@ public class DateUtils {
     } else {
       // starting or ending year should not be 0
       int endingYear = StringUtils.convertToInt(endDate.substring(0, Constants.FOUR));
-      if (endingYear == 0) {
+      if ((endingYear == 0) || (!getSqlDateFromDateStr(endDate).before(currentDate)) || (!getSqlDateFromDateStr(startDate)
+              .before(getSqlDateFromDateStr(formatTranDate(endDate)))) ) {
         validFlag = false;
-      } else if (!getSqlDateFromDateStr(endDate).before(currentDate)) {
-        validFlag = false;
-      } else if (!getSqlDateFromDateStr(startDate)
-          .before(getSqlDateFromDateStr(formatTranDate(endDate)))) {
-        validFlag = false;
-      }
+      } 
     }
     return validFlag;
   }
@@ -483,7 +480,8 @@ public class DateUtils {
    * @return
    */
   public static String timestampToString(Timestamp timestamp) {
-    if (null == timestamp) {
+	  SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
+	  if (null == timestamp) {
       return "";
     }
     return mmddyyyyformatter.format(new Date(timestamp.getTime()));

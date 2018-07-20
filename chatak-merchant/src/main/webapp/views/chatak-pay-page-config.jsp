@@ -6,6 +6,7 @@
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.constants.PGConstants"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -13,7 +14,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/jquery.Jcrop.css" rel="stylesheet">
 <link type="text/css" media="screen" rel="stylesheet" href="../css/jquery.cropbox.css">
@@ -22,7 +23,7 @@
 	type="text/css" />
 
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -64,6 +65,7 @@
 
 								<form:form action="chatak-pay-page-config" name="paypageconfig"
 									commandName="payPageConfig" method="post">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">

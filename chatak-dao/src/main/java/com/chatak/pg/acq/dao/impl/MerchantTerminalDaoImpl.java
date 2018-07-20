@@ -1,5 +1,6 @@
 package com.chatak.pg.acq.dao.impl;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -66,7 +67,7 @@ public class MerchantTerminalDaoImpl implements MerchantTerminalDao {
 		logger.info("Entering:: "+CLASS_NAME +" : "+METHOD_NAME);
 		
 		logger.info("Exiting:: "+CLASS_NAME +" : "+METHOD_NAME);
-		return null;
+		return Collections.emptyList();
 	}
 	
 	public PGMerchant validateMerchantIdAndTerminalId(String merchantId, String terminalId)throws DataAccessException{

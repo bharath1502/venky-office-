@@ -4,6 +4,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -25,7 +26,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
 	<script src="../js/jquery.min.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
@@ -83,6 +84,7 @@
 								<!-- Page Form Start -->
 								<form:form action="updateUser" modelAttribute="userViewData"
 									method="post">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<form:hidden path="requestType" id="requestType" />
 									<div class="col-sm-12">
 										<div class="row">
@@ -97,6 +99,18 @@
 													<form:input path="roleType" cssClass="form-control" readonly="true"/>													
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error" id="roleTypeError">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3" id="entityNameDiv">
+													<label data-toggle="tooltip" data-placement="top" title="" id="entityLabel"><spring:message code="access-user-create.label.entityname"/><span id="red-color" class="required-field">*</span></label>
+													<form:select cssClass="form-control" path="entityId"
+														id="entityId" onblur="this.value=this.value.trim();" readonly="true">
+														<c:forEach items="${entityList}" var="entity">
+															<form:option value="${entity.key}">${entity.value}</form:option>
+														</c:forEach>
+													</form:select>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span class="red-error" id="entityIdDiv">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -265,6 +279,20 @@
 			if($('#roleType').val() == 'Admin'){
 				$('#merchantDivId').hide();
 				$('#merchantNameId').hide();
+				$('#entityNameDiv').hide();
+			} else if($('#roleType').val() == 'Program Manager' || $('#roleType').val() == 'ISO') {
+				$('#merchantDivId').hide();
+				$('#merchantNameId').hide();
+				$('#entityNameDiv').show();
+				if($('#roleType').val() == 'Program Manager') {
+					document.getElementById("entityLabel").innerHTML=webMessages.entityProgramManager;
+					$("#red-color").addClass("required-field");
+				} else if($('#roleType').val() == 'ISO') {
+					document.getElementById("entityLabel").innerHTML=webMessages.entityIso;
+					$("#red-color").addClass("required-field");
+				}
+			} else if($('#roleType').val() == 'Merchant') {
+				$('#entityNameDiv').hide();
 			}
 			if($('#roleType').val() == 'Tms'){
 				$('#merchantDivId').hide();

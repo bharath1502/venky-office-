@@ -21,7 +21,7 @@
 <link href="../css/style.css" rel="stylesheet">
 
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -69,29 +69,34 @@
 								<form:form action="getPaymentSchemeInfo" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="getPaymentShemeReport" name="downloadReport" method="post">
 									<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" /> 
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="edit-Payment-Scheme" name="editPaymentSchemeForm"
 									method="post">
 									<input type="hidden" id="getpaymentschemeId"
 										name="getpaymentschemeId" />
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="view-payment-scheme" name="viewPaymentSchemeForm"
 									method="post">
 									<input type="hidden" id="getViewPaymentSchemeId"
 										name="getpaymentschemeId" />
+									 <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<!-- Page Form Start -->
 								<form:form action="payment-scheme-search-action"
 									modelAttribute="paymentScheme" method="post">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -324,7 +329,9 @@
 			method="post">
 			<input type="hidden" id="editAccountId" name="accountId" /> <input
 				type="hidden" id="editAccountStatus" name="accountStatus" /> <input
-				type="hidden" id="editMerchantType" name="merchantType" /> <label data-toggle="tooltip" data-placement="top" title=""><span
+				type="hidden" id="editMerchantType" name="merchantType" /> 
+			<input type="hidden" name="CSRFToken" value="${tokenval}">
+				<label data-toggle="tooltip" data-placement="top" title=""><span
 				class="requiredFiled">*</span> Reason </label>
 			<textarea id="reason" name="reason" maxlength="500"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -349,6 +356,7 @@
 		<form:form action="paymentSchemeActivationSuspention" name="paymentSchemeActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="paymentSchemeId" /> <input
 				type="hidden" id="suspendActiveStatus" name="paymentSchemeStatus" /> 
+			 <input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -371,11 +379,10 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
     <script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
+	
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/messages.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/payment-scheme.js"></script>
@@ -410,6 +417,22 @@
 		function openPopup() {
 			$('#paymentSchemePopupDiv').popup("show");
 		}
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

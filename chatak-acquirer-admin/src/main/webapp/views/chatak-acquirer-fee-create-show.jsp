@@ -6,6 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -22,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
@@ -69,6 +70,7 @@
 								</div>
 								<!-- Page Form Start -->
 								<form:form action="chatak-acquirer-fee-create-process" modelAttribute="pgAcquirerFeeCode" method="post" >
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -78,15 +80,7 @@
 								class="required-field">*</span></label>
 							<form:select cssClass="form-control" path="acquirerName" id="acquirerFeeName" onblur="return clientValidation('acquirerFeeName', 'country','acquirerFeeNameErrorDiv');">
 								<form:option value="">..:Select:..</form:option>
-								<form:option value="MC"><spring:message code="fee-program-create.label.mastercard"/></form:option>
-								<form:option value="VI"><spring:message code="fee-program-edit.label.visa"/></form:option>
-								<form:option value="AX">American Express</form:option>
-								<form:option value="DC"><spring:message code="fee-program-edit.label.discover"/></form:option>
-								<%-- <form:option value="DC">Dinner's Club</form:option>
-								<form:option value="PP">Paypal</form:option>
-								<form:option value="JC">Japanese Credit Bureau(JCB) </form:option>
-								<form:option value="BL">Bill Me Later</form:option>
-								<form:option value="EC">Echeck</form:option> --%>
+								<option value="IC">Chatak Prepaid Card</option>
 							</form:select>
 							<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 								<span class="red-error" id="acquirerFeeNameErrorDiv">&nbsp;</span>

@@ -5,6 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -16,7 +17,7 @@
     <link href="../css/style.css" rel="stylesheet">
 	<link href="../css/jquery.datetimepicker.css" rel="stylesheet" type="text/css"/>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->	
     <div id="wrapper">
 		<!--Container block Start -->
@@ -56,6 +57,7 @@
 					<!-- Content Block Start -->
 					<div class="main-content-holder padding0">
 						<form:form action="updateAdvancedFraud" commandName="advancedFraudDTO" name="advancedFraudDTO" method="post">
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="id"/>
 						<form:hidden path="merchantCode"/>
 									<div class="col-sm-12 paddingT20">

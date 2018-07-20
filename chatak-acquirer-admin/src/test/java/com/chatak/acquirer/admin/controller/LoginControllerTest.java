@@ -145,7 +145,7 @@ public class LoginControllerTest {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_AUTHENTICATE)
           .sessionAttr("loginUserId", "loginUserId").sessionAttr("loginUserType", "loginUserType")
           .header("user-agent", "user-agent").sessionAttr("loginUserId", Integer.parseInt("1234")))
-          .andExpect(view().name(URLMappingConstants.CHATAK_INVALID_SESSION));
+          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_LOGIN));
     } catch (NumberFormatException e) {
       logger.error("ERROR:: LoginControllerTest:: testAuthenticate method1", e);
     } catch (Exception e) {
@@ -178,7 +178,7 @@ public class LoginControllerTest {
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_AUTHENTICATE)
               .sessionAttr("loginUserType", "loginUserType").header("user-agent", "user-agent")
               .sessionAttr("loginUserId", "loginUserId").param("acqU", "soft"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CHANGE_PSWD));
+          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_LOGIN));
     } catch (Exception e) {
       logger.error(
           "ERROR:: LoginControllerTest:: testAuthenticateWhenSessionInformationIsNull method", e);
@@ -222,8 +222,7 @@ public class LoginControllerTest {
     LoginResponse loginResponse = new LoginResponse();
     loginResponse.setStatus(true);
     List<String> existingFeature = new ArrayList<String>();
-    String string = new String();
-    existingFeature.add(string);
+    existingFeature.add("");
     loginResponse.setExistingFeature(existingFeature);
     loginDetails = new LoginDetails();
     loginDetails.setAcqP("girmiti");
@@ -334,7 +333,7 @@ public class LoginControllerTest {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CHANGE_PSWD)
               .sessionAttr("loginUserId", Long.parseLong("121")))
-          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CHANGE_PSWD));
+          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_LOGIN));
     } catch (NumberFormatException e) {
       logger.error("ERROR:: LoginControllerTest:: testChangePasswordDataException method1", e);
     } catch (Exception e) {

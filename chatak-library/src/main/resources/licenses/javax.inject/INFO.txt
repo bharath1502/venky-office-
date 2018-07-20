@@ -1,0 +1,6 @@
+Project homepage: https://mvnrepository.com/artifact/javax.inject/javax.inject
+
+Sources: https://mvnrepository.com/search?q=javax.inject
+
+License:
+Licensed under Apache License 2.0

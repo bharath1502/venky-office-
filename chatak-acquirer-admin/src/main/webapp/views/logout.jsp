@@ -1,5 +1,6 @@
 <!doctype html>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html>
 <head>
 <meta charset="ISO-8859-1">
@@ -9,7 +10,7 @@
     <link rel="icon" href="../images/favicon.png" type="image/png">
    
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<div id="wrapper" class="container-fluid prepaid-admin-dashboard">
     	<header id="loginHeader"  class="col-sm-12 content-wrapper"> 
         	<div class="col-sm-4"><img class="login-logo-size" src="../images/Chatak-logo.jpg"> </div>
@@ -21,5 +22,7 @@
         </article>
         <jsp:include page="footer.jsp"/>
     </div>
+    <script src="../js/common-lib.js"></script>
+    <script type="text/javascript" src="../js/backbutton.js"></script>
 </body>
 </html>

@@ -123,7 +123,6 @@ public class PaymentSchemeDaoImpl implements PaymentSchemeDao {
 		PaymentSchemeResponse addPaymentSchemeResponse = new PaymentSchemeResponse();
 		String EmailID = addPaymentSchemeRequest.getContactEmail().toLowerCase();
 		try {
-			if (null != addPaymentSchemeRequest) {
 
 				List<PGPaymentScheme> pgPaymentScheme1 = paymentSchemeRepository.findByContactEmailOrderByUpdatedDateDesc(EmailID);
 
@@ -149,13 +148,9 @@ public class PaymentSchemeDaoImpl implements PaymentSchemeDao {
 				pgPaymentScheme.setCreatedBy(userid);
 				pgPaymentScheme.setUpdatedBy(userid);
 			
-
-				if (pgPaymentScheme != null) {
 					paymentSchemeRepository.save(pgPaymentScheme);
 					addPaymentSchemeResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
 					addPaymentSchemeResponse.setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
-				}
-			}
 		} catch (Exception e) {
 			logger.error("PaymentSchemeDaoImpl | addPaymentSchemeInformation | Exception" + e);
 			addPaymentSchemeResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);

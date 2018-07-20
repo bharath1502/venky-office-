@@ -1,13 +1,15 @@
 <!--Header Block Start -->
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <header class="col-sm-12 all-page-header">
 	<!--Header Logo Start -->
 	<div class="col-sm-4">
-		<img src="../images/logo.jpg" height="63px" alt="Logo" />
+		<img src="../images/Chatak-logo.jpg" height="63px" alt="Logo" />
 	</div>
 	<!--Header Logo End -->
 	<!--Header Welcome Text and Logout button Start -->
+	<c:if test="${loginUserType ne 'NEW-USER'}">
 	<div class="col-sm-6 col-xs-offset-3">
 		<div class="pull-right user-settings">
 			<table>
@@ -19,11 +21,12 @@
 					</td>
 				</tr>
 				<tr>
-					<td align="right" id="time" style="color: #0072C6;"></td>
+					<td><spring:message code="header.label.lastLoginTime"/> ${loginResponse.lastLonginTime }</td>
 				</tr>
 			</table>
 		</div>
 	</div>
+	</c:if>
 	<!--Header Welcome Text and Logout button End -->
 	<script src="../js/backbutton.js"></script>
 	<script src="../js/jquery.min.js"></script>

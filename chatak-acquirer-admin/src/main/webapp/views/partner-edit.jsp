@@ -6,7 +6,7 @@
 <%@page import="java.util.Calendar"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -23,7 +23,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -38,7 +38,7 @@
 					<div class="breadCrumb">
 						<span class="breadcrumb-text"><spring:message code="manage.label.manage"/></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
-							class="breadcrumb-text"><a href="showSearchPartner"><spring:message code="admin.partner.message"/></a></span>
+							class="breadcrumb-text"><spring:message code="admin.partner.message"/></span>
 						<span class="glyphicon glyphicon-play icon-font-size"></span> <span
 							class="breadcrumb-text"><spring:message code="common.label.edit"/></span>
 					</div>
@@ -71,6 +71,7 @@
 										value="${partnerRequest.partnerId}" />
 									<input type="hidden" id="managerId" name="managerId"
 										value="${partnerRequest.programManagerRequest.id}" />
+								    <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -351,6 +352,7 @@
 		<h2><spring:message code="label.partner.logo"/></h2>
 		<form:form action="updateManagePartner" id="popupForm"
 			modelAttribute="partnerRequest" method="post">
+		 <input type="hidden" name="CSRFToken" value="${tokenval}">
 			<c:choose>
 				<c:when test="${not empty imageData}">
 					<img id="logoDisp" src="${image}" width="50%" height="50%"

@@ -170,9 +170,7 @@ public class VaultServiceImpl implements VaultService {
       if(CommonUtil.isNullAndEmpty(registerCardRequest.getCardData().getCardNumber())) {
         throw new ChatakVaultException(VaultErrorCodes.ERROR_CODE_V08);
       }
-      if(CommonUtil.isNullAndEmpty(registerCardRequest.getCardData().getExpDate())) {
-        throw new ChatakVaultException(VaultErrorCodes.ERROR_CODE_V09);
-      } else if(!PGUtils.isValidCardExpiryDate(registerCardRequest.getCardData().getExpDate())) {
+      if((CommonUtil.isNullAndEmpty(registerCardRequest.getCardData().getExpDate())) || (!PGUtils.isValidCardExpiryDate(registerCardRequest.getCardData().getExpDate())) ) {
         throw new ChatakVaultException(VaultErrorCodes.ERROR_CODE_V09);
       }
     } else {

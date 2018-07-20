@@ -3,32 +3,32 @@ package com.chatak.switches.sb.util;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 import java.util.Calendar;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.core.MediaType;
 
-import org.apache.http.HttpStatus;
+import org.apache.http.Header;
+import org.apache.http.entity.ContentType;
+import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 
+import com.chatak.pg.exception.HttpClientException;
+import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.OAuthToken;
-import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.HttpClient;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.switches.sb.exception.ChatakSwitchException;
 import com.chatak.switches.sb.exception.ServiceException;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.core.util.Base64;
 
 public class JsonUtil {
 
@@ -41,7 +41,7 @@ public class JsonUtil {
 
   public static final ObjectWriter objectWriter = new ObjectMapper().writer();
   
-  private static String issuanceBaseServiceUrl = "";
+  private static String issuanceBaseServiceUrl = Properties.getProperty("prepaid.service.url");
   
   private static ObjectMapper mapper = new ObjectMapper();
 
@@ -100,7 +100,6 @@ public class JsonUtil {
    * @throws PLMarketPlaceException
    */
   public static Object convertJSONToObject(String jsonData, Class<?> c) throws ServiceException {
-    ObjectMapper mapper = new ObjectMapper();
     try {
       return mapper.readValue(jsonData, c);
     }
@@ -117,161 +116,90 @@ public class JsonUtil {
     }
     
   }
-
-  /**
-   * Method to invoke REST service with Payload object
-   * 
-   * @param request
-   * @param serviceEndPoint
-   * @return
-   * @throws ServiceException 
-   */
-  public static Object postRequest(Class<?> responseClass, Object request, String serviceEndPoint) throws ServiceException {
-    logger.info("Inside::PostReqeust::Method");
-    Client client = Client.create();
-    logger.info("Connecting to Gate way URL ::"+BASE_SERVICE_URL);
-    WebResource webResource = client.resource(BASE_SERVICE_URL + serviceEndPoint);
-    ClientResponse response = null;
-    ObjectWriter objectPrettyWriter = objectWriter.withDefaultPrettyPrinter();
-    String input = "";
-    try {
-      input = objectPrettyWriter.writeValueAsString(request);
-      response = webResource.header("Content-Type", MediaType.APPLICATION_JSON).post(ClientResponse.class, input);
-      if(response.getStatus() == HttpStatus.SC_OK) {
-        return validateStatus(responseClass, response);
-        }
-    }
-    catch(Exception e) {
-      logger.error("Error::PostReqeust::Method",e);
-      throw new ServiceException(e.getMessage());
-    }
-    logger.info("Exiting::PostReqeust::Method");
-    return null;
-
-  }
-
-private static Object validateStatus(Class<?> responseClass, ClientResponse response)
-		throws IOException, JsonParseException, JsonMappingException {
-	String output = response.getEntity(String.class);
-	  return mapper.readValue(output, responseClass);
-}
-
-  /**
-   * Method to invoke REST service object
-   * 
-   * @param serviceEndPoint
-   * @return
-   */
-  public static ClientResponse postRequest(String serviceEndPoint) {
-    ClientResponse response = validateMediaType(serviceEndPoint);
-    return response;
-  }
-
-private static ClientResponse validateMediaType(String serviceEndPoint) {
-	Client client = Client.create();
-    WebResource webResource = client.resource(BASE_SERVICE_URL + serviceEndPoint);
   
-    ClientResponse response = webResource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class);
-	return response;
-}
-  public static ClientResponse postRequestLogin(String serviceEndPoint) {
-	    ClientResponse response = validateMediaType(serviceEndPoint);
-	   
-	    return response;
-	  }
-  
-  public static ClientResponse sendToIssuance(Object request, String serviceEndPoint,String mode) throws Exception{
-    Client client = Client.create();
-    client.setConnectTimeout(Constants.TIME_OUT);
-    issuanceBaseServiceUrl=ProcessorConfig.get(ProcessorConfig.FEE_SERVICE+mode);
-    logger.info("Connecting to Issuance URL :: "+issuanceBaseServiceUrl);
-    String input = "";
-    Builder webResource = client.resource(issuanceBaseServiceUrl + serviceEndPoint).header("consumerClientId",
-                                                                                     Properties.getProperty("chatak-issuance.consumer.client.id")).header("consumerSecret",
-                                                                                                                                                          Properties.getProperty("chatak-issuance.consumer.client.secret"));
-    webResource.header(AUTH_HEADER, TOKEN_TYPE_BEARER + getValidOAuth2TokenForFee());
-    ObjectWriter objectPrettyWriter = objectWriter.withDefaultPrettyPrinter();
-    ClientResponse response = null;
-    try {
-      input = objectPrettyWriter.writeValueAsString(request);
-      response = webResource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, input);
-      if (null != response && refershRequestCount == 0 && response.getStatus() == HttpStatus.SC_UNAUTHORIZED) {
-        return validateResponseAndStatus(request, serviceEndPoint, mode);
-      }
-    }
-    catch(Exception e) {
-      logger.info("Error:: JsonUtil:: postFee method "+e);
-      throw new ChatakSwitchException("Unable to connect to API server,Please try again");
-    }
-    return response;
-  }
+  public static <T extends Object> T sendToIssuance(Object request, String serviceEndPoint,String mode,Class<T> response) throws HttpClientException, ChatakSwitchException {
+		T resultantObject = null;
+		logger.info("Connecting to Issuance URL :: " + issuanceBaseServiceUrl);
+		HttpClient httpClient = new HttpClient(issuanceBaseServiceUrl, serviceEndPoint);
+		try {
+			Header[] headers = new Header[] {
+					new BasicHeader("consumerClientId", Properties.getProperty("chatak-issuance.consumer.client.id")),
+					new BasicHeader("consumerSecret", Properties.getProperty("chatak-issuance.consumer.client.secret")),
+					new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + getValidOAuth2TokenForFee()),
+					new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()) };
+			resultantObject = httpClient.invokePost(request, response, headers);
+		} catch (PrepaidAdminException e) {
+			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "PrepaidException");
+			logger.info("Requesting oauth ::");
+			if (refershRequestCount == 0) {
+				refreshOAuth2Token_fee();
+				refershRequestCount++;
+				return sendToIssuance(request, serviceEndPoint, mode, response);
+			}
+		} catch (Exception e) {
+			logger.info("Error:: JsonUtil:: postFee method " + e);
+		    throw new ChatakSwitchException("Unable to connect to API server,Please try again");
+		} 
+		return resultantObject;
+	}
 
-private static ClientResponse validateResponseAndStatus(Object request, String serviceEndPoint, String mode)
-		throws Exception {
-	refreshOAuth2Token_fee();
-	refershRequestCount++;
-	return sendToIssuance(request, serviceEndPoint, mode);
-}
+
 private static String getValidOAuth2TokenForFee() {
-    if(isValidToken_fee()) {
-      return OAUTH_TOKEN_FEE;
-    }
-    else {
+	String output = null;
+	if (isValidToken_fee()) {
+		return OAUTH_TOKEN_FEE;
+	} else {
+		if(issuanceBaseServiceUrl.startsWith("https")) {
+	        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+	          
+	        	@Override
+	            public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1) throws CertificateException {
+	             
+	        		// need to implement based on requirement
+	            }
+	        	
+	          @Override
+	          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+	            
+	            return new java.security.cert.X509Certificate[0];
+	          }
+	          
+	          
+	          
+	          @Override
+	          public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1) throws CertificateException {
+	        	// need to implement based on requirement
+	          }
+	        } };
+	        
 
-      Client client = Client.create();
-      if(issuanceBaseServiceUrl.startsWith("https")) {
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-          
-        	@Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1) throws CertificateException {
-             
-        		// need to implement based on requirement
-            }
-        	
-          @Override
-          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            
-            return null;
-          }
-          
-          
-          
-          @Override
-          public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1) throws CertificateException {
-        	// need to implement based on requirement
-          }
-        } };
-        
+	      // Install the all-trusting trust manager
+	      try {
+	          SSLContext sc = SSLContext.getInstance("TLS");
+	          sc.init(null, trustAllCerts, new SecureRandom());
+	          HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+	      } catch (Exception e) {
+	        logger.info("Error:: JsonUtil:: getValidOAuth2Token method "+e); ;
+	      }
 
-      // Install the all-trusting trust manager
-      try {
-          SSLContext sc = SSLContext.getInstance("TLS");
-          sc.init(null, trustAllCerts, new SecureRandom());
-          HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-      } catch (Exception e) {
-        logger.info("Error:: JsonUtil:: getValidOAuth2Token method "+e); ;
-      }
-
-      }
-      ClientResponse response = null;
-      Builder webResource = client.resource(issuanceBaseServiceUrl
-                                            + ISSUANCE_BASE_ADMIN_OAUTH_SERVICE_URL).header(AUTH_HEADER, getBasicAuthValueForFee());
-
-      try {
-        response = webResource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        String output = response.getEntity(String.class);
-        OAuthToken apiResponse = new ObjectMapper().readValue(output, OAuthToken.class);
-        OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
-        OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
-        tokenValidity_fee = Calendar.getInstance();
-        tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
-      }
-      catch(Exception e) {
-        logger.info("Error:: JsonUtil:: getValidOAuth2Token method "+e); ;
-      }
-    }
-    return OAUTH_TOKEN_FEE;
-  }
+	      }
+		HttpClient httpClient = new HttpClient(issuanceBaseServiceUrl, ISSUANCE_BASE_ADMIN_OAUTH_SERVICE_URL);
+		try {
+			Header[] headers = new Header[] { new BasicHeader(AUTH_HEADER, getBasicAuthValueForFee()),
+					new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()) };
+			output = httpClient.invokePost(String.class, headers);
+			OAuthToken apiResponse = new ObjectMapper().readValue(output, OAuthToken.class);
+			OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
+			OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
+			tokenValidity_fee = Calendar.getInstance();
+			tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
+		} catch (Exception e) {
+			logger.info("Error:: JsonUtil:: getValidOAuth2Token method " + e);
+			;
+		}
+	}
+	return OAUTH_TOKEN_FEE;
+}
 
 private static boolean isValidToken_fee() {
   if( tokenValidity_fee == null || OAUTH_TOKEN_FEE == null) {
@@ -289,29 +217,30 @@ private static boolean isValidToken_fee() {
 private static String getBasicAuthValueForFee() {
     String basicAuth = Properties.getProperty("chatak-issuance.oauth.basic.auth.username") + ":"
                        + Properties.getProperty("chatak-issuance.oauth.basic.auth.password");
-    basicAuth = TOKEN_TYPE_BASIC + new String(Base64.encode(basicAuth));
+    basicAuth = TOKEN_TYPE_BASIC + new String(Base64.getEncoder().encode(basicAuth.getBytes()));
     return basicAuth;
   }
-private static String refreshOAuth2Token_fee() {
-  Client client = Client.create();
-  ClientResponse response = null;
-  Builder webResource = client.resource(issuanceBaseServiceUrl
-                                        + ISSUANCE_BASE_OAUTH_REFRESH_SERVICE_URL + OAUTH_REFRESH_TOKEN_FEE).header(AUTH_HEADER,
-                                                                                                                    getBasicAuthValueForFee());
-  try {
-    response = webResource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-    String output = response.getEntity(String.class);
-    OAuthToken apiResponse = new ObjectMapper().readValue(output, OAuthToken.class);
-    OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
-    OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
-    tokenValidity_fee = Calendar.getInstance();
-    tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
-    return OAUTH_TOKEN_FEE;
-  }
-  catch(Exception e) {
-    logger.info("Error:: JsonUtil:: refreshOAuth2Token_fee method "+e);
-  }
-  return null;
+
+private static <T> String refreshOAuth2Token_fee() {
+	T resultantObject = null;
+	HttpClient paymentHttpClient = new HttpClient(issuanceBaseServiceUrl + ISSUANCE_BASE_OAUTH_REFRESH_SERVICE_URL,
+			OAUTH_REFRESH_TOKEN_FEE);
+
+	try {
+		Class<T> response = null;
+		Header[] headers = new Header[] { new BasicHeader(AUTH_HEADER, getBasicAuthValueForFee()),
+				new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()), };
+		resultantObject = paymentHttpClient.invokeGet(response, headers);
+		OAuthToken apiResponse = (OAuthToken) resultantObject;
+		OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
+		OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
+		tokenValidity_fee = Calendar.getInstance();
+		tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
+		return OAUTH_TOKEN_FEE;
+	} catch (Exception e) { 
+		logger.info("Error:: JsonUtil:: refreshOAuth2Token_fee method " + e);
+	}
+	return null;
 }
 
 }

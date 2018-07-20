@@ -13,7 +13,7 @@ public class SettlementActionDTOList implements Serializable{
    * 
    */
   private static final long serialVersionUID = 3316113884563639021L;
-  List< SettlemetActionDTO> actionDTOs;
+  private List< SettlemetActionDTO> actionDTOs;
 
   public List<SettlemetActionDTO> getActionDTOs() {
     return actionDTOs;

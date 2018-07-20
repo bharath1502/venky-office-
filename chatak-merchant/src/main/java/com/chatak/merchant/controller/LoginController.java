@@ -40,6 +40,7 @@ import com.chatak.merchant.service.LoginService;
 import com.chatak.merchant.service.MerchantProfileService;
 import com.chatak.merchant.service.RestPaymentService;
 import com.chatak.merchant.service.TransactionService;
+import com.chatak.merchant.util.DateUtils;
 import com.chatak.merchant.util.PasswordHandler;
 import com.chatak.merchant.util.StringUtil;
 import com.chatak.pg.acq.dao.MerchantDao;
@@ -56,7 +57,10 @@ import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.user.bean.MerchantAccountHistory;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
+import com.chatak.pg.util.validator.CSRFTokenManager;
 
 /**
  * << Add Comments Here >>
@@ -123,6 +127,7 @@ public class LoginController implements URLMappingConstants {
     try {
       LoginDetails loginDetails = new LoginDetails();
       model.put("loginDetails", loginDetails);
+      
       session.setAttribute(Constants.ERROR, null);
       session.setAttribute(Constants.SUCESS, null);
     } catch (Exception e) {
@@ -132,6 +137,9 @@ public class LoginController implements URLMappingConstants {
 
     }
     model.put("currentBuildRelease", Properties.getProperty("current.release.version"));
+    String token = CSRFTokenManager.getTokenForSession(session);
+    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Genarated CSRF token before login : " + token);
+    session.setAttribute("tokenval", token);
     logger.info("Exiting:: LoginController:: showLogin method");
     return modelAndView;
   }
@@ -162,24 +170,19 @@ public class LoginController implements URLMappingConstants {
         getError(bindingResult, modelAndView);
         return modelAndView;
       }
-      if (userAgent != null) {
-        userAgent = userAgent.replaceAll("\\ ", "");
-      }
+      userAgent = removeWhiteSpace(userAgent);
+      loginDetails.setCurrentLoginTime(DateUtils.getFormatLastLoginTime(loginDetails));
       LoginResponse loginResponse = loginSevice.authenticate(loginDetails);
-      if (loginResponse == null) {
-        throw new ChatakMerchantException(messageSource.getMessage(
-            "chatak.merchant.login.error.message", null, LocaleContextHolder.getLocale()));
-      }
+      getChatakException(loginResponse);
       if (null != loginResponse.getUserType()
           && loginResponse.getUserType().equals(PGConstants.NEW_USER)) {
         session.setAttribute(Constants.LOING_USER_ID, loginResponse.getUserId());
+        session.setAttribute("loginUserType", loginResponse.getUserType());
         modelAndView = changePassword(model, session);
       } else if (null != loginResponse.getUserMerchantId()
           && null != loginResponse.getExistingFeature()) {
         String existngFeatues = "";
-        for (String str : loginResponse.getExistingFeature()) {
-          existngFeatues += str;
-        }
+        existngFeatues = loginExistingFeature(loginResponse, existngFeatues);
         session.setAttribute("existingFeatues", existngFeatues);
         session.setAttribute("userType", loginResponse.getUserType());
         modelAndView.addObject("userType", loginResponse.getUserType());
@@ -191,51 +194,15 @@ public class LoginController implements URLMappingConstants {
               && loginResponseData.getAcqU().trim().equals(loginDetails.getAcqU())) {
             Cookie[] cookies = request.getCookies();
             String cookieValue = "";
-            for (Cookie cookie : cookies) {
-              if (Constants.COOKIE_CHATAK_NAME.equalsIgnoreCase(cookie.getName())) {
-                cookieValue = cookie.getValue();
-                break;
-              }
-            }
-            String encUName = PasswordHandler.encrypt(loginDetails.getAcqU());
-            SessionInformation sessionInformation = sessionRegistry.getSessionInformation(encUName);
-
-            if (null == sessionInformation) {
-              modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
-              return modelAndView;
-            } else {
-              if (!loginResponseData.getjSession().equals(userAgent + cookieValue)) {
-                Date lastSessionRequestDate = sessionInformation.getLastRequest();
-                Date lastRequestDate = new Date(lastSessionRequestDate.getTime());
-                lastRequestDate.setTime(lastRequestDate.getTime()
-                    + (Integer.parseInt(messageSource.getMessage("chatak.merchant.session.timeout",
-                        null, LocaleContextHolder.getLocale())) * Constants.TIME_OUT));
-                Date curDate = new Date();
-                if (lastRequestDate.after(curDate)) {
-                  modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
-                  return modelAndView;
-                } else {
-                  sessionRegistry.getAllSessions(object, false);
-                  sessionInformation.expireNow();
-                  sessionRegistry.removeSessionInformation(encUName);
-                  Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
-                  myCookie.setMaxAge(0);
-                  response.addCookie(myCookie);
-                  modelAndView.setViewName(Constants.CHATAK_INVALID_SESSION);
-                  return modelAndView;
-                }
-              }
-              sessionInformation.refreshLastRequest();
-            }
+            cookieValue = getCookiesValue(cookies, cookieValue);
+            modelAndView = getInvalidSessionResponse(response, loginDetails, userAgent, modelAndView, loginResponseData, cookieValue, object);
           }
 
         }
+        session.setAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME,
+	  			(String) session.getAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME));
 
-        if (loginResponse.getStatus() != null && loginResponse.getStatus()) {
-          modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse,
-              loginDetails, userAgent);
-          session.setAttribute("loginResponse", loginResponse);
-        }
+        modelAndView = getStatusResponse(response, session, loginDetails, modelAndView, userAgent, loginResponse);
       } else if (loginResponse.getErrorCode().equals(Constants.ERROR_CODE)) {
         modelAndView.addObject(Constants.ERROR, loginResponse.getMessage());
       } else {
@@ -253,6 +220,110 @@ public class LoginController implements URLMappingConstants {
     logger.info("Exiting:: LoginController:: authenticateUser method");
     return modelAndView;
   }
+  
+	private ModelAndView getInvalidSessionResponse(HttpServletResponse response, LoginDetails loginDetails,
+			String userAgent, ModelAndView modelAndView, LoginDetails loginResponseData, String cookieValue,
+			Object object) {
+		String encUName = PasswordHandler.encrypt(loginDetails.getAcqU());
+		SessionInformation sessionInformation = sessionRegistry.getSessionInformation(encUName);
+
+		if (null == sessionInformation) {
+			modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
+			return modelAndView;
+		} else {
+			if (!loginResponseData.getjSession().equals(userAgent + cookieValue)) {
+				Date lastSessionRequestDate = sessionInformation.getLastRequest();
+				Date lastRequestDate = new Date(lastSessionRequestDate.getTime());
+				lastRequestDate.setTime(lastRequestDate.getTime()
+						+ (Integer.parseInt(messageSource.getMessage("chatak.merchant.session.timeout", null,
+								LocaleContextHolder.getLocale())) * Constants.TIME_OUT));
+				Date curDate = new Date();
+				if (lastRequestDate.after(curDate)) {
+					modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
+					return modelAndView;
+				} else {
+					sessionRegistry.getAllSessions(object, false);
+					sessionInformation.expireNow();
+					sessionRegistry.removeSessionInformation(encUName);
+					Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
+					myCookie.setMaxAge(0);
+					response.addCookie(myCookie);
+					modelAndView.setViewName(Constants.CHATAK_INVALID_SESSION);
+					return modelAndView;
+				}
+			}
+			sessionInformation.refreshLastRequest();
+		}
+		return modelAndView;
+	}
+
+	/**
+	 * @param response
+	 * @param session
+	 * @param loginDetails
+	 * @param modelAndView
+	 * @param userAgent
+	 * @param loginResponse
+	 * @return
+	 */
+	private ModelAndView getStatusResponse(HttpServletResponse response, HttpSession session, LoginDetails loginDetails,
+			ModelAndView modelAndView, String userAgent, LoginResponse loginResponse) {
+		if (loginResponse.getStatus() != null && loginResponse.getStatus()) {
+			modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse, loginDetails,
+					userAgent);
+			session.setAttribute("loginResponse", loginResponse);
+		}
+		return modelAndView;
+	}
+
+	/**
+	 * @param cookies
+	 * @param cookieValue
+	 * @return
+	 */
+	private String getCookiesValue(Cookie[] cookies, String cookieValue) {
+		for (Cookie cookie : cookies) {
+			if (Constants.COOKIE_CHATAK_NAME.equalsIgnoreCase(cookie.getName())) {
+				cookieValue = cookie.getValue();
+				break;
+			}
+		}
+		return cookieValue;
+	}
+
+	/**
+	 * @param loginResponse
+	 * @param existngFeatues
+	 * @return
+	 */
+	private String loginExistingFeature(LoginResponse loginResponse, String existngFeatues) {
+		for (String str : loginResponse.getExistingFeature()) {
+			existngFeatues += str;
+		}
+		return existngFeatues;
+	}
+
+	/**
+	 * @param loginResponse
+	 * @throws ChatakMerchantException
+	 */
+	private void getChatakException(LoginResponse loginResponse) throws ChatakMerchantException {
+		if (loginResponse == null) {
+			throw new ChatakMerchantException(messageSource.getMessage("chatak.merchant.login.error.message", null,
+					LocaleContextHolder.getLocale()));
+		}
+	}
+
+	/**
+	 * @param userAgent
+	 * @return
+	 */
+	private String removeWhiteSpace(String userAgent) {
+		if (userAgent != null) {
+			userAgent = userAgent.replaceAll("\\ ", "");
+		}
+		return userAgent;
+	}
 
   private ModelAndView populateChangePasswordModel(HttpSession session, Map model,
       LoginResponse loginResponse) {
@@ -405,7 +476,7 @@ public class LoginController implements URLMappingConstants {
           txnCodeList.add(AccountTransactionCode.FT_BANK);
           txnCodeList.add(AccountTransactionCode.FT_CHECK);
           txnCodeList.add(AccountTransactionCode.CC_FEE_CREDIT);
-          txnCodeList.add(AccountTransactionCode.CC_FEE_DEBIT); 
+          txnCodeList.add(AccountTransactionCode.CC_FEE_DEBIT);
           txnCodeList.add(AccountTransactionCode.EFT_DEBIT);
           txnCodeList.add(AccountTransactionCode.ACCOUNT_CREDIT);
           txnCodeList.add(AccountTransactionCode.ACCOUNT_DEBIT);
@@ -625,8 +696,8 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
 
     // If user came from a change password case when still not logged into the portal,
     // Ex. from forgot password scenario, set the new user attribute.
-    String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
-    if (userType == null) {
+    String loginUserType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
+    if (loginUserType != null && loginUserType.equals(PGConstants.NEW_USER)) {
       forgotPasswordRequest.setIsNewUser(true);
     }
     model.put("forgotPasswordRequest", forgotPasswordRequest);

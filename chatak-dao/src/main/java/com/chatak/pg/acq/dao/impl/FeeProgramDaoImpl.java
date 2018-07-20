@@ -1,6 +1,7 @@
 package com.chatak.pg.acq.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -8,6 +9,8 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
@@ -62,6 +65,9 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
 
   @Autowired
   MerchantRepository merchantRepository;
+  
+  @Autowired
+  MessageSource messageSource;
 
   @Autowired
   MerchantConfigRepositrory merchantConfigRepositrory;
@@ -168,7 +174,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
 
   private BooleanExpression isStatusNotEq() {
     String status = "Deleted";
-    return (status != null && !"".equals(status)) ? QPGFeeProgram.pGFeeProgram.status.ne(status)
+    return (!"".equals(status)) ? QPGFeeProgram.pGFeeProgram.status.ne(status)
         : null;
   }
 
@@ -219,7 +225,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
     if (CommonUtil.isListNotNullAndEmpty(tupleCardList)) {
       return tupleCardList;
     }
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -273,7 +279,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
     feeProgramRepository.save(pgFeeProgram);
     response.setErrorCode(ActionErrorCode.ERROR_CODE_F2);
     response
-        .setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_F2));
+        .setErrorMessage(messageSource.getMessage("fee.program.delete.success", null, LocaleContextHolder.getLocale()));
     return response;
   }
 
@@ -296,5 +302,29 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   @Override
   public PGFeeProgram getFeeprogramName(String feeProgramName) {
     return feeProgramRepository.findByFeeProgramName(feeProgramName);
+  }
+  
+  @Override
+  public List<PGFeeProgram> findByCardProgramId(Long cardProgramId) throws DataAccessException {
+    return feeProgramRepository.findByCardProgramId(cardProgramId);
+  }
+  
+  @Override
+  public List<PGAcquirerFeeValue> getAcquirerFeeValueByCardProgramId(Long cardProgramId) throws DataAccessException {
+
+    JPAQuery query = new JPAQuery(entityManager);
+    List<PGAcquirerFeeValue> tupleCardList =
+        query.distinct()
+            .from(QPGFeeProgram.pGFeeProgram, QPGAcquirerFeeValue.pGAcquirerFeeValue)
+            .where(
+                isStatusEq(
+                    Constants.ACTIVE).and(QPGFeeProgram.pGFeeProgram.cardProgramId.eq(cardProgramId))
+                                .and(QPGFeeProgram.pGFeeProgram.feeProgramId
+                                    .eq(QPGAcquirerFeeValue.pGAcquirerFeeValue.feeProgramId)))
+        .list(QPGAcquirerFeeValue.pGAcquirerFeeValue);
+    if (CommonUtil.isListNotNullAndEmpty(tupleCardList)) {
+      return tupleCardList;
+    }
+    return Collections.emptyList();
   }
 }

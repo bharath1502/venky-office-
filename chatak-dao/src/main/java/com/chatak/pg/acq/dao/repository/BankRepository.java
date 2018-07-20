@@ -31,5 +31,5 @@ public interface BankRepository extends JpaRepository<PGBank, Long>, QueryDslPre
 	
 	public List<PGBank> findByCurrencyIdAndStatusLike(Long currencyId, String status);
 	
-
+	public List<PGBank> findByIssuanceBankId(Long issuanceBankId);
 }

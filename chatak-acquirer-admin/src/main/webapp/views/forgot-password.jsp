@@ -7,6 +7,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page import="java.util.Calendar"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -29,7 +30,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper" class="main-container">
 		<!--Container block Start -->
@@ -62,7 +63,7 @@
 							<!-- Page Form Start -->
 							<form:form action="forgot-password"
 								modelAttribute="forgotPasswordRequest" method="post">
-
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12 login-elements-holder">
 									<fieldset class="col-sm-12">
 									<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">

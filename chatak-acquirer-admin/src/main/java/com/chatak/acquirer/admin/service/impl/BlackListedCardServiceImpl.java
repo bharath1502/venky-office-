@@ -1,5 +1,6 @@
 package com.chatak.acquirer.admin.service.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.BlackListedCardService;
 import com.chatak.pg.acq.dao.BINDao;
 import com.chatak.pg.acq.dao.BlackListedCardDao;
+import com.chatak.pg.acq.dao.CardProgramDao;
+import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGBlackListedCard;
 import com.chatak.pg.bean.CardNumberResponse;
 import com.chatak.pg.bean.Response;
@@ -21,6 +24,7 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.BlackListedCard;
 import com.chatak.pg.user.bean.BlackListedCardRequest;
 import com.chatak.pg.user.bean.BlackListedCardResponse;
+import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 
 @Service
@@ -33,6 +37,9 @@ public class BlackListedCardServiceImpl implements BlackListedCardService, PGCon
 
   @Autowired
   private BINDao bINDao;
+  
+  @Autowired
+  private CardProgramDao cardProgramDao;
 
   @Override
   public BlackListedCardResponse addBlackListedCardInfo(BlackListedCard blacklistedcardInfo,
@@ -134,7 +141,7 @@ public class BlackListedCardServiceImpl implements BlackListedCardService, PGCon
 
   @Override
   public Response findByCardNumber(String cardNum) {
-    long cardNumber = Long.parseLong(cardNum);
+    BigInteger cardNumber = new BigInteger(cardNum);
     Response response = blackListedCardDao.getCardDataByCardNumber(cardNumber);
     return response;
   }
@@ -165,42 +172,22 @@ public class BlackListedCardServiceImpl implements BlackListedCardService, PGCon
   }
 
   @Override
-  public CardNumberResponse validateCardNumber(Long cardNum) {
+  public CardNumberResponse validateCardNumber(BigInteger cardNum) {
     logger.info("Entering:: BlackListedCardServiceImpl:: validateCardNumber method");
     CardNumberResponse cardNumberResponse = new CardNumberResponse();
-    PGBlackListedCard blackListedCard = blackListedCardDao.getCardNumber(cardNum);
-    String numberAsString = Long.toString(cardNum);
-    Long blackListedCardNumber =
-        Long.parseLong(numberAsString.substring(Constants.ZERO, Constants.SIX));
-    boolean isContainsBin = bINDao.containsBin(blackListedCardNumber);
-    if (isContainsBin) {
-      if (blackListedCard != null) {
-        if (blackListedCard.getStatus() == PGConstants.STATUS_INACTIVE
-            || blackListedCard.getStatus() == PGConstants.STATUS_ACTIVE) {
-          cardNumberResponse.setId(blackListedCard.getId());
-          cardNumberResponse.setCardNumber(blackListedCard.getCardNumber());
-          cardNumberResponse.setErrorCode(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY);
-          cardNumberResponse.setErrorMessage(
-              ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY));
-          return cardNumberResponse;
-        } else {
-          cardNumberResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
-          cardNumberResponse.setErrorMessage(
-              ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
-          return cardNumberResponse;
-        }
-      } else {
-        cardNumberResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
-        cardNumberResponse.setErrorMessage(
-            ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
-        return cardNumberResponse;
-      }
-    } else {
-      cardNumberResponse.setErrorCode(ActionErrorCode.ERROR_CODE_201);
-      cardNumberResponse.setErrorMessage(
-          ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_201));
-      return cardNumberResponse;
-    }
-
+    
+	String cardnumber = cardNum.toString();
+	CardProgram cardProgram = cardProgramDao.findCardProgramByIIN(CommonUtil.getIIN(cardnumber),
+			CommonUtil.getPartnerIINExt(cardnumber), CommonUtil.getIINExt(cardnumber));
+	if (cardProgram == null) {
+		cardNumberResponse.setErrorCode(ActionErrorCode.ERROR_CODE_201);
+		cardNumberResponse
+				.setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_201));
+		return cardNumberResponse;
+	} else {
+		cardNumberResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
+		cardNumberResponse.setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
+		return cardNumberResponse;
+	}
   }
 }

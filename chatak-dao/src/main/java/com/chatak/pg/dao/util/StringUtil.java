@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.dao.util;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -10,7 +11,10 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.StringUtils;
 
 
 /**
@@ -55,8 +59,8 @@ public final class StringUtil {
     if(raw == null || "".equals(raw.trim()))
       return null;
     try {
-      if(raw.indexOf("/") != -1 || raw.indexOf("-") != -1 || raw.indexOf(".") != -1) {
-        String splitVariable = (raw.indexOf("/") != -1) ? "/" : ((raw.indexOf("-") != -1) ? "-" : "\\.");
+      if(raw.indexOf('/') != -1 || raw.indexOf('-') != -1 || raw.indexOf('.') != -1) {
+        String splitVariable = (raw.indexOf('/') != -1) ? "/" : validateRaw(raw);
         String[] raws = raw.split(splitVariable);
         String result = "";
         result = (raws[0].length() < Constants.TWO) ? "0" + raws[0] : raws[0];
@@ -71,6 +75,10 @@ public final class StringUtil {
     }
 
     return null;
+  }
+
+  private static String validateRaw(String raw) {
+    return (raw.indexOf('-') != -1) ? "-" : "\\.";
   }
   
   public static boolean isNullEmpty(String input) {
@@ -122,11 +130,11 @@ public final class StringUtil {
       String arrayData[] = data.split(",");
       return arrayData;
     }
-    return null;
+    return new String[0];
   }
 
   public static String convertString(String[] arrayData) {
-    if(arrayData.length > 0 && arrayData != null) {
+    if(arrayData.length > 0) {
       StringBuilder sb = new StringBuilder();
       for(String arr : arrayData) {
         sb.append(arr + ",");
@@ -267,4 +275,26 @@ public final class StringUtil {
     }
   }
 
+  public static PGApplicationClient getApplicationClientDTO() {
+    PGApplicationClient applicationClient = new PGApplicationClient();
+    applicationClient.setAppName(Constants.APP_NAME);
+    applicationClient.setAppDescription(Constants.APP_DESCRIPTION);
+    applicationClient.setAppAdminEmail(Constants.APP_ADMIN_EMAIL);
+    applicationClient.setAppClientName(Constants.APP_CLIENT_NAME);
+    applicationClient.setAppClientEmail(Constants.APP_ADMIN_EMAIL);
+    applicationClient.setAppClientPhone(Constants.APP_CLIENT_PHONE);
+    applicationClient.setAppClientAddress(Constants.APP_CLIENT_ADDRESS);
+    applicationClient.setAppClientCity(Constants.APP_CLIENT_CITY);
+    applicationClient.setAppClientCountry(Constants.APP_CLIENT_COUNTRY);
+    applicationClient.setAppClientZip(Constants.APP_CLIENT_ZIP);
+    applicationClient.setAppClientRole(Constants.APP_CLIENT_ROLE);
+    applicationClient.setStatus(0);
+    applicationClient.setActiveFrom(new Timestamp(System.currentTimeMillis()));
+    applicationClient.setActiveTill(new Timestamp(System.currentTimeMillis()));
+    applicationClient.setAppClientAccess(Constants.APP_CLIENT_ACCESS);
+    applicationClient.setAppAuthPass(StringUtils.randomNumeric(Integer.parseInt("12")));
+    applicationClient.setCreatedBy(Constants.CREATED_BY);
+    applicationClient.setCreatedDate(DateUtil.getCurrentTimestamp());
+    return applicationClient;
+  }
 }

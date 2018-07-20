@@ -5,41 +5,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 			<section class="field-element-row account-details-content"
 												style="display: none;">
 												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="admin.pm.Name.message" /></label>
-														<form:input cssClass="form-control" readonly="true"
-															path="programManagerId" id="programManagerId" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="programManagerIdEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label><spring:message code="admin.PartnerName.message"/><span class="required-field">*</span></label>
-														<form:select path="partnerId" cssClass="form-control"
-														onblur="validatePartnerId()">
-															<form:option value=""><spring:message code="reports.option.select" /></form:option>
-															<c:if test="${not empty partnerList}">
-															<c:forEach items="${partnerList}" var="partner">
-				   													<form:option value="${partner.label}">${partner.value}</form:option>
-															</c:forEach>
-															</c:if>
-														</form:select>
-														<div class="discriptionErrorMsg">
-															<span id="partnerIdEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.companyname"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="businessName"
@@ -239,6 +215,15 @@
 															<span id="businessTypeEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
+															<fieldset class="col-sm-3">
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.username"/><span class="required-field">*</span></label>
+														<form:input cssClass="form-control" path="userName"
+															id="userName" maxlength="50" />
+														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+															<span id="userNameEr" class="red-error">&nbsp;</span> <span
+																id="userNamegreenEr" class="green-error">&nbsp;</span>
+														</div>
+													</fieldset>
 												</fieldset>
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
@@ -251,5 +236,6 @@
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->
-											</section>								
+											</section>
+											<script src="../js/common-lib.js"></script>							
 </body>

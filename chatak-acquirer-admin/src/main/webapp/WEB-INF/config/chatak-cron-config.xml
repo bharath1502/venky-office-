@@ -38,5 +38,16 @@
 	<!-- Scheduler pool size settings payoutScheduler -->
 	<task:scheduler id="processAutoPaymentSchedulerTask"
 		pool-size="${scheduler.session.release.scheduler.pool.size}" />
+		
+		<!-- Scheduler merchant settelment Report scheduler -->
+		<bean id="merchantSettelmentSchedulerTask"
+		class="com.chatak.acquirer.admin.spring.scheduler.MerchantSettelmentReportScheduler" />
+
+	<task:scheduled-tasks scheduler="processAutoPaymentSchedulerTask">
+		<!-- ref: Scheduler Class Name with Java notation, method: Method/Task 
+			to be executed when scheduler triggers. -->
+		<task:scheduled ref="merchantSettelmentSchedulerTask" method="generateMerchantSettelmentReport"
+			cron="${scheduler.merchant.settlement.report.reminder.cron}" />
+	</task:scheduled-tasks>
 
 </beans>

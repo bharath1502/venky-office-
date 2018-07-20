@@ -57,7 +57,7 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
       throws ChatakAdminException {
     logger.info("Entering:: MerchantCategoryCodeServiceImpl:: createMerchantCategoryCode method");
     MerchantCategoryCodeRequest request = new MerchantCategoryCodeRequest();
-    request.setMerchantCategoryCode(mcc.getMerchantCategoryCode());
+    request.setMerchantCategoryCode(mcc.getMcc());
     request.setSelectedTcc(mcc.getSelectedTcc());
     request.setDescription(mcc.getDescription());
     request.setCreatedBy(mcc.getCreatedBy());
@@ -72,7 +72,7 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
     logger.info("Entering:: MerchantCategoryCodeServiceImpl:: searchMerchantCategoryCode method");
     MerchantCategoryCodeRequest mccSearchRequest = new MerchantCategoryCodeRequest();
     MerchantCategoryCodeSearchResponse mccSearchResponse = new MerchantCategoryCodeSearchResponse();
-    mccSearchRequest.setMerchantCategoryCode(mcc.getMerchantCategoryCode());
+    mccSearchRequest.setMerchantCategoryCode(mcc.getMcc());
     mccSearchRequest.setStatus(mcc.getStatus());
     mccSearchRequest.setPageSize(mcc.getPageSize());
     mccSearchRequest.setPageIndex(mcc.getPageIndex());
@@ -87,7 +87,7 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
       for (PGMerchantCategoryCode pgMCC : pgMCCs) {
         mccRespObj = new MerchantCategoryCode();
         mccRespObj.setId(pgMCC.getId());
-        mccRespObj.setMerchantCategoryCode(pgMCC.getMerchantCategoryCode());
+        mccRespObj.setMcc(pgMCC.getMerchantCategoryCode());
         mccRespObj.setSelectedTcc(pgMCC.getSelectedTcc());
         mccRespObj.setDescription(pgMCC.getDescription());
         mccRespObj.setStatus(pgMCC.getStatus());
@@ -107,7 +107,7 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
     PGMerchantCategoryCode pgMCC = mccDao.findById(id);
     if (null != pgMCC) {
       merchantCategoryCode.setId(pgMCC.getId());
-      merchantCategoryCode.setMerchantCategoryCode(pgMCC.getMerchantCategoryCode());
+      merchantCategoryCode.setMcc(pgMCC.getMerchantCategoryCode());
       merchantCategoryCode.setSelectedTCCMultiple(Arrays.asList(pgMCC.getSelectedTcc().split(",")));
       merchantCategoryCode.setDescription(pgMCC.getDescription());
       merchantCategoryCode.setStatus(pgMCC.getStatus());
@@ -123,7 +123,7 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
     logger.info("Entering:: MerchantCategoryCodeServiceImpl:: updateMerchantCategoryCode method");
     MerchantCategoryCodeRequest request = new MerchantCategoryCodeRequest();
     request.setId(mcc.getId());
-    request.setMerchantCategoryCode(mcc.getMerchantCategoryCode());
+    request.setMerchantCategoryCode(mcc.getMcc());
     request.setSelectedTcc(mcc.getSelectedTcc());
     request.setDescription(mcc.getDescription());
     request.setStatus(S_STATUS_ACTIVE);
@@ -202,13 +202,11 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
             LocaleContextHolder.getLocale()));
         return mccs;
       }
-      if (null != merchantCategoryCode) {
         merchantCategoryCode.setStatus(PGConstants.S_STATUS_DELETED);
         mccDao.createOrUpdateMerchantCategoryCode(merchantCategoryCode);
         mccs.setErrorCode(PGConstants.SUCCESS);
         mccs.setErrorMessage(messageSource.getMessage("chatak.mcc.delete.success", null,
             LocaleContextHolder.getLocale()));
-      }
     } catch (Exception e) {
       throw new ChatakAdminException(e);
     }

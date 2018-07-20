@@ -88,14 +88,7 @@ public class FeeController implements URLMappingConstants, Constant {
           feeDataResponse.setTxnAmount(txnAmount);
           Long feeAmt = 0L;
           List<FeeData> fees = new ArrayList<>();
-          FeeData feeData = new FeeData();
-          feeData.setCardType(CardAssociationEnum.MC);
-          feeData.setFeeCode("CODE001");
-          feeData.setFeeDescription("Master Card Fee");
-          feeData.setFeeType(FeeTypeEnum.FIXED);
-          feeData.setFeeValue(Constants.ONE_NINE_NINE_LONG);
-          fees.add(feeData);
-          feeAmt += feeData.getFeeValue();
+          FeeData feeData;
           
           feeData = new FeeData();
           feeData.setFeeCode("CODE002");

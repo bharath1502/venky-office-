@@ -64,6 +64,8 @@ public class LoginResponse extends Response {
 
 	private String pin;
 
+	private String refreshToken;
+
 	/**
 	 * @return the subServiceProviderId
 	 */
@@ -335,5 +337,13 @@ public class LoginResponse extends Response {
 	public void setCountry(String country) {
 		this.country = country;
 	}
-	
+
+    public String getRefreshToken() {
+      return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+      this.refreshToken = refreshToken;
+    }
+
 }

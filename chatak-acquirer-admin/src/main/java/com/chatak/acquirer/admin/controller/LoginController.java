@@ -41,10 +41,14 @@ import com.chatak.acquirer.admin.service.LoginService;
 import com.chatak.acquirer.admin.service.MerchantUpdateService;
 import com.chatak.acquirer.admin.service.RoleService;
 import com.chatak.acquirer.admin.service.TransactionService;
+import com.chatak.acquirer.admin.util.DateUtils;
 import com.chatak.acquirer.admin.util.PasswordHandler;
 import com.chatak.acquirer.admin.util.StringUtil;
+import com.chatak.pg.acq.dao.IssSettlementDataDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.TransactionDao;
+import com.chatak.pg.acq.dao.model.PGIssSettlementData;
+import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.AccountTransactionDTO;
@@ -53,7 +57,10 @@ import com.chatak.pg.model.UserRolesDTO;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
+import com.chatak.pg.util.validator.CSRFTokenManager;
 
 /**
  * << Add Comments Here >>
@@ -97,6 +104,9 @@ public class LoginController implements URLMappingConstants {
 
   @Autowired
   private MessageSource messageSource;
+  
+  @Autowired
+  private IssSettlementDataDao issSettlementDataDao;
 
   /**
    * Method to show login page
@@ -114,7 +124,9 @@ public class LoginController implements URLMappingConstants {
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
     model.put(Constants.LOGIN_DETAILS, new LoginDetails());
-
+    String token = CSRFTokenManager.getTokenForSession(session);
+    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Genarated CSRF token before login : " + token);
+    session.setAttribute("tokenval", token);
     logger.info("Exiting:: LoginController:: showLogin method");
     return modelAndView;
   }
@@ -152,6 +164,7 @@ public class LoginController implements URLMappingConstants {
       if (null != userAgent) {
         userAgent = userAgent.replaceAll("\\ ", "");
       }
+      loginDetails.setCurrentLoginTime(DateUtils.getFormatLastLoginTime(loginDetails));
       LoginResponse loginResponse = loginService.authenticate(loginDetails);
       if (loginResponse == null)
         throw new ChatakAdminException(messageSource.getMessage("chatak.admin.login.error.message",
@@ -159,6 +172,7 @@ public class LoginController implements URLMappingConstants {
       if (null != loginResponse.getUserType()
           && loginResponse.getUserType().equals(PGConstants.NEW_USER)) {
         session.setAttribute(Constants.LOGIN_USER_ID, loginResponse.getUserId());
+        session.setAttribute("loginUserType", loginResponse.getUserType());
         modelAndView = changePassword(model, request, session);
       } else {
         
@@ -166,10 +180,23 @@ public class LoginController implements URLMappingConstants {
     	  if(!isValid) {
     		  return modelAndView;
     	  }
-        
+    	  model.put("loginType", loginResponse.getUserType());
+    	  session.setAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME,
+    	  			(String) session.getAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME));
+    	  
              if (loginResponse.getStatus() != null && loginResponse.getStatus()) {
           modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse,
               loginDetails, userAgent);
+					if (loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+						List<PGIssSettlementData> list = issSettlementDataDao
+								.findByProgramManagerId(loginResponse.getEntityId());
+						List<PGIssSettlementData> settlementData = new ArrayList<>();
+						processSettlementData(session, list, settlementData);
+					} else if (loginResponse.getUserType().equals(PGConstants.ADMIN)) {
+						List<PGIssSettlementData> list = issSettlementDataDao.getAllPendingPM();
+						List<PGIssSettlementData> settlementData = new ArrayList<>();
+						processSettlementData(session, list, settlementData);
+					}
           session.setAttribute("adminId", loginResponse.getUserId());
           List<Merchant> merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
           
@@ -215,6 +242,31 @@ public class LoginController implements URLMappingConstants {
     logger.info("Exiting:: LoginController:: authenticate method");
     return modelAndView;
   }
+
+/**
+ * @param session
+ * @param list
+ * @param settlementData
+ */
+	private void processSettlementData(HttpSession session, List<PGIssSettlementData> list,
+			List<PGIssSettlementData> settlementData) {
+		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			for (PGIssSettlementData data : list) {
+				PGIssSettlementData issSettlementData = new PGIssSettlementData();
+				issSettlementData.setProgramManagerId(data.getAcqPmId());
+				issSettlementData.setProgramManagerName(data.getProgramManagerName());
+				issSettlementData.setBatchDate(data.getBatchDate());
+				issSettlementData.setTotalAmount(data.getTotalAmount());
+				issSettlementData.setTotalTxnCount(data.getTotalTxnCount());
+				settlementData.add(issSettlementData);
+				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "List of PGIssSettlementData" + issSettlementData.getProgramManagerId() + issSettlementData.getProgramManagerName() + 
+						issSettlementData.getTotalTxnCount());
+			}
+			session.setAttribute("settlementDataList", settlementData);
+		}
+		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	}
 
   private void validateMerchantList(HttpSession session, List<Merchant> merchants) {
 	if (StringUtil.isListNotNullNEmpty(merchants)) {
@@ -497,8 +549,8 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
     ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
     // If user came from a change password case when still not logged into the portal,
     // Ex. from forgot password scenario, set the new user attribute.
-    String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
-    if (userType == null) {
+    String loginUserType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
+    if (loginUserType != null && loginUserType.equals(PGConstants.NEW_USER)) {
       changePasswordRequest.setIsNewUser(true);
     }
     model.put("changePasswordRequest", changePasswordRequest);
@@ -660,6 +712,7 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
       model.put(Constants.SUCESS, messageSource.getMessage("chatak.admin.reset.password.message",
           null, LocaleContextHolder.getLocale()));
       model.put(Constants.LOGIN_DETAILS, new LoginDetails());
+      session.removeAttribute("tokenval");
     } catch (ChatakAdminException e) {
       logger.error("Error:: LoginController:: resetPassword method1" + e);
       modelAndView = new ModelAndView(RESET_PSWD);

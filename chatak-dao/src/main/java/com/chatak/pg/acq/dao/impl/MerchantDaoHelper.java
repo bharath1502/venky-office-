@@ -88,8 +88,6 @@ public class MerchantDaoHelper {
 			merchant.setBusinessType(addMerchantRequest.getBusinessType());
 			merchant.setLookingFor(addMerchantRequest.getLookinFor());
 			merchant.setAgentId(addMerchantRequest.getAgentId());
-			merchant.setIssuancePartnerId(addMerchantRequest.getIssuancePartnerId());
-			merchant.setProgramManagerId(addMerchantRequest.getProgramManagerId());
 			merchant.setMerchantCategory(addMerchantRequest.getMerchantCategory());
 
 			PGMerchantConfig pgMerchantConfig = new PGMerchantConfig();

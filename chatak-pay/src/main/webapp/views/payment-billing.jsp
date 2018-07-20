@@ -109,15 +109,7 @@ function checkAndSubmit() {
   <td>
   <select name="cardAssociation">
   <option value="">Select</option>
-  <option value="MC" selected="selected">Master Card</option>
-  <option value="VI">Visa Card</option>
-  <option value="AX">American Express</option>
-  <option value="DC">Diner's Club</option>
-  <option value="DI">Discover Card</option>
-  <option value="PP">Paypal</option>
-  <option value="JCB">Japanese Credit Bureau(JCB)</option>
-  <option value="BC">Bill Me Later</option>
-  <option value="EC">Echeck</option>
+	<option value="IC">Chatak Prepaid Card</option>
   </select>
   </td>
  </tr>

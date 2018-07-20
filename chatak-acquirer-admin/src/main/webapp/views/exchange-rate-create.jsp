@@ -6,6 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -23,7 +24,7 @@
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
 <div id="wrapper">
 		<!--Container block Start -->
@@ -79,10 +80,12 @@
 								
 								<form:form action="editExchangeRate" name="editExchangeRateForm" method="post">
 									<input type="hidden" id="getExchangeId" name="getExchangeId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="deleteExchangeRate" name="deleteExchangeRateForm" method="post">
 									<input type="hidden" id="getExchangeRateId" name="getExchangeRateId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<%-- <form action="get-exchange-report" name="downloadReport" method="post">
@@ -95,6 +98,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="createExchangeRate" commandName="exchangeRate" name="exchangeRate">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Account Details Content Start -->
@@ -245,6 +249,7 @@
 	<script src="../js/validation.js"></script>
 	<script src="../js/chatak-ajax.js"></script>
 	<script src="../js/messages.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script type="text/javascript" src="../js/exchange-rate.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -261,6 +266,22 @@
 			    }
 			 });
 		});
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 		</script>
 	</body>
 </html>

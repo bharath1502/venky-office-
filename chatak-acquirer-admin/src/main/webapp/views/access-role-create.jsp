@@ -6,7 +6,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page  import="java.util.Calendar"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
-
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -33,7 +33,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -48,12 +48,13 @@
 					<div class="breadCrumb">
 						<span class="breadcrumb-text"><spring:message code="setup.label.setup"/></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
-							class="breadcrumb-text"><a href="access-role-search"><spring:message code="roles.label.role"/></a></span> <span
+							class="breadcrumb-text"><spring:message code="roles.label.role"/></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
 							class="breadcrumb-text"><spring:message code="common.label.create"/></span>
 					</div>
 					<form:form action="adminRoleName" name="roleTypeForm" method="post">
 				      <input type="hidden" id="rolesType" name="rolesType" />
+				      <input type="hidden" name="CSRFToken" value="${tokenval}">
 				      <!-- <input type="hidden" id="rolesName" name="roleName" />
 				      <input type="hidden" id="roleDiscription" name="description" /> --> 
 			        </form:form>
@@ -87,6 +88,7 @@
 								<!-- Page Form Start -->
 								<form:form action="processCreateRole" modelAttribute="userRoleDTO"  method="post" onsubmit="buttonDisabled()">
  								  <input type="hidden" id="permission" name="permission">
+ 								  <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -94,14 +96,9 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="roles.label.roletype"/></label>
 															<form:select  path="roleType" id="roleType" cssClass="form-control" onchange="validateRoleType(this.value)"
 															 onblur="validRoleType('roleType','roleTypeError','Please enter the role type','Please enter the valid role type')" >
-																<form:option value="Admin"><spring:message code="roles.label.admin"/></form:option>
-																<%-- <form:option value="Reseller"><spring:message code="roles.label.reseller"/></form:option> --%>
-																<form:option value="Merchant"><spring:message code="roles.label.merchant"/></form:option>
-																<%-- <form:option value="Tms"><spring:message code="roles.label.tms"/></form:option> --%>
-															
-															  <%-- <c:forEach items="${roleLevelList}" var="roleLevelList">
-															         <form:option value="${roleLevelList.name()}">${roleLevelList.value}</form:option>
-														        </c:forEach>  --%>
+																<c:forEach items="${roleLevelList}" var="roleLevel">
+															         <form:option value="${roleLevel.value}">${roleLevel.value}</form:option>
+														        </c:forEach>
 														        
 															</form:select>
 															<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -147,7 +144,7 @@
 																					<c:if test="${feature.getName() eq 'SETUP'}"><spring:message code="header.label.setup"/></c:if>
 																					<c:if test="${feature.getName() eq 'Programs'}"><spring:message code="commission-program-search.label.programs"/></c:if>
 																					<c:if test="${feature.getName() eq 'Manage'}"><spring:message code="manage.label.manage1"/></c:if>
-																					<c:if test="${feature.getName() eq 'Adjustment'}"><spring:message code="accounts-manual-credit.label.adjustments"/></c:if>
+																					<c:if test="${feature.getName() eq 'Adjustment'}"><spring:message code="accounts-manual-credit.label.adjustments1"/></c:if>
 																					<c:if test="${feature.getName() eq 'Reports'}"><spring:message code="reports.label.reports"/></c:if>
 																					<c:if test="${feature.getName() eq 'VIRTUAL TERMINAL'}"><spring:message code="virtual-terminal-void.label.virtualterminal"/></c:if>
 																					<c:if test="${feature.getName() eq 'SubMerchant'}"><spring:message code="reports.label.overviewandbalancesheet.submerchant"/></c:if>
@@ -195,7 +192,7 @@
 																					<c:if test="${featureSub.getName() eq 'CA Public Keys'}"><spring:message code="header.label.capublickeys"/></c:if>
 																					<c:if test="${featureSub.getName() eq 'Fee Programs'}"><spring:message code="fee-program-search.label.feeprogram"/></c:if>
 																					<c:if test="${featureSub.getName() eq 'Program Manager'}"><spring:message code="admin.pm.message"/></c:if>
-																					<c:if test="${featureSub.getName() eq 'Partner'}"><spring:message code="admin.partner.message"/></c:if>
+																					<c:if test="${featureSub.getName() eq 'ISO'}"><spring:message code="admin.partner.message"/></c:if>
 																					<c:if test="${featureSub.getName() eq 'Merchant'}"><spring:message code="reports.label.overviewandbalancesheet.merchant"/></c:if>
 																					<c:if test="${featureSub.getName() eq 'SubMerchant'}"><spring:message code="reports.label.overviewandbalancesheet.submerchant"/></c:if>
 																					<c:if test="${featureSub.getName() eq 'Bank'}"><spring:message code="bank.label.bank"/></c:if>

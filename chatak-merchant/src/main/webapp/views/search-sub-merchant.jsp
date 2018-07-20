@@ -6,7 +6,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 
-
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -14,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -24,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -89,20 +88,24 @@
 								<form action="getMerchants" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 										type="hidden" id="totalRecordsId" name="totalRecords" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 								<form action="editMercahnt" name="editMercahntForm"
 									method="post">
 									<input type="hidden" id="getMerchantId" name="getMerchantId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 								<form action="editSubMerchant" name="editSubMercahntForm"
 									method="post">
 									<input type="hidden" id="getSubMerchantId"
 										name="getSubMerchantId" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 
 								<form action="deleteMerchant" name="deleteMercahntForm"
 									method="post">
 									<input type="hidden" id="getMerchantsId" name="getMerchantsId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 
 								<form action="get-merchant-report" name="downloadReport"
@@ -113,18 +116,21 @@
 										type="hidden" id="totalRecords" name="totalRecords" /> <input
 										type="hidden" id="downloadAllRecords"
 										name="downloadAllRecords" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 								<!--getSubMerchantListForm  -->
 								<form action="viewSubMerchant" name="getSubMerchantListForm"
 									method="post">
 									<input type="hidden" id="getSubMerchantIdForView"
 										name="getSubMerchantIdForView" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="search-sub-merchant" commandName="merchant"
 									name="merchant">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -484,6 +490,7 @@
 		<form action="subMerchantActivationSuspention" name="merchantActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="subMerchantId" /> <input
 				type="hidden" id="suspendActiveStatus" name="subMerchantStatus" /> 
+				<input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="merchant.label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -508,16 +515,30 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
+	
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/merchant.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script>
+	$(document).ready(function() {
+		/* Table Sorter includes Start*/
+		$(function() {
+			
+				  // call the tablesorter plugin
+				  $('#serviceResults').sortable({
+					
+					 divBeforeTable: '#divbeforeid',
+					divAfterTable: '#divafterid',
+					initialSort: false,
+					locale: 'th',
+					//negativeSort: [1, 2]
+				});
+		});
+		});
 		/* Common Navigation Include Start */
 		$(function() {
 			//$("#main-navigation").load("main-navigation.html");

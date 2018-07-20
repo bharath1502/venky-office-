@@ -5,7 +5,7 @@ import java.util.List;
 public class MerchantCategoryCode {
   private Long id;
 
-  private String merchantCategoryCode;
+  private String mcc;
 
   private String selectedTcc;
 
@@ -33,16 +33,17 @@ public class MerchantCategoryCode {
   
   private String reason;
 
-  public String getMerchantCategoryCode() {
-    return merchantCategoryCode;
-  }
   
-  public Long getId() {
-    return id;
+  public String getMcc() {
+    return mcc;
   }
 
-  public void setMerchantCategoryCode(String merchantCategoryCode) {
-    this.merchantCategoryCode = merchantCategoryCode;
+  public void setMcc(String mcc) {
+    this.mcc = mcc;
+  }
+
+  public Long getId() {
+    return id;
   }
   
   public List<String> getTccMultiple() {

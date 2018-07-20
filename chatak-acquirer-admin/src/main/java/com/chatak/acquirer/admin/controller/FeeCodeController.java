@@ -229,27 +229,33 @@ public class FeeCodeController implements URLMappingConstants {
     try {
       merchant.setPageIndex(pageNumber);
       merchant.setNoOfRecords(totalRecords);
-      try {
-        MerchantSearchResponse searchResponse = merchantUpdateService.searchAllMerchant(merchant);
-        List<MerchantData> merchants = new ArrayList<>();
-        if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMerchants())) {
-          merchants = searchResponse.getMerchants();
-          modelAndView.addObject("pageSize", merchant.getPageSize());
-          modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
-              searchResponse.getTotalNoOfRows());
-        }
-        modelAndView.addObject("partnerFeeList", merchants);
-      } catch (Exception e) {
-        modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
-            null, LocaleContextHolder.getLocale()));
-        logger.error("ERROR:: FeeCodeController:: getFeeCodePagination method", e);
-      }
+      modelAndView = validateMerchantSearchResponse(pageNumber, merchant, modelAndView);
     } catch (Exception e) {
       logger.error("ERROR:: FeeCodeController:: getFeeCodePagination method", e);
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting:: FeeCodeController:: getFeeCodePagination method");
+    return modelAndView;
+  }
+
+  private ModelAndView validateMerchantSearchResponse(final Integer pageNumber, Merchant merchant,
+      ModelAndView modelAndView) {
+    try {
+      MerchantSearchResponse searchResponse = merchantUpdateService.searchAllMerchant(merchant);
+      List<MerchantData> merchants = new ArrayList<>();
+      if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMerchants())) {
+        merchants = searchResponse.getMerchants();
+        modelAndView.addObject("pageSize", merchant.getPageSize());
+        modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
+            searchResponse.getTotalNoOfRows());
+      }
+      modelAndView.addObject("partnerFeeList", merchants);
+    } catch (Exception e) {
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+      logger.error("ERROR:: FeeCodeController:: getFeeCodePagination method", e);
+    }
     return modelAndView;
   }
 

@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -24,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -55,20 +56,23 @@
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
 
-						<form:form action="executed-transaction-details-pagination"
+						<form action="executed-transaction-details-pagination"
 							name="paginationForm" method="post">
 							<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 								type="hidden" id="totalRecordsId" name="totalRecords" />
-						</form:form>
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
+						</form>
 
-						<form:form action="executed-transaction-details-report"
+						<form action="executed-transaction-details-report"
 							name="downloadReport" method="post">
 							<input type="hidden" id="downloadPageNumberId"
 								name="downLoadPageNumber" /> <input type="hidden"
 								id="downloadTypeId" name="downloadType" /> <input type="hidden"
 								id="totalRecords" name="totalRecords" /> <input type="hidden"
 								id="downloadAllRecords" name="downloadAllRecords" />
-						</form:form>
+								<input type="hidden" id="requestFromId" name="requestFrom" />
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
+						</form>
 						<!-- Search Table Block Start -->
 						<div class="search-results-table">
 							<table class="table table-striped table-bordered table-condensed"
@@ -84,7 +88,7 @@
 							<!-- Search Table Header End -->
 							<!-- Search Table Content Start -->
 							<table id="serviceResults"
-								class="table table-striped table-bordered table-responsive table-condensed tablesorter">
+								class="table table-striped table-bordered table-responsive table-condensed tablesorter" style="word-break: break-all;">
 								<thead>
 									<tr>
 										<th style="width: 90px;"><spring:message
@@ -402,9 +406,7 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/backbutton.js"></script>
 	<script src="../js/messages.js"></script>
@@ -679,6 +681,22 @@
 				}
 			});
 		}
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

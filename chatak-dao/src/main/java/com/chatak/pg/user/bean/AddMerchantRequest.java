@@ -1,5 +1,7 @@
 package com.chatak.pg.user.bean;
 
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,6 +65,14 @@ public class AddMerchantRequest extends MerchantRequest {
   private String emailId;
 
   private String lastName;
+  
+  private String associatedTo;
+  
+  private List<String> cardProgramIds;
+  
+  private List<Long> entitiesId;
+  
+  private Map<Long, Long> cardProgramAndEntityId;
 
   /**
    * @return the createdBy
@@ -306,4 +316,47 @@ public class AddMerchantRequest extends MerchantRequest {
     this.emailId = emailId;
   }
 
-}
+  public String getAssociatedTo() {
+		return associatedTo;
+  }
+
+  public void setAssociatedTo(String associatedTo) {
+		this.associatedTo = associatedTo;
+  }
+
+  public List<Long> getEntitiesId() {
+		return entitiesId;
+	}
+
+  public void setEntitiesId(List<Long> entitiesId) {
+		this.entitiesId = entitiesId;
+	}
+
+  /**
+   * @return the cardProgramIds
+   */
+  public List<String> getCardProgramIds() {
+    return cardProgramIds;
+  }
+
+  /**
+   * @param cardProgramIds the cardProgramIds to set
+   */
+  public void setCardProgramIds(List<String> cardProgramIds) {
+    this.cardProgramIds = cardProgramIds;
+  }
+
+  /**
+   * @return the cardProgramAndEntityId
+   */
+  public Map<Long, Long> getCardProgramAndEntityId() {
+    return cardProgramAndEntityId;
+  }
+
+  /**
+   * @param cardProgramAndEntityId the cardProgramAndEntityId to set
+   */
+  public void setCardProgramAndEntityId(Map<Long, Long> cardProgramAndEntityId) {
+    this.cardProgramAndEntityId = cardProgramAndEntityId;
+  }
+ }

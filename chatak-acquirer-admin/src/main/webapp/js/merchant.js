@@ -67,10 +67,9 @@ function closeCancelConfirmationPopup() {
 function validateCreateMerchantStep1() {
 	var flag = true;
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
-			| !validatePhone() | !validatePartnerId() | !validateProgramManagerId()
-			| !validateAddress1() | !validateCity() | !validateEmailId()
+			| !validatePhone() 	| !validateAddress1() | !validateCity() | !validateEmailId()
 			| !validateState() | !validateCountry() | !validatePin()
-			| !validateAppMode() | !validateURL() | !validateParentMerchantId()) {
+			| !validateAppMode() | !validateURL() | !validateParentMerchantId() | !vlalidateUserName()) {
 		return false;
 	} else {
 		var faxValue = getVal('fax').trim();
@@ -82,7 +81,11 @@ function validateCreateMerchantStep1() {
 			setLable('confirmMfax', "");
 		}
 
-		if (lookingForValue != "") {
+		if (!isCharacter(lookingForValue)) {
+			setError(get('lookingFor'), webMessages.shouldContainNumericAndAlphabets);
+			loadMsgTitleText();
+			return false;
+		} else if (lookingForValue != "") {
 			setLable('confirmLookingFor', lookingForValue);
 		} else {
 			setLable('confirmLookingFor', "");
@@ -94,6 +97,7 @@ function validateCreateMerchantStep1() {
 			setLable('confirmBusinessType', "");
 		}
 	}
+	setError(get('lookingFor'), "");
 	return flag;
 }
 
@@ -243,8 +247,11 @@ function validateCreateMerchantStep1edit() {
 			setLable('confirmMfax', getVal('fax').trim());
 		} else {
 			setLable('confirmMfax', "");
-		}
-		if (lookingForValue != "") {
+		}if (!isCharacter(lookingForValue)) {
+			setError(get('lookingFor'), webMessages.shouldContainonlyNumeric);
+			loadMsgTitleText();
+			return false;
+		} else if (lookingForValue != "") {
 			setLable('confirmLookingFor', lookingForValue);
 		} else {
 			setLable('confirmLookingFor', "");
@@ -255,6 +262,10 @@ function validateCreateMerchantStep1edit() {
 			setLable('confirmBusinessType', "");
 		}
 	}
+	setError(get('lookingFor'), "");
+	setLable('confirmMemailId', get('emailId').value.trim());
+	setLable('confirmMmerchantCode', get('merchantCode').value.trim());
+	setLable('confirmMuserName', get('userName').value.trim());
 	return flag;
 }
 
@@ -338,14 +349,12 @@ function validateCreateMerchantStep4edit() {
 function validateCreateMerchantStep5() {
 	var flag = true;
 	if (!validateProcessor() | !validateVirtualTerminal()
-			| !validateOnlineOptions() | !validatefeeProgram()
-			| !validateRadio()  | !validateCategory()
+			| !validateOnlineOptions()
+			| !validateCategory()
 			| !validateAutoPaymentMethod() | !validateAutoTransferLimit()
 			| !continueBtnValidateForOnline()
-			| !continueBtnValidateVirtualTerminal() | !validateCheckPayoutAt() |!doCheckPayoutAt
-			| !validateMerchantCategory() |!validateMcc() //| !validateAgentName()
-			/*| !validateAgentAccountNumber() |!validateAgentClientId()
-			| !validateAgentANI()*/
+			| !continueBtnValidateVirtualTerminal() |!doCheckPayoutAt
+			| !validateMerchantCategory() |!validateMcc()
 			| !validateBank()| !validatelocalCurrency()) {
 		return false;
 	}
@@ -396,13 +405,6 @@ function validateCreateMerchantStep5() {
 	}else {
 		setLable('confirmBankName', "");
 	}
-	var partnerId = get('partnerId').value.trim();
-	if (partnerId != "") {
-		var id = get('partnerId');
-		setLable('confirmPartnerId', id.options[id.selectedIndex].text);
-	} else {
-		setLable('confirmPartnerId', "");
-	}
 	
 	var confirmlocalCurrency = get('localCurrency').value.trim();
 	if (confirmlocalCurrency != "") {
@@ -411,47 +413,6 @@ function validateCreateMerchantStep5() {
 		setLable('confirmlocalCurrency', "");
 	}
 	
-	var confirmAgentAccountNumber = get('agentAccountNumber').value.trim();
-	if (confirmAgentAccountNumber != "") {
-		setLable('confirmAgentAccountNumber', confirmAgentAccountNumber);
-	}else {
-		setLable('confirmAgentAccountNumber', "");
-	}
-	var agentClientId = get('agentClientId').value.trim();
-	if (agentClientId != "") {
-		setLable('confirmAgentClientid', agentClientId);
-	}else {
-		setLable('confirmAgentClientid', "");
-	}
-	var agentANI = get('agentANI').value.trim();
-	if (agentANI != "") {
-		setLable('confirmAgentANI', agentANI);
-	}else {
-		setLable('confirmAgentANI', "");
-	}
-	
-	/*var resellerName = get('resellerId').value.trim();
-	if (resellerName != "") {
-		var rName = get('resellerId');
-		setLable('confirmResellerName', rName.options[rName.selectedIndex].text);
-	}else {
-		setLable('confirmResellerName', "");
-	}*/
-	/*
-	 * var agentTempValue = get('agentId').value; var agentValue =
-	 * document.getElementById("agentId"); if(agentTempValue == ""){
-	 * setLable('confirmAgent', ""); }else{ var agentText =
-	 * agentValue.options[agentValue.selectedIndex].text;
-	 * setLable('confirmAgent', agentText); }
-	 */
-	/*
-	 * if(get('partnerId')) { ($('#partnerId').val() == '') ?
-	 * setLable('confirmPartner', '') : setLable('confirmPartner', $('#partnerId
-	 * option:selected').text()); } else
-	 */if (get('agentId')) {
-		($('#agentId').val() == '') ? setLable('confirmAgent', '') : setLable(
-				'confirmAgent', $('#agentId  option:selected').text());
-	}
 	if (fieldsValue == "") {
 		setLable('confirmMautoTransferDay', "");
 	}
@@ -1044,7 +1005,6 @@ function validateParentMerchantId() {
 		setLable('confirmMerchantCode', $('#parentMerchantId :selected').text());
 		
 		var currency = document.getElementById('localCurrency').value;
-		fetchAgentNames(currency, 'agentId');
 		
 	}
 	return true;
@@ -1438,12 +1398,49 @@ function resetBasicInfo() {
 	setError(get('lookingFor'), '');
 	get('businessType').value = "";
 	setError(get('businessType'), '');
-	get('partnerId').value = "";
-	setError(get('partnerId'), '');
-	get('programManagerId').value = "";
-	setError(get('programManagerId'), '');
+	get('userName').value = "";
+	setError(get('userName'), '');
+}
+
+function resetBasicInfoSub() {
+	resetSuccessAndErrorMsg();
+	$('#status').val('1');
+	get('businessName').value = "";
+	setError(get('businessName'), '');
+	get('firstName').value = "";
+	setError(get('firstName'), '');
+	get('lastName').value = "";
+	setError(get('lastName'), '');
+	get('phone').value = "";
+	setError(get('phone'), '');
+	get('fax').value = "";
+	setError(get('fax'), '');
+	get('emailId').value = "";
+	setError(get('emailId'), '');
+	get('address1').value = "";
+	setError(get('address1'), '');
+	get('country').value = "";
+	setError(get('country'), '');
+	get('address2').value = "";
+	setError(get('address2'), '');
+	get('state').value = "";
+	setError(get('state'), '');
+	get('pin').value = "";
+	setError(get('pin'), '');
+	get('appMode').value = "";
+	setError(get('appMode'), '');
+	get('city').value = "";
+	setError(get('city'), '');
+	get('businessURL').value = "";
+	setError(get('businessURL'), '');
+	get('lookingFor').value = "";
+	setError(get('lookingFor'), '');
+	get('businessType').value = "";
+	setError(get('businessType'), '');
 	get('parentMerchantId').value = "";
 	setError(get('parentMerchantId'), '');
+	get('userName').value = "";
+	setError(get('userName'), '');
 }
 
 function resetBankInfo() {
@@ -1453,8 +1450,6 @@ function resetBankInfo() {
 	setDiv('bankRoutingNumberEr', '');
 	get('bankAccountNumber').value = "";
 	setDiv('bankAccountNumberErrorDiv', '');
-	get('bankRoutingNumber').value = "";
-	setDiv('bankRoutingNumberEr', '');
 	get('bankAccountType').value = "";
 	setDiv('bankAccountTypeErrorDiv', '');
 	get('bankAddress1').value = "";
@@ -1467,6 +1462,31 @@ function resetBankInfo() {
 	setDiv('bankCountryErrorDiv', '');
 	get('currencyId').value = "";
 	setDiv('currencyEr', '');
+	get('bankState').value = "";
+	setDiv('bankStateErrorDiv', '');
+	get('bankPin').value = "";
+	setDiv('bankPinEr', '');
+	get('bankNameOnAccount').value = "";
+	setDiv('bankNameOnAccountErrorDiv', '');
+}
+
+function resetBankInfoSub() {
+	get('bankAccountName').value = "";
+	setDiv('bankAccountNameErrorDiv', '');
+	get('bankRoutingNumber').value = "";
+	setDiv('bankRoutingNumberEr', '');
+	get('bankAccountNumber').value = "";
+	setDiv('bankAccountNumberErrorDiv', '');
+	get('bankAccountType').value = "";
+	setDiv('bankAccountTypeErrorDiv', '');
+	get('bankAddress1').value = "";
+	setDiv('bankAddress1ErrorDiv', '');
+	get('bankAddress2').value = "";
+	setDiv('bankAddress2ErrorDiv', '');
+	get('bankCity').value = "";
+	setDiv('bankCityErrorDiv', '');
+	get('bankCountry').value = "";
+	setDiv('bankCountryErrorDiv', '');
 	get('bankState').value = "";
 	setDiv('bankStateErrorDiv', '');
 	get('bankPin').value = "";
@@ -1489,6 +1509,7 @@ function resetBankInfoErrorMsg() {
 	setDiv('bankStateErrorDiv', '');
 	setDiv('bankPinErrorDiv', '');
 	setDiv('bankNameOnAccountErrorDiv', '');
+	
 }
 
 function resetLegalEntityRepInfo() {
@@ -1600,42 +1621,21 @@ function resetAdditionalInfoErrorMsg() {
 }
 
 function resetConfigurationsInfo() {
-	
-	setDiv('agentIdErr', '');
-	get('agentId').value = "";
-	get('allowAutoSettlement').checked = false;
-	get('noAutoSettlement').checked = false;
-	setError(get('noAutoSettlement'), '');
-	get('feeProgram').value = "";
-	setError(get('feeProgram'), '');
+	get('autoTransferWeeklyDay').value = "";
+	setError(get('autoTransferWeeklyDay'), '');
 	get('processor').value = "";
 	setError(get('processor'), '');
 	get('autoPaymentMethod').value = "";
 	setError(get('autoPaymentMethod'), '');
-	get('agentAccountNumber').value = "";
-	setError(get('agentAccountNumber'), '');
-	get('agentClientId').value = "";
-	setError(get('agentClientId'), '');
-	get('agentANI').value = "";
-	setError(get('agentANI'), '');
 	get('autoTransferLimit').value = "";
 	setError(get('autoTransferLimit'), '');
 	get('merchantCallBackURL').value = "";
 	setError(get('merchantCallBackURL'), '');
-	get('merchantCategory').value = "";
-	setError(get('merchantCategory'), '');
-	//get('dcc_enable').checked = false;
-	get('bankId').value = "";
-	setError(get('bankId'), '');
-	/*get('resellerId').value = "";
-	setError(get('resellerId'), '');*/
-	get('payOutAt').value = "";
-	setError(get('payOutAt'), '');
+	get('autoTransferDay').value = "";
+	setError(get('autoTransferDay'), '');
 	get('litleMID').value = "";
 	setError(get('litleMID'), '');
-	get('mcc').value = "";
-	setDiv('mccErr','');
-
+	
 	if (get('virtualTerminal').checked) {
 
 		if (get('refunds')) { // && get('feeProgram')
@@ -1682,19 +1682,15 @@ function resetConfigurationsInfo() {
 	get('litleMID').value = "";
 	setError(get('litleMID'), '');
 	$('#vantivMerchantId').hide();
-	if (get('partnerId')) {
-		get('partnerId').value = "";
-		setError(get('partnerId'), '');
-	} else if (get('agentId')) {
-		get('agentId').value = "";
-		setError(get('agentId'), '');
-	}
-	
+	get('bankId').value = "";
+	setError(get('bankId'), '');
+	get('mcc').value = "";
+	setDiv('mccErr','');
+	get('merchantCategory').value = "";
+	setError(get('merchantCategory'), '');
 }
 
 function resetConfigurationsInfoErrorMsg() {
-	setError(get('noAutoSettlement'), '');
-	setError(get('feeProgram'), '');
 	setError(get('processor'), '');
 	setError(get('refunds'), '');
 	setError(get('autoPaymentMethod'), '');
@@ -1704,16 +1700,15 @@ function resetConfigurationsInfoErrorMsg() {
 	setDiv('mccErr','');
 	if($('#parentMerchantId').val()==""){
 		setError(get('merchantCategory'), '');
-		setError(get('payOutAt'), '');
 	}
-	setError(get('agentAccountNumber'), '');
-	setError(get('agentClientId'), '');
-	setError(get('agentANI'), '');
 }
 
 function checkStatusAndMerchantType() {
-	var status = get('status').value.trim();
-	var type = get('merchantType').value.trim();
+	var status;
+	if(get('status')!=null && get('status')!=''){
+		status = get('status').value.trim();
+	}
+	var type = get('merchantType')!=null ? get('merchantType').value.trim() : '';
 	if ("0" == status && type == "Merchant") {
 		return true;
 	} else {
@@ -2148,7 +2143,7 @@ function validateAccountDetails() {
 					'autoTransferMonthlyDayEr')
 			| !validateAutoTransferLimit()
 			| !validateAutoPaymentMethod()*/
-					| !validateRadio()) {
+					/*| !validateRadio()*/) {
 		flag = false;
 		return flag;
 	}
@@ -2340,14 +2335,11 @@ function downloadNMAS(id) {
 function validateCreateSubMerchantStep5() {
 	var flag = true;
 	if (!validateProcessor() | !validateVirtualTerminal()
-			| !validateOnlineOptions() | !validatefeeProgram()
-			| !validateRadio() | !validateCallbackURL() | !validateCategory()
+			| !validateOnlineOptions() /*| !validatefeeProgram()*/
+			/*| !validateRadio()*/ | !validateCallbackURL() | !validateCategory()
 			| !validateAutoPaymentMethod() | !validateAutoTransferLimit()
 			| !continueBtnValidateForOnline()
-			| !continueBtnValidateVirtualTerminal()
-			| !validateAgentAccountNumber() |!validateAgentClientId()
-			| !validateAgentANI()
-			/*| !validateAgentName()*/) {
+			| !continueBtnValidateVirtualTerminal()) {
 		return false;
 	}
 	var fieldsValue = get('autoTransferDay').value;
@@ -2663,6 +2655,7 @@ $('#emailId').keypress(function( e ) {
 });
 
 function fetchCurrency(currencyId,elementId) {
+	validateAssocated();
 	if (currencyId == '') {
 		//clearLocalCurrency(localCurrency);
 		return null;
@@ -2719,34 +2712,6 @@ function getfetchMerchantCurrency(parentMerchantId) {
 				
 				setValue('localCurrency',obj.currencyCodeAlpha );
 				setLable('confirmMcurrencyId', get('localCurrency').value.trim());
-			}
-		},
-		error : function(e) {
-		}
-	});
-}
-
-function fetchPartnerName(merchantId) {
-	if (merchantId == '') {
-		return null;
-	}
-	getPartnerName(merchantId);
-}
-
-function getPartnerName(merchantId) {
-	$.ajax({
-		type : "GET",
-		url : "getPartnerNameByMerchantCode?merchantId=" + merchantId,
-		async : false,
-		success : function(responseVal) {
-			var obj = JSON.parse(responseVal);
-			if (obj.errorMessage === "SUCCESS") {
-				document.getElementById("partnerId").options.length = 0;
-				var newOption = document.createElement("option");
-				newOption.value = obj.partnerId;
-				newOption.innerHTML = obj.partnerName;
-				$(("#partnerId")).append(newOption);
-				setValue('programManagerId', obj.programManagerName);
 			}
 		},
 		error : function(e) {
@@ -2915,24 +2880,12 @@ function getPartners(pmID, elementId) {
 	});
 }
 
-function validateProgramManagerId() {
-	var programManagerId = get('programManagerId').value.trim();
-	if (isEmpty(programManagerId)) {
-		setError(get('programManagerId'), webMessages.validationthisfieldismandatory);
-		loadMsgTitleText();
-		return false;
-	} else {
-		setError(get('programManagerId'), '');
-		return true;
-	}
-}
-
 function validateCreateSubMerchantStep1() {
 	var flag = true;
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
 			| !validatePhone() | !validateAddress1() | !validateCity() | !validateEmailId()
 			| !validateState() | !validateCountry() | !validatePin()
-			| !validateAppMode() | !validateURL() | !validateParentMerchantId()) {
+			| !validateAppMode() | !validateURL() | !validateParentMerchantId() |!vlalidateUserName()) {
 		return false;
 	} else {
 		var faxValue = getVal('fax').trim();
@@ -2943,8 +2896,11 @@ function validateCreateSubMerchantStep1() {
 		} else {
 			setLable('confirmMfax', "");
 		}
-
-		if (lookingForValue != "") {
+		if (!isCharacter(lookingForValue)) {
+			setError(get('lookingFor'), webMessages.shouldContainonlyNumeric);
+			loadMsgTitleText();
+			return false;
+		} else if (lookingForValue != "") {
 			setLable('confirmLookingFor', lookingForValue);
 		} else {
 			setLable('confirmLookingFor', "");
@@ -2956,5 +2912,279 @@ function validateCreateSubMerchantStep1() {
 			setLable('confirmBusinessType', "");
 		}
 	}
+	setError(get('lookingFor'), "");
 	return flag;
+}
+
+function validatePmIsoCardprogram() {
+	var flag = true;
+	if (!validateAssociatedTo() | !validateAssociatedToEntityName()) {
+		return false;
+	}
+	
+	return flag;
+}
+var entityType;
+var elementId;
+function validateAssociatedTo() {
+	var associatedTo = get('associatedTo').value.trim();
+	if (isEmpty(associatedTo)) {
+		setError(get('associatedTo'), webMessages.validationthisfieldismandatory);
+		loadMsgTitleText();
+		return false;
+	} else {
+		setError(get('associatedTo'), '');
+		setLable('confirmAssociatedTo', get('associatedTo').value.trim());
+		return true;
+	}
+}
+
+function resetpmIsoCardprogarmErrorMsg() {
+	$('#associatedTo').val('');
+	document.getElementById("programManagerName").innerHTML = "";
+	document.getElementById("programManagerNameId").innerHTML = "";
+	$("#serviceResults > tbody").html("");
+	setError(get('associatedTo'), '');
+	setError(get('programManagerNameId'), '');
+	$('#ambiguityFlag').text('');
+}
+
+function fetchEntityNameByPmIso(entityType,elementId) {
+	setError(get('associatedTo'), '');
+	if(null != entityType && entityType == "Program Manager"){
+		document.getElementById("entityType").innerHTML = "PM Name";
+		document.getElementById("associatedID").innerHTML = "Associated with PM Name";
+		document.getElementById("userType").innerHTML = "PM Name";
+	}else{
+		document.getElementById("entityType").innerHTML = "ISO Name";
+		document.getElementById("associatedID").innerHTML = "Associated with ISO Name";
+		document.getElementById("userType").innerHTML = "ISO Name";
+	}
+	getAllEntityName(entityType,elementId);
+}
+
+
+function getAllEntityName(entityType,elementId) {
+	var currencyId = get('currencyId').value.trim();
+	$.ajax({
+		type : "GET",
+		url : "getAllEntityName?entityType=" + entityType + "&currencyId=" + currencyId,
+		async : false,
+		success : function(responseVal) {
+			var obj = JSON.parse(responseVal);
+			if (obj.errorCode === '00') {
+				document.getElementById(elementId).options.length = 0;
+				var data = obj.responseList;
+
+				for (var i = 0; i < data.length; i++) {
+					var programManagerName = data[i].label;
+					var newOption = document.createElement("option");
+					newOption.value = data[i].value;
+					newOption.innerHTML = programManagerName;
+
+					$(("#" + elementId)).append(newOption);
+				}
+			}
+			$(("#" + elementId)).append("");
+		},
+		error : function(e) {
+		}
+	});
+}
+
+function validateAssociatedToEntityName() {
+	if (ValidationRules.fee_Short_Code.mandatory == true) {
+		var entityVal = get('programManagerNameId');
+		if(entityVal == null || entityVal.options.length <= 0) {
+			setError(get('programManagerNameId'), webMessages.validationthisfieldismandatory);
+			loadMsgTitleText();
+			return false;
+		}
+		else
+			{
+			setError(get('programManagerNameId'), '');
+			return true;
+			}
+}
+	return true;
+}
+var type;
+function getCardProgramByPmId(pmId){
+	if(pmId !=null && pmId != ""){
+		entityType = get('associatedTo').value.trim();
+		doAjaxToGetCardProgramByPmId(pmId, entityType);
+	}
+}
+
+var entityName;
+var entityId;
+function doAjaxToGetCardProgramByPmId(pmId,entityType){
+	var currencyId = get('currencyId').value.trim();
+	$.ajax({
+		type : "GET",
+		url : "getCardProgramByPmId?pmId=" + pmId + "&entityType=" + entityType + "&currencyId=" + currencyId,
+		success : function(response) {
+			
+			if(response !=null && response != ""){
+				var obj = JSON.parse(response);
+				
+				if (obj.errorMessage == "SUCCESS") {
+					var count=0;
+					for (var i = 0; i < obj.cardProgramList.length; i++) {
+						var cardProgramId = obj.cardProgramList[i].cardProgramId;
+						var cardProgramName = obj.cardProgramList[i].cardProgramName;
+						var partnerName = obj.cardProgramList[i].partnerName;
+						var partnerCode = obj.cardProgramList[i].partnerCode;
+						var iin = obj.cardProgramList[i].iin;
+						var iinExt = obj.cardProgramList[i].iinExt;
+						if(obj.cardProgramList[i].programManagerName != null){
+							entityName = obj.cardProgramList[i].programManagerName;
+						}else{
+							entityName = obj.cardProgramList[i].isoName;
+						}
+						var currency = obj.cardProgramList[i].currency;
+						if(obj.cardProgramList[i].programManagerId != null){
+							entityId = obj.cardProgramList[i].programManagerId;
+						}else{
+							entityId = obj.cardProgramList[i].isoId;
+						}
+						var recRow = '<tr id="rowId'+cardProgramId+'">'
+							+'<td>'+partnerName+'</td>'
+							+'<td>'+cardProgramName+'</td>'
+							+'<td>'+iin+'</td>'
+							+'<td>'+partnerCode+'</td>'
+							+'<td>'+iinExt+'</td>'
+							+'<td>'+entityName+'</td>'
+							+'<td>'+currency+'</td>'
+							+'<td data-title="Action"><input id="cpId'+cardProgramId+''+entityId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+',\''+cardProgramName+'\',\''+entityName+'\',\''+entityId+'\')"></td>'
+					       +'</tr>';	
+							jQuery('#serviceResults').append(recRow);
+							count++;
+					}
+				
+				}	
+			}
+		},
+		error : function(e) {
+
+		}
+	});
+}
+
+function removeCardProgramFromList(pmId){
+	if(pmId !=null && pmId != ""){
+		entityType = get('associatedTo').value.trim();
+		doAjaxToRemoveCardProgramByPmId(pmId, entityType);
+	}
+}
+
+function doAjaxToRemoveCardProgramByPmId(pmId,entityType){
+	var currencyId = get('currencyId').value.trim();
+	$.ajax({
+		type : "GET",
+		url : "getCardProgramByPmId?pmId=" + pmId + "&entityType=" + entityType + "&currencyId=" + currencyId,
+		success : function(response) {
+			
+			if(response !=null && response != ""){
+				var obj = JSON.parse(response);
+				
+				if (obj.errorMessage == "SUCCESS") {
+					for (var i = 0; i < obj.cardProgramList.length; i++) {
+						var cardProgramId = obj.cardProgramList[i].cardProgramId;
+						var cardProgramName = obj.cardProgramList[i].cardProgramName;
+						
+						var rowId = 'rowId'+ cardProgramId;
+							$('#'+rowId).remove();
+							doUnCheckedToCardProgram(cardProgramId,cardProgramName,pmId);
+					}
+				}	
+			}
+		},
+		error : function(e) {
+
+		}
+	});
+}
+
+function validateEntityType(){
+	validateAssocated();
+}
+
+function validateEditPmIsoCardprogram() {
+	setSelectedPmAndCpId();
+	var flag = true;
+	if (!validateAssociatedTo() | !validateAssociatedToEntityName()) {
+		return false;
+	}
+	
+	return flag;
+}
+
+function fetchCardProgramByMerchantId(merchantId){
+	var entityType = get('associatedTo').value.trim();
+	$.ajax({
+		type : "GET",
+		url : "fetchCardProgramByMerchantId?merchantId=" + merchantId + "&entityType=" + entityType,
+		success : function(response) {
+			
+			if(response !=null && response != ""){
+				var obj = JSON.parse(response);
+				
+				if (obj.errorMessage == "SUCCESS") {
+					for (var i = 0; i < obj.cardProgramList.length; i++) {
+						var cardProgramId = obj.cardProgramList[i].cardProgramId;
+						var cardProgramName = obj.cardProgramList[i].cardProgramName;
+						var partnerName = obj.cardProgramList[i].partnerName;
+						var partnerCode = obj.cardProgramList[i].partnerCode;
+						var iin = obj.cardProgramList[i].iin;
+						var iinExt = obj.cardProgramList[i].iinExt;
+						if(obj.cardProgramList[i].programManagerName != null){
+							entityName = obj.cardProgramList[i].programManagerName;
+						}else{
+							entityName = obj.cardProgramList[i].isoName;
+						}
+						var currency = obj.cardProgramList[i].currency;
+						if(obj.cardProgramList[i].programManagerId != null){
+							entityId = obj.cardProgramList[i].programManagerId;
+						}else{
+							entityId = obj.cardProgramList[i].isoId;
+						}
+						var recRow = '<tr id="rowId'+cardProgramId+'">'
+							+'<td>'+partnerName+'</td>'
+							+'<td>'+cardProgramName+'</td>'
+							+'<td>'+iin+'</td>'
+							+'<td>'+partnerCode+'</td>'
+							+'<td>'+iinExt+'</td>'
+							+'<td>'+entityName+'</td>'
+							+'<td>'+currency+'</td>'
+							+'<td data-title="Action"><input id="cpId'+cardProgramId+''+entityId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+',\''+cardProgramName+'\',\''+entityName+'\',\''+entityId+'\')"></td>'
+					       +'</tr>';	
+							jQuery('#serviceResults').append(recRow);
+					}
+				}	
+			}
+		},
+		error : function(e) {
+
+		}
+	});
+}
+
+function openCreateCancelConfirmationPopup() {
+	if ((isEmpty(get('businessName').value))
+			&& (isEmpty(get('businessURL').value.trim()))
+			&& (isEmpty(get('firstName').value.trim()))
+			&& (isEmpty(get('lastName').value.trim()))
+			&& (isEmpty(get('phone').value.trim()))
+			&& (isEmpty(get('city').value.trim()))
+			&& (isEmpty(get('country').value.trim()))
+			&& (isEmpty(get('emailId').value.trim()))
+			&& (isEmpty(get('address1').value.trim()))
+			&& (isEmpty(getVal('pin')))
+			&& (isEmpty(get('state').value.trim()))) {
+		window.location.href = 'sub-merchant-search-page';
+	}
+	else{
+		$('#my_popup1').popup("show");
+     }
 }

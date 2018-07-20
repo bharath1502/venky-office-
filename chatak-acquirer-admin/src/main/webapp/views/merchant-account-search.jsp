@@ -5,6 +5,7 @@
 <%@page import="java.util.Calendar"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -24,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -73,6 +74,7 @@
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
 									<input type="hidden" id="sortProperty" name="sortProperty" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="merchant-account-search-report" name="downloadReport" method="post">
@@ -80,12 +82,14 @@
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="merchant-account-edit-page" name="editMercahntAccountForm" method="post">
 									<input type="hidden" id="editAccountId" name="accountId" />
 									<input type="hidden" id="editmerchantCode" name="merchantCode" />
 									<input type="hidden" id="editMerchantType" name="merchantType" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<%-- <form action="#" name="viewMercahntaccountForm" method="post">
@@ -101,6 +105,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="merchant-account-search" commandName="merchantAccountSearchDto" name="merchantAccountSearchDto">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -302,7 +307,7 @@
 			<input type="hidden" id="csAccountId" name="accountId" />
 			<input type="hidden" id="csAccountStatus" name="accountStatus" />
 			<input type="hidden" id="csMerchantType" name="merchantType" />
-			
+			<input type="hidden" name="CSRFToken" value="${tokenval}">
 			<label data-toggle="tooltip" data-placement="top" title=""><span class="required-field">*</span> Reason </label>
 			<textarea id="reason" name="reason" maxlength="500" onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
 			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -324,9 +329,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
@@ -364,6 +367,22 @@
 				}
 			}); */
 		});
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

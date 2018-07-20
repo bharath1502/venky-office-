@@ -70,6 +70,8 @@ public class GenericUserDTO extends SearchRequest{
 	
 	private String merchantCode;
 	
+	private Long entityId;
+	
 
 	/**
 	 * @return the adminUserId
@@ -483,6 +485,20 @@ public class GenericUserDTO extends SearchRequest{
 
   public void setMerchantName(String merchantName) {
     this.merchantName = merchantName;
+  }
+
+  /**
+   * @return the entityId
+   */
+  public Long getEntityId() {
+    return entityId;
+  }
+
+  /**
+   * @param entityId the entityId to set
+   */
+  public void setEntityId(Long entityId) {
+    this.entityId = entityId;
   }
 
 }

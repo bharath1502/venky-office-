@@ -3,6 +3,7 @@
  */
 package com.chatak.acquirer.admin.controller;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,19 +27,25 @@ import org.springframework.web.servlet.ModelAndView;
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.Option;
+import com.chatak.acquirer.admin.controller.model.SettlementDataRequest;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.TransactionResponse;
 import com.chatak.acquirer.admin.service.BankService;
 import com.chatak.acquirer.admin.service.CurrencyConfigService;
+import com.chatak.acquirer.admin.service.IsoService;
 import com.chatak.acquirer.admin.service.MerchantUpdateService;
 import com.chatak.acquirer.admin.service.MerchantValidateService;
 import com.chatak.acquirer.admin.service.PartnerService;
+import com.chatak.acquirer.admin.service.ProgramManagerService;
 import com.chatak.acquirer.admin.service.ResellerService;
 import com.chatak.acquirer.admin.service.TransactionService;
 import com.chatak.acquirer.admin.service.UserService;
 import com.chatak.acquirer.admin.util.CommonUtil;
 import com.chatak.acquirer.admin.util.ProcessorConfig;
+import com.chatak.acquirer.admin.util.StringUtil;
+import com.chatak.pg.acq.dao.IssSettlementDataDao;
 import com.chatak.pg.acq.dao.PGParamsDao;
+import com.chatak.pg.acq.dao.model.PGIssSettlementData;
 import com.chatak.pg.acq.dao.model.PGParams;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.AccountTransactionCode;
@@ -49,7 +56,10 @@ import com.chatak.pg.model.GenericUserDTO;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
+import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 
 /**
  *
@@ -93,6 +103,18 @@ public class DashboardController implements URLMappingConstants {
   
   @Autowired
   private PartnerService partnerService;
+  
+  @Autowired
+  RoleController roleController;
+  
+  @Autowired
+  private ProgramManagerService programManagerService;
+  
+  @Autowired
+  private IsoService isoService;
+
+  @Autowired
+  private IssSettlementDataDao issSettlementDataDao;
 
   @PostConstruct
   private void loadConfiguration() {
@@ -196,16 +218,12 @@ public class DashboardController implements URLMappingConstants {
 
   private ModelAndView showLoginCondition(HttpSession session, ModelAndView modelAndView,
       String existingFeature, String userType) {
-    if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_DASHBOARD_FEATURE_ID)) {
+    if ((!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_DASHBOARD_FEATURE_ID)) || ("reseller".equalsIgnoreCase(userType)
+            && !existingFeature.contains(FeatureConstants.RESELLER_SERVICE_DASHBOARD_FEATURE_ID))) {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
-    } else if ("reseller".equalsIgnoreCase(userType)
-        && !existingFeature.contains(FeatureConstants.RESELLER_SERVICE_DASHBOARD_FEATURE_ID)) {
-      session.invalidate();
-      modelAndView.setViewName(INVALID_REQUEST_PAGE);
-      return modelAndView;
-    }
+    } 
     return modelAndView;
   }
 
@@ -228,7 +246,7 @@ public class DashboardController implements URLMappingConstants {
       if (null == merchant) {
         throw new ChatakAdminException();
       } else {
-
+    	  validateMerchant(model, merchant);
         List<Option> options =
             merchantValidateService.getFeeProgramNamesForEdit(merchant.getFeeProgram());
         modelAndView.addObject("feeprogramnames", options);
@@ -253,10 +271,6 @@ public class DashboardController implements URLMappingConstants {
         modelAndView.addObject("bankList", bankOptions);
         List<Option> resellerOptions = resellerService.getResellerData();
         modelAndView.addObject("resellerList", resellerOptions);
-        
-        List<Option> partnersList = partnerService.getActivePartners();
-        modelAndView.addObject("partnerList", partnersList);
-        session.setAttribute("partnerList", partnersList);
       }
     } catch (ChatakAdminException e) {
       logger.error("ERORR:: DashboardController:: showViewSubMerchant method",e);
@@ -268,6 +282,34 @@ public class DashboardController implements URLMappingConstants {
     logger.info("EXITING :: MerchantController :: showViewSubMerchant");
     return modelAndView;
   }
+
+private void validateMerchant(Map model, Merchant merchant) {
+	try {
+		MerchantResponse selectedCurrencyList = merchantUpdateService.findByMerchantId(merchant.getId());
+		if (selectedCurrencyList != null) {
+			merchant.setAssociatedTo(selectedCurrencyList.getMerchant().getAssociatedTo());
+			if (merchant.getAssociatedTo() != null
+					&& merchant.getAssociatedTo().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+				 Response  programManagerResponse = programManagerService.findProgramManagerNameByCurrencyAndId(merchant.getId(),merchant.getLocalCurrency());
+				model.put("selectedCardProgramList", selectedCurrencyList.getCardProgramRequests());
+				model.put("selectedEntityList", selectedCurrencyList.getProgramManagerRequests());
+				model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
+				model.put("EntityList", programManagerResponse.getResponseList());
+			} else {
+				Response  programManagerResponse = isoService.findIsoNameByCurrencyAndId(merchant.getId(), merchant.getLocalCurrency());
+				model.put("selectedCardProgramList", selectedCurrencyList.getCardProgramRequests());
+				model.put("selectedEntityList", selectedCurrencyList.getIsoRequests());
+				model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
+				model.put("EntityList", programManagerResponse.getResponseList());
+			}
+		}
+		} catch (InstantiationException e) {
+			logger.error("ERORR:: DashboardController:: showViewSubMerchant method : InstantiationException",
+					e);
+		} catch (IllegalAccessException e) {
+			logger.error("ERORR:: DashboardController:: showViewSubMerchant method :IllegalAccessException", e);
+		}
+}
 
   private void fetchState(HttpSession session, ModelAndView modelAndView, Merchant merchant) throws ChatakAdminException {
 	Response stateList = merchantUpdateService.getStatesByCountry(merchant.getCountry());
@@ -294,7 +336,7 @@ public class DashboardController implements URLMappingConstants {
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
     }
-
+    roleController.getRoleListForRoles(session, model);
     modelAndView.addObject("flag", false);
     modelAndView.addObject(Constants.USERDATA_DTO, userDataDto);
     logger.info("Exiting :: DashboardController :: showUnblockUsers method");
@@ -314,8 +356,11 @@ public class DashboardController implements URLMappingConstants {
       return modelAndView;
     }
     try {
+    	roleController.getRoleListForRoles(session, model);
       List<AdminUserDTO> adminUserList;
-      if (userDataDto.getUserType().equals(PGConstants.ADMIN)) {
+      if (userDataDto.getUserType().equals(PGConstants.ADMIN) 
+    		  || userDataDto.getUserType().equals(Constants.PM_USER_TYPE)
+    		  || userDataDto.getUserType().equals(Constants.ISO_USER_TYPE)) {
         adminUserList = userService.searchAdminUserList();
       } else {
         adminUserList = userService.searchMerchantUserList();
@@ -356,7 +401,9 @@ public class DashboardController implements URLMappingConstants {
     String entityType = request.getParameter("entityType");
     Response responseval = new Response();
     try {
-      if (userName != null && entityType.equals(PGConstants.ADMIN)) {
+      if (userName != null && entityType.equals(PGConstants.ADMIN)
+    		  || entityType.equals(Constants.PM_USER_TYPE)
+    		  || entityType.equals(Constants.ISO_USER_TYPE)) {
         responseval = userService.unblockAdminUser(userName);
       } else {
         responseval = userService.unblockMerchantUser(userName);
@@ -380,4 +427,66 @@ public class DashboardController implements URLMappingConstants {
     logger.info("Exit:: DashboardController:: searchAdminUser method");
     return modelAndView;
   }
+  
+	@RequestMapping(value = FETCH_SETTLEMENT_DATA_BY_PMID)
+	public ModelAndView showViewSettlementDetails(HttpServletRequest request, HttpServletResponse response,
+			@FormParam("programViewId") final Long programViewId, @FormParam("batchDate") final Timestamp batchDate, HttpSession session, Map model) {
+		LogHelper.logEntry(logger, LoggerMessage.getCallerName());		
+		ModelAndView modelAndView = new ModelAndView(FETCH_SETTLEMENT_DATA_BY_PMID);
+		modelAndView.addObject(Constants.ERROR, null);
+		modelAndView.addObject(Constants.SUCESS, null);
+		Long programId = (Long) session.getAttribute("programViewId");
+		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Acquirer Programa manager id" + programViewId);
+		try {
+			
+			if (programId == null || programViewId != null) {
+				programId = programViewId;
+			}
+			
+			List<PGIssSettlementData> list = issSettlementDataDao.findByAcqPmIdAndBatchDate(programId, batchDate);
+			SettlementDataRequest settlementDataRequest = new SettlementDataRequest();
+			if (StringUtil.isListNotNullNEmpty(list)) {
+				settlementDataRequest.setProgramManagerId(list.get(0).getAcqPmId());
+				settlementDataRequest.setBatchDate(list.get(0).getBatchDate());
+				settlementDataRequest.setTotalAmount(list.get(0).getTotalAmount());
+				settlementDataRequest.setTotalTxnCount(list.get(0).getTotalTxnCount());
+				settlementDataRequest.setProgramManagerName(list.get(0).getProgramManagerName());
+				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "selected Program manager details" + settlementDataRequest.getProgramManagerId() 
+				+ settlementDataRequest.getProgramManagerName() + settlementDataRequest.getTotalTxnCount() + settlementDataRequest.getTotalAmount());
+			}
+			model.put("settlementDataRequest", settlementDataRequest);
+		} catch (Exception e) {
+			logger.error("ERROR:: DashboardController:: showViewSettlementDetails method", e);
+			model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE, null,
+					LocaleContextHolder.getLocale()));
+		}
+		session.setAttribute("programViewId", programId);
+		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		return modelAndView;
+	}
+
+	@RequestMapping(value = SHOW_ALL_PENDING_SETTLEMENT_DATA, method = RequestMethod.GET)
+	public ModelAndView showAllPendingSettlementDetails(HttpServletRequest request, HttpServletResponse response,
+			HttpSession session, @FormParam("totalRecords") final Integer totalRecords) {
+		logger.info("Entering:: DashboardController:: showAllPendingSettlementDetails method");
+		ModelAndView modelAndView = new ModelAndView(SHOW_ALL_PENDING_SETTLEMENT_DATA);
+		List<PGIssSettlementData> list = issSettlementDataDao.getAllPendingPM();
+		List<PGIssSettlementData> settlementData = new ArrayList<>();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			for (PGIssSettlementData data : list) {
+				PGIssSettlementData issSettlementData = new PGIssSettlementData();
+				issSettlementData.setProgramManagerId(data.getAcqPmId());
+				issSettlementData.setProgramManagerName(data.getProgramManagerName());
+				issSettlementData.setBatchDate(data.getBatchDate());
+				issSettlementData.setTotalAmount(data.getTotalAmount());
+				issSettlementData.setTotalTxnCount(data.getTotalTxnCount());
+				settlementData.add(issSettlementData);
+			}
+			modelAndView.addObject("settlementDataList", settlementData);
+			session.setAttribute("totalRecords", settlementData.size());
+
+		}
+		logger.info("EXITING :: DashboardController :: showAllPendingSettlementDetails");
+		return modelAndView;
+	}
 }

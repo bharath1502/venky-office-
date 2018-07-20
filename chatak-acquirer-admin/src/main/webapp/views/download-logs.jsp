@@ -5,6 +5,7 @@
 <%@page import="java.util.Calendar"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
 	int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -29,7 +30,7 @@
     <![endif]-->
 
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -64,11 +65,13 @@
 						method="post">
 						<input type="hidden" id="downloadLog" name="downloadLog" />
 						<input type="hidden" id="logName" name="logName" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 			       <form:form action="chatak-process-download-logs"
 						name="poratlsLogDownload" method="post">
 						<input type="hidden" name="selectedLog" id="selectedLog" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 					<fieldset class="col-sm-12">
@@ -142,10 +145,9 @@
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script type="text/javascript" src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/upload-logs.js"></script>
+	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script>
 		/* if (document.getElementById('portalLog').checked) {			
 		} else if (document.getElementById('serviceLog').checked) {
@@ -165,6 +167,21 @@
 			 radio[i].checked=true;
 		 }
 		}	 */
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

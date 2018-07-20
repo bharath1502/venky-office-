@@ -120,6 +120,9 @@ public class PGTransactionServiceImplTest {
 
 	@Mock
 	CurrencyConfigRepository currencyConfigRepository;
+	
+	@Mock
+	PGMerchant merchant;
 
 	@Test
 	public void testProcessTransactionAuth() {
@@ -139,7 +142,7 @@ public class PGTransactionServiceImplTest {
 		cardData.setCardType(MethodOfPaymentTypeEnum.VI);
 		transactionRequest.setCardData(cardData);
 		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any((PGOnlineTxnLog.class)))).thenReturn(pgOnlineTxnLog);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -165,13 +168,13 @@ public class PGTransactionServiceImplTest {
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgTransaction);
 		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any((PGOnlineTxnLog.class)))).thenReturn(pgOnlineTxnLog);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
 	public void testProcessTransactionElse() {
 		TransactionRequest transactionRequest = new TransactionRequest();
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -198,7 +201,7 @@ public class PGTransactionServiceImplTest {
 		transactionRequest.setTotalTxnAmount(Long.parseLong("54354"));
 		feeValues.add(acquirerFeeValue);
 		Mockito.when(merchantUpdateDao.getMerchantByCode(Matchers.anyString())).thenReturn(pgMerchant);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -223,7 +226,7 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any((PGOnlineTxnLog.class)))).thenReturn(pgOnlineTxnLog);
 		Mockito.when(refundTransactionDao.findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId(
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(pgTransaction);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -253,7 +256,7 @@ public class PGTransactionServiceImplTest {
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(pgTransaction);
 		Mockito.when(refundTransactionDao.getRefundedAmountOnTxnId(Matchers.anyString()))
 				.thenReturn(Long.parseLong("543"));
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -263,7 +266,7 @@ public class PGTransactionServiceImplTest {
 		transactionRequest.setTransactionType(TransactionType.VOID);
 		Mockito.when(refundTransactionDao.findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId(
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(pgTransaction);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -282,7 +285,7 @@ public class PGTransactionServiceImplTest {
 		transactionRequest.setCardTokenData(cardTokenData);
 		cardData.setCardType(MethodOfPaymentTypeEnum.VI);
 		transactionRequest.setCardData(cardData);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -305,7 +308,7 @@ public class PGTransactionServiceImplTest {
 		pgTransaction.setPosEntryMode("abc");
 		transactionRequest.setCardData(cardData);
 		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any((PGOnlineTxnLog.class)))).thenReturn(pgOnlineTxnLog);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -332,7 +335,7 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(refundTransactionDao.findRefundTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgTransaction);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
@@ -360,13 +363,13 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(merchantUpdateDao.getMerchant(Matchers.anyString())).thenReturn(merchantData);
 		Mockito.when(currencyConfigRepository.findByCurrencyCodeAlpha(Matchers.anyString()))
 				.thenReturn(currencyDetails);
-		pgTransactionServiceImpl.processTransaction(transactionRequest);
+		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 	}
 
 	@Test
 	public void testProcessTransactionMerchant() {
 		TransactionRequest transactionRequest = new TransactionRequest();
-		PGMerchant merchant = new PGMerchant();
+		merchant = new PGMerchant();
 		transactionRequest.setTransactionType(TransactionType.AUTH);
 		pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
 	}
@@ -377,10 +380,10 @@ public class PGTransactionServiceImplTest {
 		List<TransactionDTO> dtos = new ArrayList<>();
 		TransactionDTO transactionDTO = new TransactionDTO();
 		TransactionDTOResponse transactionResponse = new TransactionDTOResponse();
-		PGMerchant merchant = new PGMerchant();
+		merchant = new PGMerchant();
 		CardData cardData = new CardData();
 		transactionRequest.setTransactionType(TransactionType.AUTH);
-		transactionRequest.setMerchantId("543");
+		transactionRequest.setMerchantCode("543");
 		transactionRequest.setTerminalId("5435");
 		cardData.setCardNumber("546");
 		transactionRequest.setCardData(cardData);
@@ -393,14 +396,14 @@ public class PGTransactionServiceImplTest {
 	@Test
 	public void testProcessTransactionMerchantElse() {
 		TransactionRequest transactionRequest = new TransactionRequest();
-		PGMerchant merchant = new PGMerchant();
+		merchant = new PGMerchant();
 		pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
 	}
 
 	@Test
 	public void testProcessAuthCapture() {
 		TransactionRequest transactionRequest = new TransactionRequest();
-		pgTransactionServiceImpl.processAuthCapture(transactionRequest);
+		pgTransactionServiceImpl.processAuthCapture(transactionRequest,merchant);
 	}
 
 	@Test
@@ -442,7 +445,7 @@ public class PGTransactionServiceImplTest {
 	@Test
 	public void testProcessSplitSale() {
 		TransactionRequest transactionRequest = new TransactionRequest();
-		pgTransactionServiceImpl.processSplitSale(transactionRequest);
+		pgTransactionServiceImpl.processSplitSale(transactionRequest,merchant);
 	}
 
 	@Test
@@ -457,7 +460,7 @@ public class PGTransactionServiceImplTest {
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyLong())).thenReturn(pgSplitTransaction);
 		Mockito.when(voidTransactionDao.findTransactionToReversalByMerchantIdAndPGTxnId(Matchers.anyString(),
 				Matchers.anyString())).thenReturn(txnToVoid);
-		pgTransactionServiceImpl.processSplitReject(transactionRequest);
+		pgTransactionServiceImpl.processSplitReject(transactionRequest,merchant);
 	}
 
 	@Test
@@ -479,7 +482,7 @@ public class PGTransactionServiceImplTest {
 	@Test
 	public void testProcessLoadFund() {
 		TransactionRequest transactionRequest = new TransactionRequest();
-		PGMerchant merchant = new PGMerchant();
+		merchant = new PGMerchant();
 		pgTransactionServiceImpl.processLoadFund(transactionRequest, merchant);
 	}
 
@@ -520,7 +523,7 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(onlineTxnLogDao.getTransactionOnPgTxnIdAndMerchantId(Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgOnlineTxnLog);
 		try {
-			pgTransactionServiceImpl.updateSettlementStatus("1", "2", "3", "4", "5", "6", Long.parseLong("654"));
+			pgTransactionServiceImpl.updateSettlementStatus("1", "2", "3", "4", "5", "6", Long.parseLong("654"),"7");
 		} catch (Exception e) {
 			logger.info("Error:: PGTransactionServiceImplTest:: testUpdateSettlementStatus method", e);
 
@@ -536,7 +539,7 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(onlineTxnLogDao.getTransactionOnPgTxnIdAndMerchantId(Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgOnlineTxnLog);
 		try {
-			pgTransactionServiceImpl.updateSettlementStatus("1", "2", "3", "4", "Executed", "6", Long.parseLong("654"));
+			pgTransactionServiceImpl.updateSettlementStatus("1", "2", "3", "4", "Executed", "6", Long.parseLong("654"),"7");
 		} catch (Exception e) {
 			logger.info("Error:: PGTransactionServiceImplTest:: testUpdateSettlementStatusException method", e);
 
@@ -611,14 +614,14 @@ public class PGTransactionServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateAccountCCTransactionsCcAcquirerFeeCredit() {  //ReBrand
+	public void testUpdateAccountCCTransactionsCcAcquirerFeeCredit() {
 		List<PGAccountTransactions> accountTxns = new ArrayList<>();
 		List<PGTransaction> transactions = new ArrayList<>();
 		PGTransaction pgTransaction = new PGTransaction();
 		PGCurrencyConfig currencyConfig = new PGCurrencyConfig();
 		PGAccount account = new PGAccount();
 		PGAccountTransactions accountTransactions = new PGAccountTransactions();
-		accountTransactions.setTransactionCode("CC_ACQUIRER_FEE_CREDIT");  //ReBrand
+		accountTransactions.setTransactionCode("CC_ACQUIRER_FEE_CREDIT");
 		account.setAvailableBalance(Long.parseLong("534"));
 		accountTransactions.setCredit(Long.parseLong("34"));
 		account.setCurrentBalance(Long.parseLong("434"));

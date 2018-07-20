@@ -44,8 +44,8 @@ public class CardTrackParser {
   private void init() throws IllegalArgumentException {
     String sTrackData = track;
     // --- Determine the presence of special characters
-    int nHasTrack1 = track.indexOf("^");
-    int nHasTrack2 = track.indexOf("=");
+    int nHasTrack1 = track.indexOf('^');
+    int nHasTrack2 = track.indexOf('=');
     boolean bHasTrack1 = false;
     boolean bHasTrack2 = false;
 
@@ -124,7 +124,7 @@ public class CardTrackParser {
     // -----------------------------------------------------------------------------
     if(bTrack2) {
 
-      int nSeperator = track.indexOf("=");
+      int nSeperator = track.indexOf('=');
 
       this.cardData.setCardNumber(stripAlpha(track.substring(1, nSeperator)));
       this.cardData.setExpDate(track.substring(nSeperator+1, nSeperator + Integer.parseInt("5")));
@@ -192,7 +192,7 @@ public class CardTrackParser {
         sTrackData = sTrackData.substring(1, sTrackData.length());
       }
 
-      int track2sentinel = sTrackData.indexOf(";");
+      int track2sentinel = sTrackData.indexOf(';');
       if(track2sentinel != -1) {
         this.track1 = sTrackData.substring(0, track2sentinel);
         this.track2 = sTrackData.substring(track2sentinel);

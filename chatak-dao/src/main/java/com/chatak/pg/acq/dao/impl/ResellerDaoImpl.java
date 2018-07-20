@@ -128,12 +128,10 @@ public class ResellerDaoImpl implements ResellerDao, PGConstants {
     resellerData.setAccountBalance(PGConstants.ZERO);
     resellerData.setAccountNumber(addResellerRequest.getAccountNumber());
 
-    if (null != resellerData) {
       resellerRepository.save(resellerData);
       addResellerResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
       addResellerResponse.setErrorMessage(
           ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
-    }
     logger.info("Exiting ResellerDaoImpl : : addReseller Method");
     return addResellerResponse;
   }

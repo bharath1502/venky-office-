@@ -1,0 +1,7 @@
+Project homepage: http://jexcelapi.sourceforge.net/
+
+
+Sources: https://mvnrepository.com/artifact/net.sourceforge.jexcelapi/jxl/2.6
+
+License:
+Licensed under LGPL

@@ -19,7 +19,7 @@ public class Hex {
    * Hex decimal character array. Used in selecting the mapping for each four
    * binary bits
    */
-  private static final char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+  private static final char hexa[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
   /**
    * Encode the byte array of binary data to hex decimal format
@@ -34,8 +34,8 @@ public class Hex {
     char out[] = new char[datalength * Constants.TWO];
     int j = 0;
     for(int i = 0; i < datalength; i++) {
-      out[j++] = hex[(0xf0 & data[i]) >>> HEX_CHAR_LENGTH];
-      out[j++] = hex[0xf & data[i]];
+      out[j++] = hexa[(0xf0 & data[i]) >>> HEX_CHAR_LENGTH];
+      out[j++] = hexa[0xf & data[i]];
     }
     return new String(out);
   }
@@ -62,7 +62,8 @@ public class Hex {
     // dividing by two as every two characters will represent one byte
     byte out[] = new byte[datalength / Constants.TWO];
     int i = 0;
-    for(int j = 0; j < datalength;) {
+    int j;
+    for(j = 0; j < datalength;) {
       int upperBytes = toDigit(data[j], j) << Constants.FOUR;
       j++;
       int byteInteger = upperBytes | toDigit(data[j], j);
@@ -139,7 +140,8 @@ public class Hex {
 
   public static byte[] asciiToBinary(byte[] buffer) {
     byte[] array = new byte[buffer.length / Constants.TWO];
-    for(int i = 0; i < buffer.length; i += Constants.TWO) {
+    int i;
+    for(i = 0; i < buffer.length; i += Constants.TWO) {
       if(buffer[i] == Constants.MAX_ENTITY_DISPLAY_SIZE || buffer[i] == Constants.THIRTEEN) {
         --i;
         continue;

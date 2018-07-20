@@ -42,7 +42,7 @@ function validFirstName() {
 		loadMsgTitleText();
 		return false;
 	} else if (!isCharacter(firstName)) {
-		setDiv('firstNameDiv', webMessages.adminUserFirstName);
+		setDiv('firstNameDiv', webMessages.invalidFirstName);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -61,7 +61,7 @@ function validLastName() {
 		loadMsgTitleText();
 		return false;
 	} else if (!isCharacter(lastName)) {
-		setDiv('lastNameDiv', webMessages.adminUserLastName);
+		setDiv('lastNameDiv', webMessages.invalidLastName);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -280,8 +280,13 @@ function validCreateUser() {
 			    | !validMerchantId() | !validUserName()) {
 			return false;
 		}
-	}
-	else{
+	} else if($('#roleType').val() == 'Program Manager' || $('#roleType').val() == 'ISO') {
+		if (!validEntityName() | !validRoleName() | !validFirstName() //
+				| !validLastName() | !validPhone() | !validateUserEmail()
+			    | !validUserName()) {
+			return false;
+		}
+	} else {
 		if (!validRoleName() | !validFirstName() //
 				| !validLastName() | !validPhone() | !validateUserEmail()
 			    | !validUserName()) {
@@ -297,27 +302,17 @@ function validEditUser() {
 		if (!validRoleName()  | !validFirstName() | !validLastName() | !validPhone()  | !validMerchantId() | !validateUserEmail()) {
 			return false;
 		}
-	}
-	else{
+	} else if($('#roleType').val() == 'Program Manager' || $('#roleType').val() == 'ISO') {
+		if (!validEntityName() | !validRoleName() | !validFirstName() //
+				| !validLastName() | !validPhone() | !validateUserEmail()
+			    | !validUserName()) {
+			return false;
+		}
+	} else {
 		if (!validRoleName()  | !validFirstName() | !validLastName() | !validPhone()  | !validateUserEmail()) {
 			return false;
 		}
 	}
-	
-	
-	 function validRoleName() {
-			var roleName = get('roleName').value.trim();
-			if (isEmpty(roleName)) {
-				setDiv('roleNameDiv', webMessages.adminUserRoleType);
-				loadMsgTitleText();
-				return false;
-			} else {
-				setDiv('roleNameDiv', '');
-				setLable('confirmRoleName', roleName);
-				return true;
-			}
-		}
-	
 	return true;
 }
 
@@ -543,4 +538,16 @@ function doAjaxFetchMerchantCodeByMerchantName() {
 
 function resetAll() {
 	document.forms["resubmitForm"].submit();
+}
+
+function validEntityName() {
+	var roleName = get('entityId').value.trim();
+	if (isEmpty(roleName)) {
+		setDiv('entityIdDiv', webMessages.adminUserEntity);
+		loadMsgTitleText();
+		return false;
+	} else {
+		setDiv('entityIdDiv', '');
+		return true;
+	}
 }

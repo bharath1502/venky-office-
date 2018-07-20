@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.user.bean;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 /**
@@ -19,7 +20,7 @@ public class BlackListedCardRequest extends SearchRequest {
 
 	private Long id;
 	
-	private Long cardNumber;
+	private BigInteger cardNumber;
 	
 	private Integer status;
 	
@@ -35,19 +36,6 @@ public class BlackListedCardRequest extends SearchRequest {
 	
 	private String reason;
 
-	/**
-	 * @return the cardNumber
-	 */
-	public Long getCardNumber() {
-		return cardNumber;
-	}
-
-	/**
-	 * @param cardNumber the cardNumber to set
-	 */
-	public void setCardNumber(Long cardNumber) {
-		this.cardNumber = cardNumber;
-	}
 
 	/**
 	 * @return the statusDisp
@@ -160,6 +148,20 @@ public class BlackListedCardRequest extends SearchRequest {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
-	
+
+  /**
+   * @return the cardNumber
+   */
+  public BigInteger getCardNumber() {
+    return cardNumber;
+  }
+
+  /**
+   * @param cardNumber the cardNumber to set
+   */
+  public void setCardNumber(BigInteger cardNumber) {
+    this.cardNumber = cardNumber;
+  }
+
 
 	}

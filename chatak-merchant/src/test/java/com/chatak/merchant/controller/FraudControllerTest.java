@@ -201,18 +201,6 @@ public class FraudControllerTest {
 	}
 
 	@Test
-	public void testShowAdvancedFraudNotNull() {
-		try {
-			mockMvc.perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_FRAUD_ADVANCED_PAGE)
-					.sessionAttr("existingFeatures", "abcd").sessionAttr("loginResponse", "bcd"))
-					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_FRAUD_ADVANCED_PAGE));
-		} catch (Exception e) {
-			logger.error("ERROR :: FraudControllerTest :: testShowAdvancedFraudNotNull method", e);
-
-		}
-	}
-
-	@Test
 	public void testAddNewAdvancedFraudHeader() {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ADD_NEW_ADVANCED_FRAUD)
@@ -234,20 +222,6 @@ public class FraudControllerTest {
 					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_FRAUD_ADVANCED_PAGE));
 		} catch (Exception e) {
 			logger.error("ERROR :: FraudControllerTest :: testShowAdvancedFraudException method", e);
-
-		}
-	}
-
-	@Test
-	public void testAddNewAdvancedFraudNull() throws ChatakMerchantException {
-		Mockito.when(fraudService.searchAdvancedFraudByIdAndMerchantCode(Matchers.any(AdvancedFraudDTO.class)))
-				.thenReturn(advancedFraudDTO);
-		try {
-			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ADD_NEW_ADVANCED_FRAUD)
-					.sessionAttr("existingFeatures", "123").header("referer", "referer"))
-					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_FRAUD_ADVANCED_PAGE));
-		} catch (Exception e) {
-			logger.error("ERROR :: FraudControllerTest :: testAddNewAdvancedFraudNull method", e);
 
 		}
 	}
@@ -327,19 +301,6 @@ public class FraudControllerTest {
 					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ADVANCED_FRAUD_EDIT_PAGE));
 		} catch (Exception e) {
 			logger.error("ERROR :: FraudControllerTest :: testShowAdvancedFraudEditPage method", e);
-
-		}
-	}
-
-	@Test
-	public void testShowAdvancedFraudEditPageNotNull() {
-		LoginResponse loginResponse = new LoginResponse();
-		try {
-			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_SHOW_ADVANCED_FRAUD_EDIT_PAGE)
-					.sessionAttr("existingFeatures", "abc").sessionAttr("loginResponse", loginResponse)
-					.header("referer", "referer")).andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_FRAUD_ADVANCED_PAGE));
-		} catch (Exception e) {
-			logger.error("ERROR :: FraudControllerTest :: testShowAdvancedFraudEditPageNotNull method", e);
 
 		}
 	}
@@ -430,21 +391,7 @@ public class FraudControllerTest {
 					.sessionAttr("existingFeatures", "123"))
 					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
 		} catch (Exception e) {
-			logger.error("ERROR :: FraudControllerTest :: testUpdateRecurringPaymentNull method", e);
-
-		}
-	}
-
-	@Test
-	public void testUpdateRecurringPaymentNull() throws ChatakMerchantException {
-		Mockito.when(fraudService.searchAdvancedFraudByIdAndMerchantCode(Matchers.any(AdvancedFraudDTO.class)))
-				.thenReturn(advancedFraudDTO);
-		try {
-			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ADVANCED_FRAUD_UPDATE)
-					.sessionAttr("existingFeatures", "123").header("referer", "referer"))
-					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_FRAUD_ADVANCED_PAGE));
-		} catch (Exception e) {
-			logger.error("ERROR :: FraudControllerTest :: testUpdateRecurringPaymentNull method", e);
+			logger.error("ERROR :: FraudControllerTest :: testUpdateRecurringPaymentNotNull method", e);
 
 		}
 	}
@@ -497,20 +444,6 @@ public class FraudControllerTest {
 					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
 		} catch (Exception e) {
 			logger.error("ERROR :: FraudControllerTest :: testDeleteAdvancedFraudNotNull method", e);
-		}
-	}
-
-	@Test
-	public void testDeleteAdvancedFraudNull() throws ChatakMerchantException {
-		Mockito.when(fraudService.searchAdvancedFraudByIdAndMerchantCode(Matchers.any(AdvancedFraudDTO.class)))
-				.thenReturn(advancedFraudDTO);
-		try {
-			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_DELETE_ADVANCED_FRAUD)
-					.sessionAttr("existingFeatures", "123").header("referer", "referer"))
-					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_FRAUD_ADVANCED_PAGE));
-		} catch (Exception e) {
-			logger.error("ERROR :: FraudControllerTest :: testDeleteAdvancedFraudNull method", e);
-
 		}
 	}
 

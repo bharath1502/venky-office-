@@ -997,6 +997,100 @@ public interface URLMappingConstants {
    
    String GET_BANK_DETAILS_BY_CURRENCY = "getBankDetailsByCurrency";
    
-   
+   String GET_ENTITY_DETAILS_BY_ENTITY_NAME = "getAllEntityName"; 
 
+   String SHOW_ISO_CREATE = "showIsoCreate";
+   
+   String ISO_CREATE_VIEW = "iso-create";
+   
+   String PROCESS_ISO_CREATE = "createIso";
+   
+   String  GET_CARD_PROGRAM = "getCardProgramByPmId";
+   
+   String SHOW_ISO_SEARCH = "showIsoSearch";
+   
+   String PROCESS_ISO_SEARCH = "processIsoSearch";
+   
+   String VIEW_ISO_SEARCH = "iso-search";
+   
+   String VIEW_ISO_EDIT = "iso-edit";
+   
+   String SHOW_ISO_EDIT = "showIsoEdit";
+   
+   String UPDATE_ISO = "updateIso";
+
+   String  GET_CARD_PROGRAM_BY_BANK_ID = "getAcquirerCardProgramDetailsByBankId";
+   
+   String FETCH_CARD_PROGRAM_BY_ISO = "fetchCardProgramByIso";
+   
+   String PREPAID_ADMIN_ISO_PAGINATION_ACTION = "isoPaginationAction";
+   
+   String GET_ISO_REPORT = "downloadIsoReport";
+   
+   String ADMIN_CHANGE_ISO_STATUS = "changeIsoStatus";
+   
+   String FETCH_COUNTRY_TIME_ZONE = "fetchTimeZone";
+	
+   String GET_PM_STATES_BY_COUNTRY_ID = "getPMStatesByCountryId";
+   
+   String  FETCH_CARD_PROGRAM_BY_MERCHANTID = "fetchCardProgramByMerchantId";
+
+   String  FETCH_SETTLEMENT_DATA_BY_PMID = "show-incoming-settlement-report";
+
+   String SHOW_ALL_PENDING_SETTLEMENT_DATA = "show-All-incoming-settlement-report";
+
+   String PROCESS_SETTLEMENT_DATA = "processIncomingSettlementData";
+   
+   String  SETTLEMENT_MONEY_MOVEMENT = "settlement-money-moment-report";
+   
+   String  EXECUTE_SETTLEMENT_DATA = "executeSettlementData";
+   
+   String PREPAID_SHOW_FEE_REPORT_PAGE = "showFeeReport";
+   
+   String PREPAID_PROCESS_FEE_REPORT_PAGE = "processFeeReport";
+   
+   String PREPAID_FEE_REPORT_PAGE = "fee-report";
+   
+   String PREPAID_SHOW_ISO_FEE_REPORT = "processISOTxns";
+   
+   String PREPAID_ISO_FEE_REPORT = "iso-fee-report";
+   
+   String PREPAID_FEE_REPORT_PAGINATION = "getFeeReportPagination";
+   
+   String DOWNLOAD_FEE_TXN_REPORT = "downloadFeeTxnReport";
+   
+   String PREPAID_MATCHED_TRANSACTIONS_PAGE = "matched-transactions";
+   
+   String PREPAID_SHOW_MATCHED_TRANSACTIONS_PAGE = "getAllMatchedTxnsByPgTxnId";
+   
+   String SHOW_ISO_REVENUE_REPORT_PAGE = "showIsoRevenueReport";
+   
+   String ISO_REVENUE_REPORT_PAGE = "iso-revenue-report";
+   
+   String PROCESS_ISO_REVENUE_REPORT_PAGE = "processIsoRevenueReport";
+   
+   String PREPAID_ADMIN_FETCH_PARTNER_FOR_ENTITY = "getPartnersEntites";
+   
+   String SHOW_MATCHED_TRANSACTIONS_REPORT_PAGE = "getAllMatchedTxnsByEntityId";
+   
+   String SHOW_MERCHANT_REVENUE_REPORT_PAGE = "showMerchantRevenueReport";
+
+   String MERCHANT_REVENUE_REPORT_PAGE = "merchant-revenue-report";
+   
+   String PROCESS_MERCHANT_REVENUE_REPORT_PAGE = "processMerchantRevenueReport";
+   
+   String PREPAID_MERCHANT_REPORT_PAGINATION = "getMerchantRevenueReportPagination"; 
+   
+   String PREPAID_ISO_REPORT_PAGINATION = "getIsoRevenueReportPagination";
+   
+   String DOWNLOAD_ISO_REPORT = "downloadIsoRevenueReport";
+   
+   String DOWNLOAD_MERCHANT_REPORT = "downloadMerchantRevenueReport";
+   
+   String SHOW_PM_REVENUE_REPORT_PAGE = "showPmRevenueReport";
+   
+   String PM_REVENUE_REPORT_PAGE = "pm-revenue-report";
+   
+   String PROCESS_PM_REVENUE_REPORT_PAGE = "processPmRevenueReport";
+   
 }

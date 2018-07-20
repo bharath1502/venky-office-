@@ -59,7 +59,7 @@ public class AccountServiceImplTest {
 	public void testBalanceInquiryElse() throws ChatakPayException {
 		AccountBalanceInquiryRequest accountBalanceInquiryRequest = new AccountBalanceInquiryRequest();
 		List<Long> accounts = new ArrayList<>();
-		Long long1 = new Long(Long.parseLong("243"));
+		Long long1 = Long.valueOf("243");
 		accounts.add(long1);
 		accountBalanceInquiryRequest.setAccountNumbers(accounts);
 		accountServiceImpl.balanceInquiry(accountBalanceInquiryRequest);
@@ -69,7 +69,7 @@ public class AccountServiceImplTest {
 	public void testBalanceInquiryException() throws ChatakPayException {
 		AccountBalanceInquiryRequest accountBalanceInquiryRequest = new AccountBalanceInquiryRequest();
 		List<Long> accounts = new ArrayList<>();
-		Long long1 = new Long(Long.parseLong("243"));
+		Long long1 =Long.valueOf("243");
 		accounts.add(long1);
 		accountBalanceInquiryRequest.setAccountNumbers(accounts);
 		Mockito.when(accountDao.getAccDetailsOnAccNums(Matchers.anyList())).thenThrow(new NullPointerException());

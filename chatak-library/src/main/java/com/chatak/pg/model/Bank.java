@@ -8,6 +8,24 @@ public class Bank extends SearchRequest {
 
   private String bankName;
   
+  private String settlRoutingNumber;
+  
+  private String bankCode;
+  
+  private String extension;
+  
+  private String settlAccountNumber;
+  
+  private String contactPersonPhone;
+  
+  private String contactPersonCell;
+  
+  private String contactPersonName;
+  
+  private String contactPersonFax;
+  
+  private String contactPersonEmail;
+  
   private Long id;
 
   private String bankShortName;
@@ -114,6 +132,78 @@ public class Bank extends SearchRequest {
 
   public void setZip(String zip) {
     this.zip = zip;
+  }
+
+  public String getSettlRoutingNumber() {
+    return settlRoutingNumber;
+  }
+
+  public void setSettlRoutingNumber(String settlRoutingNumber) {
+    this.settlRoutingNumber = settlRoutingNumber;
+  }
+
+  public String getBankCode() {
+    return bankCode;
+  }
+
+  public void setBankCode(String bankCode) {
+    this.bankCode = bankCode;
+  }
+
+  public String getExtension() {
+    return extension;
+  }
+
+  public void setExtension(String extension) {
+    this.extension = extension;
+  }
+
+  public String getSettlAccountNumber() {
+    return settlAccountNumber;
+  }
+
+  public void setSettlAccountNumber(String settlAccountNumber) {
+    this.settlAccountNumber = settlAccountNumber;
+  }
+
+  public String getContactPersonPhone() {
+    return contactPersonPhone;
+  }
+
+  public void setContactPersonPhone(String contactPersonPhone) {
+    this.contactPersonPhone = contactPersonPhone;
+  }
+
+  public String getContactPersonCell() {
+    return contactPersonCell;
+  }
+
+  public void setContactPersonCell(String contactPersonCell) {
+    this.contactPersonCell = contactPersonCell;
+  }
+
+  public String getContactPersonName() {
+    return contactPersonName;
+  }
+
+  public void setContactPersonName(String contactPersonName) {
+    this.contactPersonName = contactPersonName;
+  }
+
+  public String getContactPersonFax() {
+    return contactPersonFax;
+  }
+
+  public void setContactPersonFax(String contactPersonFax) {
+    this.contactPersonFax = contactPersonFax;
+  }
+
+  public String getContactPersonEmail() {
+    return contactPersonEmail;
+  }
+
+  public void setContactPersonEmail(String contactPersonEmail) {
+    this.contactPersonEmail = contactPersonEmail;
   }
   
 }

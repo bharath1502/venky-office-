@@ -230,7 +230,9 @@ public class ByteConversionUtils {
 		}
 		byte[] out = new byte[len >> 1];
 		// two characters form the hex value.
-		for(int i = 0, j = 0; j < len; i++) {
+		int i;
+		int j;
+		for(i = 0, j = 0; j < len; i++) {
 			int f = toDigit(data[j], j) << Integer.parseInt("4");
 			j++;
 			f = f | toDigit(data[j], j);
@@ -293,7 +295,7 @@ public class ByteConversionUtils {
 	 */
 	public static byte intToByte(int number) {
 		byte intByte;
-		Integer intInteger = new Integer(number);
+		Integer intInteger = Integer.valueOf(number);
 		intByte = intInteger.byteValue();
 		return intByte;
 	}

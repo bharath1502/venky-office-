@@ -154,7 +154,7 @@ public class UserServiceImplTest {
 		userServiceImpl.updateUser(userData);
 	}
 
-	@Test
+	@Test(expected = ChatakAdminException.class)
 	public void testUpdateUserElse() throws ChatakAdminException {
 		UserData userData = new UserData();
 		PGAdminUser adminUserListByEmail = new PGAdminUser();

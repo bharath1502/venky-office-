@@ -267,11 +267,10 @@ public class RecurringServiceImpl implements RecurringService {
           .findByRecurringPaymentInfoId(recurringContractInfoDTO.getRecurringpaymentInfoId());
 
       // validate the card status.
-      if (recurringPaymentInfo == null || (recurringPaymentInfo != null
-          && Status.INACTIVE.name().equalsIgnoreCase(recurringPaymentInfo.getStatus()))) {
+      if (recurringPaymentInfo != null       
+    		  && Status.INACTIVE.name().equalsIgnoreCase(recurringPaymentInfo.getStatus())) {
           throw new ChatakMerchantException("payment information is null");
-      } else if ((recurringPaymentInfo != null
-          && Status.ACTIVE.name().equals(recurringPaymentInfo.getStatus()))) {
+      } else if ((recurringPaymentInfo != null && Status.ACTIVE.name().equals(recurringPaymentInfo.getStatus()))) {
         validateContractEndDateWithCardExpDate(recurringContractInfoDTO, recurringPaymentInfo);
 
         recurringContractInfo =

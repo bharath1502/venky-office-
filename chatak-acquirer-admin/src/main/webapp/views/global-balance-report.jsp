@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -21,7 +22,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -61,6 +62,7 @@
 								<form:form action="getGlobalBalanceInfo" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="downloadGlobalBalanceReport" name="downloadReport" method="post">
@@ -68,6 +70,7 @@
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 							</div>
 					<!-- Content Block End -->
@@ -218,9 +221,7 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/reports.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -243,7 +244,21 @@
 			$("#navListId4").addClass("active-background");
 			
 		});
-		 
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

@@ -89,8 +89,7 @@ public class StringUtilTest {
 	@Test
 	public void testConvertListToString(){
 		List<String> featureList=new ArrayList<>();
-		String string=new String();
-		featureList.add(string);
+		featureList.add("");
 		stringUtil.convertListToString(featureList);
 	}
 	
@@ -196,8 +195,7 @@ public class StringUtilTest {
 	@Test
 	public void testGetSubCodeType(){
 		List<String> codeTypeList = new ArrayList<>();
-		String string=new String();
-		codeTypeList.add(string);
+		codeTypeList.add("");
 		stringUtil.getSubCodeType("abc\\|");
 	}
 	

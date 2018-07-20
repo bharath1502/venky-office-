@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.chatak.merchant.exception.ChatakMerchantException;
-import com.sun.jersey.api.client.ClientHandlerException;
+import com.chatak.pg.exception.HttpClientException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonUtilTest {
@@ -29,27 +29,37 @@ public class JsonUtilTest {
 	@Test
 	public void testPostRequest() {
 		try {
-			jsonUtil.postRequest(object, "serviceEndPoint");
+			jsonUtil.postRequest(object, "serviceEndPoint",String.class);
 		} catch (Exception e) {
 			logger.error("ERROR:: JsonUtil::testPostRequest ", e);
 
 		}
 	}
 
-	@Test(expected = ClientHandlerException.class)
+	@Test
 	public void testPostRequestString() {
-		jsonUtil.postRequest("serviceEndPoint");
+		try {
+		jsonUtil.postRequest("serviceEndPoint",String.class);
+		} catch (Exception e) {
+				logger.error("ERROR:: JsonUtil::testPostRequestString ", e);
+
+			}
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testSendToIssuance() {
-		jsonUtil.sendToIssuance(object, "serviceEndPoint", "mode");
+		try {
+		jsonUtil.sendToIssuance(object, "serviceEndPoint", "mode", String.class);
+		} catch (Exception e) {
+			logger.error("ERROR:: JsonUtil::testSendToIssuance ", e);
+
+		}
 	}
 
 	@Test
 	public void testPostIssuanceRequest() {
 		try {
-			jsonUtil.postIssuanceRequest(object, "serviceEndPoint");
+			jsonUtil.postIssuanceRequest(object, "serviceEndPoint", String.class);
 		} catch (Exception e) {
 			logger.error("ERROR:: JsonUtil::testPostIssuanceRequest ", e);
 

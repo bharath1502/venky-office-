@@ -2,6 +2,7 @@ package com.chatak.acquirer.admin.model;
 
 import java.util.List;
 
+import com.chatak.pg.bean.Response;
 import com.chatak.pg.model.FeeProgramDTO;
 
 public class FeeProgramResponseDetails extends Response

@@ -50,8 +50,20 @@ public class LoginResponse extends Response {
   private String firstName;
   
   private String userName;
+  
+  private Long entityId;
 
-  /**
+  private String lastLonginTime;
+  
+  public String getLastLonginTime() {
+    return lastLonginTime;
+  }
+
+  public void setLastLonginTime(String lastLonginTime) {
+    this.lastLonginTime = lastLonginTime;
+  }
+
+/**
    * @return the serviceProviderId
    */
   public Long getServiceProviderId() {
@@ -252,5 +264,20 @@ public class LoginResponse extends Response {
   public void setEmail(String email) {
     this.email = email;
   }
+
+	/**
+	 * @return the entityId
+	 */
+	public Long getEntityId() {
+		return entityId;
+	}
+
+	/**
+	 * @param entityId
+	 *            the entityId to set
+	 */
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
+	}
 
 }

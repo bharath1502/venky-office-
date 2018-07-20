@@ -109,7 +109,7 @@ public class VirtualTerminalController implements URLMappingConstants {
       Map model) {
 
     logger.info("Entering :: VirtualTerminalController :: processSale method with TimeZone : " + terminalSaleDTO.getTimeZoneOffset());
-    String merchantId = terminalSaleDTO.getMerchantId();
+    String merchantCode = terminalSaleDTO.getMerchantCode();
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_VIRTUAL_TERMINAL_SALE_PAGE);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
     if (!existingFeature
@@ -119,7 +119,7 @@ public class VirtualTerminalController implements URLMappingConstants {
       return modelAndView;
     }
     terminalSaleDTO.setUserName((String)session.getAttribute(CHATAK_ADMIN_USER_NAME));
-    if (null != merchantId) {
+    if (null != merchantCode) {
       try {
         Response blackListedCardResponse =
             blackListedCardService.findByCardNumber(terminalSaleDTO.getCardNum());
@@ -131,7 +131,7 @@ public class VirtualTerminalController implements URLMappingConstants {
         }
 
         GetMerchantDetailsResponse merchantDetailsResponse =
-            paymentService.getMerchantIdAndTerminalId(terminalSaleDTO.getMerchantId());
+            paymentService.getMerchantIdAndTerminalId(terminalSaleDTO.getMerchantCode());
         if (merchantDetailsResponse.getErrorCode().equals(Constants.SUCCESS_CODE)) {
           terminalSaleDTO.setMerchantId(merchantDetailsResponse.getMerchantId());
           terminalSaleDTO.setTerminalId(merchantDetailsResponse.getTerminalId());

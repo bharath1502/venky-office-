@@ -134,15 +134,9 @@ public interface MerchantDao {
 
   public String getAgentId(String merchantCode);
 
-  public List<String> getExistingPartnerList();
-
   public List<String> getExistingAgentList(String partnerId);
 
-  public String getPartnerId(String merchantCode);
-
   public String getApplicationMode(String merchantCode);
-
-  public String getPartnerLinkedToMerchant(Long parentMerchantId);
 
   public List<Map<String, String>> getMerchantNamesAndMerchantCode();
 

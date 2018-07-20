@@ -6,6 +6,7 @@
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.constants.PGConstants"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -13,7 +14,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
@@ -25,7 +26,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<spring:message code="process.submerchant.transactions.id"
 		var="processSubMerchantTransactions"></spring:message>
 	<spring:message code="execute.submerchant.transactions.id"
@@ -91,6 +92,7 @@
 										type="hidden" id="totalRecords" name="totalRecords" /> <input
 										type="hidden" id="downloadAllRecords"
 										name="downloadAllRecords" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 
 								<form action="do-transaction-void" method="post"
@@ -98,6 +100,7 @@
 									<input type="hidden" name="transactionID" id="transactionID" />
 									<input type="hidden" name="merchantId" id="merchantID" /> <input
 										type="hidden" name="terminalId" id="terminalID" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 
 								<form action="do-transaction-refund" name="doRefundForm"
@@ -105,6 +108,7 @@
 									<input type="hidden" name="getRefundTxnId" id="getRefundTxnId" />
 									<input type="hidden" name="merchantId" id="merchantRefundID" />
 									<input type="hidden" name="terminalId" id="terminalRefundID" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 
 								<form action="process-bulk-settlement-action" method="post"
@@ -112,6 +116,7 @@
 									<input type="hidden" name="requestObject" id="requestObjectId" />
 									<input type="hidden" name="status" id="statusId" /> <input
 										type="hidden" id="removedTxns" name="removedTxns" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 								<form:form action="process-settlement-action"
 									commandName="settlementDto" name="processAction" method="post">
@@ -121,12 +126,14 @@
 									<form:hidden path="txnType" id="txnType" />
 									<form:hidden path="settlementStatus" id="settlementStatus" />
 									<form:hidden path="comments" id="comments" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="searchTransaction" commandName="transaction"
 									name="transaction">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -299,9 +306,11 @@
 							type="hidden" id="totalRecordsId" name="totalRecords" /> <input
 							type="hidden" id="selectedTxnsReqObj" name="requestObject" /> <input
 							type="hidden" id="removedTxns" name="removedTxns" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form>
 					<form action="editMerchant" name="editMercahntForm" method="post">
 						<input type="hidden" id="getMerchantId" name="getMerchantId" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form>
 					<!-- Search Table Block Start -->
 						<div class="search-results-table">
@@ -397,7 +406,7 @@
 								</tr>
 							</table>
 							<table id="serviceResults"
-								class="table table-striped table-bordered table-responsive table-condensed tablesorter">
+								class="table table-striped table-bordered table-responsive table-condensed tablesorter" style="word-break: break-all;">
 								<thead>
 									<tr>
 										<th style="width: 80px;"><spring:message
@@ -680,14 +689,29 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script>
+	
+	$(document).ready(function() {
+		/* Table Sorter includes Start*/
+		$(function() {
+			
+				  // call the tablesorter plugin
+				  $('#serviceResults').sortable({
+					
+					 divBeforeTable: '#divbeforeid',
+					divAfterTable: '#divafterid',
+					initialSort: false,
+					locale: 'th',
+					//negativeSort: [1, 2]
+				});
+		});
+		});
+	
 		/* Common Navigation Include Start */
 		$(function() {
 			/* $( "#main-navigation" ).load( "main-navigation.html" );		 */

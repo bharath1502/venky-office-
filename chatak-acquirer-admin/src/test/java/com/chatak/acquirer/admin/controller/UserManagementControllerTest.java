@@ -141,7 +141,7 @@ public class UserManagementControllerTest {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_USER_SEARCH)
               .sessionAttr(Constants.EXISTING_FEATURES, "notExist").sessionAttr("adminId", 1l))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testShowUserExistingFeature", e);
 
@@ -182,7 +182,7 @@ public class UserManagementControllerTest {
           .perform(post("/" + URLMappingConstants.CHATAK_USER_SEARCH).sessionAttr("adminId", 1l)
               .sessionAttr(Constants.EXISTING_FEATURES, "notExist").param(Constants.PAGE_SIZE, "1")
               .param("noOfRecords", "1").param("userType", "Admin").param("noOfRecords", "1"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testSearchUserExistingFeatures", e);
 
@@ -278,7 +278,7 @@ public class UserManagementControllerTest {
           .perform(get("/" + URLMappingConstants.CHATAK_USER_CREATE).sessionAttr("adminId", 1l)
               .param(Constants.PAGE_SIZE, "1").sessionAttr("existingFeature", "notExist")
               .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_CREATE));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testShowCreateUserNoFeature", e);
 
@@ -323,7 +323,7 @@ public class UserManagementControllerTest {
           .perform(post("/" + URLMappingConstants.CHATAK_USER_CREATE).sessionAttr("adminId", 1l)
               .param(Constants.PAGE_SIZE, "1").sessionAttr("existingFeature", "notExist")
               .param("requestType", "MERCHANT").sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_CREATE));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testCreateUserNotExist", e);
 
@@ -337,7 +337,7 @@ public class UserManagementControllerTest {
           .perform(post("/" + URLMappingConstants.CHATAK_USER_CREATE).sessionAttr("loginUserId", 1l)
               .sessionAttr("existingFeature", "exist").param("roleType", "Admin")
               .sessionAttr(Constants.EXISTING_FEATURES, "exist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_CREATE));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testCreateUserExistRoleTypeAdmin", e);
 
@@ -351,7 +351,7 @@ public class UserManagementControllerTest {
           .perform(post("/" + URLMappingConstants.CHATAK_USER_CREATE).sessionAttr("loginUserId", 1l)
               .sessionAttr("existingFeature", "exist").param("roleType", "Merchant")
               .sessionAttr(Constants.EXISTING_FEATURES, "exist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_CREATE));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testCreateUserExistRoleTypeMerchant",
           e);
@@ -508,7 +508,7 @@ public class UserManagementControllerTest {
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_USER_EDIT)
           .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_EDIT));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testEditUserInvalidFeature", e);
 
@@ -577,7 +577,7 @@ public class UserManagementControllerTest {
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_USER_VIEW)
           .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_VIEW));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testViewUserInvalidFeature", e);
 
@@ -646,7 +646,7 @@ public class UserManagementControllerTest {
     try {
       mockMvc.perform(
           post("/" + URLMappingConstants.UPDATE_USER).sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
     } catch (Exception e) {
       logger.error("ERROR :: UserManagementControllerTest :: testUpdateUserInvalidFeature", e);
 

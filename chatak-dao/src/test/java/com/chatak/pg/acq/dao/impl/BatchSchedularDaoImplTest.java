@@ -62,18 +62,18 @@ public class BatchSchedularDaoImplTest {
 		time = new Timestamp(Integer.parseInt("2018"));
 		List<Object> tuplelist = new ArrayList<>();
 		Object objects[] = new Object[Integer.parseInt("13")];
-		objects[0] = new Long(Long.parseLong("12"));
-		objects[1] = new String("name");
-		objects[Integer.parseInt("2")] = new String("name");
-		objects[Integer.parseInt("3")] = new String("name");
-		objects[Integer.parseInt("4")] = new String("phone");
-		objects[Integer.parseInt("5")] = new String("name");
-		objects[Integer.parseInt("6")] = new String("status");
-		objects[Integer.parseInt("7")] = new String("status");
-		objects[Integer.parseInt("8")] = new String("bankRoutingNumber");
-		objects[Integer.parseInt("9")] = new Double(Double.parseDouble("12.5"));
-		objects[Integer.parseInt("10")] = new Double(Double.parseDouble("12.5"));
-		objects[Integer.parseInt("11")] = new Double(Double.parseDouble("12.5"));
+		objects[0] = new Long("12");
+		objects[1] = "name";
+		objects[Integer.parseInt("2")] = "name";
+		objects[Integer.parseInt("3")] = "name";
+		objects[Integer.parseInt("4")] = "phone";
+		objects[Integer.parseInt("5")] = "name";
+		objects[Integer.parseInt("6")] = "status";
+		objects[Integer.parseInt("7")] = "status";
+		objects[Integer.parseInt("8")] = "bankRoutingNumber";
+		objects[Integer.parseInt("9")] = new Double("12.5");
+		objects[Integer.parseInt("10")] = new Double("12.5");
+		objects[Integer.parseInt("11")] = new Double("12.5");
 		objects[Integer.parseInt("12")] = time;
 		tuplelist.add(objects);
 
@@ -92,7 +92,7 @@ public class BatchSchedularDaoImplTest {
 	@Test
 	public void testShowManualFundingReport() {
 		List<String> str = new ArrayList<>();
-		String st = new String("string");
+		String st = "string";
 		str.add(st);
 		Mockito.when(entityManager.createNativeQuery(Matchers.anyString())).thenReturn(query);
 		Mockito.when(query.getResultList()).thenReturn(str);
@@ -118,23 +118,23 @@ public class BatchSchedularDaoImplTest {
 		Mockito.when(merchantRepository.findMerchantsList(Matchers.anyLong())).thenReturn(merchantList);
 		reportRequest.setPageIndex(null);
 		List<Long> list = new ArrayList<>();
-		Long lon = new Long(Long.parseLong("10"));
+		Long lon = new Long("10");
 		list.add(lon);
 
 		List<Object> tupleList = new ArrayList<>();
 		Object objects[] = new Object[Integer.parseInt("13")];
-		objects[0] = new Long(Long.parseLong("12"));
-		objects[1] = new String("batchId");
-		objects[Integer.parseInt("2")] = new String("merchantCode");
-		objects[Integer.parseInt("3")] = new String("merchantName");
-		objects[Integer.parseInt("4")] = new String("subMerchantCode");
-		objects[Integer.parseInt("5")] = new String("subMerchantName");
-		objects[Integer.parseInt("6")] = new String("currency");
-		objects[Integer.parseInt("7")] = new String("bankAccountNumber");
-		objects[Integer.parseInt("8")] = new String("bankRoutingNumber");
-		objects[Integer.parseInt("9")] = new Double(Double.parseDouble("12.3357"));
-		objects[Integer.parseInt("10")] = new Double(Double.parseDouble("12.3357"));
-		objects[Integer.parseInt("11")] = new Double(Double.parseDouble("12.3357"));
+		objects[0] = new Long("12");
+		objects[1] = "batchId";
+		objects[Integer.parseInt("2")] = "merchantCode";
+		objects[Integer.parseInt("3")] = "merchantName";
+		objects[Integer.parseInt("4")] = "subMerchantCode";
+		objects[Integer.parseInt("5")] = "subMerchantName";
+		objects[Integer.parseInt("6")] = "currency";
+		objects[Integer.parseInt("7")] = "bankAccountNumber";
+		objects[Integer.parseInt("8")] = "bankRoutingNumber";
+		objects[Integer.parseInt("9")] = new Double("12.3357");
+		objects[Integer.parseInt("10")] = new Double("12.3357");
+		objects[Integer.parseInt("11")] = new Double("12.3357");
 		objects[Integer.parseInt("12")] = time;
 		tupleList.add(objects);
 
@@ -148,8 +148,7 @@ public class BatchSchedularDaoImplTest {
 	@Test
 	public void testGetMerchantBatchReportTransactions() {
 		List<String> merchantList = new ArrayList<>();
-		String string = new String();
-		merchantList.add(string);
+		merchantList.add("");
 		GetBatchReportRequest batchReportRequest = new GetBatchReportRequest();
 		batchReportRequest.setPageIndex(null);
 		batchReportRequest.setFromDate("11/01/2000");
@@ -158,18 +157,18 @@ public class BatchSchedularDaoImplTest {
 		Timestamp time1 = new Timestamp(Integer.parseInt("2018"));
 		List<Object> tuplelist = new ArrayList<>();
 		Object objects[] = new Object[Integer.parseInt("13")];
-		objects[0] = new Long(Long.parseLong("12"));
-		objects[1] = new String("name");
-		objects[Integer.parseInt("2")] = new String("name");
-		objects[Integer.parseInt("3")] = new String("name");
-		objects[Integer.parseInt("4")] = new String("phone");
-		objects[Integer.parseInt("5")] = new String("name");
-		objects[Integer.parseInt("6")] = new String("status");
-		objects[Integer.parseInt("7")] = new String("status");
-		objects[Integer.parseInt("8")] = new String("bankRoutingNumber");
-		objects[Integer.parseInt("9")] = new Double(Double.parseDouble("12.5"));
-		objects[Integer.parseInt("10")] = new Double(Double.parseDouble("12.5"));
-		objects[Integer.parseInt("11")] = new Double(Double.parseDouble("12.5"));
+		objects[0] = new Long("12");
+		objects[1] = "name";
+		objects[Integer.parseInt("2")] = "name";
+		objects[Integer.parseInt("3")] = "name";
+		objects[Integer.parseInt("4")] = "phone";
+		objects[Integer.parseInt("5")] = "name";
+		objects[Integer.parseInt("6")] = "status";
+		objects[Integer.parseInt("7")] = "status";
+		objects[Integer.parseInt("8")] = "bankRoutingNumber";
+		objects[Integer.parseInt("9")] = new Double("12.5");
+		objects[Integer.parseInt("10")] = new Double("12.5");
+		objects[Integer.parseInt("11")] = new Double("12.5");
 		objects[Integer.parseInt("12")] = time1;
 		tuplelist.add(objects);
 
@@ -188,18 +187,18 @@ public class BatchSchedularDaoImplTest {
 		time = new Timestamp(Integer.parseInt("2018"));
 		List<Object> tuplelist = new ArrayList<>();
 		Object objects[] = new Object[Integer.parseInt("13")];
-		objects[0] = new Long(Long.parseLong("12"));
-		objects[1] = new String("name");
-		objects[Integer.parseInt("2")] = new String("name");
-		objects[Integer.parseInt("3")] = new String("name");
-		objects[Integer.parseInt("4")] = new String("phone");
-		objects[Integer.parseInt("5")] = new String("name");
-		objects[Integer.parseInt("6")] = new String("status");
-		objects[Integer.parseInt("7")] = new String("status");
-		objects[Integer.parseInt("8")] = new String("bankRoutingNumber");
-		objects[Integer.parseInt("9")] = new Double(Double.parseDouble("12.5"));
-		objects[Integer.parseInt("10")] = new Double(Double.parseDouble("12.5"));
-		objects[Integer.parseInt("11")] = new Double(Double.parseDouble("12.5"));
+		objects[0] = new Long("12");
+		objects[1] = "name";
+		objects[Integer.parseInt("2")] = "name";
+		objects[Integer.parseInt("3")] = "name";
+		objects[Integer.parseInt("4")] = "phone";
+		objects[Integer.parseInt("5")] = "name";
+		objects[Integer.parseInt("6")] = "status";
+		objects[Integer.parseInt("7")] = "status";
+		objects[Integer.parseInt("8")] = "bankRoutingNumber";
+		objects[Integer.parseInt("9")] = new Double("12.5");
+		objects[Integer.parseInt("10")] = new Double("12.5");
+		objects[Integer.parseInt("11")] = new Double("12.5");
 		objects[Integer.parseInt("12")] = time;
 		tuplelist.add(objects);
 

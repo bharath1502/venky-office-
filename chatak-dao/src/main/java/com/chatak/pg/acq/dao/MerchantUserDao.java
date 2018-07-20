@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
+import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.model.AdminUserDTO;
@@ -53,4 +54,7 @@ public interface MerchantUserDao {
   
   public  List<AdminUserDTO> searchMerchantUserList();
 
+  public PGApplicationClient getApplicationClientAuth(String appAuthUser);
+
+  public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient);
 }

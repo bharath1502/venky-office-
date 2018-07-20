@@ -13,8 +13,7 @@ import org.apache.logging.log4j.Logger;
  *          the pool is configured by the numberThreads argument in the
  *          constructor.
  */
-@SuppressWarnings("unused")
-public class ThreadPool {
+  public class ThreadPool {
 
   private final int numberThreads;
 
@@ -30,7 +29,19 @@ public class ThreadPool {
   // isDaemon flag
   private boolean isDaemon = false;
 
-  private Logger logger = LogManager.getLogger(ThreadPool.class);;
+  private Logger logger = LogManager.getLogger(ThreadPool.class);
+
+  public boolean isDaemon() {
+    return isDaemon;
+  }
+
+  public void setDaemon(boolean isDaemon) {
+    this.isDaemon = isDaemon;
+  }
+
+  public int getNumberThreads() {
+    return numberThreads;
+  }
 
   /**
    * Parmaterized constructor

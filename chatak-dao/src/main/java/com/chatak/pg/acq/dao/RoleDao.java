@@ -40,5 +40,7 @@ public interface RoleDao {
    * @return
    */
   public List<PGUserRoles> findByRoleType(String rolesType);
+  
+  public List<PGFeature> getFeatureDataByIds(List<Long> featureIds);
 
 }

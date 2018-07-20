@@ -36,9 +36,7 @@ public interface FeeCodeService {
   public List<PGAcquirerFeeCode> getAllAcquirerFeeCodesByPartnerId(Long partnerId) throws ChatakAdminException;
   
   public List<AcquirerFeeCodeDTO> findByPartnerIdAndMerchantCode(Long partnerId, String merchantCode) throws ChatakAdminException;
-  
-  public List<PGAcquirerFeeCode> getAcquirerFeeCodeTemplatesByPartnerId(Long partnerId) throws ChatakAdminException;
-  
+    
   public void addAcquirerFeeCode(AcquirerFeeCodeDTO pgAcquirerFeeCode) throws ChatakAdminException;
   
   public PGMerchant getAcquirerFeeByMerchantCode(String merchantCode) throws ChatakAdminException;

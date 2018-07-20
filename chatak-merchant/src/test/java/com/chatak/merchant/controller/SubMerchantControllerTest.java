@@ -224,19 +224,6 @@ public class SubMerchantControllerTest {
   }
 
   @Test
-  public void testSearchMerchantExistingFeature() {
-    try {
-      mockMvc
-          .perform(post("/" + URLMappingConstants.CHATAK_SHOW_SUB_MERCHANT_SEARCH_PAGE)
-              .sessionAttr("loginUserMerchantId", Long.parseLong("1234"))
-              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_SHOW_SUB_MERCHANT_SEARCH_PAGE));
-    } catch (Exception e) {
-      logger.error("ERROR :: SubMerchantControllerTest :: testSearchMerchantExistingFeature:", e);
-    }
-  }
-
-  @Test
   public void testSearchMerchant() {
     merchant = new Merchant();
     searchResponse = new MerchantSearchResponse();
@@ -270,21 +257,6 @@ public class SubMerchantControllerTest {
           .andExpect(view().name(URLMappingConstants.CHATAK_SHOW_SUB_MERCHANT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("ERROR :: SubMerchantControllerTest :: testSearchMerchantException:", e);
-    }
-  }
-
-
-  @Test
-  public void testDeleteMerchantExistingFeature() {
-    try {
-      mockMvc
-          .perform(post("/" + URLMappingConstants.CHATAK_DELETE_SUB_MERCHANT)
-              .param("getMerchantsId", "10")
-              .sessionAttr("loginUserMerchantId", Long.parseLong("1234"))
-              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_SHOW_SUB_MERCHANT_SEARCH_PAGE));
-    } catch (Exception e) {
-      logger.error("ERROR :: SubMerchantControllerTest :: testDeleteMerchantExistingFeature:", e);
     }
   }
 
@@ -331,20 +303,6 @@ public class SubMerchantControllerTest {
           .sessionAttr(Constants.EXISTING_FEATURES, "exist"));
     } catch (Exception e) {
       logger.error("ERROR :: SubMerchantControllerTest :: testDeleteMerchantException:", e);
-    }
-  }
-
-  @Test
-  public void testUpdateSubMerchantExistingFeature() {
-    try {
-      mockMvc
-          .perform(post("/" + URLMappingConstants.CHATAK_PROCESS_SUB_MERCHANT_UPDATE_PAGE)
-              .sessionAttr("loginUserMerchantId", Long.parseLong("1234"))
-              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_SHOW_SUB_MERCHANT_SEARCH_PAGE));
-    } catch (Exception e) {
-      logger.error("ERROR :: SubMerchantControllerTest :: testUpdateSubMerchantExistingFeature:",
-          e);
     }
   }
 
@@ -412,20 +370,6 @@ public class SubMerchantControllerTest {
   }
 
   @Test
-  public void testShowViewSubMerchantExistingFeature() {
-    try {
-      mockMvc
-          .perform(post("/" + URLMappingConstants.CHATAK_VIEW_SUB_MERCHANT_UPDATE_PAGE)
-              .sessionAttr("loginUserMerchantId", Long.parseLong("1234"))
-              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_VIEW_SUB_MERCHANT_PAGE));
-    } catch (Exception e) {
-      logger.error("ERROR :: SubMerchantControllerTest :: testShowViewSubMerchantExistingFeature:",
-          e);
-    }
-  }
-
-  @Test
   public void testShowViewSubMerchant() throws ChatakMerchantException {
     Mockito.when(merchantService.getMerchant(Matchers.any(Merchant.class))).thenReturn(merchant);
     Mockito.when(merchantInfoService.getStatesByCountry(Matchers.anyString())).thenReturn(response);
@@ -457,21 +401,6 @@ public class SubMerchantControllerTest {
       logger.error("ERROR :: SubMerchantControllerTest :: testShowViewSubMerchantException:", e);
     }
   }
-
-  @Test
-  public void testChangeSubMerchantStatusExistingFeatures() {
-    try {
-      mockMvc
-          .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SUB_MERCHANT_STATUS_CHANGE)
-              .sessionAttr("loginUserMerchantId", Long.parseLong("1234"))
-              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_SHOW_SUB_MERCHANT_SEARCH_PAGE));
-    } catch (Exception e) {
-      logger.error(
-          "ERROR :: SubMerchantControllerTest :: testChangeSubMerchantStatusExistingFeatures:", e);
-    }
-  }
-
 
   @Test
   public void testChangeSubMerchantStatus() {
@@ -612,24 +541,6 @@ public class SubMerchantControllerTest {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testShowEditSubMerchantExistingFeature() {
-    try {
-      Mockito.when(merchantInfoService.getMerchantOnId(Matchers.anyLong()))
-          .thenThrow(ChatakMerchantException.class);
-      mockMvc
-          .perform(post("/" + URLMappingConstants.CHATAK_SHOW_SUB_MERCHANT_UPDATE_PAGE)
-              .param(Constants.TOTAL_RECORDS, "12")
-              .sessionAttr("loginUserMerchantId", Long.parseLong("1234"))
-              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_PROCESS_SUB_MERCHANT_UPDATE_PAGE));
-    } catch (Exception e) {
-      logger.error("ERROR :: SubMerchantControllerTest :: testShowEditSubMerchantExistingFeature:",
-          e);
-    }
-  }
-
   @Test
   public void testShowEditSubMerchant() {
     merchant = new Merchant();
@@ -670,31 +581,5 @@ public class SubMerchantControllerTest {
     }
   }
   
-  @Test
-  public void testGetPartnerName() {
-    response = new Response();
-    response.setAgentAccountNumber(Long.parseLong("2156161566"));
-    try {
-      Mockito.when(merchantService.findPartnerByMerchantCode(Matchers.anyString())).thenReturn(response);
-      mockMvc
-      .perform(get("/" + URLMappingConstants.GET_PARTNER_NAME_BY_MERCHANT_CODE));
-    } catch (Exception e) {
-      logger.error("ERROR :: SubMerchantControllerTest :: testGetPartnerName:", e);
-    }
-  }
-  
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testGetPartnerNameExp() {
-    response = new Response();
-    response.setAgentAccountNumber(Long.parseLong("2156161566"));
-    try {
-      Mockito.when(merchantService.findPartnerByMerchantCode(Matchers.anyString())).thenThrow(ChatakMerchantException.class);
-      mockMvc.perform(get("/" + URLMappingConstants.GET_PARTNER_NAME_BY_MERCHANT_CODE));
-    } catch (Exception e) {
-      logger.error("ERROR :: SubMerchantControllerTest :: testGetPartnerName:", e);
-    }
-  }
-
 }
 

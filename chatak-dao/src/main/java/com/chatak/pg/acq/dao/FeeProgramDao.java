@@ -85,4 +85,8 @@ public interface FeeProgramDao {
 	
 	public PGFeeProgram getFeeprogramName(String feeProgramName);
 	
+	public List<PGFeeProgram> findByCardProgramId(Long cardProgramId);
+	
+	public List<PGAcquirerFeeValue> getAcquirerFeeValueByCardProgramId(Long cardProgramId);
+	
 }

@@ -10,6 +10,7 @@ import com.chatak.pg.bean.Response;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.DeleteMerchantResponse;
 import com.chatak.pg.user.bean.GetMerchantListRequest;
+import com.chatak.pg.user.bean.MerchantResponse;
 
 public interface MerchantUpdateService {
   
@@ -49,12 +50,14 @@ public interface MerchantUpdateService {
 
   public List<Option> getCurrencies();
 
-  public Merchant findByMerchantId(Long getMerchantId) throws InstantiationException, IllegalAccessException;
+  public MerchantResponse findByMerchantId(Long getMerchantId) throws InstantiationException, IllegalAccessException;
 
   public MerchantSearchResponse getMerchantCode(String merchantCode);
 
   public List<Merchant> getMerchantByStatusPendingandDecline();
 
   public Response getAgentNames(String currencyAlpha);
+  
+  public List<Long> findByEntityIdAndEntitytype(List<Long> entityIds, String entityType);
 
 }

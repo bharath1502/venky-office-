@@ -3,9 +3,11 @@
  */
 package com.chatak.pg.acq.dao;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+
 import com.chatak.pg.acq.dao.model.PGBlackListedCard;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.user.bean.BlackListedCardRequest;
@@ -30,10 +32,10 @@ public interface BlackListedCardDao {
 
 	public PGBlackListedCard getBlackListedCardInfoById(Long getBlackListedCardId);
 
-	public Response getCardDataByCardNumber(long cardNumber);
+	public Response getCardDataByCardNumber(BigInteger cardNumber);
 	
 	public PGBlackListedCard createOrUpdateBlackListedCard(PGBlackListedCard pgBlackListedCard) throws DataAccessException;
 	
-	public PGBlackListedCard getCardNumber(Long cardNumber);
+	public PGBlackListedCard getCardNumber(BigInteger cardNumber);
 
 }

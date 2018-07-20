@@ -230,7 +230,7 @@ public class MerchantServiceImplTest {
 		Assert.assertNotNull(merchantServiceImpl.searchMerchant(merchant));
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test
 	public void testGetMerchantDaily() throws ChatakMerchantException {
 		merchant = new Merchant();
 		merchant.setLegalAnnualCard("abcd.abcd");
@@ -251,7 +251,6 @@ public class MerchantServiceImplTest {
 		pgAccount.setAutoPaymentLimit(bigDecimal);
 		merchantBank.setBankName("asdfg");
 		pgMerchant.setMerchantCode("abcdef");
-		pgMerchant.setPartnerId("1545456");
 		pgAccount.setPgMerchantBank(merchantBank);
 		pgLegalEntity.setCountryOfCitizenship("2222");
 		Partner partner = new Partner();
@@ -355,18 +354,4 @@ public class MerchantServiceImplTest {
 		Assert.assertNotNull(merchantServiceImpl.updateMerchant(merchant));
 	}
 	
-	@Test
-	public void testFindPartnerByMerchantCode() {
-	  PGMerchant pgMerchant = new PGMerchant();
-	  pgMerchant.setPartnerId("156156");
-	  Partner partner = new Partner();
-	  partner.setProgramManagerId(Long.parseLong("54864654"));
-	  partner.setPartnerName("partnerName");
-	  ProgramManagerRequest programManager = new ProgramManagerRequest();
-	  programManager.setProgramManagerName("programManagerName");
-      Mockito.when(programManagerDao.findProgramManagerById(Matchers.anyLong())).thenReturn(programManager);
-	  Mockito.when(partnerDao.findByPartnerId(Matchers.anyLong())).thenReturn(partner);
-	  Mockito.when(merchantDao.findBymerchantConfig(Matchers.anyString())).thenReturn(pgMerchant);
-	  Assert.assertNotNull(merchantServiceImpl.findPartnerByMerchantCode("5156455"));
-	}
 }

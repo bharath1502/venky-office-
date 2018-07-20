@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.acq.dao.model;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -32,7 +33,7 @@ public class PGBlackListedCard {
 	  private Long id;
 
 	  @Column(name = "CARD_NUM")
-	  private Long cardNumber;
+	  private BigInteger cardNumber;
 
 	  @Column(name = "CREATED_DATE")
 	  private Timestamp createdDate;
@@ -55,20 +56,6 @@ public class PGBlackListedCard {
 	 */
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	/**
-	 * @return the cardNumber
-	 */
-	public Long getCardNumber() {
-		return cardNumber;
-	}
-
-	/**
-	 * @param cardNumber the cardNumber to set
-	 */
-	public void setCardNumber(Long cardNumber) {
-		this.cardNumber = cardNumber;
 	}
 
 	/**
@@ -112,5 +99,19 @@ public class PGBlackListedCard {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
-	  
+
+  /**
+   * @return the cardNumber
+   */
+  public BigInteger getCardNumber() {
+    return cardNumber;
+  }
+
+  /**
+   * @param cardNumber the cardNumber to set
+   */
+  public void setCardNumber(BigInteger cardNumber) {
+    this.cardNumber = cardNumber;
+  }
+
 }

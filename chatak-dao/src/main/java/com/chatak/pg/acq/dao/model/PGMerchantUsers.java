@@ -101,6 +101,16 @@ public class PGMerchantUsers {
   @Column(name = "USER_ROLE_TYPE")
   private String userRoleType;
 
+  @Column(name = "LAST_LOGIN_TIME")
+  private String lastLonginTime;
+
+  public String getLastLonginTime() {
+    return lastLonginTime;
+  }
+
+  public void setLastLonginTime(String lastLonginTime) {
+    this.lastLonginTime = lastLonginTime;
+  }
 
 
   /**

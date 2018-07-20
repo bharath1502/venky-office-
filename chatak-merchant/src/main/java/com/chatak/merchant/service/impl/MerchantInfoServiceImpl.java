@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +46,7 @@ import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ProcessorType;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.AgentDTO;
 import com.chatak.pg.model.AgentDTOResponse;
 import com.chatak.pg.model.CIEntityDetailsResponse;
@@ -63,7 +63,6 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
-import com.sun.jersey.api.client.ClientResponse;
 
 @Service("merchantInfoService")
 public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants {
@@ -412,23 +411,18 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
     VirtualAccGetAgentsRequest request = new VirtualAccGetAgentsRequest();
     CIEntityDetailsResponse ciEntityDetailsResponse = null;
     /* Start posting fee to issuance */
-    ClientResponse response = JsonUtil.sendToIssuance(request,
-        Properties.getProperty("chatak-issuance.virtual.get.partnerDetails"), mode);
-    /* End posting fee to issuance */
-
-    if (null != response && response.getStatus() != HttpStatus.SC_OK) {
-      return ciEntityDetailsResponse;
-    } else {
-      if(response != null){
-        String output = response.getEntity(String.class);
-        ciEntityDetailsResponse = mapper.readValue(output, CIEntityDetailsResponse.class);
-      } else {
-        String output = "";
-        ciEntityDetailsResponse = mapper.readValue(output, CIEntityDetailsResponse.class);
-      }
-    }
-    return ciEntityDetailsResponse;
-  }
+		try {
+			String output = JsonUtil.sendToIssuance(request,
+					Properties.getProperty("chatak-issuance.virtual.get.partnerDetails"), mode, String.class);
+			/* End posting fee to issuance */
+			ciEntityDetailsResponse = mapper.readValue(output, CIEntityDetailsResponse.class);
+			return ciEntityDetailsResponse;
+		} catch (HttpClientException e) {
+			logger.error("ERROR:: RestPaymentServiceImpl:: doVoid method", e);
+			throw new ChatakMerchantException(messageSource.getMessage(ActionErrorCode.ERROR_CODE_API_CONNECT, null,
+					LocaleContextHolder.getLocale()));
+		}
+}
 
   @Override
   public List<String> getExistingAgentList(String partnerId) {
@@ -440,16 +434,6 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
     List<String> linkedAgentsList = merchantDao.getExistingAgentList(parentMerchantId);
     return (StringUtil.isListNotNullNEmpty(linkedAgentsList)) ? linkedAgentsList
         : new ArrayList<String>();
-  }
-
-  @Override
-  public List<String> getlinkedPartners() {
-    return merchantDao.getExistingPartnerList();
-  }
-
-  @Override
-  public String getPartnerLinkedToMerchant(Long parentMerchantId) {
-    return merchantDao.getPartnerLinkedToMerchant(parentMerchantId);
   }
 
   @Override
@@ -465,7 +449,7 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
 
   @Override
   public String validateAgentDetails(String agentAccountNumber, String agentClientId,
-      String agentANI, String currencyCodeAlpha) {
+		  String agentANI, String currencyCodeAlpha) {
 
     ValidateAgentDataRequest agentDataRequest = new ValidateAgentDataRequest();
 
@@ -477,13 +461,10 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
     agentDataRequest.setAgentClientId(agentClientId);
     agentDataRequest.setAgentAni(agentANI);
     agentDataRequest.setCurrencyCodeNumeric(currencyCodeNumeric);
-    ClientResponse clientResponse = null;
+    String output = null;
     try {
-      clientResponse = JsonUtil.postIssuanceRequest(agentDataRequest,
-          "/agentManagementService/agentService/searchAgentByAgentAccountNumber");
-
-
-      String output = clientResponse.getEntity(String.class);
+    	output = JsonUtil.postIssuanceRequest(agentDataRequest,
+          "/agentManagementService/agentService/searchAgentByAgentAccountNumber",String.class);
       Response response = mapper.readValue(output, Response.class);
 
       if (response.getErrorCode().equals("CEC_0001")) { //These Error Code and Error Messages will come from issuence Side
@@ -503,11 +484,8 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
     ValidateAgentDataRequest agentData = new ValidateAgentDataRequest();
     agentData.setAgentId(agentId);
     try {
-      ClientResponse clientResponse = JsonUtil.postIssuanceRequest(agentData,
-          "/agentManagementService/agentService/searchAgentByAgentId");
-
-      String output = clientResponse.getEntity(String.class);
-
+      String output = JsonUtil.postIssuanceRequest(agentData,
+          "/agentManagementService/agentService/searchAgentByAgentId", String.class);
       return mapper.readValue(output, AgentDTOResponse.class);
     } catch (Exception e) {
       logger.error("Error :: MerchantInfoServiceImpl :: getAgentDataById method", e);
@@ -520,12 +498,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
     CurrencyDTO currency = new CurrencyDTO();
     currency.setCurrencyCodeAlpha(currencyAlpha);
     try {
-      ClientResponse clientResponse = JsonUtil.postIssuanceRequest(currency,
-          "/agentManagementService/agentService/searchAllAgent");
-
-      String output = clientResponse.getEntity(String.class);
+     String output = JsonUtil.postIssuanceRequest(currency,
+          "/agentManagementService/agentService/searchAllAgent", String.class);
       AgentDTOResponse agentDTOlist = mapper.readValue(output, AgentDTOResponse.class);
-
       List<Option> options = new ArrayList<>();
       if (agentDTOlist != null && agentDTOlist.getAgentDTOlist() != null) {
         for (AgentDTO agentRequest : agentDTOlist.getAgentDTOlist()) {
@@ -623,4 +598,5 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
     }
     return merchantMap;
   }
+
 }

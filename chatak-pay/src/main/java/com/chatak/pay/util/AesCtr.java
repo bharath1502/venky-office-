@@ -42,7 +42,7 @@ public class AesCtr {
     getCounterBlock(counterBlock, ctrTxt);
 
     aes.makeKey(key, Constants.TWO_FIVE_SIX, 1);
-    int blockCount = (int) Math.ceil((new Float(plaintext.length())).floatValue() / Constants.SIXTEEN_FLOAT);
+    int blockCount = (int) Math.ceil((Float.valueOf(plaintext.length())) / Constants.SIXTEEN_FLOAT);
     byte ciphertxt[] = new byte[plaintext.length()];
     for (int b = 0; b < blockCount; b++) {
       for (int c = 0; c < Constants.FOUR; c++) {
@@ -61,7 +61,7 @@ public class AesCtr {
 
     }
 
-    aes.finalize();
+    aes.done();
     byte ciphertext[] = Util.addByteArrays(ctrTxt, ciphertxt);
     String ciphertext64 = new String(Base64.encodeBase64(ciphertext));
     return ciphertext64;
@@ -73,7 +73,7 @@ private static byte[] validateNBytesValue(String password, Rijndael aes, int nBy
 
     aes.makeKey(pwBytes, Constants.TWO_FIVE_SIX, 1);
     byte key[] = aes.encryptBlock(pwBytes, new byte[Constants.SIXTEEN]);
-    aes.finalize();
+    aes.done();
     if (nBytes > Constants.SIXTEEN) {
       byte keySlice[] = new byte[nBytes - Constants.SIXTEEN];
       getKeySlice(nBytes, key, keySlice);
@@ -128,7 +128,7 @@ private static byte[] validateNBytesValue(String password, Rijndael aes, int nBy
 
     }
 
-    aes.finalize();
+    aes.done();
     String plaintext = new String(plaintxt);
     return plaintext;
   }

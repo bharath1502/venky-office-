@@ -73,7 +73,7 @@ public class PayController implements URLMappingConstants, Constant {
   @PostConstruct
   private void loadConfiguration() {
     List<PGParams> pgParams = paramsDao.getAllPGParams();
-    ProcessorConfig.setProcessorConfig(pgParams);
+    ProcessorConfig.setProcessorConfiguration(pgParams);
   }
 
   /**

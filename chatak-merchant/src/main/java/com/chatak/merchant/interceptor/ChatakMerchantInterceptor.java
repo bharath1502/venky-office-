@@ -21,6 +21,7 @@ import com.chatak.merchant.util.PasswordHandler;
 import com.chatak.merchant.util.StringUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
+import com.chatak.pg.util.validator.CSRFTokenManager;
 
 public class ChatakMerchantInterceptor extends HandlerInterceptorAdapter implements Serializable {
   private static final long serialVersionUID = -5306853636280146748L;
@@ -32,9 +33,22 @@ public class ChatakMerchantInterceptor extends HandlerInterceptorAdapter impleme
       javax.servlet.http.HttpServletResponse response, java.lang.Object object)
           throws java.lang.Exception {
     boolean isDone = false;
-
-    if (null != request) {
-      isDone = isValidRequest(request.getRequestURI());
+    if (!request.getMethod().equalsIgnoreCase("POST")) {
+        // Not a POST - allow the request           
+        // Valid request        
+      } else {
+        try {
+          // This is a POST request - need to check the CSRF token            
+          CSRFTokenManager.validateCSRFToken(request);
+        } catch (com.chatak.pg.exception.PrepaidException e) {
+          logger.error("ERROR:: WalletInterceptor :: preHandle method", e);
+          response.sendRedirect(request.getContextPath() + "/"
+              + URLMappingConstants.INVALID_REQUEST_PAGE);
+          return false;
+        }
+      }
+        
+     isDone = isValidRequest(request.getRequestURI());
       if (isDone) {
         // DO nothing
       } else {
@@ -47,24 +61,22 @@ public class ChatakMerchantInterceptor extends HandlerInterceptorAdapter impleme
               request.getContextPath() + Constants.URL_SPERATOR + Constants.CHATAK_INVALID_SESSION);
         }
       }
-    }
+    
 
     return isDone;
   }
 
   private boolean isValidRequest(final String requestURI) {
     boolean isDone = false;
-    if (StringUtil.isNullAndEmpty(requestURI)) {
-      isDone = true;
-    } else if (requestURI.contains(URLMappingConstants.CHATAK_MERCHANT_LOGIN)
-        || requestURI.contains(Constants.CHATAK_INVALID_SESSION)
-        || requestURI.contains(Constants.CHATAK_INVALID_ACCESS)
-        || requestURI.contains(URLMappingConstants.CHATAK_MERCHANT_LOG_OUT)
-        || requestURI.contains(URLMappingConstants.SHOW_MERCHANT_FORGOT_PSWD)
-        || requestURI.contains(URLMappingConstants.PROCESS_MERCHANT_RESET_PSWD)
-        || requestURI.contains(URLMappingConstants.NEW_USER_PSWD_MANAGEMENT)
-        || requestURI.contains(URLMappingConstants.SHOW_MERCHANT_RESET_PSWD)
-        || requestURI.contains(URLMappingConstants.CHATAK_MERCHANT_AUTHENTICATE)) {
+    if ((StringUtil.isNullAndEmpty(requestURI)) || (requestURI.contains(URLMappingConstants.CHATAK_MERCHANT_LOGIN)
+            || requestURI.contains(Constants.CHATAK_INVALID_SESSION)
+            || requestURI.contains(Constants.CHATAK_INVALID_ACCESS)
+            || requestURI.contains(URLMappingConstants.CHATAK_MERCHANT_LOG_OUT)
+            || requestURI.contains(URLMappingConstants.SHOW_MERCHANT_FORGOT_PSWD)
+            || requestURI.contains(URLMappingConstants.PROCESS_MERCHANT_RESET_PSWD)
+            || requestURI.contains(URLMappingConstants.NEW_USER_PSWD_MANAGEMENT)
+            || requestURI.contains(URLMappingConstants.SHOW_MERCHANT_RESET_PSWD)
+            || requestURI.contains(URLMappingConstants.CHATAK_MERCHANT_AUTHENTICATE))) {
       isDone = true;
     }
 

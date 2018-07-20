@@ -9,8 +9,8 @@ public class Track2Parser {
    * @throws Exception
    */
   public Track2Parser(String track2data) {
-    this.cardNumber = track2data.substring(1, track2data.indexOf("="));
-    this.expDate = track2data.substring(track2data.indexOf("=") + 1, track2data.indexOf("=") + Integer.parseInt("5"));
+    this.cardNumber = track2data.substring(1, track2data.indexOf('='));
+    this.expDate = track2data.substring(track2data.indexOf('=') + 1, track2data.indexOf('=') + Integer.parseInt("5"));
 
   }
 

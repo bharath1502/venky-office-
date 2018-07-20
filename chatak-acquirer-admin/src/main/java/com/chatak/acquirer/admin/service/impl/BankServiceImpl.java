@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +14,18 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.chatak.acquirer.admin.constants.StatusConstants;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.BankSearchResponse;
 import com.chatak.acquirer.admin.service.BankService;
 import com.chatak.acquirer.admin.service.CurrencyConfigService;
+import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.acq.dao.BankDao;
 import com.chatak.pg.acq.dao.CountryDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
+import com.chatak.pg.acq.dao.ProgramManagerDao;
+import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
 import com.chatak.pg.acq.dao.model.PGBank;
 import com.chatak.pg.acq.dao.model.PGBankCurrencyMapping;
 import com.chatak.pg.acq.dao.model.PGMerchant;
@@ -28,6 +33,8 @@ import com.chatak.pg.acq.dao.model.PGState;
 import com.chatak.pg.acq.dao.repository.StateRepository;
 import com.chatak.pg.bean.CountryRequest;
 import com.chatak.pg.bean.Response;
+import com.chatak.pg.bean.TimeZoneRequest;
+import com.chatak.pg.bean.TimeZoneResponse;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.Bank;
@@ -36,6 +43,8 @@ import com.chatak.pg.user.bean.BankRequest;
 import com.chatak.pg.user.bean.BankResponse;
 import com.chatak.pg.user.bean.GetBankListResopnse;
 import com.chatak.pg.util.CommonUtil;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 
 @Service
 public class BankServiceImpl implements BankService, PGConstants {
@@ -63,6 +72,9 @@ public class BankServiceImpl implements BankService, PGConstants {
   @Autowired
   MerchantUpdateDao merchantUpdateDao;
 
+  @Autowired
+  ProgramManagerDao programManagerDao;
+
   @Override
   public BankResponse createBank(Bank bank) throws ChatakAdminException {
     logger.info("Entering:: BankServiceImpl:: createBank method");
@@ -86,6 +98,15 @@ public class BankServiceImpl implements BankService, PGConstants {
     bankRequest.setCountry(bank.getCountry());
     bankRequest.setState(bank.getState());
     bankRequest.setZip(bank.getZip());
+    bankRequest.setBankCode(bank.getBankCode());
+    bankRequest.setSettlRoutingNumber(bank.getSettlRoutingNumber());
+    bankRequest.setExtension(bank.getExtension());
+    bankRequest.setSettlAccountNumber(bank.getSettlAccountNumber());
+    bankRequest.setContactPersonCell(bank.getContactPersonCell());
+    bankRequest.setContactPersonEmail(bank.getContactPersonEmail());
+    bankRequest.setContactPersonFax(bank.getContactPersonFax());
+    bankRequest.setContactPersonName(bank.getContactPersonName());
+    bankRequest.setContactPersonPhone(bank.getContactPersonPhone());
   }
 
   @Override
@@ -116,6 +137,15 @@ public class BankServiceImpl implements BankService, PGConstants {
       bank.setStatus(pgBank.getStatus());
       bank.setZip(pgBank.getZip());
       bank.setCurrencyId(pgBank.getCurrencyId());
+      bank.setBankCode(pgBank.getBankCode());
+      bank.setSettlRoutingNumber(pgBank.getSettlRoutingNumber());
+      bank.setExtension(pgBank.getExtension());
+      bank.setSettlAccountNumber(pgBank.getSettlAccountNumber());
+      bank.setContactPersonCell(pgBank.getContactPersonCell().replaceAll("[-+.^:,]",""));
+      bank.setContactPersonEmail(pgBank.getContactPersonEmail());
+      bank.setContactPersonFax(pgBank.getContactPersonFax());
+      bank.setContactPersonName(pgBank.getContactPersonName());
+      bank.setContactPersonPhone(pgBank.getContactPersonPhone().replaceAll("[-+.^:,]",""));
       CurrencyDTO currencyDTO = currencyService.getCurrencyConfigById(pgBank.getCurrencyId());
       bank.setCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha());
     }
@@ -130,8 +160,8 @@ public class BankServiceImpl implements BankService, PGConstants {
     GetBankListResopnse getBankSearchResponse;
     BankSearchResponse bankSearchResponse = new BankSearchResponse();
     bankSerachRequest.setBankName(bank.getBankName());
-    bankSerachRequest.setBankShortName(bank.getBankShortName());
-    bankSerachRequest.setAcquirerId(bank.getAcquirerId());
+    bankSerachRequest.setBankCode(bank.getBankCode());
+    bankSerachRequest.setContactPersonEmail(bank.getContactPersonEmail());
     bankSerachRequest.setStatus(bank.getStatus());
     bankSerachRequest.setPageSize(bank.getPageSize());
     bankSerachRequest.setPageIndex(bank.getPageIndex());
@@ -147,8 +177,8 @@ public class BankServiceImpl implements BankService, PGConstants {
       for (PGBank pgBank : pgBanks) {
         bankRespObj = new Bank();
         bankRespObj.setBankName(pgBank.getBankName());
-        bankRespObj.setBankShortName(pgBank.getBankShortName());
-        bankRespObj.setAcquirerId(pgBank.getAcqirerId());
+        bankRespObj.setBankCode(pgBank.getBankCode());
+        bankRespObj.setContactPersonEmail(pgBank.getContactPersonEmail());
         bankRespObj.setStatus(pgBank.getStatus());
         CurrencyDTO currencyDTO =
             currencyConfigService.getCurrencyConfigById(pgBank.getCurrencyId());
@@ -165,7 +195,13 @@ public class BankServiceImpl implements BankService, PGConstants {
   @Override
   public BankResponse deleteBankByName(String bankName) {
     logger.info("Entering:: BankServiceImpl:: deleteBankByName method");
-    return bankDao.deleteBank(bankName);
+    BankResponse response = bankDao.deleteBank(bankName);
+    if (response.getErrorCode().equals(ActionErrorCode.ERROR_CODE_01)) {
+      response.setErrorMessage(messageSource.getMessage("chatak.bank.pm.association.error", null,
+          LocaleContextHolder.getLocale()));
+    }
+    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+    return response;
   }
 
   @Override
@@ -310,6 +346,14 @@ public class BankServiceImpl implements BankService, PGConstants {
           List<PGMerchant> pgMerchantList = merchantUpdateDao.findByBankId(pgBank.getId());
           getPgmerchantValue(pgMerchantList);
         }
+        Set<BankProgramManagerMap> set = programManagerDao.findByBankId(pgBank.getId());
+        if (!set.isEmpty()) {
+          LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Select bank linked to " + set.size() + " Entitie(s)");
+          bankResponse.setErrorCode(ActionErrorCode.ERROR_CODE_01);
+          bankResponse.setErrorMessage(messageSource.getMessage("chatak.bank.pm.association.error",
+              null, LocaleContextHolder.getLocale()));
+          return bankResponse;
+        }
         pgBank.setStatus(bank.getStatus());
         pgBank.setReason(bank.getReason());
         bankDao.createOrUpdateBank(pgBank);
@@ -332,6 +376,51 @@ public class BankServiceImpl implements BankService, PGConstants {
     return bankResponse;
   }
 
+	@Override
+	public TimeZoneResponse searchAllTimeZone(Long countryId) throws ChatakAdminException {
+		TimeZoneResponse timeZoneResponse = new TimeZoneResponse();
+		logger.info("Entering:: CountryHandlerImpl:: searchAllTimeZone method: ");
+		if(StringUtil.isNull(countryId)){
+			throw new ChatakAdminException(ActionErrorCode.ERROR_CODE_TIME_ZONE_02);
+		}
+		logger.info("info:: CountryHandlerImpl::before findAllTimeZone:: searchAllTimeZone method: ");
+		List<TimeZoneRequest> timeZoneList = countryDao.findAllTimeZone(countryId);
+		if (StringUtil.isListNullNEmpty(timeZoneList)) {
+			throw new ChatakAdminException(ActionErrorCode.ERROR_CODE_TIME_ZONE_03);
+		}
+		
+		List<TimeZoneRequest> timeZoneRequestList = null;
+		try{
+			timeZoneRequestList = CommonUtil.copyListBeanProperty(timeZoneList, TimeZoneRequest.class);	
+		}catch(Exception e){
+			logger.error("Error in retrieving all the time zone", e);
+			throw new ChatakAdminException(ActionErrorCode.ERROR_CODE_TIME_ZONE_03);
+		}
+		
+		timeZoneResponse.setListOfTimeZoneRequests(timeZoneRequestList);
+		timeZoneResponse = (TimeZoneResponse) getSuccessResponse(timeZoneResponse);
+		logger.info("Exiting:: CountryHandlerImpl:: searchAllTimeZone method: ");
+		return timeZoneResponse;
+	}
+	
+	@Override
+	public  Response getTimeZone(Long timeZoneId) throws ChatakAdminException {
+		logger.info("Entering:: CountryHandlerImpl:: getTimeZone method: ");
+		TimeZoneResponse timeZoneResponse = new TimeZoneResponse();
+		TimeZoneRequest timeZoneRequest = countryDao.findTimeZoneByID(timeZoneId);
+		
+		if (StringUtil.isNull(timeZoneRequest)) {
+			throw new ChatakAdminException(ActionErrorCode.ERROR_CODE_TIME_ZONE_03);
+		}
+		
+		List<TimeZoneRequest> timeZoneRequestList = new ArrayList<>();
+		timeZoneRequestList.add(timeZoneRequest);
+		timeZoneResponse.setListOfTimeZoneRequests(timeZoneRequestList);
+		timeZoneResponse = (TimeZoneResponse) getSuccessResponse(timeZoneResponse);
+		logger.info("Exiting:: CountryHandlerImpl:: getTimeZone method: ");
+		return timeZoneResponse;
+	}
+  
   private void getPgmerchantValue(List<PGMerchant> pgMerchantList) throws ChatakAdminException {
     if (CommonUtil.isListNotNullAndEmpty(pgMerchantList)) {
       for (PGMerchant pgMerchant : pgMerchantList) {
@@ -341,4 +430,69 @@ public class BankServiceImpl implements BankService, PGConstants {
       }
     }
   }
+  
+  public static Response getSuccessResponse(Response response){
+	    response.setErrorCode(StatusConstants.STATUS_CODE_SUCCESS);
+	    response.setErrorMessage(StatusConstants.STATUS_CODE_SUCCESS);
+	    return response;
+	  }
+
+	  public static Response getErrorResponse(){
+	    Response response = new Response();
+	    response.setErrorCode(StatusConstants.STATUS_MESSAGE_FAILED);
+	    response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILURE);
+	    return response;
+	  }
+
+	  public static Response getSuccessResponse(){
+	    Response response = new Response();
+	    response.setErrorCode(StatusConstants.STATUS_CODE_SUCCESS);
+	    response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
+	    return response;
+	  }
+	  
+	  @Override
+	  public Response getPmCountryById(Long countryId) throws ChatakAdminException {
+	    Response response = new Response();
+	    CountryRequest countryRequest = countryDao.findCountryByID(countryId);
+	    if (countryRequest.getName() != null) {
+
+	      List<PGState> pgStates = stateRepository.findByCountryId(countryRequest.getId());
+
+	      List<Option> options = new ArrayList<Option>(pgStates.size());
+	      for (PGState state : pgStates) {
+	        Option option = new Option();
+	        option.setValue(state.getName());
+	        option.setLabel(state.getId().toString());
+	        options.add(option);
+	      }
+	      Collections.sort(options, ALPHABETICAL_ORDER);
+	      response.setResponseList(options);
+	      response.setTotalNoOfRows(options.size());
+	      response.setErrorCode("00");
+	      response.setErrorMessage("SUCCESS");
+
+	    } else {
+	      response.setErrorCode("99");
+	      response.setErrorMessage("failure");
+	    }
+	    return response;
+	  }
+	  
+	  
+	  @Override
+	  public List<Option> getCountry() {
+	    List<CountryRequest> countryRequests = countryDao.findAllCountries();
+	    List<Option> options = new ArrayList<Option>();
+	    if (countryRequests != null) {
+	      for (CountryRequest countryRequest : countryRequests) {
+	        Option option = new Option();
+	        option.setLabel(countryRequest.getId().toString());
+	        option.setValue(countryRequest.getName());
+	        options.add(option);
+	      }
+	    }
+	    Collections.sort(options, ALPHABETICAL_ORDER);
+	    return options;
+	  }
 }

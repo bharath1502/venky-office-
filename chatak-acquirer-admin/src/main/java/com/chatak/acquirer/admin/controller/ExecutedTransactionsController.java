@@ -442,7 +442,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
                   : "";
       Object[] rowData = {transaction.getTransactionTime(), transaction.getProcessedTime(),deviceLocalTxnTimeAndOffSet,     
           Long.parseLong(transaction.getTransactionId()), Long.parseLong(transaction.getPgTransactionId()),
-          transaction.getCurrency(), transaction.getType(), transaction.getDescription(),
+          transaction.getCurrency(), transaction.getType(), transaction.getDescription().replace("\n" , " "),
           (!"".equals(transaction.getDebit())) ? Double.parseDouble(transaction.getDebit()) : transaction.getDebit(), 
           (!"".equals(transaction.getCredit())) ? Double.parseDouble(transaction.getCredit()) : transaction.getCredit(), 
           Double.parseDouble(transaction.getCurrentBalance()),
@@ -490,7 +490,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
          { transaction.getTransactionTime(),deviceLocalTxnTimeAndOffSet,
               Long.parseLong(transaction.getTransactionId()),
               Long.parseLong(transaction.getPgTransactionId()), transaction.getCurrency(),
-              transaction.getType(), transaction.getDescription(),
+              transaction.getType(), transaction.getDescription().replace("\n" , " "),
               (!"".equals(transaction.getDebit())) ? Double.parseDouble(transaction.getDebit()) : transaction.getDebit(),
               (!"".equals(transaction.getCredit())) ? Double.parseDouble(transaction.getCredit()) : transaction.getCredit()};
       fileData.add(rowData);

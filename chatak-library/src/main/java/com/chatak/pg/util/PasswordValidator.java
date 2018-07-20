@@ -19,7 +19,7 @@ public class PasswordValidator {
     private static Matcher matcher;
           
     private PasswordValidator(){
-      pattern = Pattern.compile(PASS_WORD_PATTERN);
+      //Do nothing
     }
     
     /**

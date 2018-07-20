@@ -6,6 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -18,7 +19,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -64,6 +65,7 @@
 								<!--Success and Failure Message End-->
 								<div id="my_popup" class="locatioin-list-popup">
 								<form:form action="addNewAdvancedFraud" commandName="advancedFraudDTO" method="post" name="advancedFraud" id="advancedFraud">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<!-- Fraud Information Pop Up Box Information Start -->
 										<span class="glyphicon glyphicon-remove"
 											onclick="closePopup()"></span>
@@ -169,11 +171,13 @@
 								 <form action="deleteAdvancedFraud" name="deleteAdvancedFraudForm" method="post">
 								 	<input type="hidden" id="getId1" name="getId">
 								 	<input type="hidden" id="getMerchantCode1" name="getMerchantCode">
+								 	<input type="hidden" name="CSRFToken" value="${tokenval}">
 								 </form> 
 								 
 								 <form action="advancedFraudEditPage" name="editAdvancedFraudForm" method="post">
 								 	<input type="hidden" id="getId" name="getId">
 								 	<input type="hidden" id="getMerchantCode" name="getMerchantCode">
+								 	<input type="hidden" name="CSRFToken" value="${tokenval}">
 								 </form> 
 								 
 								<form:form name="contract" >

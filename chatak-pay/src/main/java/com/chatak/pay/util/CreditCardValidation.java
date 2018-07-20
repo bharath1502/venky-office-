@@ -77,33 +77,18 @@ public class CreditCardValidation {
 
   private static boolean prefixMatched(long number, int d) {
 
-    if ((getPrefix(number, d) == Constants.THREE) || (getPrefix(number, d) == Constants.FOUR) || (getPrefix(number, d) == Constants.FIVE)
-        || (getPrefix(number, d) == Constants.SIX)) {
+		if ((getPrefix(number, d) == 1) || (getPrefix(number, d) == Constants.TWO)
+				|| (getPrefix(number, d) == Constants.THREE) || (getPrefix(number, d) == Constants.FOUR)
+				|| (getPrefix(number, d) == Constants.FIVE) || (getPrefix(number, d) == Constants.SIX)
+				|| (getPrefix(number, d) == Constants.SEVEN) || (getPrefix(number, d) == Constants.EIGHT)
+				|| (getPrefix(number, d) == Constants.NINE)) {
+			logger.info("\nChatak Prepaid Card ! ");
+			return true;
+		} else {
+			logger.info("prefixMatched :: unknown card");
+			return false;
 
-      if (getPrefix(number, d) == Constants.THREE) {
-        logger.info("American Express Card ");
-      } else if (getPrefix(number, d) == Constants.FIVE) {
-        logger.info("Master Card !");
-      } else if (getPrefix(number, d) == Constants.FOUR) {
-          logger.info("Visa Card ");
-      } else if (getPrefix(number, d) == Constants.SIX) {
-        logger.info("Discover Card !");
-      }
-
-      return true;
-
-    }
-    //These Card numbers used for IDGS.
-    else if ((getPrefix(number, d) == 1) || (getPrefix(number, d) == Constants.TWO)
-        || (getPrefix(number, d) == Constants.SEVEN) || (getPrefix(number, d) == Constants.EIGHT)
-        || (getPrefix(number, d) == Constants.NINE)) {
-      logger.info("\n Chatak Prepaid Card ! ");
-      return true;
-    } else {
-      logger.info("prefixMatched :: unknown card");
-      return false;
-
-    }
+		}
   }
 
   private static int getSize(long d) {

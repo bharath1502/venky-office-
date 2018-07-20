@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import com.chatak.merchant.exception.ChatakMerchantException;
 import com.chatak.pg.acq.dao.model.PGAccountFeeLog;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.BulkSettlementResponse;
 import com.chatak.pg.model.SettlementActionDTOList;
 
@@ -32,5 +33,5 @@ public interface SettlementService {
 
 
   public PGAccountFeeLog postVirtualAccFeeReversal(PGAccountFeeLog pgAccountFeeLog, String agentId,
-      String ciVirtualAccTxnId, String mode) throws IOException;
+      String ciVirtualAccTxnId, String mode) throws IOException, HttpClientException;
 }

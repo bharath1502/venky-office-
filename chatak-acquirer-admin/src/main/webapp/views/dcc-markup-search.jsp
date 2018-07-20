@@ -5,6 +5,7 @@
 <%@page import="java.util.Calendar"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -22,7 +23,7 @@
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -75,11 +76,13 @@
 								<form:form action="getFeeProgramDetails" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="editDccMarkup" name="editDccMarkupForm" method="post">
 									<input type="hidden" id="getMerchantCode" name="getMerchantCode" />
 									<input type="hidden" id="getMerchantName" name="getMerchantName" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="downloadFeeProgramreport" name="downloadReport" method="post">
@@ -87,15 +90,18 @@
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
 				      				<input type="hidden" id="totalRecordsflag" name="totalRecords" />
+				      				<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="deleteDccMarkup" name="deleteDccMarkupForm" method="post">
 									<input type="hidden" id="merchantCodeId" name="merchantCodeId" /> 
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="chatak-admin-search-markup-fee" modelAttribute="dccMarkup" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -279,6 +285,7 @@
 	<script src="../js/validation.js"></script>
 	<script src="../js/chatak-ajax.js"></script>
 	<script src="../js/messages.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script type="text/javascript" src="../js/dcc-markup.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -293,6 +300,22 @@
 		window.location=$(this).find("a").attr("href"); 
 		return false;
 	});
+	
+	$(document).ready(function() {
+		/* Table Sorter includes Start*/
+		$(function() {
+			
+				  // call the tablesorter plugin
+				  $('#serviceResults').sortable({
+					
+					 divBeforeTable: '#divbeforeid',
+					divAfterTable: '#divafterid',
+					initialSort: false,
+					locale: 'th',
+					//negativeSort: [1, 2]
+				});
+		});
+		});
 	</script>
 </body>
 </html>

@@ -1,0 +1,6 @@
+Project homepage: https://mvnrepository.com/artifact/org.springframework/spring-web/4.1.1.RELEASE
+
+Sources: https://mvnrepository.com/artifact/org.springframework/spring-web
+
+License:
+Licensed under Apache License 2.0

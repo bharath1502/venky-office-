@@ -288,35 +288,43 @@ public class SwitchController implements URLMappingConstants {
       @FormParam(Constants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: SwitchController:: getPaginationList method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_SWITCH_PAGE);
-    SwitchResponse searchResponse = null;
     List<SwitchRequest> switchSearchList = null;
     try {
       SwitchRequest switchInfo = (SwitchRequest) session.getAttribute(Constants.SWITCH_INFO);
       model.put("switch", switchInfo);
       switchInfo.setPageIndex(pageNumber);
       switchInfo.setNoOfRecords(totalRecords);
-      try {
-        searchResponse = switchService.searchSwitchInformation(switchInfo);
-        if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getSwitchRequest())) {
-          switchSearchList = searchResponse.getSwitchRequest();
-          modelAndView.addObject(Constants.PAGE_SIZE, switchInfo.getPageSize());
-          modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
-              searchResponse.getTotalNoOfRows());
-          session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
-          session.setAttribute(Constants.TOTAL_RECORDS, totalRecords);
-        }
-        modelAndView.addObject(Constants.SWITCH_INFO, switchSearchList);
-      } catch (Exception e) {
-        modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
-            null, LocaleContextHolder.getLocale()));
-        logger.error("ERROR:: SwitchController:: searchMerchant method", e);
-      }
+      modelAndView = validateSwitchResponse(session, pageNumber, totalRecords, modelAndView,
+          switchSearchList, switchInfo);
     } catch (Exception e) {
       logger.error("ERROR:: SwitchController:: getPaginationList method", e);
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting:: SwitchController:: getPaginationList method");
+    return modelAndView;
+  }
+
+  private ModelAndView validateSwitchResponse(final HttpSession session, final Integer pageNumber,
+      final Integer totalRecords, ModelAndView modelAndView, List<SwitchRequest> switchSearchList,
+      SwitchRequest switchInfo) {
+    SwitchResponse searchResponse = null;
+    try {
+      searchResponse = switchService.searchSwitchInformation(switchInfo);
+      if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getSwitchRequest())) {
+        switchSearchList = searchResponse.getSwitchRequest();
+        modelAndView.addObject(Constants.PAGE_SIZE, switchInfo.getPageSize());
+        modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
+            searchResponse.getTotalNoOfRows());
+        session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
+        session.setAttribute(Constants.TOTAL_RECORDS, totalRecords);
+      }
+      modelAndView.addObject(Constants.SWITCH_INFO, switchSearchList);
+    } catch (Exception e) {
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+      logger.error("ERROR:: SwitchController:: searchMerchant method", e);
+    }
     return modelAndView;
   }
 

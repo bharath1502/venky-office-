@@ -252,8 +252,7 @@ public class TransactionServiceImplTest {
 		merchants.add(loginMerchant);
 		LoginResponse loginResponse = new LoginResponse();
 		List<String> existingFeature = new ArrayList<>();
-		String s = new String();
-		existingFeature.add(s);
+		existingFeature.add("");
 		loginResponse.setUserId(Long.parseLong("124"));
 		loginMerchant.setMerchantCode("32453");
 		loginResponse.setExistingFeature(existingFeature);
@@ -271,7 +270,7 @@ public class TransactionServiceImplTest {
 		transactionServiceImpl.configureReqObj(request, session, actionDTOList, "4", removedTxns);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testSearchAccountTransactions() {
 		List<AccountTransactionDTO> accountTransactionDTOs = new ArrayList<>();
 		AccountTransactionDTO accountTransactionDTO = new AccountTransactionDTO();

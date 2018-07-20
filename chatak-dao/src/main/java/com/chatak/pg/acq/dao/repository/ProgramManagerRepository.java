@@ -1,6 +1,7 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -28,4 +29,13 @@ public interface ProgramManagerRepository
       @Param("defaultValue") Boolean defaultValue);
 
   public ProgramManager findById(Long id);
+  
+  public List<ProgramManager> findByAccountCurrencyAndStatusLike(String currencyId, String status);
+  
+  public List<ProgramManager> findByIssuancepmid(Long issuancePmId);
+  
+  public List<ProgramManager> findByIdAndAccountCurrency(Long pmId,String currencyId);
+  
+  @Query("select pm from ProgramManager pm where pm.pmSystemConvertedTime like %:pmSystemConvertedTime%")
+  public List<ProgramManager> findByBatchTime(@Param("pmSystemConvertedTime")String pmSystemConvertedTime);
 }

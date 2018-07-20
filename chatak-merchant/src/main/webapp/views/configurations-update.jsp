@@ -6,30 +6,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 	<section class="field-element-row atm-transaction-content" style="display:none;">
 												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-12">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.autosettlementoptions"/><span
-															class="required-field">*</span></label><br> <input
-															type="radio" id="allowAutoSettlement"
-															name="autoSettlement" value="1" onclick="validateRadio()"><spring:message code="configurations.label.yes"/>
-														<input type="radio" id="noAutoSettlement"
-															name="autoSettlement" value="0" onclick="validateRadio()"><spring:message code="bin.label.no"/>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="noAutoSettlementEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.feeprogram"/><span class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="feeProgram"
-															id="feeProgram" onblur="validatefeeProgram()">
-															<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
-															<c:forEach items="${feeprogramnames}" var="feename">
-																<form:option value="${feename.label}">${feename.label}</form:option>
-															</c:forEach>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="feeProgramEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.processor"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="processor"
@@ -368,7 +344,7 @@
 															value="<spring:message code="sub-merchant-create.label.previous"></spring:message>">
 															<input type="button"
 															class="form-control button pull-right marginL10"
-															value="<spring:message code="sub-merchant-create.label.cancel"></spring:message>" onclick="cancelCreateMerchant()">
+															value="<spring:message code="sub-merchant-create.label.cancel"></spring:message>" onclick="openCreateCancelConfirmationPopup()">
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->

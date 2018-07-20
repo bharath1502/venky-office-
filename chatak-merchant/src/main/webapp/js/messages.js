@@ -16,7 +16,7 @@ C_MERCHANT_MSG = {
 		faxcannotstartwithzero : "fax cannot start with zero",
 		pleasenteremailid : "Please enter Email ID",
 		invalidemailid : "Invalid Email ID",
-		emailidalreadyinuse : "Email ID already in use",
+		emailidalreadyinuse : "Email id already in use",
 		pleasenteraddress1 : "Please enter Address1",
 		invalidaddress1length : "Invalid Address1 Length",
 		pleasentercity : "Please enter City",
@@ -46,9 +46,6 @@ C_MERCHANT_MSG = {
 		expirydateisbeforetodaydatepleaseselectavalidexpirydate : "The expiry date is before today's date. Please select a valid expiry date",
 		pleaseselectheyear : "Please select the year",
 		pleaseselecthemonth : "Please select the year",
-		jcbcardnumbershouldstartwith3 : "jcb card number should start with 3",
-		visacardnumbershouldstartwith4 : "Visa card number should start with 4",
-		mcshouldstartwith5 : "MC should start with 5",
 		pleaseselectcardtype : "Please select card type",
 		startdatecannotbegreaterthanEnddate : "Start date can not be greater than End date",
 		invalidamount : "*Invalid amount*",
@@ -79,7 +76,6 @@ C_MERCHANT_MSG = {
 		enterValidAmountToTransfer : "Enter Valid Amount To Transfer ",
 		pleasentermerchantcode : "Please enter Merchant Code",
 		shouldbenumerics : "Should be 6-16 numerics",
-		cancontainalphanumerics : "*Can contain 8-16 alphanumerics",
 		pleasenterreturnURL : "Please enter Return URL",
 		invalidreturnURL : "Invalid Return URL",
 		pleasenterwebsiteaddress : "Please enter Web Site Address",
@@ -141,7 +137,7 @@ C_MERCHANT_MSG = {
 		pleaseenterIP : "Please enter IP",
 		invalidIP : "Invalid IP",
 		duplicateIP : "Duplicate IP",
-		duplicateemailid : "Duplicate Email ID",
+		duplicateemailid : "Duplicate Email Id",
 		pleaseentercountry : "Please enter Country",
 		duplicatecountry : "Duplicate Country",
 		pleaseenterbIN : "Please enter BIN",
@@ -203,7 +199,8 @@ C_MERCHANT_MSG = {
 		statusMessages : "Status Message",
 		merchantsSettlementsStatus : "Merchant Settlement Status",
 		invalidImageFormat : '*Wrong image format*',
-		deviceLocalTxnTime : 'Device Local Txn Time'	
+		deviceLocalTxnTime : 'Device Local Txn Time',
+		RIGHT_CLICK_NOT_ALLOWED : "Right click is not allowed"
 	},
 	es : {
 		loginUsername : "Introduzca nombre de usuario",
@@ -252,10 +249,7 @@ C_MERCHANT_MSG = {
 		expirydateisbeforetodaydatepleaseselectavalidexpirydate : "La fecha de caducidad es anterior a la fecha de hoy. Por favor, seleccione una fecha de caducidad válida",
 		pleaseselectheyear : "Por favor, seleccione el año",
 		pleaseselecthemonth : "Seleccione el año",
-		jcbcardnumbershouldstartwith3 : "Número de tarjeta de JCB debería comenzar con 3",
 		pleaseselectcardtype : "Por favor, seleccione el tipo de tarjeta",
-		visacardnumbershouldstartwith4 : "Número de tarjeta Visa debe comenzar con 4",
-		mcshouldstartwith5 : "Número de tarjeta MC debe comenzar con 5",
 		startdatecannotbegreaterthanEnddate : "La fecha de inicio no puede ser mayor que la fecha de finalización",
 		invalidamount : "*Invalid amount es*",
 		shouldnotstartwithspecialchar : "*No debería comenzar con un carácter especial*",
@@ -281,7 +275,6 @@ C_MERCHANT_MSG = {
 		enterValidAmountToTransfer : "Introducir cantidad válida para transferir",
 		pleasentermerchantcode : "Por favor, introduzca el código de comerciante",
 		shouldbenumerics : "Should be 6-16 numerics_es",
-		cancontainalphanumerics : "*Puede contener a 8-16 caracteres alfanuméricos",
 		pleasenterreturnURL : "Por favor ingrese la URL de retorno",
 		invalidreturnURL : "URL de devolución no válido",
 		pleasenterwebsiteaddress : "Por favor ingrese la dirección del sitio web",
@@ -407,7 +400,8 @@ C_MERCHANT_MSG = {
 		statusMessages : "Mensaje de estado",
 		merchantsSettlementsStatus : "Estado del acuerdo comercial",
 		invalidImageFormat : 'Formato de imagen incorrecto',
-		deviceLocalTxnTime : 'Dispositivo Local Txn Time'
+		deviceLocalTxnTime : 'Dispositivo Local Txn Time',
+		RIGHT_CLICK_NOT_ALLOWED : "Clic derecho no está permitido."
 	}
 };
 
@@ -784,7 +778,8 @@ function resetPreAuthFetch() {
 	$("#descriptionDiv").attr("readOnly", false);
 
 	$("#refNumberDiv").val('');
-	document.getElementById("txnForm").reset();
+	//document.getElementById("txnForm").reset();
+	$('#txnForm').val("");
 }
 
 function validState() {
@@ -851,9 +846,7 @@ function openConfirmPageSaleAndPreAuth() {
 		setLable('confirmCardHolderNameDiv', get('cardHolderNameDiv').value
 				.trim());
 		setLable('confirmSubTotalDiv', (get('subTotalDiv').value.trim()));
-		setLable('confirmTaxAmtDiv', (get('taxAmtDiv').value.trim()));
-		setLable('confirmTipAmountDiv', get('tipAmountDiv').value.trim());
-		setLable('confirmShippingAmtDiv', get('shippingAmtDiv').value.trim());
+		
 		setLable('confirmTotalAmtDiv', (get('totalAmtDiv').value.trim()));
 		setLable('confirmStreetDiv', get('streetDiv').value.trim());
 		setLable('confirmCityDiv', get('cityDiv').value.trim());

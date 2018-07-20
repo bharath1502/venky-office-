@@ -541,7 +541,7 @@ public class BlackListedCardControllerTest {
   @Test
   public void testValidateuniqueCardNumber() {
     try {
-      Mockito.when(blackListedCardService.validateCardNumber(Matchers.anyLong()))
+      Mockito.when(blackListedCardService.validateCardNumber(Matchers.any()))
           .thenReturn(cardNumberResponse);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_CARDNUMBER_VALIDATE)
           .param("cardId", Constants.ONE.toString()));

@@ -84,7 +84,7 @@ public class CurrencyConfigServiceImpl implements CurrencyConfigService,PGConsta
 		pgCurrencyConfig.setCurrencyName(currencyDTO.getCurrencyName().toUpperCase());
 		pgCurrencyConfig.setCurrencyCodeNumeric(currencyDTO.getCurrencyCodeNumeric());
 		pgCurrencyConfig.setCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha().toUpperCase());
-		pgCurrencyConfig.setCurrencyExponent(currencyDTO.getCurrencyExponent());
+		pgCurrencyConfig.setCurrencyExponent(Integer.parseInt("2"));
 		pgCurrencyConfig.setCurrencySeparatorPosition(currencyDTO.getCurrencySeparatorPosition());
 		pgCurrencyConfig.setCurrencyMinorUnit(currencyDTO.getCurrencyMinorUnit());
 		pgCurrencyConfig.setCurrencyThousandsUnit(currencyDTO.getCurrencyThousandsUnit());
@@ -233,7 +233,7 @@ public class CurrencyConfigServiceImpl implements CurrencyConfigService,PGConsta
 	      }
 	      return currencyCode;
 	    }
-	    return null;
+	    return Collections.emptyList();
 	}
 
 	@Override

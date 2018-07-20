@@ -659,29 +659,4 @@ public class SubMerchantControllerTest {
       logger.error("Error :: SubMerchantControllerTest :: testChangeSubMerchantStatusException", e);
     }
   }
-  
-  @Test
-  public void testGetPartnerName() {
-    response2 = new Response();
-    response2.setAgentAccountNumber(Long.parseLong("15646545656"));
-    try {
-      Mockito.when(merchantService.findPartnerByMerchantCode(Matchers.anyString())).thenReturn(response2);
-      mockMvc
-      .perform(get("/" + URLMappingConstants.GET_PARTNER_NAME_BY_MERCHANT_CODE));
-    } catch (Exception e) {
-      logger.error("Error :: SubMerchantControllerTest :: testGetPartnerName", e);
-    }
-  }
-  
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testGetPartnerNameExp() {
-    try {
-      Mockito.when(merchantService.findPartnerByMerchantCode(Matchers.anyString())).thenThrow(ChatakAdminException.class);
-      mockMvc
-      .perform(get("/" + URLMappingConstants.GET_PARTNER_NAME_BY_MERCHANT_CODE));
-    } catch (Exception e) {
-      logger.error("Error :: SubMerchantControllerTest :: testGetPartnerName", e);
-    }
-  }
 }

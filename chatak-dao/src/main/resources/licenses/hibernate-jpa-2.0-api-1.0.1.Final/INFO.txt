@@ -1,0 +1,6 @@
+Project homepage: http://hibernate.org/
+
+Sources: https://github.com/hibernate/hibernate-jpa-api
+
+License:
+Licensed under  under LGPL

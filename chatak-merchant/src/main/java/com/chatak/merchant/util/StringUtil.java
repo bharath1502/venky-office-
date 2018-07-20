@@ -84,10 +84,10 @@ public final class StringUtil {
     if (raw == null || "".equals(raw.trim()))
       return null;
     try {
-      if (raw.indexOf("/") != -1 || raw.indexOf("-") != -1 || raw.indexOf(".") != -1) {
+      if (raw.indexOf('/') != -1 || raw.indexOf('-') != -1 || raw.indexOf('.') != -1) {
         String result = "";
         String splitVariable =
-            (raw.indexOf("/") != -1) ? "/" : ((raw.indexOf("-") != -1) ? "-" : "\\.");
+            (raw.indexOf('/') != -1) ? "/" : validateRaw(raw);
         String[] raws = raw.split(splitVariable);
         result = (raws[0].length() < Constants.TWO) ? "0" + raws[0] : raws[0];
         result += "/" + ((raws[1].length() < Constants.TWO) ? "0" + raws[1] : raws[1]);
@@ -100,6 +100,10 @@ public final class StringUtil {
     }
 
     return null;
+  }
+
+  private static String validateRaw(String raw) {
+    return (raw.indexOf('-') != -1) ? "-" : "\\.";
   }
 
   public static String toAmount(Object object) {
@@ -146,7 +150,7 @@ public final class StringUtil {
       String arrayData[] = data.split(",");
       return arrayData;
     }
-    return null;
+    return new String[0];
   }
 
   public static String convertString(String[] arrayData) {

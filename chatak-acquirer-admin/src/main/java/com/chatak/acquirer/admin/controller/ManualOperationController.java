@@ -120,51 +120,48 @@ public class ManualOperationController implements URLMappingConstants{
   public void downloadLogs(HttpServletRequest httpServletRequest,HttpServletResponse response,HttpSession httpSession,
       @FormParam("downloadLog") final String downloadLog, @FormParam("logName") final String logName) throws IOException{
     logger.info("Entering:: ManualOperationsController:: downloadLogs method");
-    FileInputStream fileInputStream = null;
-    OutputStream outputStream = null;
     String fileName = '/'+downloadLog;
-    StringBuilder loggerPath = null;
-    try {
-      if (logName.equals(ADMIN_LOG)) {
-        loggerPath = new StringBuilder(Properties.getProperty("log4j.appender.FILE.File"));
-        loggerPath = modifyLoggersPath(loggerPath, Properties.getProperty("gateway.admin.log.location"));
-        String str[] = loggerPath.toString().split(PG_ADMIN_LOG);
-        fileInputStream = new FileInputStream(loggerPath.toString());
-        outputStream = response.getOutputStream();
-        processWriteByteFile(response, fileInputStream, outputStream, fileName, str);
-        outputStream.flush();
-        outputStream.close();
-      } else if (logName.equals(MERCHANT_LOG)) {
-        loggerPath = new StringBuilder(Properties.getProperty("log4j.appender.FILE.File.merchant"));
-        loggerPath = modifyLoggersPath(loggerPath, Properties.getProperty("gateway.merchant.log.location"));
-        String str[] = loggerPath.toString().split(PG_MERCHANT_LOG);
-        fileInputStream = new FileInputStream(loggerPath.toString());
-        outputStream = response.getOutputStream();
-        processWriteByteFile(response, fileInputStream, outputStream, fileName, str);
-        outputStream.flush();
-        outputStream.close();
-      } else if (logName.equals(CATALINA_LOG)) {
-        loggerPath = new StringBuilder(Properties.getProperty("log4j.appender.FILE.File.catalina"));
-        loggerPath = modifyLoggersPath(loggerPath, Properties.getProperty("gateway.catalina.log.location"));
-        String str[] = loggerPath.toString().split(PG_CATALINA_OUT);
-        fileInputStream = new FileInputStream(loggerPath.toString());
-        outputStream = response.getOutputStream();
-        processWriteByteFile(response, fileInputStream, outputStream, fileName, str);
-        outputStream.flush();
-        outputStream.close();
-      }
-    } catch (Exception e) {
-      logger.error("ERROR :: ManualOperationController :: downloadLogs methods", e);
-    } finally {
-      if (fileInputStream != null) {
-        fileInputStream.close();
-      }
-      if (outputStream != null) {
-        outputStream.close();
-      }
+    StringBuilder loggerPath = getLoggerPath(logName);
+    if (loggerPath != null) {
+    	try (FileInputStream fileInputStream = new FileInputStream(loggerPath.toString());
+    			OutputStream outputStream = response.getOutputStream()) {
+    		if (logName.equals(ADMIN_LOG)) {
+    			String str[] = loggerPath.toString().split(PG_ADMIN_LOG);
+    			processWriteByteFile(response, fileInputStream, outputStream, fileName, str);
+    			outputStream.flush();
+    		} else if (logName.equals(MERCHANT_LOG)) {
+    			String str[] = loggerPath.toString().split(PG_MERCHANT_LOG);
+    			processWriteByteFile(response, fileInputStream, outputStream, fileName, str);
+    			outputStream.flush();
+    		} else if (logName.equals(CATALINA_LOG)) {
+    			String str[] = loggerPath.toString().split(PG_CATALINA_OUT);
+    			processWriteByteFile(response, fileInputStream, outputStream, fileName, str);
+    			outputStream.flush();
+    		}
+    	} catch (Exception e) {
+    		logger.error("ERROR :: ManualOperationController :: downloadLogs methods", e);
+    	}
     }
     logger.info("Exiting :: ManualOperationsController :: downloadLogs method");
   }
+
+/**
+ * @param logName
+ */
+private StringBuilder getLoggerPath(final String logName) {
+	StringBuilder loggerPath = null;
+	if (logName.equals(ADMIN_LOG)) {
+	    loggerPath = new StringBuilder(Properties.getProperty("log4j.appender.FILE.File"));
+        loggerPath = modifyLoggersPath(loggerPath, Properties.getProperty("gateway.admin.log.location"));
+	  } else if (logName.equals(MERCHANT_LOG)) {
+	    loggerPath = new StringBuilder(Properties.getProperty("log4j.appender.FILE.File.merchant"));
+	    loggerPath = modifyLoggersPath(loggerPath, Properties.getProperty("gateway.merchant.log.location"));
+	  } else if (logName.equals(CATALINA_LOG)) {
+	    loggerPath = new StringBuilder(Properties.getProperty("log4j.appender.FILE.File.catalina"));
+	    loggerPath = modifyLoggersPath(loggerPath, Properties.getProperty("gateway.catalina.log.location"));
+	  }
+	return loggerPath;
+}
 
   private void processWriteByteFile(HttpServletResponse response, FileInputStream fileInputStream,
       OutputStream outputStream, String fileName, String[] str) throws IOException {
@@ -186,12 +183,8 @@ public class ManualOperationController implements URLMappingConstants{
   }
 
   private FilenameFilter filterFileName(String loggerName) {
-    return new FilenameFilter() {
-
-      @Override
-      public boolean accept(File dir, String name) {
-        return name.startsWith(loggerName);
-      }
-    };
+    return (dir,name) ->  {
+            return name.startsWith(loggerName);
+      };
+    }
   }
-}

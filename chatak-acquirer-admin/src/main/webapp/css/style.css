@@ -100,7 +100,16 @@ textarea.form-control{
 	overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 185px;
+     width: 185px; 
+}
+
+.discriptionErrorMsgReset {
+	height: 20px;
+	line-height:10px;
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+   
 }
 .descriptionMsg {
 	height: 20px;
@@ -956,15 +965,21 @@ input[readonly] {
 }
 .left-right-btn, .right-left-btn {
 	height: 30px;
-	margin-bottom: 30px;
+	margin-bottom: 10px !important;
 	display: table;
 	vertical-align: middle;
 	text-align: center;
 	cursor: pointer;
-	padding:7px;
+	padding:6px;
+}
+.marginT24 {
+	margin-top: 24px;
 }
 .marginT30 {
 	margin-top: 30px;
+}
+.marginT60 {
+	margin-top: 60px;
 }
 
 .marginT20 {
@@ -2325,4 +2340,28 @@ input.alignright{
 	#collapse102.parent-child-list .col-md-3, #collapse165.parent-child-list .col-md-3
 	{
 	min-height: auto;
+}
+
+.sortableth2{
+	display:none !important;
+	}
+.sorted.asc {
+	height:14px;
+	/*  width:14px; */
+	background:url(../images/sort_asc.png) no-repeat;
+	background-position:right 2px;
+	}
+.sorted.desc {
+	height:14px;
+	/*  width:14px; */
+background:url(../images/sort_desc.png) no-repeat;
+background-position:right 2px;
+}
+
+.discriptionErrorMsgForReport {
+	height: 20px;
+	line-height:10px;
+	overflow: hidden;
+    white-space: nowrap;
+    width: 215px;
 }

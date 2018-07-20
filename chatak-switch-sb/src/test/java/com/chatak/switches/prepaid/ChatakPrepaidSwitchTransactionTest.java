@@ -90,10 +90,4 @@ public class ChatakPrepaidSwitchTransactionTest {
 		ISOMsg isoMsg = new ISOMsg();
 		chatakPrepaidSwitchTransaction.networkAdvice(isoMsg);
 	}
-
-	@Test
-	public void testInitConfigP() {
-		chatakPrepaidSwitchTransaction.initConfig();
-	}
-
 }

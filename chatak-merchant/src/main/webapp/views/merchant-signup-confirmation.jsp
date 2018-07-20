@@ -234,7 +234,7 @@
 						<td><div id="confirmlegalCitizen"></div></td>
 					</tr>
 					<tr>
-						<td>Mobile Number(Home):</td>
+						<td>Home Phone:</td>
 						<td><div id="confirmlegalHomePhone"></div></td>
 					</tr>
 				</table>

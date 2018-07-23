@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
+import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
 import com.chatak.pg.acq.dao.model.PGBank;
 import com.chatak.pg.acq.dao.model.PGBankCurrencyMapping;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
@@ -48,5 +49,9 @@ public interface BankDao {
 	public List<PGBank> getBankName(Long currencyId);
 	
 	public PGBank createOrUpdateBank(PGBank pgBank) throws DataAccessException;
+	
+	public BankProgramManagerMap createOrUpdateBankProgramManagerMapping(BankProgramManagerMap bankProgramManagerMap) throws DataAccessException;
+	
+	public List<PGBank> findByIssuanceBankId(Long issuanceBankId);
 	
 }

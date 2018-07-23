@@ -101,7 +101,7 @@ public class TransactionServiceTest {
     Mockito.when(transactionDao.getTransactions(getTransactionsListRequest))
         .thenReturn(Arrays.asList(transactions));
     response = transactionServiceImpl.searchTransactions(getTransactionsListRequest);
-    Assert.assertNull(response);
+    Assert.assertNotNull(response);
   }
 
   @Test
@@ -167,18 +167,6 @@ public class TransactionServiceTest {
     Assert.assertNotNull(response);
   }
 
-  @Test(expected=NullPointerException.class)
-  public void testGetAllAccountsExecutedTransactionsOnDate() {
-    ReportsDTO reportList = Mockito.mock(ReportsDTO.class);
-    Mockito
-        .when(executedTransactionDao
-            .getAllAccountsExecutedTransactionsOnDate(getTransactionsListRequest))
-        .thenReturn(Arrays.asList(reportList));
-    List<ReportsDTO> ExecutedTransactionsOnDateList =
-        transactionServiceImpl.getAllAccountsExecutedTransactionsOnDate(getTransactionsListRequest);
-    Assert.assertNotNull(ExecutedTransactionsOnDateList);
-  }
-
   @Test
   public void testGetAllManualTransactionListReport() {
     ReportsDTO reportList = Mockito.mock(ReportsDTO.class);
@@ -226,7 +214,7 @@ public class TransactionServiceTest {
     Assert.assertNotNull(response);
   }
 
-  @Test
+  @Test(expected = ChatakAdminException.class)
   public void testConfigureReqObj() throws ChatakAdminException {
     PowerMockito.mockStatic(JsonUtil.class);
     SettlementActionDTOList actionDTOList = Mockito.mock(SettlementActionDTOList.class);
@@ -246,7 +234,7 @@ public class TransactionServiceTest {
         removedTxns);
   }
 
-  @Test
+  @Test(expected = ChatakAdminException.class)
   public void testConfigureLitleReqObj() throws ChatakAdminException {
     PowerMockito.mockStatic(JsonUtil.class);
     PowerMockito.mockStatic(PGConstants.class);

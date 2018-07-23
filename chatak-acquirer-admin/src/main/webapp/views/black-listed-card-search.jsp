@@ -27,7 +27,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -76,14 +76,17 @@
 								<form:form action="getBlackListedCardInfo" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="editBlackListedCard" name="editBlackListedCardForm" method="post">
 									<input type="hidden" id="getBlackListedCardId" name="getBlackListedCardId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="viewBlackListedCard" name="viewBlackListedCard" method="post">
 									<input type="hidden" id="getViewBlackListedCardId" name="getBlackListedCardId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="getblackListedCardreport" name="downloadReport" method="post">
@@ -91,10 +94,12 @@
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 						<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="searchBlackListedCard" modelAttribute="blackListedCard">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -309,6 +314,7 @@
 		<form:form action="blackListedCardActivationSuspention" name="blackListedCardActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="cardId" /> <input
 				type="hidden" id="suspendActiveStatus" name="cardStatus" /> 
+				<input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -333,11 +339,10 @@
 	<script src="../js/utils.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
+	
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js" type="text/javascript"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/black-listed-card.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -356,6 +361,22 @@
 		function openPopup() {
 			$('#blackListedCardPopupDiv').popup("show");
 		}
+
+		$(document).ready(function() {
+					/* Table Sorter includes Start*/
+					$(function() {
+						
+							  // call the tablesorter plugin
+							  $('#serviceResults').sortable({
+								
+								 divBeforeTable: '#divbeforeid',
+								divAfterTable: '#divafterid',
+								initialSort: false,
+								locale: 'th',
+								//negativeSort: [1, 2]
+							});
+					});
+					});
 		
 	</script>
 </body>

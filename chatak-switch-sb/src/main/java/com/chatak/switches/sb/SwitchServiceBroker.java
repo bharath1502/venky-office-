@@ -58,7 +58,6 @@ import com.chatak.pg.enums.ProcessorType;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.LogHelper;
 import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.PGUtils;
@@ -122,7 +121,7 @@ public class SwitchServiceBroker extends TransactionService {
    * @throws ServiceException
    */
   public AuthResponse authTransaction(AuthRequest authRequest) throws ServiceException {
-    logger.info("PaymentServiceImpl | authTransaction | Entering");
+    logger.info("SwitchServiceBroker | authTransaction | Entering");
     AuthResponse authResponse = new AuthResponse();
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
 
@@ -203,7 +202,7 @@ public class SwitchServiceBroker extends TransactionService {
       authResponse.setErrorCode(e.getMessage());
       authResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(authResponse.getErrorCode()));
-      logger.error("PaymentServiceImpl | authTransaction | ServiceException :", e);
+      logger.error("SwitchServiceBroker | authTransaction | ServiceException :", e);
     } catch (DataAccessException e) {
       authRequest.setReversalReason(e.getMessage());
       autoReversal(populateReversalRequest(authRequest, authResponse));// Reversaing
@@ -211,7 +210,7 @@ public class SwitchServiceBroker extends TransactionService {
       authResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       authResponse.setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
       validatePGTransaction(pgSwitchTransaction, pgTransaction);
-      logger.error("PaymentServiceImpl | authTransaction | DataAccessException :", e);
+      logger.error("SwitchServiceBroker | authTransaction | DataAccessException :", e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
       pgTransactionValidation(pgSwitchTransaction, pgTransaction);
@@ -220,7 +219,7 @@ public class SwitchServiceBroker extends TransactionService {
       authResponse.setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
     }
 
-    logger.info("PaymentServiceImpl | authTransaction | Exiting");
+    logger.info("SwitchServiceBroker | authTransaction | Exiting");
     return authResponse;
   }
 
@@ -237,13 +236,17 @@ private void pgTransactionValidation(PGSwitchTransaction pgSwitchTransaction, PG
 
 private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTransaction pgTransaction) {
       LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+      if (pgTransaction != null) {
       pgTransaction.setStatus(PGConstants.STATUS_FAILED);
       pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
       pgTransaction
           .setTxnDescription(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
       voidTransactionDao.createTransaction(pgTransaction);
+      }
+      if (pgSwitchTransaction != null) {
       pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
       switchTransactionDao.createTransaction(pgSwitchTransaction);
+      }
       LogHelper.logEntry(logger, LoggerMessage.getCallerName());
 }
 
@@ -259,7 +262,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
    * @throws ServiceException
    */
   public CaptureResponse captureTransaction(CaptureRequest captureRequest) throws ServiceException {
-    logger.info("PaymentServiceImpl | captureTransaction | Entering");
+    logger.info("SwitchServiceBroker | captureTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     CaptureResponse captureResponse = new CaptureResponse();
     PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
@@ -273,14 +276,14 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       PGTransaction authTransaction = voidTransactionDao
           .findTransactionToCaptureByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(
               captureRequest.getAuthTxnRefNum(), captureRequest.getIssuerTxnRefNum(),
-              captureRequest.getMerchantId(), captureRequest.getTerminalId());
+              captureRequest.getMerchantCode(), captureRequest.getTerminalId());
 
       if (authTransaction == null) {
         throw new ServiceException(ActionCode.ERROR_CODE_78);
       }
       // checking for is already auth captured or not?
       PGTransaction lookForSale =
-          transactionDao.getTransactionOnRefNumber(captureRequest.getMerchantId(),
+          transactionDao.getTransactionOnRefNumber(captureRequest.getMerchantCode(),
               captureRequest.getTerminalId(), authTransaction.getTransactionId());
       if (!(lookForSale == null)) {
         Integer checkCapturedStatus = lookForSale.getStatus();
@@ -337,7 +340,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
         descriptionTemplate =
             MessageFormat.format(descriptionTemplate, pgTransaction.getTransactionId());
         authTransaction.setTxnDescription(descriptionTemplate);
-        logAccountTransaction(pgTransaction);//Logging account transactions
+        logAccountTransaction(pgTransaction,captureRequest);//Logging account transactions
         logPgAccountFee(pgTransaction);
         voidTransactionDao.createTransaction(authTransaction);
       } else {
@@ -370,7 +373,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgTransaction.setStatus(PGConstants.STATUS_FAILED);
       pgTransaction.setTxnDescription(ActionCode.getInstance().getMessage(e.getMessage()));
       voidTransactionDao.createTransaction(pgTransaction);
-      logger.error("PaymentServiceImpl | captureTransaction | ServiceException :", e);
+      logger.error("SwitchServiceBroker | captureTransaction | ServiceException :", e);
     } catch (DataAccessException e) {
       captureRequest.setReversalReason(e.getMessage());
       autoReversal(populateReversalRequest(captureRequest, captureResponse));
@@ -378,7 +381,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       captureResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
       pgTransactionValidation(pgSwitchTransaction, pgTransaction);
-      logger.error("PaymentServiceImpl | captureTransaction | DataAccessException :", e);
+      logger.error("SwitchServiceBroker | captureTransaction | DataAccessException :", e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
       pgTransactionValidation(pgSwitchTransaction, pgTransaction);
@@ -388,7 +391,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
     }
 
-    logger.info("PaymentServiceImpl | captureTransaction | Exiting");
+    logger.info("SwitchServiceBroker | captureTransaction | Exiting");
     return captureResponse;
   }
 
@@ -401,9 +404,9 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
    * @return PurchaseResponse
    * @throws ServiceException
    */
-  public PurchaseResponse purchaseTransaction(PurchaseRequest purchaseRequest)
+  public PurchaseResponse purchaseTransaction(PurchaseRequest purchaseRequest, PGMerchant pgMerchant)
       throws ServiceException, NestedRuntimeException {
-    logger.info("PaymentServiceImpl | purchaseTransaction | Entering");
+    logger.info("SwitchServiceBroker | purchaseTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     PurchaseResponse purchaseResponse = new PurchaseResponse();
 
@@ -416,10 +419,17 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgTransaction = populatePGTransaction(purchaseRequest, PGConstants.TXN_TYPE_SALE);
       pgTransaction.setPaymentMethod(PGConstants.PAYMENT_METHOD_DEBIT);
       pgTransaction.setUserName(purchaseRequest.getUserName());
+      
+      logger.info("SwitchServiceBroker | purchaseTransaction | PmId: " + purchaseRequest.getPmId());
+      
+      pgTransaction.setPmId(purchaseRequest.getPmId());
+      pgTransaction.setIsoId(purchaseRequest.getIsoId());
       voidTransactionDao.createTransaction(pgTransaction);
 
+      // Set the gateway transaction id
+      purchaseRequest.setTransactionId(pgTransaction.getTransactionId());
+      
       // Switch transaction log before Switch call
-
       pgSwitchTransaction = populateSwitchTransactionRequest(purchaseRequest);
 
       paymentService = binUpstreamRouter.getPaymentService();
@@ -441,12 +451,15 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgSwitchTransaction.setProcessorAuthCode(purchaseResponse.getUpStreamAuthCode());
       pgSwitchTransaction.setStatus(pgTransaction.getStatus());
 
+      pgTransaction.setIssuancePartner(purchaseResponse.getIssuancePartner());
+      //setting transaction based on processor response
+      pgTransaction.setDeviceLocalTxnTime(purchaseResponse.getIssuanceTxnTime() == null
+    		  ? pgTransaction.getDeviceLocalTxnTime() : purchaseResponse.getIssuanceTxnTime());
       // Update account
       statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
 
-      PGMerchant pgMerchant = merchantUpdateDao.getMerchantByCode(purchaseRequest.getMerchantId());
-      String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement().toString();
-      autoSettlement = (autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_YES
+      String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() !=null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
+      autoSettlement = (autoSettlement!=null && autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_YES
           : Constants.BATCH_STATUS_NA;
 
       if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
@@ -474,7 +487,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       purchaseResponse.setIssuerTxnRefNum(pgTransaction.getIssuerTxnRefNum());
     } catch (ServiceException e) {
       logger.error(Constants.EXCEPTIONS + e.getMessage(), e);
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
 
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
@@ -489,22 +502,22 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       purchaseResponse.setErrorCode(e.getMessage());
       purchaseResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(purchaseResponse.getErrorCode()));
-      logger.error("PaymentServiceImpl | purchaseTransaction | ServiceException :", e);
+      logger.error("SwitchServiceBroker | purchaseTransaction | ServiceException :", e);
     } catch (DataAccessException e) {
       logger.error("DataAccessException" + e.getMessage(), e);
       purchaseResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       purchaseResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         purchaseRequest.setReversalReason(e.getMessage());
         autoReversal(populateReversalRequest(purchaseRequest, purchaseResponse));// Reversing
         validatePGTransaction(pgSwitchTransaction, pgTransaction);
       }
 
-      logger.error("PaymentServiceImpl | purchaseTransaction | DataAccessException :", e);
+      logger.error("SwitchServiceBroker | purchaseTransaction | DataAccessException :", e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e.getMessage(), e);
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         validatePGTransaction(pgSwitchTransaction, pgTransaction);
       }
 
@@ -513,9 +526,13 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
     }
 
-    logger.info("PaymentServiceImpl | purchaseTransaction | Exiting");
+    logger.info("SwitchServiceBroker | purchaseTransaction | Exiting");
     return purchaseResponse;
   }
+
+private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTransaction pgTransaction) {
+	return null != pgTransaction && null != pgSwitchTransaction;
+}
 
   private void fetchCardNumberLength(PurchaseRequest purchaseRequest) {
 	if (purchaseRequest.getCardNum() != null && purchaseRequest.getCardNum().length() > Constants.FOUR) {
@@ -537,7 +554,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
           // Setting Initial Litle EFT status
           pgTransaction.setEftStatus(PGConstants.LITLE_PENDING);
         }
-        logAccountTransaction(pgTransaction);
+        logAccountTransaction(pgTransaction,purchaseRequest);
         logPgAccountFee(pgTransaction);// Logging transaction fee details
         String descriptionTemplate =
             Properties.getProperty("chatak-pay.pending.description.template");
@@ -571,7 +588,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
    */
   public AdjustmentResponse adjustmentTransaction(AdjustmentRequest adjustmentRequest)
       throws ServiceException {
-    logger.info("PaymentServiceImpl | adjustmentTransaction | Entering");
+    logger.info("SwitchServiceBroker | adjustmentTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     AdjustmentResponse adjustmentResponse = new AdjustmentResponse();
 
@@ -581,7 +598,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       validateRequest(adjustmentRequest);
 
       PGTransaction saleTransaction =
-          transactionDao.getTransaction(adjustmentRequest.getMerchantId(),
+          transactionDao.getTransaction(adjustmentRequest.getMerchantCode(),
               adjustmentRequest.getTerminalId(), adjustmentRequest.getTxnRefNum());
       if (saleTransaction == null) {
         throw new ServiceException(ActionCode.ERROR_CODE_78);
@@ -590,77 +607,8 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       PGSwitchTransaction pgSwitchTransaction = null;
       PGTransaction pgTransaction = null;
 
-      try {
-
-        // Create Transaction record
-        pgTransaction = populatePGTransaction(adjustmentRequest, PGConstants.TXN_TYPE_SALE_ADJ);
-
-        pgTransaction.setRefTransactionId(adjustmentRequest.getTxnRefNum());
-        pgTransaction.setSysTraceNum(adjustmentRequest.getSysTraceNum());
-        pgTransaction.setAuthId(adjustmentRequest.getAuthId());
-        voidTransactionDao.createTransaction(pgTransaction);
-
-        // Switch transaction log before Switch call
-        pgSwitchTransaction = populateSwitchTransactionRequest(adjustmentRequest);
-
-        // Switch interface call
-        SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
-        PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
-        switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-            Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
-        ISOMsg switchISOMsg =
-            switchTransaction.auth(getISOMsg("0200", "021010", adjustmentRequest.getTxnAmount(),
-                adjustmentRequest.getCardNum(), adjustmentRequest.getExpDate(), txnRefNum));
-
-        String switchResponseCode =
-            switchISOMsg.getValue(Constants.THIRTYNINE) != null ? (String) switchISOMsg.getValue(Constants.THIRTYNINE) : null;
-
-        if (switchResponseCode != null && switchResponseCode.equals(ActionCode.ERROR_CODE_00)) {
-          // Switch transaction id
-          String issuerTxnRefNumber =
-              switchISOMsg.getValue(Constants.THIRTYSEVEN) != null ? (String) switchISOMsg.getValue(Constants.THIRTYSEVEN) : null;
-
-          pgSwitchTransaction.setTransactionId(issuerTxnRefNumber);
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-
-          pgTransaction.setIssuerTxnRefNum(issuerTxnRefNumber);
-          pgTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-        } else {
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-        }
-        pgSwitchTransaction.setTransactionId(
-            switchISOMsg.getString(Constants.THIRTYSEVEN) != null ? switchISOMsg.getString(Constants.THIRTYSEVEN) : null);
-        switchTransactionDao.createTransaction(pgSwitchTransaction);
-
-        // Update transaction status and switch response
-        voidTransactionDao.createTransaction(pgTransaction);
-
-        // Set Response attributes
-        adjustmentResponse.setTxnRefNum(pgTransaction.getTransactionId());
-        adjustmentResponse.setAuthId(pgTransaction.getAuthId());
-        adjustmentResponse.setTxnAmount(adjustmentRequest.getTxnAmount());
-        adjustmentResponse.setAdjAmount(adjustmentRequest.getAdjAmount());
-        adjustmentResponse.setFeeAmount(saleTransaction.getFeeAmount());
-        adjustmentResponse
-            .setTotalAmount(adjustmentRequest.getTxnAmount() + saleTransaction.getFeeAmount());
-        adjustmentResponse.setErrorCode(ActionCode.ERROR_CODE_00);
-        adjustmentResponse
-            .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_00));
-
-      } catch (Exception e) {
-        logger.error(Constants.EXCEPTIONS + e);
-        if (null != pgTransaction && null != pgSwitchTransaction) {
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-          voidTransactionDao.createTransaction(pgTransaction);
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-          switchTransactionDao.createTransaction(pgSwitchTransaction);
-        }
-
-        adjustmentResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
-        adjustmentResponse
-            .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-      }
+      validatePGSwitchTransaction(adjustmentRequest, adjustmentResponse, saleTransaction,
+          pgSwitchTransaction, pgTransaction);
 
       // Required to set in reversal
       adjustmentResponse.setTxnRefNum(txnRefNum);
@@ -670,22 +618,98 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       adjustmentResponse.setErrorMessage(ActionCode.getInstance().getMessage(e.getMessage()));
 
       logger.error(
-          "PaymentServiceImpl | adjustmentTransaction | ServiceException :" + e.getMessage(), e);
+          "SwitchServiceBroker | adjustmentTransaction | ServiceException :" + e.getMessage(), e);
     } catch (DataAccessException e) {
       adjustmentResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       adjustmentResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
       logger.error(
-          "PaymentServiceImpl | adjustmentTransaction | DataAccessException :" + e.getMessage(), e);
+          "SwitchServiceBroker | adjustmentTransaction | DataAccessException :" + e.getMessage(), e);
     } catch (Exception e) {
       adjustmentResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       adjustmentResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-      logger.error("PaymentServiceImpl | adjustmentTransaction | Exception :" + e.getMessage(), e);
+      logger.error("SwitchServiceBroker | adjustmentTransaction | Exception :" + e.getMessage(), e);
     }
 
-    logger.info("PaymentServiceImpl | adjustmentTransaction | Exiting");
+    logger.info("SwitchServiceBroker | adjustmentTransaction | Exiting");
     return adjustmentResponse;
+  }
+
+  private void validatePGSwitchTransaction(AdjustmentRequest adjustmentRequest,
+      AdjustmentResponse adjustmentResponse, PGTransaction saleTransaction,
+      PGSwitchTransaction pgSwitchTransaction, PGTransaction pgTransaction) {
+    try {
+
+      // Create Transaction record
+      pgTransaction = populatePGTransaction(adjustmentRequest, PGConstants.TXN_TYPE_SALE_ADJ);
+
+      pgTransaction.setRefTransactionId(adjustmentRequest.getTxnRefNum());
+      pgTransaction.setSysTraceNum(adjustmentRequest.getSysTraceNum());
+      pgTransaction.setAuthId(adjustmentRequest.getAuthId());
+      voidTransactionDao.createTransaction(pgTransaction);
+
+      // Switch transaction log before Switch call
+      pgSwitchTransaction = populateSwitchTransactionRequest(adjustmentRequest);
+
+      // Switch interface call
+      SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
+      PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
+      switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
+          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+      ISOMsg switchISOMsg =
+          switchTransaction.auth(getISOMsg("0200", "021010", adjustmentRequest.getTxnAmount(),
+              adjustmentRequest.getCardNum(), adjustmentRequest.getExpDate(), txnRefNum));
+
+      String switchResponseCode = switchISOMsg.getValue(Constants.THIRTYNINE) != null
+          ? (String) switchISOMsg.getValue(Constants.THIRTYNINE) : null;
+
+      if (switchResponseCode != null && switchResponseCode.equals(ActionCode.ERROR_CODE_00)) {
+        // Switch transaction id
+        String issuerTxnRefNumber = switchISOMsg.getValue(Constants.THIRTYSEVEN) != null
+            ? (String) switchISOMsg.getValue(Constants.THIRTYSEVEN) : null;
+
+        pgSwitchTransaction.setTransactionId(issuerTxnRefNumber);
+        pgSwitchTransaction.setStatus(PGConstants.STATUS_SUCCESS);
+
+        pgTransaction.setIssuerTxnRefNum(issuerTxnRefNumber);
+        pgTransaction.setStatus(PGConstants.STATUS_SUCCESS);
+      } else {
+        pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
+        pgTransaction.setStatus(PGConstants.STATUS_FAILED);
+      }
+      pgSwitchTransaction.setTransactionId(switchISOMsg.getString(Constants.THIRTYSEVEN) != null
+          ? switchISOMsg.getString(Constants.THIRTYSEVEN) : null);
+      switchTransactionDao.createTransaction(pgSwitchTransaction);
+
+      // Update transaction status and switch response
+      voidTransactionDao.createTransaction(pgTransaction);
+
+      // Set Response attributes
+      adjustmentResponse.setTxnRefNum(pgTransaction.getTransactionId());
+      adjustmentResponse.setAuthId(pgTransaction.getAuthId());
+      adjustmentResponse.setTxnAmount(adjustmentRequest.getTxnAmount());
+      adjustmentResponse.setAdjAmount(adjustmentRequest.getAdjAmount());
+      adjustmentResponse.setFeeAmount(saleTransaction.getFeeAmount());
+      adjustmentResponse
+          .setTotalAmount(adjustmentRequest.getTxnAmount() + saleTransaction.getFeeAmount());
+      adjustmentResponse.setErrorCode(ActionCode.ERROR_CODE_00);
+      adjustmentResponse
+          .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_00));
+
+    } catch (Exception e) {
+      logger.error(Constants.EXCEPTIONS + e);
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+        pgTransaction.setStatus(PGConstants.STATUS_FAILED);
+        voidTransactionDao.createTransaction(pgTransaction);
+        pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
+        switchTransactionDao.createTransaction(pgSwitchTransaction);
+      }
+
+      adjustmentResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
+      adjustmentResponse
+          .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
+    }
   }
 
   /**
@@ -696,7 +720,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
    * @throws ServiceException
    */
   public VoidResponse voidTransaction(VoidRequest voidRequest) throws ServiceException {
-    logger.info("PaymentServiceImpl | voidTransaction | Entering");
+    logger.info("SwitchServiceBroker | voidTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     VoidResponse voidResponse = new VoidResponse();
     PGSwitchTransaction pgSwitchTransaction = null;
@@ -767,13 +791,13 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     } catch (DataAccessException e) {
         voidResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
         voidResponse.setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-        if (null != pgTransaction && null != pgSwitchTransaction) {
+        if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
           validatePGTransaction(pgSwitchTransaction, pgTransaction);
         }
-        logger.error("PaymentServiceImpl | voidTransaction | DataAccessException :", e);
+        logger.error("SwitchServiceBroker | voidTransaction | DataAccessException :", e);
       } catch (ServiceException e) {
       
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
         pgTransaction
@@ -789,7 +813,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       logger.error("ServiceException :" + e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         validatePGTransaction(pgSwitchTransaction, pgTransaction);
       }
 
@@ -797,7 +821,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       voidResponse.setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
     }
 
-    logger.info("PaymentServiceImpl | voidTransaction | Exiting");
+    logger.info("SwitchServiceBroker | voidTransaction | Exiting");
     return voidResponse;
 
   }
@@ -814,7 +838,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 	    .equals(PGConstants.PG_SETTLEMENT_PENDING))
 	    || (originalSaleTransaction.getMerchantSettlementStatus()
 	        .equals(PGConstants.PG_SETTLEMENT_PROCESSING))) {
-	  logAccountTransaction(pgTransaction);
+	  logAccountTransaction(pgTransaction,voidRequest);
 	  originalSaleTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_VOIDED);
 	  pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
 	  logPgAccountFee(pgTransaction);
@@ -860,7 +884,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
    */
   public ReversalResponse reversalTransaction(ReversalRequest reversalRequest)
       throws ServiceException {
-    logger.info("PaymentServiceImpl | reversalTransaction | Entering");
+    logger.info("SwitchServiceBroker | reversalTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     ReversalResponse reversalResponse = new ReversalResponse();
     PGSwitchTransaction pgSwitchTransaction = null;
@@ -919,16 +943,16 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
         reversalResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
         reversalResponse
             .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-        if (null != pgTransaction && null != pgSwitchTransaction) {
+        if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
           pgTransaction.setStatus(PGConstants.STATUS_FAILED);
           voidTransactionDao.createTransaction(pgTransaction);
           pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
           switchTransactionDao.createTransaction(pgSwitchTransaction);
         }
-        logger.error("PaymentServiceImpl | voidTransaction | DataAccessException :", e);
+        logger.error("SwitchServiceBroker | voidTransaction | DataAccessException :", e);
       }  catch (ServiceException e) {
 
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         voidTransactionDao.createTransaction(pgTransaction);
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
@@ -941,12 +965,8 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       logger.error("ServiceException :" + e);
     }catch (Exception e) {
       
-      if (null != pgTransaction && null != pgSwitchTransaction) {
-        pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-        pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
-        voidTransactionDao.createTransaction(pgTransaction);
-        pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-        switchTransactionDao.createTransaction(pgSwitchTransaction);
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+    	  creatTransaction(pgSwitchTransaction, pgTransaction);
       }
 
       reversalResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
@@ -955,9 +975,21 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       logger.error(Constants.EXCEPTIONS + e);
     }
 
-    logger.info("PaymentServiceImpl | reversalTransaction | Exiting");
+    logger.info("SwitchServiceBroker | reversalTransaction | Exiting");
     return reversalResponse;
   }
+  
+	private void creatTransaction(PGSwitchTransaction pgSwitchTransaction, PGTransaction pgTransaction) {
+		if (pgTransaction != null) {
+			pgTransaction.setStatus(PGConstants.STATUS_FAILED);
+			pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
+			voidTransactionDao.createTransaction(pgTransaction);
+		}
+		if (pgSwitchTransaction != null) {
+			pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
+			switchTransactionDao.createTransaction(pgSwitchTransaction);
+		}
+	}
 
   private void validateStatus(ReversalRequest reversalRequest, PGTransaction pgTransaction)
 		throws ServiceException, Exception {
@@ -997,13 +1029,13 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
    * @throws ServiceException
    */
   public RefundResponse refundTransaction(RefundRequest refundRequest) throws ServiceException {
-    logger.info("PaymentServiceImpl | refundTransaction | Entering");
+    logger.info("SwitchServiceBroker | refundTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     RefundResponse refundResponse = new RefundResponse();
 
     PGTransaction orignalSaleTxn = refundTransactionDao
         .findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId(refundRequest.getTxnRefNum(),
-            refundRequest.getIssuerTxnRefNum(), refundRequest.getMerchantId());
+            refundRequest.getIssuerTxnRefNum(), refundRequest.getMerchantCode());
 
     PGSwitchTransaction pgSwitchTransaction = null;
     PGTransaction pgTransaction = null;
@@ -1040,6 +1072,9 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       pgTransaction.setIssuerTxnRefNum(refundResponse.getUpStreamTxnRefNum());
       pgTransaction.setProcessor(paymentService.getProcessor());
       pgTransaction.setRefTransactionId(refundRequest.getTxnRefNum());
+      
+      pgTransaction.setIssuancePartner(refundResponse.getIssuancePartner());
+      pgTransaction.setDeviceLocalTxnTime(refundResponse.getIssuanceTxnTime());
       
       Date date = new Date();
       String batchId = new SimpleDateFormat(Constants.BATCH_ID_DATE_FORMAT).format(date);
@@ -1080,21 +1115,15 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       refundResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       refundResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         validatePGTransaction(pgSwitchTransaction, pgTransaction);
       }
       logger.error(
-          "PaymentServiceImpl | refundTransaction | DataAccessException :" + e.getMessage(), e);
+          "SwitchServiceBroker | refundTransaction | DataAccessException :" + e.getMessage(), e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
-      if (null != pgTransaction && null != pgSwitchTransaction) {
-        pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-        pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
-        voidTransactionDao.createTransaction(pgTransaction);
-        pgTransaction
-            .setTxnDescription(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-        pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-        switchTransactionDao.createTransaction(pgSwitchTransaction);
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+    	  creatTransaction(pgSwitchTransaction, pgTransaction);
       }
       refundResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       refundResponse
@@ -1103,7 +1132,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 
     // Required to set in reversal
 
-    logger.info("PaymentServiceImpl | refundTransaction | Exiting");
+    logger.info("SwitchServiceBroker | refundTransaction | Exiting");
     return refundResponse;
 
   }
@@ -1122,7 +1151,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	  } else if (orignalSaleTxn.getMerchantSettlementStatus()
 	      .equals(PGConstants.PG_SETTLEMENT_EXECUTED)
 	      || orignalSaleTxn.getMerchantSettlementStatus().equals(PGConstants.PG_TXN_REFUNDED)) {
-	    validateMerchantSettlementExecuted(orignalSaleTxn, pgTransaction);
+	    validateMerchantSettlementExecuted(orignalSaleTxn, pgTransaction,refundRequest);
 	  }
 
 	  voidTransactionDao.createTransaction(orignalSaleTxn);
@@ -1164,9 +1193,9 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	    pgTransaction.getTransactionId());
   }
 
-  private void validateMerchantSettlementExecuted(PGTransaction orignalSaleTxn, PGTransaction pgTransaction)
+  private void validateMerchantSettlementExecuted(PGTransaction orignalSaleTxn, PGTransaction pgTransaction,RefundRequest refundRequest)
 		throws Exception, ServiceException {
-	logAccountTransaction(pgTransaction);
+	logAccountTransaction(pgTransaction, refundRequest);
 	String nbFlag = updateMerchantSettledAccount(orignalSaleTxn);
 	String descriptionTemplate =
 	    Properties.getProperty("chatak-pay.refund.description.template");
@@ -1187,7 +1216,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
   }
 
   public VoidResponse voidRefundTransaction(VoidRequest voidRequest) throws ServiceException {
-    logger.info("PaymentServiceImpl | voidTransaction | Entering");
+    logger.info("SwitchServiceBroker | voidTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     VoidResponse voidResponse = new VoidResponse();
     PGSwitchTransaction pgSwitchTransaction = null;
@@ -1246,7 +1275,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     } catch (ServiceException e) {
       logger.error(Constants.EXCEPTIONS + e);
 
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
         pgTransaction
@@ -1261,20 +1290,20 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     } catch (DataAccessException e) {
       voidResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       voidResponse.setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         validatePGTransaction(pgSwitchTransaction, pgTransaction);
       }
-      logger.error("PaymentServiceImpl | voidTransaction | DataAccessException :", e);
+      logger.error("SwitchServiceBroker | voidTransaction | DataAccessException :", e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         validatePGTransaction(pgSwitchTransaction, pgTransaction);
       }
       voidResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       voidResponse.setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
     }
 
-    logger.info("PaymentServiceImpl | voidTransaction | Exiting");
+    logger.info("SwitchServiceBroker | voidTransaction | Exiting");
     return voidResponse;
 
   }
@@ -1342,7 +1371,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
    */
   public ReversalResponse autoReversal(ReversalRequest reversalRequest) {
 
-    logger.info("PaymentServiceImpl | autoReversal | Entering");
+    logger.info("SwitchServiceBroker | autoReversal | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     ReversalResponse reversalResponse = new ReversalResponse();
     PGSwitchTransaction pgSwitchTransaction = null;
@@ -1407,7 +1436,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     } catch (ServiceException e) {
       logger.error(Constants.EXCEPTIONS + e);
 
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         voidTransactionDao.createTransaction(pgTransaction);
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
@@ -1420,35 +1449,31 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       reversalResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       reversalResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         voidTransactionDao.createTransaction(pgTransaction);
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
         switchTransactionDao.createTransaction(pgSwitchTransaction);
       }
-      logger.error("PaymentServiceImpl | autoReversal | DataAccessException :", e);
+      logger.error("SwitchServiceBroker | autoReversal | DataAccessException :", e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
-      if (null != pgTransaction && null != pgSwitchTransaction) {
-        pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-        pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
-        voidTransactionDao.createTransaction(pgTransaction);
-        pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-        switchTransactionDao.createTransaction(pgSwitchTransaction);
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+    	  creatTransaction(pgSwitchTransaction, pgTransaction);
       }
       reversalResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       reversalResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
     }
 
-    logger.info("PaymentServiceImpl | autoReversal | Exiting");
+    logger.info("SwitchServiceBroker | autoReversal | Exiting");
     return reversalResponse;
 
   }
 
   public BalanceEnquiryResponse balanceEnquiry(Request balanceEnquiryRequest)
       throws ServiceException {
-    logger.info("PaymentServiceImpl | balanceEnquiry | Entering");
+    logger.info("SwitchServiceBroker | balanceEnquiry | Entering");
     BalanceEnquiryResponse balanceEnquiryResponse = new BalanceEnquiryResponse();
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
 
@@ -1553,7 +1578,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       balanceEnquiryResponse.setErrorCode(e.getMessage());
       balanceEnquiryResponse.setErrorMessage(
           ActionCode.getInstance().getMessage(balanceEnquiryResponse.getErrorCode()));
-      logger.error("PaymentServiceImpl | balanceEnquiry | ServiceException :", e);
+      logger.error("SwitchServiceBroker | balanceEnquiry | ServiceException :", e);
     } catch (DataAccessException e) {
       balanceEnquiryRequest.setReversalReason(e.getMessage());
       autoReversal(populateReversalRequest(balanceEnquiryRequest, balanceEnquiryResponse));// Reversaing
@@ -1562,7 +1587,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       balanceEnquiryResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
       validatePGTransaction(pgSwitchTransaction, pgTransaction);
-      logger.error("PaymentServiceImpl | authTransaction | DataAccessException :", e);
+      logger.error("SwitchServiceBroker | authTransaction | DataAccessException :", e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
       pgTransactionValidation(pgSwitchTransaction, pgTransaction);
@@ -1572,13 +1597,13 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
     }
 
-    logger.info("PaymentServiceImpl | balanceEnquiry | Exiting");
+    logger.info("SwitchServiceBroker | balanceEnquiry | Exiting");
     return balanceEnquiryResponse;
   }
 
   public CashBackResponse processCashBackTransaction(CashBackRequest cashBackRequest)
       throws ServiceException {
-    logger.info("PaymentServiceImpl | purchaseTransaction | Entering");
+    logger.info("SwitchServiceBroker | purchaseTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     CashBackResponse cashBackResponse = new CashBackResponse();
 
@@ -1650,7 +1675,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       cashBackResponse.setIssuerTxnRefNum(pgTransaction.getIssuerTxnRefNum());
     } catch (ServiceException e) {
       logger.error(Constants.EXCEPTIONS + e);
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
 
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
@@ -1665,22 +1690,22 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       cashBackResponse.setErrorCode(e.getMessage());
       cashBackResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(cashBackResponse.getErrorCode()));
-      logger.error("PaymentServiceImpl | purchaseTransaction | ServiceException :", e);
+      logger.error("SwitchServiceBroker | purchaseTransaction | ServiceException :", e);
     } catch (DataAccessException e) {
 
       cashBackResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       cashBackResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         cashBackRequest.setReversalReason(e.getMessage());
         autoReversal(populateReversalRequest(cashBackRequest, cashBackResponse));// Reversaing
         validatePGTransaction(pgSwitchTransaction, pgTransaction);
       }
 
-      logger.error("PaymentServiceImpl | purchaseTransaction | DataAccessException :", e);
+      logger.error("SwitchServiceBroker | purchaseTransaction | DataAccessException :", e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
-      if (null != pgTransaction && null != pgSwitchTransaction) {
+      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
         validatePGTransaction(pgSwitchTransaction, pgTransaction);
       }
 
@@ -1690,7 +1715,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     }
 
     // Required to set in reversal
-    logger.info("PaymentServiceImpl | purchaseTransaction | Exiting");
+    logger.info("SwitchServiceBroker | purchaseTransaction | Exiting");
     return cashBackResponse;
   }
 
@@ -1705,7 +1730,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 
   public CashWithdrawalResponse cashWithdrawalTransaction(
       CashWithdrawalRequest cashWithdrawalRequest) throws ServiceException {
-    logger.info("PaymentServiceImpl | authTransaction | Entering");
+    logger.info("SwitchServiceBroker | authTransaction | Entering");
     CashWithdrawalResponse cashWithdrawalResponse = new CashWithdrawalResponse();
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
 
@@ -1785,7 +1810,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       cashWithdrawalResponse.setErrorCode(e.getMessage());
       cashWithdrawalResponse.setErrorMessage(
           ActionCode.getInstance().getMessage(cashWithdrawalResponse.getErrorCode()));
-      logger.error("PaymentServiceImpl | authTransaction | ServiceException :", e);
+      logger.error("SwitchServiceBroker | authTransaction | ServiceException :", e);
     } catch (DataAccessException e) {
       cashWithdrawalRequest.setReversalReason(e.getMessage());
       autoReversal(populateReversalRequest(cashWithdrawalRequest, cashWithdrawalResponse));// Reversaing
@@ -1794,7 +1819,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       cashWithdrawalResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
       validatePGTransaction(pgSwitchTransaction, pgTransaction);
-      logger.error("PaymentServiceImpl | authTransaction | DataAccessException :", e);
+      logger.error("SwitchServiceBroker | authTransaction | DataAccessException :", e);
     } catch (Exception e) {
       logger.error(Constants.EXCEPTIONS + e);
       pgTransactionValidation(pgSwitchTransaction, pgTransaction);
@@ -1804,7 +1829,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
     }
 
-    logger.info("PaymentServiceImpl | authTransaction | Exiting");
+    logger.info("SwitchServiceBroker | authTransaction | Exiting");
     return cashWithdrawalResponse;
   }
 
@@ -1815,7 +1840,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     boolean iterationFlag = true;
     PGAccountFeeLog pgAccountFeeLog;
     List<Object> objectResult =
-        getProcessingFee(PGUtils.getCCType(EncryptionUtil.decrypt(pgTransaction.getPan())), 1L,
+        getProcessingFee(PGUtils.getCCType(), 1L,
             pgTransaction.getMerchantId(), pgTransaction.getTxnTotalAmount());
     @SuppressWarnings("unchecked")
     List<ProcessingFee> list = (List<ProcessingFee>) objectResult.get(0);
@@ -1887,7 +1912,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
             account = accountDao.getPgAccount(accTxn.getMerchantCode()); }
           setPGAccountDetails(currentTime, accTxn, account);
           break;
-        case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:  //ReBrand
+        case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
 
           logger.info(
               "SwitchServiceBroker:: updateAccountCCTransactions method fetching transactions by PG TRANS ID: "

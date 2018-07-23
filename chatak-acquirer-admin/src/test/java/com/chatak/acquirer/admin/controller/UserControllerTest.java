@@ -48,7 +48,7 @@ public class UserControllerTest extends UserManagementControllerTest {
       mockMvc
           .perform(post("/" + URLMappingConstants.DELETE_MERCHANT_USER)
               .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
     } catch (Exception e) {
       logger.error("ERROR :: UserControllerTest :: testDeleteUserNoExistingFeature", e);
 
@@ -158,7 +158,7 @@ public class UserControllerTest extends UserManagementControllerTest {
       mockMvc
           .perform(post("/" + URLMappingConstants.USER_ACTIVATION_SUSPENTION)
               .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
     } catch (Exception e) {
       logger.error(
           "ERROR :: UserManagementControllerTest :: testChangeUserStatusNoExistingFeatures", e);

@@ -1,0 +1,8 @@
+Project homepage: http://hc.apache.org/httpcomponents-client
+
+
+
+Sources: https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient/4.4.1
+
+License:
+Licensed under Apache License 2.0

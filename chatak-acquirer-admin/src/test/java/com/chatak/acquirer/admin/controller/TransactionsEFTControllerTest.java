@@ -421,7 +421,7 @@ public class TransactionsEFTControllerTest {
     try {
       Mockito.when(settlementService.updateSettlementStatus(Matchers.anyString(),
           Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-          Matchers.anyString(), Matchers.anyString())).thenReturn(true);
+          Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(true);
 
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SETTLEMRNT_ACTION)
           .sessionAttr("transactionReqObject", transactionsListRequest).param(Constants.PAGE_NUMBER, "1")
@@ -441,7 +441,7 @@ public class TransactionsEFTControllerTest {
     try {
       Mockito.when(settlementService.updateSettlementStatus(Matchers.anyString(),
           Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-          Matchers.anyString(), Matchers.anyString())).thenReturn(true);
+          Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(true);
 
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SETTLEMRNT_ACTION)
           .sessionAttr("transactionReqObject", transactionsListRequest).param(Constants.PAGE_NUMBER, "1")
@@ -462,7 +462,7 @@ public class TransactionsEFTControllerTest {
     try {
       Mockito.when(settlementService.updateSettlementStatus(Matchers.anyString(),
           Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-          Matchers.anyString(), Matchers.anyString())).thenReturn(false);
+          Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(false);
 
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SETTLEMRNT_ACTION)
           .sessionAttr("transactionReqObject", transactionsListRequest).param(Constants.PAGE_NUMBER, "1")
@@ -482,7 +482,7 @@ public class TransactionsEFTControllerTest {
     try {
       Mockito.when(settlementService.updateSettlementStatus(Matchers.anyString(),
           Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-          Matchers.anyString(), Matchers.anyString())).thenThrow(ChatakAdminException.class);
+          Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenThrow(ChatakAdminException.class);
 
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SETTLEMRNT_ACTION)
           .sessionAttr("transactionReqObject", transactionsListRequest).param(Constants.PAGE_NUMBER, "1")
@@ -623,7 +623,7 @@ public class TransactionsEFTControllerTest {
     try {
       Mockito.when(settlementService.updateSettlementStatus(Matchers.anyString(),
           Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-          Matchers.anyString(), Matchers.anyString())).thenReturn(true);
+          Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(true);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DASH_BOARD_SETTLEMRNT_ACTION)
           .sessionAttr("transactionReqObject", transactionsListRequest));
     } catch (Exception e) {
@@ -638,7 +638,7 @@ public class TransactionsEFTControllerTest {
     try {
       Mockito.when(settlementService.updateSettlementStatus(Matchers.anyString(),
           Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-          Matchers.anyString(), Matchers.anyString())).thenReturn(false);
+          Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(false);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DASH_BOARD_SETTLEMRNT_ACTION)
           .sessionAttr("transactionReqObject", transactionsListRequest));
     } catch (Exception e) {
@@ -652,7 +652,7 @@ public class TransactionsEFTControllerTest {
     try {
       Mockito.when(settlementService.updateSettlementStatus(Matchers.anyString(),
           Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-          Matchers.anyString(), Matchers.anyString())).thenThrow(ChatakAdminException.class);
+          Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenThrow(ChatakAdminException.class);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DASH_BOARD_SETTLEMRNT_ACTION)
           .sessionAttr("transactionReqObject", transactionsListRequest));
     } catch (Exception e) {
@@ -667,7 +667,7 @@ public class TransactionsEFTControllerTest {
     try {
       Mockito.when(settlementService.updateSettlementStatus(Matchers.anyString(),
           Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
-          Matchers.anyString(), Matchers.anyString())).thenThrow(nullPointerException);
+          Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DASH_BOARD_SETTLEMRNT_ACTION)
           .sessionAttr("transactionReqObject", transactionsListRequest));
     } catch (Exception e) {

@@ -6,6 +6,7 @@ package com.chatak.pay.processor.impl;
 import java.sql.Timestamp;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,8 @@ import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 public class TokenizationServiceImpl implements TokenizationService {
 
   private static Logger logger = Logger.getLogger(CardPaymentProcessorImpl.class);
+  
+  private static ObjectMapper mapper=new ObjectMapper();
 
   @Autowired
   TokenDao tokenDao;
@@ -70,9 +73,10 @@ public class TokenizationServiceImpl implements TokenizationService {
     request.setDeviceInfoData(Properties.getProperty("chatak-pay.deviceInfoData"));
     TokenizeResponse response = null;
     try {
-      response = (TokenizeResponse) JsonUtil.postRequest(TokenizeResponse.class,
+      String output = (String) JsonUtil.postRequest(String.class,
                                                          request,
                                                          Properties.getProperty("chatak-pay.serviceEndPointTokenize"));
+      response=mapper.readValue(output, TokenizeResponse.class);
 
       if(null != response) {
         String encryptedToken = EncryptionUtil.encrypt(response.getPaymentToken(),
@@ -119,9 +123,10 @@ public class TokenizationServiceImpl implements TokenizationService {
       request.setVersionNum(Properties.getProperty("chatak-pay.versionNum"));
       DETokenizeResponse tokenResponse = null;
       try {
-        tokenResponse = (DETokenizeResponse) JsonUtil.postRequest(DETokenizeResponse.class,
+        String output = (String) JsonUtil.postRequest(String.class,
                                                                   request,
                                                                   Properties.getProperty("chatak-pay.serviceEndPointDeTokenize"));
+        tokenResponse= mapper.readValue(output, DETokenizeResponse.class);
 
         if(null != tokenResponse) {
           String expDate = tokenResponse.getPanExpDate().replace("/", "");

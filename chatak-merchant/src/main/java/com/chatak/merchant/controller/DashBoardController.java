@@ -86,7 +86,7 @@ public class DashBoardController implements URLMappingConstants {
   @PostConstruct
   private void loadConfiguration() {
     List<PGParams> pgParams = paramsDao.getAllPGParams();
-    ProcessorConfig.setProcessorConfig(pgParams);
+    ProcessorConfig.setProcessorConfiguration(pgParams);
   }
 
   private static Logger logger = Logger.getLogger(DashBoardController.class);
@@ -135,7 +135,7 @@ public class DashBoardController implements URLMappingConstants {
 
         List<String> txnCodeList = new ArrayList<>(Constants.ELEVEN);
         txnCodeList.add(AccountTransactionCode.CC_FEE_CREDIT);
-        txnCodeList.add(AccountTransactionCode.CC_FEE_DEBIT); 
+        txnCodeList.add(AccountTransactionCode.CC_FEE_DEBIT);
         txnCodeList.add(AccountTransactionCode.CC_AMOUNT_CREDIT);
         txnCodeList.add(AccountTransactionCode.CC_AMOUNT_DEBIT);
         txnCodeList.add(AccountTransactionCode.FT_BANK);
@@ -581,9 +581,7 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
     List<Object[]> fileData = new ArrayList<Object[]>();
 
     for (Transaction transaction : transactionList) {
-      if (!"".equals(transaction.getTimeZoneOffset()) && null != transaction.getTimeZoneOffset()) {
-        transaction.setTimeZoneOffset("(" + transaction.getTimeZoneOffset() + ")");
-      }
+      getTransactionTimeZone(transaction);
       Object[] rowData = {
           transaction.getTransactionDate() != null ? transaction.getTransactionDate() : "",
               transaction.getDeviceLocalTxnTime()+transaction.getTimeZoneOffset(),
@@ -608,6 +606,15 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
 
     return fileData;
   }
+
+	/**
+	 * @param transaction
+	 */
+	private static void getTransactionTimeZone(Transaction transaction) {
+		if (!"".equals(transaction.getTimeZoneOffset()) && null != transaction.getTimeZoneOffset()) {
+			transaction.setTimeZoneOffset("(" + transaction.getTimeZoneOffset() + ")");
+		}
+	}
 
   @RequestMapping(value = DOWNLOAD_SPECIFIC_EFT_TRANSFERS_REPORT, method = RequestMethod.POST)
   public ModelAndView downloadSpecificEFTTransferReport(HttpSession session, Map model,

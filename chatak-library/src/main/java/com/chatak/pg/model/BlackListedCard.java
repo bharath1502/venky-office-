@@ -1,5 +1,7 @@
 package com.chatak.pg.model;
 
+import java.math.BigInteger;
+
 import com.chatak.pg.bean.SearchRequest;
 
 public class BlackListedCard extends SearchRequest{
@@ -11,20 +13,20 @@ public class BlackListedCard extends SearchRequest{
 
   private Long id;
   
-  private Long cardNumber;
+  private BigInteger cardNumber;
   
   private Integer status;
   
   /**
    * @return the cardNumber
    */
-  public Long getCardNumber() {
+  public BigInteger getCardNumber() {
     return cardNumber;
   }
   /**
    * @param cardNumber the cardNumber to set
    */
-  public void setCardNumber(Long cardNumber) {
+  public void setCardNumber(BigInteger cardNumber) {
     this.cardNumber = cardNumber;
   }
   /**

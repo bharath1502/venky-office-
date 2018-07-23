@@ -12,22 +12,28 @@ import com.chatak.pg.acq.dao.AccountDao;
 import com.chatak.pg.acq.dao.AccountTransactionsDao;
 import com.chatak.pg.acq.dao.CurrencyConfigDao;
 import com.chatak.pg.acq.dao.FeeProgramDao;
+import com.chatak.pg.acq.dao.IsoServiceDao;
 import com.chatak.pg.acq.dao.MerchantDao;
+import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.TransactionDao;
+import com.chatak.pg.acq.dao.model.IsoAccount;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAccountTransactions;
 import com.chatak.pg.acq.dao.model.PGAcquirerFeeValue;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
+import com.chatak.pg.acq.dao.model.PGFeeProgram;
 import com.chatak.pg.acq.dao.model.PGTransaction;
+import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
+import com.chatak.pg.bean.Request;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
+import com.chatak.pg.enums.AccountType;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.util.CommonUtil;
-import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.EncryptionUtil;
+import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
@@ -63,16 +69,22 @@ public abstract class AccountTransactionService {
   
   @Autowired
   private TransactionRepository transactionRepository;
+  
+  @Autowired
+  private ProgramManagerDao programManagerDao;
+  
+  @Autowired
+  private IsoServiceDao isoServiceDao;
 
   protected Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
   protected static Logger logger = Logger.getLogger(AccountTransactionService.class);
 
-  protected void logAccountTransaction(PGTransaction pgTransaction) {
+  protected void logAccountTransaction(PGTransaction pgTransaction, Request request) {
     logger.info("Entering:: AccountTransactionService:: logAccountTransaction method  with TxnType : " + pgTransaction.getTransactionType());
     switch(pgTransaction.getTransactionType()) {
       case PGConstants.TXN_TYPE_SALE:
-        logSaleToAccountTransaction(pgTransaction);
+        logSaleToAccountTransaction(pgTransaction, request);
         break;
       case PGConstants.TXN_TYPE_VOID:
         logVoidToAccountTransaction(pgTransaction);
@@ -87,11 +99,12 @@ public abstract class AccountTransactionService {
     }
   }
 
-  private void logSaleToAccountTransaction(PGTransaction pgTransaction) {
+  private void logSaleToAccountTransaction(PGTransaction pgTransaction,  Request request) {
     logger.info("Entering:: AccountTransactionService:: logSaleToAccountTransaction method ");
     String accountTxnId = accountTransactionsDao.generateAccountTransactionId();
     PGAccount account = accountDao.getPgAccount(pgTransaction.getMerchantId());
-    List<Object> objectResult = getProcessingFee(PGUtils.getCCType(EncryptionUtil.decrypt(pgTransaction.getPan())),
+    // Required for future implementation
+    /*List<Object> objectResult = getProcessingFee(PGUtils.getCCType(),
                                                  pgTransaction.getMerchantId(),
                                                  pgTransaction.getTxnTotalAmount());
     Long chatakFeeAmountTotal = (Long) objectResult.get(1);
@@ -104,7 +117,7 @@ public abstract class AccountTransactionService {
     }
     else {
       chatakFeeAmountTotal = totalFeeAmount;
-    }
+    }*/
 
     String descriptionTemplate = Properties.getProperty("chatak-pay.account.sale.description.template");
     descriptionTemplate = MessageFormat.format(descriptionTemplate,
@@ -119,7 +132,7 @@ public abstract class AccountTransactionService {
     pgAccountTransactions.setTransactionType(pgTransaction.getTransactionType());
     pgAccountTransactions.setAccountTransactionId(accountTxnId);
     pgAccountTransactions.setTransactionCode(AccountTransactionCode.CC_AMOUNT_CREDIT);
-    pgAccountTransactions.setStatus(PGConstants.PG_SETTLEMENT_PROCESSING);
+    pgAccountTransactions.setStatus(PGConstants.PG_SETTLEMENT_PENDING);
     pgAccountTransactions.setCredit(pgTransaction.getTxnTotalAmount());
     pgAccountTransactions.setMerchantCode(pgTransaction.getMerchantId());
     pgAccountTransactions.setCreatedDate(timestamp);
@@ -129,28 +142,68 @@ public abstract class AccountTransactionService {
     pgAccountTransactions.setTxnCurrencyCode(pgTransaction.getTxnCurrencyCode());
     pgAccountTransactions.setTimeZoneOffset(pgTransaction.getTimeZoneOffset());
     pgAccountTransactions.setTimeZoneRegion(pgTransaction.getTimeZoneRegion());
-    pgAccountTransactions.setDeviceLocalTxnTime(DateUtil.convertTimeZone(pgTransaction.getTimeZoneOffset(), timestamp.toString()));
+    pgAccountTransactions.setDeviceLocalTxnTime(pgTransaction.getDeviceLocalTxnTime());
+    pgAccountTransactions.setEntityType(PGConstants.MERCHANT);
+    pgAccountTransactions.setEntityId(request.getMerchantId());
     // Step-1 : Initially logging total amount into account transactions
     pgAccountTransactions = accountTransactionsDao.createOrUpdate(pgAccountTransactions);
 
     // Step-2 : Debting total fee amount from Step-1
-    descriptionTemplate = Properties.getProperty("chatak-pay.account.fee.description.template");
-    descriptionTemplate = MessageFormat.format(descriptionTemplate,
-                                               StringUtils.amountToString(chatakFeeAmountTotal),
-                                               StringUtils.amountToString(merchantFeeAmount));
-    logFeeAmount(pgAccountTransactions, totalFeeAmount, AccountTransactionCode.CC_FEE_DEBIT, descriptionTemplate);
+    // Commenting the below fee credit since it is being charged to PM and ISO as per the acquiring hierarchy
+//    descriptionTemplate = Properties.getProperty("chatak-pay.account.fee.description.template");
+//    descriptionTemplate = MessageFormat.format(descriptionTemplate,
+//                                               StringUtils.amountToString(chatakFeeAmountTotal),
+//                                               StringUtils.amountToString(merchantFeeAmount));
+//    
+//    logFeeAmount(pgAccountTransactions, totalFeeAmount, AccountTransactionCode.CC_FEE_DEBIT, descriptionTemplate);
+    
     // Step-3 : Crediting Merchant Fee
-    descriptionTemplate = "Merchant Fee: " + StringUtils.amountToString(merchantFeeAmount);
-    logFeeAmount(pgAccountTransactions,
-                 merchantFeeAmount,
-                 AccountTransactionCode.CC_MERCHANT_FEE_CREDIT,
-                 descriptionTemplate);
-    // Step-4 : Crediting Rapid Fee
-    descriptionTemplate = "Processing Fee: " + StringUtils.amountToString(chatakFeeAmountTotal);
-    logFeeAmount(pgAccountTransactions,
-                 totalFeeAmount,
-                 AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT,  //ReBrand
-                 descriptionTemplate);
+    // Commenting the below since this will be required for different merchant fees like settlement fee, chargeback fee etc,
+    // This to be taken in phase 2
+//    descriptionTemplate = "Merchant Fee: " + StringUtils.amountToString(merchantFeeAmount);
+//    logFeeAmount(pgAccountTransactions,
+//                 merchantFeeAmount,
+//                 AccountTransactionCode.CC_MERCHANT_FEE_CREDIT,
+//                 descriptionTemplate);
+    
+    // Step-4 : Crediting Chatak system Fee
+    // Commenting the below fee credit since it is being charged to PM and ISO as per the acquiring hierarchy
+//    descriptionTemplate = "Processing Fee: " + StringUtils.amountToString(chatakFeeAmountTotal);
+//    logFeeAmount(pgAccountTransactions,
+//                 totalFeeAmount,
+//                 AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT,
+//                 descriptionTemplate);
+
+    List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(pgTransaction.getCpId());
+    Double pmShare = feeProgram.get(0).getPmShare();
+    Double isoShare = feeProgram.get(0).getIsoShare();
+    Long pmFee = PGUtils.calculateAmountByPercentage((pgTransaction.getFeeAmount() / Double.parseDouble("100")), pmShare);
+    Long isoFee = PGUtils.calculateAmountByPercentage((pgTransaction.getFeeAmount() / Double.parseDouble("100")), isoShare);
+    if(request.getPmId() != null){
+      ProgramManagerAccount programManagerAccount = programManagerDao.findByProgramManagerIdAndAccountType(request.getPmId(), Constants.REVENUE_ACCOUNT);
+      // Crediting PM fee
+      descriptionTemplate = "PM Fee: " + StringUtils.amountToString(pmFee);
+      pgAccountTransactions.setAccountNumber(String.valueOf(programManagerAccount.getAccountNumber()));
+      pgAccountTransactions.setEntityType(Constants.PM_USER_TYPE);
+      pgAccountTransactions.setEntityId(request.getPmId());
+      logFeeAmount(pgAccountTransactions,
+          pmFee,
+          AccountTransactionCode.CC_PM_FEE_CREDIT,
+          descriptionTemplate);  
+    }
+    if(request.getIsoId() != null){
+    	List<IsoAccount> isoAccount = isoServiceDao.findByIsoIdAndAccountType(request.getIsoId(), AccountType.REVENUE_ACCOUNT.name());
+      // Crediting ISO fee
+      descriptionTemplate = "ISO Fee: " + StringUtils.amountToString(isoFee);
+      pgAccountTransactions.setAccountNumber(String.valueOf(isoAccount.get(0).getAccountNumber()));
+      pgAccountTransactions.setEntityType(Constants.ISO_USER_TYPE);
+      pgAccountTransactions.setEntityId(request.getIsoId());
+      logFeeAmount(pgAccountTransactions,
+          isoFee,
+          AccountTransactionCode.CC_ISO_FEE_CREDIT,
+          descriptionTemplate);      
+    }
+    
     logger.info("Exiting:: AccountTransactionService:: logSaleToAccountTransaction method ");
   }
 
@@ -194,10 +247,10 @@ public abstract class AccountTransactionService {
           descriptionTemplate = pgAccTxn.getDescription();
           voidTxn.setTransactionCode(AccountTransactionCode.CC_MERCHANT_FEE_DEBIT);
           break;
-        case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:  //ReBrand
+        case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
           voidTxn.setDebit(pgAccTxn.getCredit());
           descriptionTemplate = pgAccTxn.getDescription();
-          voidTxn.setTransactionCode(AccountTransactionCode.CC_ACQUIRER_FEE_DEBIT);  //ReBRand
+          voidTxn.setTransactionCode(AccountTransactionCode.CC_ACQUIRER_FEE_DEBIT);
           break;
         default:
       }
@@ -267,11 +320,11 @@ public abstract class AccountTransactionService {
             descriptionTemplate = validateForMerchantFeeCredit(refundTxn, account, pgAccTxn);
           }
           break;
-        case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:  //ReBrand
+        case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
           if("".equals(refundType.trim())){
-          account = validationForAcquirerFeeCredit(refundTxn, pgAccTxn);  //ReBrand
+          account = validationForAcquirerFeeCredit(refundTxn, pgAccTxn);
           descriptionTemplate = pgAccTxn.getDescription();
-          refundTxn.setTransactionCode(AccountTransactionCode.CC_ACQUIRER_FEE_DEBIT); }  //ReBrand
+          refundTxn.setTransactionCode(AccountTransactionCode.CC_ACQUIRER_FEE_DEBIT); }
           break;
         default:
       }
@@ -343,7 +396,7 @@ public abstract class AccountTransactionService {
     return refundType;
   }
 
-  private PGAccount validationForAcquirerFeeCredit(PGAccountTransactions refundTxn,  //ReBrand
+  private PGAccount validationForAcquirerFeeCredit(PGAccountTransactions refundTxn,
       PGAccountTransactions pgAccTxn) {
     PGAccount account;
     
@@ -388,6 +441,8 @@ public abstract class AccountTransactionService {
     pgAccountTransactions.setTimeZoneOffset(accountTransaction.getTimeZoneOffset());
     pgAccountTransactions.setTimeZoneRegion(accountTransaction.getTimeZoneRegion());
     pgAccountTransactions.setDeviceLocalTxnTime(accountTransaction.getDeviceLocalTxnTime());
+    pgAccountTransactions.setEntityType(accountTransaction.getEntityType());
+    pgAccountTransactions.setEntityId(accountTransaction.getEntityId());
     logger.info("Exiting:: AccountTransactionService:: populateAccountTransactions method ");
     return pgAccountTransactions;
   }
@@ -413,12 +468,18 @@ public abstract class AccountTransactionService {
         String parentMerchantCode = merchantDao.getParentMerchantCode(pgAccountTransactions.getMerchantCode());
         validateParentMerchantCodeAndPGAccount(pgAccountTransactions, account, feeTransactionLog, parentMerchantCode);
         break;
-      case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:  //ReBrand
+      case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
         feeTransactionLog.setCredit(feeAmount);
         feeTransactionLog.setRefundableAmount(feeAmount);
         //account = accountDao.getPgAccount("1");// 1 For Rapid account
         
-        validateForAcquirerFeeCredit(pgAccountTransactions, feeTransactionLog);  //ReBrand
+        validateForAcquirerFeeCredit(pgAccountTransactions, feeTransactionLog);
+        break;
+      case AccountTransactionCode.CC_PM_FEE_CREDIT:
+        setFee(feeTransactionLog, feeAmount,pgAccountTransactions);
+        break;
+      case AccountTransactionCode.CC_ISO_FEE_CREDIT:
+        setFee(feeTransactionLog, feeAmount,pgAccountTransactions);
         break;
       default:
         break;
@@ -427,7 +488,15 @@ public abstract class AccountTransactionService {
     logger.info("Exiting:: AccountTransactionService:: logFeeAmount method ");
   }
 
-  private void validateForAcquirerFeeCredit(PGAccountTransactions pgAccountTransactions,  //ReBrand
+  private void setFee(PGAccountTransactions feeTransactionLog, Long feeAmount,PGAccountTransactions pgAccountTransactions) {
+    feeTransactionLog.setCredit(feeAmount);
+    feeTransactionLog.setRefundableAmount(feeAmount);
+    feeTransactionLog.setAccountNumber(pgAccountTransactions.getAccountNumber());
+    feeTransactionLog.setEntityType(pgAccountTransactions.getEntityType());
+    feeTransactionLog.setEntityId(pgAccountTransactions.getEntityId());
+  }
+  
+  private void validateForAcquirerFeeCredit(PGAccountTransactions pgAccountTransactions,
       PGAccountTransactions feeTransactionLog) {
     PGAccount account;
     logger.info("AccountTransactionService:: logFeeAmount method fetching transactions by PG TRANS ID: " + pgAccountTransactions.getPgTransactionId());
@@ -455,13 +524,13 @@ public abstract class AccountTransactionService {
     }
   }
 
-  private List<Object> getProcessingFee(String cardType, String merchantCode, Long txnTotalAmount) {
+  //Required for future implementation
+  /*private List<Object> getProcessingFee(String cardType, String merchantCode, Long txnTotalAmount) {
     logger.info("Entering:: AccountTransactionService:: getProcessingFee method ");
     List<Object> results = new ArrayList<Object>(Integer.parseInt("2"));
     List<ProcessingFee> calculatedProcessingFeeList = new ArrayList<ProcessingFee>(0);
     Long chatakFeeAmountTotal = 0l;
-    List<PGAcquirerFeeValue> acquirerFeeValueList = feeProgramDao.getAcquirerFeeValueByMerchantIdAndCardType(merchantCode,
-                                                                                                             cardType);
+    List<PGAcquirerFeeValue> acquirerFeeValueList = feeProgramDao.getAcquirerFeeValueByMerchantIdAndCardType(merchantCode,cardType);
     if(CommonUtil.isListNotNullAndEmpty(acquirerFeeValueList)) {
 
       logger.info(" AccountTransactionService:: getProcessingFee method :: Applying this merchant fee code ");
@@ -471,7 +540,7 @@ public abstract class AccountTransactionService {
     else {
       String parentMerchantCode = merchantDao.getParentMerchantCode(merchantCode);
       if(null != parentMerchantCode) {
-        acquirerFeeValueList = feeProgramDao.getAcquirerFeeValueByMerchantIdAndCardType(parentMerchantCode, cardType);
+        acquirerFeeValueList = feeProgramDao.getAcquirerFeeValueByMerchantIdAndCardType(parentMerchantCode,cardType);
         if(CommonUtil.isListNotNullAndEmpty(acquirerFeeValueList)) {
           logger.info("Exiting:: AccountTransactionService:: getProcessingFee method :: Applying parentMerchantCode fee ");
           fetchPGAcquirerFeeValue(txnTotalAmount, calculatedProcessingFeeList,
@@ -509,7 +578,7 @@ private void fetchPGAcquirerFeeValue(Long txnTotalAmount, List<ProcessingFee> ca
     processingFee.setChatakProcessingFee(calculatedProcessingFee);
     logger.info("Exiting:: AccountTransactionService:: getProcessingFeeItem method ");
     return processingFee;
-  }
+  }*/
   protected void logPartialRefundToAccountTransaction(PGTransaction pgTransaction) {
 	    logger.info("Entering:: AccountTransactionService:: logPartialRefundToAccountTransaction method ");
 	    List<PGAccountTransactions> saleTxnList = accountTransactionsDao.getAccountTransactionsOnTransactionId(pgTransaction.getRefTransactionId());
@@ -560,13 +629,13 @@ private void fetchPGAcquirerFeeValue(Long txnTotalAmount, List<ProcessingFee> ca
 	            descriptionTemplate = "Merchant Fee: " + StringUtils.amountToString(refundTxn.getDebit());
 	            refundTxn.setTransactionCode(AccountTransactionCode.CC_MERCHANT_FEE_DEBIT); }
 	          break;
-	        case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:  //ReBrand
+	        case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
 	          if(null!=pgAccTxn.getRefundableAmount()){
 	        	  //account=accountDao.getPgAccount("1");//1 FOr Rapid account
 	        	  
 	        	account = fetchPGTransactionList(pgAccTxn);
 	        	validatePGAccountTransactionsAndRefundAmount(refundTxn, refundAmount, account, pgAccTxn);
-	            descriptionTemplate = validationForAcquirerFeeDebit(refundTxn); }  //ReBrand
+	            descriptionTemplate = validationForAcquirerFeeDebit(refundTxn); }
 	          break;
 	        default:
 	      }
@@ -619,7 +688,7 @@ private void fetchPGAcquirerFeeValue(Long txnTotalAmount, List<ProcessingFee> ca
     return account;
   }
 
-  private String validationForAcquirerFeeDebit(PGAccountTransactions refundTxn) {  //ReBrand
+  private String validationForAcquirerFeeDebit(PGAccountTransactions refundTxn) {
     String descriptionTemplate;
     descriptionTemplate = "Processing Fee: " + StringUtils.amountToString(refundTxn.getDebit());
     refundTxn.setTransactionCode(AccountTransactionCode.CC_ACQUIRER_FEE_DEBIT);
@@ -681,18 +750,18 @@ private void fetchPGAcquirerFeeValue(Long txnTotalAmount, List<ProcessingFee> ca
     return account;
   }
 
-private void validateParentMerchantCodeAndAccount(PGAccountTransactions refundTxn, PGAccount account,
-		PGAccountTransactions pgAccTxn, String parentMerchantCode) {
-	if(null != parentMerchantCode) {
-	    account=accountDao.getPgAccount(parentMerchantCode);
-	    refundTxn.setMerchantCode(parentMerchantCode);
-	  }
-	if(null==account){
-	  account=accountDao.getPgAccount(pgAccTxn.getMerchantCode());
+	private void validateParentMerchantCodeAndAccount(PGAccountTransactions refundTxn, PGAccount account,
+			PGAccountTransactions pgAccTxn, String parentMerchantCode) {
+		if (null != parentMerchantCode) {
+			account = accountDao.getPgAccount(parentMerchantCode);
+			refundTxn.setMerchantCode(parentMerchantCode);
+		}
+		if (null == account) {
+			account = accountDao.getPgAccount(pgAccTxn.getMerchantCode());
+		}
+		account.setAvailableBalance(account.getAvailableBalance() - pgAccTxn.getCredit());
+		account.setCurrentBalance(account.getCurrentBalance() - pgAccTxn.getCredit());
+		accountDao.savePGAccount(account);
+		refundTxn.setCurrentBalance(account.getCurrentBalance());
 	}
-	account.setAvailableBalance(account.getAvailableBalance() - pgAccTxn.getCredit());
-	account.setCurrentBalance(account.getCurrentBalance() - pgAccTxn.getCredit());
-	accountDao.savePGAccount(account);
-	refundTxn.setCurrentBalance(account.getCurrentBalance());
-}
 }

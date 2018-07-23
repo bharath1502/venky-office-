@@ -29,6 +29,7 @@ import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.FeeCodeResponseDetails;
 import com.chatak.acquirer.admin.model.FeeProgramResponseDetails;
+import com.chatak.acquirer.admin.service.CardProgramServices;
 import com.chatak.acquirer.admin.service.FeeCodeService;
 import com.chatak.acquirer.admin.service.FeeProgramService;
 import com.chatak.acquirer.admin.util.ExportUtil;
@@ -41,6 +42,7 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.FeeCodeDTO;
 import com.chatak.pg.model.FeeProgramDTO;
+import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 
@@ -58,6 +60,9 @@ public class FeeProgramController implements URLMappingConstants {
 
   @Autowired
   FeeProgramService feeProgramService;
+  
+  @Autowired
+  CardProgramServices cardProgramServices;
 
   @RequestMapping(value = SHOW_FEE_PROGRAM_SEARCH, method = RequestMethod.GET)
   public ModelAndView showFeeProgramSearch(HttpServletRequest request, HttpServletResponse response,
@@ -112,12 +117,14 @@ public class FeeProgramController implements URLMappingConstants {
       FeeProgramDTO feeProgramDTO = new FeeProgramDTO();
       model.put("feeProgramDTO", feeProgramDTO);
       FeeCodeResponseDetails codeResponse = feeCodeService.getAllFeeCodeList();
+      CardProgramResponse cardProgramResponse = cardProgramServices.getCardProgramListForFeeProgram();
       session.setAttribute(Constants.LOGIN_RESPONSE_DATA, loginResponse);
       model.put("feeCodeList", codeResponse.getFeeCodeList());
       List<FeeCodeDTO> codeResponseName = codeResponse.getFeeCodeList();
       if (StringUtil.isListNotNullNEmpty(codeResponseName)) {
         modelAndView.addObject("feeCodeList", codeResponseName);
       }
+      modelAndView.addObject("cardProgramList", cardProgramResponse.getCardProgramList());
     } catch (Exception e) {
       logger.error("ERROR:: FeeProgramController:: showFeeProgramCreate method", e);
       modelAndView.addObject(Constants.ERROR,
@@ -191,10 +198,6 @@ public class FeeProgramController implements URLMappingConstants {
     try {
       LoginResponse loginResponse =
           (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
-      FeeProgramResponseDetails feeProgramResponse =
-          feeProgramService.getByFeeProgramId(feeProgramDTO);
-      feeProgramDTO.setCreatedBy(feeProgramResponse.getFeeCodeList().get(0).getCreatedBy());
-      feeProgramDTO.setCreatedDate(feeProgramResponse.getFeeCodeList().get(0).getCreatedDate());
       feeProgramDTO.setUpdatedBy(loginResponse.getUserId().toString());
       feeProgramDTO.setStatus(Constants.ACTIVE);
       Response responseDetails = feeProgramService.updateFeeProgram(feeProgramDTO);
@@ -319,6 +322,9 @@ public class FeeProgramController implements URLMappingConstants {
       feeProgramDTO.setProcessor(feeProgramResponse.getFeeCodeList().get(0).getProcessor());
       feeProgramDTO.setFeeValueList(feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());
       feeProgramDTO.setOtherFee(feeProgramResponse.getFeeCodeList().get(0).getOtherFee());
+      feeProgramDTO.setPmShare(feeProgramResponse.getFeeCodeList().get(0).getPmShare());
+      feeProgramDTO.setIsoShare(feeProgramResponse.getFeeCodeList().get(0).getIsoShare());
+      feeProgramDTO.setCardProgramName(feeProgramResponse.getFeeCodeList().get(0).getCardProgramName());
       model.put("feeValuesList", feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());
       session.setAttribute("feeValuesList",
           feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());

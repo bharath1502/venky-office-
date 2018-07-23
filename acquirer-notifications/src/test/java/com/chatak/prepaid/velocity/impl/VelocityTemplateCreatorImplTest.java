@@ -18,8 +18,7 @@ public class VelocityTemplateCreatorImplTest {
 	@Test(expected=ResourceNotFoundException.class)
 	public void testCreateEmailTemplate() {
 		Map<String, String> requestMap = new HashMap<>();
-		String string = new String();
-		requestMap.put(string, "abc");
+		requestMap.put("key", "abc");
 		velocityTemplateCreatorImpl.createEmailTemplate(requestMap, "templatePath");
 	}
 }

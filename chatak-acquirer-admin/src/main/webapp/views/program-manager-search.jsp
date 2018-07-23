@@ -7,6 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -23,7 +24,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -40,8 +41,8 @@
 						<span class="breadcrumb-text"><spring:message
 								code="manage.label.manage" /></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
-							class="breadcrumb-text"><a href="showProgramManager"><spring:message
-									code="admin.pm.message" /></a></span> <span
+							class="breadcrumb-text"><spring:message
+									code="admin.pm.message" /></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
 							class="breadcrumb-text"><spring:message
 								code="common.label.search" /></span>
@@ -50,12 +51,14 @@
 					<form:form action="showEditProgramManager" name="editProgramManagerForm"
 						method="post">
 						<input type="hidden" id="programManagerId" name="programManagerId" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="programManagerPaginationAction" name="paginationForm"
 						method="post">
 						<input type="hidden" id="pageNumberId"
 							name="programManagerPageData" /> <input type="hidden"
 							id="totalRecordsId" name="totalRecords" />
+					     <input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 
 					<form:form action="downloadProgramManagerReport" name="downloadReport"
@@ -65,16 +68,17 @@
 							id="downloadTypeId" name="downloadType" /> <input type="hidden"
 							id="totalRecords" name="totalRecords" /> <input type="hidden"
 							id="downloadAllRecords" name="downloadAllRecords" />
+					    <input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<!-- Tab Buttons Start -->
 					<div class="marginL40">
 						<c:if
-							test="${fn:contains(existingFeatures,programmanagerView)||fn:contains(existingFeatures,programmanagerEdit)||fn:contains(existingFeatures,programmanagerSuspend)||fn:contains(existingFeatures,programmanagerActivate)}">
+							test="${fn:contains(existingFeatures,programmanagerView)||fn:contains(existingFeatures,programManagerEdit)||fn:contains(existingFeatures,programmanagerSuspend)||fn:contains(existingFeatures,programmanagerActivate)}">
 							<div class="tab-header-container active-background">
 								<a href="#"><spring:message code="common.label.search" /> </a>
 							</div>
 						</c:if>
-						<c:if test="${fn:contains(existingFeatures,programmanagerCreate)}">
+						<c:if test="${fn:contains(existingFeatures,programManagerCreate)}">
 							<div class="tab-header-container">
 								<a href="showCreateProgramManager"><spring:message
 										code="common.label.create" /></a>
@@ -97,6 +101,7 @@
 								</c:set>
 								<form:form action="searchProgramManager"
 									modelAttribute="programManagerRequest" method="post">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -237,7 +242,7 @@
 														<c:when
 															test="${fn:containsIgnoreCase(programManagerDetails.status,'Active') }">
 															<c:if
-																test="${fn:contains(existingFeatures,programmanagerEdit)}">
+																test="${fn:contains(existingFeatures,programManagerEdit)}">
 																<a
 																	href="javascript:editProgramManager('${programManagerDetails.id}')"
 																	title=Edit><span class="glyphicon glyphicon-pencil"></span></a>
@@ -379,6 +384,7 @@
 			<input type="hidden" id="manageProgramManagerId"
 				name="manageProgramManagerId" /> <input type="hidden"
 				id="manageProgramManagerStatus" name="manageProgramManagerStatus" />
+		     <input type="hidden" name="CSRFToken" value="${tokenval}">
 			<!-- <input type="hidden" id="partnerName" name="partnerName" />   -->
 			<!--  <input type="hidden" id="totalRecordsId" name="totalRecords" /> -->
 			<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/></label>
@@ -406,11 +412,11 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	<script src="../js/sorting.js"></script>
+	
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/messages.js"></script>
 	<script src="../js/program-manager.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -446,6 +452,22 @@
 		$(".table-hide-btn").click(function() {
 			$(".search-results-table").slideUp();
 		});
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -104,7 +105,7 @@
 }
 </style>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -143,179 +144,110 @@
 					</div>
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
-					<form:form action="updateFeeProgram" modelAttribute="feeProgramDTO" method="post">
-						<form:hidden path="feeProgramId" />
-						<div class="col-sm-12">
-							<!-- Page Form Start -->
-							<div class="form-horizontal main-content-holder bck-color" style= "height:215px">
-								<div class="row">
-									<div class="field-element-row margin0 paddingLR15"></div>
-								</div>
-								<div class="col-xs-12">
-									<div class="descriptionMsg col-xs-12">
-										<span class="red-error">&nbsp;${error }</span> <span
-											class="green-error">&nbsp;${sucess }</span>
-									</div>
-								</div>
-								<!--Panel Action Button Start -->
-								<div class="col-sm-12 added-row">
-									<div class="form-group pan-btn">
-										<fieldset class="col-sm-6">
-											<label class="control-label col-sm-6"><spring:message code="fee-program-edit.label.feeprogramname" />
-												 <span class='required-field'>*</span>
-											</label>
-											<div class="col-sm-5">
-												<form:input path="feeProgramName" id="feeProgramName"
-													cssClass="form-control feeProgramName" readonly="true"/>
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="feeProgramNameEr" class="red-error">&nbsp;</span>
-														</div>
-											</div>
-										</fieldset>
-									</div>
-									<fieldset class="col-sm-12" style="margin-top: -13px;">
-										<label class="col-sm-2 head-border"><spring:message code="fee-program-edit.label.discountrate" /></label>
-									</fieldset>
-									<c:forEach var="rows" items="${feeProgramDTO.feeValueList}"
-										varStatus="status">
-										<fieldset class="col-sm-12 padding0 filter-content" style="margin-left: 12px;">
-											<fieldset class="col-sm-2" style="width:18.66%">
-												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fee-program-edit.label.cardtype" /><span class='required-field'>*</span></label>
-												<form:select path="feeValueList[${status.index}].cardType"
-													cssClass="form-control marginB5 cardType" id="feeValueList[${status.index}].cardType">
-													<form:option value=""><spring:message code="fee-program-edit.label.select" /></form:option>
-													<form:option value="IP" cssClass="ip"><spring:message code="fee-program-create.label" /></form:option>
-												</form:select>
-												<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="feeValueList[${status.index}].cardTypeEr" class="red-error">&nbsp;</span>
-														</div>
+					
+					<div class="main-content-holder">
+						<div class="row">
+							<div class="col-sm-12">
+								<!--Success and Failure Message Start-->
+								<span class="green-error" id="sucessDiv">${sucess}</span> <span
+									class="red-error" id="errorDiv">${error}</span>
 
-											</fieldset>
-											<fieldset class="col-sm-2 marginML-25">
-												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fee-program-edit.label.%value" /><span class='required-field'>*</span></label>
-												<form:input
-													path="feeValueList[${status.index}].feePercentage" maxlength="10"
-													cssClass="form-control feePercentage" id="feeValueList[${status.index}].feePercentage" onblur="this.value=this.value.trim();"/>
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="feeValueList[${status.index}].feePercentageEr" class="red-error">&nbsp;</span>
-														</div>
-											</fieldset>
-											<fieldset class="col-sm-2 marginML-25">
-												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fee-program-edit.label.flatfee" /><span class='required-field'>*</span></label>
-												<form:input path="feeValueList[${status.index}].flatFee" maxlength="10"
-													cssClass="form-control flatFee" id="feeValueList[${status.index}].flatFee" onblur="this.value=this.value.trim();"/>
-												<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="feeValueList[${status.index}].flatFeeEr" class="red-error">&nbsp;</span>
-														</div>
-											</fieldset>
-											<fieldset class="col-sm-2 marginML-25" style="width: 52%">
-												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fee-program-edit.label.credtto" /><span class='required-field'>*</span></label>
-												<div class="col-sm-12" >
-													<fieldset class="col-sm-6 padding0 dynamicradio">
-														<span class="radio-btn-align"><form:radiobutton
-																path="feeValueList[${status.index}].accountType"
-																value="SYS" id="feeValueList[${status.index}].accountTypeSYS" /></span><label class="radio-btn-input-align">
-															<spring:message code="fee-program-edit.label.systemrevenueaccount" />
-														</label>
-													</fieldset>
-													<fieldset class="col-sm-6 padding0 dynamicradio">
-														<span class="radio-btn-align"><form:radiobutton
-																path="feeValueList[${status.index}].accountType" id="feeValueList[${status.index}].accountTypeOTH"
-																value="OTH" /></span><label class="radio-btn-input-align"><spring:message code="fee-program-edit.label.specifiedaccount" />
-														</label>
-													</fieldset>
-												</div>
-												<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="feeValueList[${status.index}].accountTypeOTHEr" class="red-error">&nbsp;</span>
-														</div>
-											</fieldset>
-											<fieldset class="col-sm-1"
-												style="margin-left:-128px;width: 15%;">
-												<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label>
-												<form:input
-													path="feeValueList[${status.index}].accountNumber"
-													cssClass="form-control accountNumber" id="feeValueList[${status.index}].accountNumber" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="feeValueList[${status.index}].accountNumberEr" class="red-error accountNumberEr">&nbsp;</span>
-														</div>
-											</fieldset>
-											<fieldset class='col-sm-1 textCenter marginT30'
-												style='margin: -40px 0px 15px 758px'>
-												<span class='glyphicon glyphicon-trash delete-icon'
-													style='cursor: pointer ;margin-left: 55px;'></span>
-											</fieldset>
-										</fieldset>
-									</c:forEach>
-								</div>
-								<!--Panel Action Button End -->
+								<!--Success and Failure Message End-->
+								<!-- Page Form Start -->
+								<c:set var="title">
+									<spring:message code="admin.label.wildcard" />
+								</c:set>
+								<form:form action="updateFeeProgram" modelAttribute="feeProgramDTO" name="feeProgramDTO">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
+								 <input type="hidden" name="feeProgramId" value="${feeProgramDTO.feeProgramId}">
+									<div class="col-sm-12">
+										<div class="row">
+											<div class="field-element-row">
+												<fieldset class="col-md-3 col-sm-6">
+													<label><spring:message
+												code="fee-program-create.label.feeprogramname" /><span
+												class='required-field'>*</span></label>
+												<form:input path="feeProgramName" id="feeProgramName"
+												cssClass="form-control"
+												onblur="this.value=this.value.trim();clientValidation('feeProgramName', 'fee_Program_Name','feeProgramNameErr');doAjaxFeeprogramNameDuplicate()"/>
+													<div class="discriptionErrorMsg">
+														<span id="feeProgramNameErr" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+										<fieldset class="col-md-3 col-sm-6">
+													<label data-toggle='tooltip' data-placement='top'><spring:message code="admin.cardprogramname"/><span
+												class='required-field'>*</span></label>
+												<form:input path="cardProgramName" id="cardProgramId" readonly="true"
+												cssClass="form-control" onblur="clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')"/>
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+												data-placement="top" title="">
+												<span id="cardProgramIdErrDiv" class="red-error">&nbsp;</span>
+											</div>
+												</fieldset>
+												<fieldset class="col-md-3 col-sm-6">
+													<label data-toggle='tooltip' data-placement='top' title=''><spring:message
+													code="fee-program-create.label.%value" /><span
+												class='required-field'>*</span></label>
+												<form:input path="feeValueList[0].feePercentage" id="feePercentage"
+												onblur="this.value=this.value.trim();clientValidation('feePercentage', 'fee','feePercentageErr');validateFeePercentValue();"
+												cssClass="form-control" onkeypress="return amountValidate(this, event);"/>
+													<div class="discriptionErrorMsg">
+														<span id="feePercentageErr" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-md-3 col-sm-6">
+													<label data-toggle='tooltip' data-placement='top' title=''><spring:message
+													code="fee-program-create.label.flatfee" /><span
+												class='required-field'>*</span></label>
+												<form:input path="feeValueList[0].flatFee" id="flatFee"
+												onblur="this.value=this.value.trim();clientValidation('flatFee', 'fee','flatFeeErr')"
+												onkeypress="return amountValidate(this, event);"
+												cssClass="form-control"/>
+													<div class="discriptionErrorMsg">
+														<span id="flatFeeErr" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-md-3 col-sm-6">
+													<label data-toggle='tooltip' data-placement='top' title=''><spring:message code="admin.pm.fee.share"/><span
+												class='required-field'>*</span></label>
+												<form:input path="pmShare" id="pmShare" onkeypress="return amountValidate(this, event);"
+												maxlength="6"
+												onblur="this.value=this.value.trim();clientValidation('pmShare', 'fee','pmShareErr')"
+												cssClass="form-control"/>
+													<div class="discriptionErrorMsg">
+														<span id="pmShareErr" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-md-3 col-sm-6">
+													<label data-toggle='tooltip' data-placement='top' title=''><spring:message code="admin.iso.fee.share"/><span
+												class='required-field'>*</span></label>
+												<form:input path="isoShare" id="isoShare" onkeypress="return amountValidate(this, event);"
+												maxlength="6"
+												onblur="this.value=this.value.trim();clientValidation('isoShare', 'fee','isoShareErr')"
+												cssClass="form-control"/>
+													<div class="discriptionErrorMsg">
+														<span id="isoShareErr" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+											</div>
+										</div>
+										<!--Panel Action Button Start -->
+										<div class="col-sm-12 form-action-buttons">
+											<div class="col-sm-5"></div>
+											<div class="col-sm-7">
+												<input type="submit" class="form-control button pull-right"
+													value="<spring:message code="fee-program-edit.label.updatebutton" />" onclick="return validateFeeProgram()">
+												<input type="button" class="form-control button pull-right marginL10" value="<spring:message code="fee-program-edit.label.cancelbutton" />" onclick="openCancelConfirmationPopup()"/>
+											</div>
+										</div>
+
+										<!--Panel Action Button End -->
+									</div>
+								</form:form>
 								<!-- Page Form End -->
 							</div>
-							<div class="form-horizontal main-content-holder otherfees bck-color">
-								<fieldset class="col-sm-12">
-									<label class="col-sm-2 other-fee-label"><spring:message code="fee-program-edit.label.otherfee" /></label>
-								</fieldset>
-								<div class="form-group">
-									<label class="control-label col-sm-2"><spring:message code="fee-program-edit.label.setupfee" />
-									</label>
-									<div class="col-sm-3">
-										<form:input path="otherFee.setupFee" id="otherFee.setupFee" maxlength="10"
-											cssClass="form-control padding-left_25px setupFee" onblur="this.value=this.value.trim();"/>
-
-										<h3 class="dollar"><spring:message code="fee-program-edit.label.$" /></h3>
-										<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="otherFee.setupFeeEr" class="red-error">&nbsp;</span>
-														</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="control-label col-sm-2"><spring:message code="fee-program-edit.label.settlementfee" /></label>
-									<div class="col-sm-3">
-										<form:input path="otherFee.settlementFee" id="otherFee.settlementFee" maxlength="10"
-											cssClass="form-control padding-left_25px settlementFee" onblur="this.value=this.value.trim();"/>
-										<h3 class="dollar"><spring:message code="fee-program-edit.label.$" /></h3>
-										<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="otherFee.settlementFeeEr" class="red-error">&nbsp;</span>
-														</div>
-									</div>
-									<label class="control-label col-sm-2"><spring:message code="fee-program-edit.label.charge" /></label>
-									<div class="col-sm-3">
-										<form:select path="otherFee.chargeFrequency" id="otherFee.chargeFrequency"
-											cssClass="form-control chargeFrequency">
-											<form:option value="M"><spring:message code="fee-program-edit.label.monthly" /></form:option>
-											<form:option value="W"><spring:message code="fee-program-edit.label.weekly" /></form:option>
-											<form:option value="A"><spring:message code="fee-program-edit.label.annually" /></form:option>
-										</form:select>
-										<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="otherFee.chargeFrequencyEr" class="red-error">&nbsp;</span>
-														</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="control-label col-sm-2"><spring:message code="fee-program-edit.label.chargebackfee" /><span
-										class='required-field'>*</span>
-									</label>
-									<div class="col-sm-3">
-										<form:input path="otherFee.chargeBacKFee" id="otherFee.chargeBacKFee" maxlength="10"
-											cssClass="form-control padding-left_25px chargeBacKFee" onblur="this.value=this.value.trim();"/>
-										<h3 class="dollar"><spring:message code="fee-program-edit.label.$" /></h3>
-										<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="otherFee.chargeBacKFeeEr" class="red-error">&nbsp;</span>
-														</div>
-									</div>
-								</div>
-								<p>
-									<span class='required-field'>*</span><spring:message code="fee-program-edit.label.manuallytriggeredfee" />
-								</p>
-
-							</div>
-							<div class="col-sm-12 button-content">
-								<fieldset class="col-sm-7 pull-right">
-								<input type="submit" class="form-control button pull-right marginL10" value="<spring:message code="fee-program-edit.label.updatebutton" />" id="updateFeePgm" />
-								<input type="button" class="form-control button pull-right marginL10" value="<spring:message code="fee-program-edit.label.cancelbutton" />" onclick="openCancelConfirmationPopup()"/>
-								</fieldset>
-							</div>
 						</div>
-					</form:form>
+					</div>
 				</div>
 				<div id="my_popup1" class="popup-void-refund voidResult">
 					<span class="glyphicon glyphicon-remove closePopupMes"
@@ -354,148 +286,13 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/feeprogram.js"></script>
 	 <script src="../js/messages.js"></script>
+	 <script src="../js/validation.js"></script>
 	 <script src="../js/jquery.popupoverlay.js"></script>
 	 <script type="text/javascript" src="../js/browser-close.js"></script>
 	<script>
-		var row = 0;
-
 		$(document).ready(function() {
 			$( "#navListId3" ).addClass( "active-background" );
-			
-			/* $('.cardType').each(function() {
-				var selOptionClass = $(this).find('option:selected').attr('class');
-				$(this).addClass('active');
-				$('.cardType').each(function() {
-					if(!$(this).hasClass('active')) {
-						$('.cardType').find('.'+selOptionClass).hide();
-					}
-				});
-				$(this).removeClass('active');
-			}); */
-
-			$('.filter-content').eq(0).find('fieldset').last().remove();
-			
-			row = $('.added-row fieldset.filter-content').length;
-
-			$(".addRow").click(function() {
-				//if ($('.added-row fieldset.filter-content').length < 4) {
-					row++;
-					var newFilterRow = "<fieldset class='col-sm-12 padding0 filter-content' style='margin-left: 12px;'><fieldset class='col-sm-2' style='width:18.66%'> <label data-toggle='tooltip' data-placement='top' title=''><spring:message code='fee-program-create.label.cardtype' /><span class='required-field'>*</span></label><select class='form-control marginB5 cardType' name='feeValueList["+row+"].cardType' id='feeValueList["+row+"].cardType'><option value=''><spring:message code='fee-program-create.label.select' /></option><option value='IP' class='ip'><spring:message code='fee-program-create.label' /></option></select><div class='discriptionErorMsg'><span id='feeValueList["+row+"].cardTypeEr' class='red-error'>&nbsp;</span></div></fieldset><fieldset class='col-sm-2 marginML-25'><label><spring:message code='fee-program-create.label.%value' /><span class='required-field'>*</span></label><input type='text' value='0.00' maxlength='10' name='feeValueList["+row+"].feePercentage' class='form-control feePercentage' id='feeValueList["+row+"].feePercentage'><div class='discriptionErrorMsg'><span id='feeValueList["+row+"].feePercentageEr' class='red-error'>&nbsp;</span></div></fieldset><fieldset class='col-sm-2 marginML-25'><label><spring:message code='fee-program-create.label.flatfee' /><span class='required-field'>*</span></label><input type='text' value='0.00' maxlength='10' name='feeValueList["+row+"].flatFee' class='form-control flatFee' id='feeValueList["+row+"].flatFee'><div class='discriptionErrorMsg'><span id='feeValueList["+row+"].flatFeeEr' class='red-error'>&nbsp;</span></div></fieldset><fieldset class='col-sm-2 marginML-25' style='width:52%'> <label><spring:message code='fee-program-create.label.creditto' /><span class='required-field'>*</span></label><div class='col-sm-12' style=margin-left: -15px;margin-right: 2px;'><fieldset class='col-sm-6 padding0 dynamicradio'><span class='radio-btn-align'><input type='radio' value='SYS' name='feeValueList["+row+"].accountType' id='feeValueList["+row+"].accountTypeSYS'></span><label class='radio-btn-input-align'><spring:message code='fee-program-create.label.systemrevenueaccount' /></label></fieldset><fieldset class='col-sm-6 padding0 dynamicradio'><span class='radio-btn-align'><input type='radio' value='OTH' name='feeValueList["+row+"].accountType' id='feeValueList["+row+"].accountTypeOTH'></span><label class='radio-btn-input-align'><spring:message code='fee-program-create.label.specifiedaccount' /></label></fieldset><div class='discriptionErrorMsg' style='float: left;'><span id='feeValueList["+row+"].accountTypeOTHEr' class='red-error'>&nbsp;</span></div></div></fieldset><fieldset class='col-sm-1' style='margin-left:-128px;width: 15%;'><label>&nbsp;</label><input type='text' value='' name='feeValueList["+row+"].accountNumber' id='feeValueList["+row+"].accountNumber' class='form-control accountNumber' placeholder='<spring:message code='fee-program-create.label.specifiedaccount' />'><div class='discriptionErrorMsg'><span id='feeValueList["+row+"].accountNumberEr' class='red-error accountNumberEr'>&nbsp;</span></div></fieldset><fieldset class='col-sm-1 textCenter marginT30' style='margin:-40px 0px 15px 758px'><span class='glyphicon glyphicon-trash delete-icon' style='cursor:pointer;margin-left: 55px;'></span></fieldset></fieldset>";
-					$(".added-row").append(newFilterRow);
-
-					/* $('.cardType').each(function() {
-						var selOptionClass = $(this).find('option:selected').attr('class');
-						$('.cardType').last().find('.'+selOptionClass).hide();
-					}); */
-				//}
-			});
-
-			$('body').on('click', '.delete-icon', function() {
-				var deletedSelctOption = $(this).parent().siblings().eq(0).find('.cardType').find('option:selected').attr('class');
-				$(this).parent().parent().remove();
-				/* $('.cardType').each(function() {
-					if(!$(this).hasClass('active')) {
-						$(this).find('.'+deletedSelctOption).show();
-					}
-				}); */
-			});
-
-			var prevOptionClass;
-			$('body').on('focus','.cardType',function() {
-				prevOptionClass = $(this).find('option:selected').attr('class');
-			});
-
-			/* $('body').on('change','.cardType',function() {
-				$(this).addClass('active');
-				var selOptionClass = $(this).find('option:selected').attr('class');
-
-				if (selOptionClass == undefined && prevOptionClass != selOptionClass) {
-					$('.cardType').each(function() {
-						if (!$(this).hasClass('active')) {
-							$(this).find('.'+ prevOptionClass).show();
-						}
-					});
-				} else {
-					$('.cardType').each(function() {
-					if (!$(this).hasClass('active')) {
-							$(this).find('.'+ selOptionClass).hide();
-						}
-					});
-				}
-				$(this).removeClass('active');
-			}); */
-			
-			$('body').on('blur','.cardType',function() {
-				validateCardType($(this));
-			});
-			
-			$('body').on('blur','.feePercentage',function() {
-				validateFeeAmount($(this)," %Value",true);
-			});
-			
-			$('body').on('blur','.flatFee',function() {
-				validateFeeAmount($(this)," Flat Fee",true);
-			});
-			
-			$('body').on('blur','.settlementFee',function() {
-				validateFeeAmount($(this)," Settlement Fee",false);
-			});
-			
-			$('body').on('blur','.setupFee',function() {
-				validateFeeAmount($(this)," SetUp Fee",false);
-			});
-			
-			$('body').on('blur','.chargeBacKFee',function() {
-				validateFeeAmount($(this)," Charge Back Fee",true);
-			});
-		
-
-			$('body').on('blur','.accountNumber',function() {
-				validateSpecifiedAccountNo($(this));
-			});
-			
-			$('body').on('click','[id$=".accountTypeSYS"],[id$=".accountTypeOTH"]', function() {
-				if($(this).is(':checked')) {
-					if($(this).attr('id').indexOf('SYS') > 0) {
-						$('.accountNumberEr').text('');
-					}
-					
-					$(this).closest('div').find('div').find('span').text(''); 
-				}
-			});
-
-			$('#updateFeePgm').on('click', function() {
-				$('.cardType,.feePercentage,.flatFee,.settlementFee,.setupFee,.chargeBacKFee,.accountNumber').trigger('blur');
-				var preAttrName = "";
-				$('*[name*=accountType]').each(function() {
-				    var attrName = $(this).attr('name');
-				    if(preAttrName != attrName) {
-				    	var id;
-				    	if($("input:radio[name='"+attrName+"']:checked").length == 0) {
-					    	id = $("input:radio[name*='"+attrName+"']").eq(1).attr('id');
-					    	setError(get(id), 'Please Select Credit To Account ');
-						} else {
-							id = $("input:radio[name*='"+attrName+"']").eq(1).attr('id');
-							setError(get(id), '');
-						}
-					}
-				});
-
-				var isValid = true;
-				$("[id$='Er']").each(function() {
-					if($(this).text().trim().length > 0) {
-						isValid = false;
-						return false;
-					}
-				});
-
-				return isValid;
-			});
-
-			$('#cancel').on('click', function() {
-				window.location.href = 'show-fee-program-search';
-			});
-		});Cancel
+		});
 		$('#my_popup1').popup({
 			blur : false
 		});

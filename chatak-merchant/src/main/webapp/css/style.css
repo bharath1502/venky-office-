@@ -2259,3 +2259,23 @@ background-color: #ADADAD;
     top: 5px;
     right: 5px;
 }
+
+.sortableth2{
+	display:none !important;
+	}
+.sorted.asc {
+	height:14px;
+	/*  width:14px; */
+	background:url(../images/sort_asc.png) no-repeat;
+	background-position:right 2px;
+	}
+.sorted.desc {
+	height:14px;
+	/*  width:14px; */
+background:url(../images/sort_desc.png) no-repeat;
+background-position:right 2px;
+}
+
+#issuanceAgentSettings {
+	display: none;
+}

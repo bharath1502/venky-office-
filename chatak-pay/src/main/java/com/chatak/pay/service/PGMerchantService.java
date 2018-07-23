@@ -4,6 +4,8 @@ import com.chatak.pay.controller.model.LoginRequest;
 import com.chatak.pay.controller.model.LoginResponse;
 import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pay.model.MerchantListResponse;
+import com.chatak.pg.acq.dao.model.PGApplicationClient;
+import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.user.bean.AddMerchantBankRequest;
 import com.chatak.pg.user.bean.AddMerchantBankResponse;
 import com.chatak.pg.user.bean.AddMerchantRequest;
@@ -78,4 +80,7 @@ public interface PGMerchantService {
 
   public Boolean forgotPassword(String userName, String baseUrl)throws ChatakPayException;
 
+  public ApplicationClientDTO getApplicationClientAuth(String appAuthUser);
+
+  public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient);
 }

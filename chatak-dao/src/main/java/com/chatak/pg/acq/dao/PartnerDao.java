@@ -148,8 +148,6 @@ public interface PartnerDao {
   public List<PartnerAccount> getPartnerAccountsByPartnerId(Long partnerId,
       AccountType accountType);
 
-  public List<PartnerRequest> findAllPartners();
-  
   public ProgramManager findProgramManagerByPartnerId(String partnerId);
 
   public List<Partner> getPartnersByPMId(Long programManagerId);

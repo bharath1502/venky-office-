@@ -9,16 +9,16 @@ public class MerchantName implements Serializable{
    */
   private static final long serialVersionUID = -8686579704790148438L;
   
-  private String merchantName;
+  private String name;
 
   private String merchantCode;
 
-  public String getMerchantName() {
-    return merchantName;
+  public String getName() {
+    return name;
   }
 
-  public void setMerchantName(String merchantName) {
-    this.merchantName = merchantName;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getMerchantCode() {

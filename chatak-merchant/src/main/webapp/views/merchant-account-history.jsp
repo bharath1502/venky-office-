@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -12,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
@@ -24,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -56,15 +57,18 @@
 						<form action="getHistory" name="paginationForm" method="post">
 							<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 								type="hidden" id="totalRecordsId" name="totalRecords" />
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 						<form action="editMerchant" name="editMercahntForm" method="post">
 							<input type="hidden" id="getMerchantId" name="getMerchantId" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 						<form action="get-history-report" name="downloadReport"	method="post">
 							<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" />
 							<input type="hidden" id="downloadTypeId" name="downloadType" />
 							<input type="hidden" id="totalRecords" name="totalRecords">
 							<input type="hidden" id="downloadAllRecords" name="downloadAllRecords">
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 						<!-- Search Table Block Start -->
 						<div class="search-results-table">
@@ -258,9 +262,7 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script> <script src="../js/utils.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/changePassword.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	 <script src="../js/messages.js"></script>
@@ -362,6 +364,22 @@
 										$('#'+t).click();
 									});
 						});
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 	<script type="text/javascript">
 		function resetTxnSearch() {

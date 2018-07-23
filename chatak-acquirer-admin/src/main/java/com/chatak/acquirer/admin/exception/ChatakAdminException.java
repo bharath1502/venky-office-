@@ -13,11 +13,47 @@ package com.chatak.acquirer.admin.exception;
  */
 public class ChatakAdminException extends Exception {
 
+	
+	  private static final long serialVersionUID = 7375272986220181341L;
+	  
+	  
+	private String errorCode;
+	private String errorMessage;
+
+	public ChatakAdminException(String errorCode, String errorMessage) {
+		this.errorCode = errorCode;
+		this.errorMessage = errorMessage;
+
+	}
+	
   /**
-   * 
-   */
-  private static final long serialVersionUID = 7375272986220181341L;
-  
+	 * @return the errorCode
+	 */
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+	/**
+	 * @param errorCode the errorCode to set
+	 */
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	/**
+	 * @return the errorMessage
+	 */
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	/**
+	 * @param errorMessage the errorMessage to set
+	 */
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
   /**
    * 
    */
@@ -46,6 +82,5 @@ public class ChatakAdminException extends Exception {
   public ChatakAdminException(String arg0, Throwable arg1) {
     super(arg0, arg1);
   }
-  
 
 }

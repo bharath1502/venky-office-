@@ -392,3 +392,12 @@ function getTxnDetailsOnMID(merchantCode, batchID) {
 	get('merchantCode').value = merchantCode;
 	document.forms["getTxns"].submit();
 }
+
+function showISOTxns(isoId) {
+	get('getISOId').value = isoId;
+	var fromDate = document.getElementById("transFromDate").value;
+	var toDate = document.getElementById("transToDate").value;
+	get('getFromDate').value = fromDate;
+	get('getToDate').value = toDate;
+	document.forms["showISOFeeReport"].submit();
+}

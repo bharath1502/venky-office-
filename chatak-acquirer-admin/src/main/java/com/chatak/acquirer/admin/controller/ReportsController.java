@@ -1,7 +1,9 @@
 package com.chatak.acquirer.admin.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,15 +29,14 @@ import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.MerchantAccountService;
 import com.chatak.acquirer.admin.service.TransactionService;
 import com.chatak.acquirer.admin.util.ExportUtil;
-import com.chatak.acquirer.admin.util.GlobalManualReportFileExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.ReportsFileExportsUtil;
-import com.chatak.acquirer.admin.util.SystemRevenueReportFileExportUtil;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.AccountBalanceReportDTO;
+import com.chatak.pg.model.AccountTransactionDTO;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.model.ReportsDTO;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
@@ -63,7 +64,7 @@ public class ReportsController implements URLMappingConstants {
       @FormParam("totalRecords") final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords,
       HttpServletResponse response) {
-    String downloadType=request.getParameter(Constants.DOWNLOAD_TYPE);
+    String downloadType = request.getParameter(Constants.DOWNLOAD_TYPE);
     logger.info("Entering:: ReportsController:: downloadManualTransferReport method");
     ModelAndView modelAndView = new ModelAndView(SHOW_GLOBAL_MANUAL_TRANSACTION_REPORT);
     GetTransactionsListRequest getTransactionsListRequest;
@@ -79,21 +80,83 @@ public class ReportsController implements URLMappingConstants {
     GetTransactionsListResponse manualTransferDownloadList =
         transactionService.searchAccountTransactions(getTransactionsListRequest);
     try {
+      ExportDetails exportDetails = new ExportDetails();
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        GlobalManualReportFileExportUtil.downloadManualTransactionsPdf(
-            manualTransferDownloadList.getAccountTransactionList(), response, messageSource);
+        exportDetails.setExportType(ExportType.PDF);
       } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        GlobalManualReportFileExportUtil.downloadManualTransactionsXl(
-            manualTransferDownloadList.getAccountTransactionList(), response, messageSource);
+        exportDetails.setExportType(ExportType.XLS);
+        exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
       }
+      setExportDetailsDataForDownloadRoleReport(
+          manualTransferDownloadList.getAccountTransactionList(), exportDetails);
+      ExportUtil.exportData(exportDetails, response, messageSource);
     } catch (Exception e) {
-      modelAndView.addObject(Constants.ERROR,
-          messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       logger.error("ERROR:: ReportsController:: downloadManualTransferReport method", e);
     }
     logger.info("Exiting:: ReportsController:: downloadManualTransferReport method");
     modelAndView.addObject("eftTransferReportList", manualTransferDownloadList);
     return null;
+  }
+
+  private void setExportDetailsDataForDownloadRoleReport(List<AccountTransactionDTO> list,
+      ExportDetails exportDetails) {
+    exportDetails.setReportName("Manual_Transactions");
+    exportDetails.setHeaderMessageProperty("chatak.header.manual.transactions.reports");
+    exportDetails.setHeaderList(getRoleHeaderLists());
+    exportDetails.setFileData(getRoleFilesData(list));
+  }
+
+  private List<String> getRoleHeaderLists() {
+    String[] headerArr = {
+        messageSource.getMessage("reports.label.transactions.dateortime", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("admin.common-deviceLocalTxnTime", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("show-account-transfer.label.description", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("accounts-manual-debit.label.merchantorsubmerchantcode", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reports.label.balancereports.manualtransactions.transactionID",
+            null, LocaleContextHolder.getLocale()),
+        messageSource.getMessage("currency-search-page.label.currencycode", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("show-account-transfer.label.availablebalance", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reports-file-exportutil-credit", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reports-file-exportutil-debit", null,
+            LocaleContextHolder.getLocale())};
+    return new ArrayList<String>(Arrays.asList(headerArr));
+  }
+
+  private static List<Object[]> getRoleFilesData(List<AccountTransactionDTO> list) {
+    List<Object[]> fileData = new ArrayList<Object[]>();
+    for (AccountTransactionDTO eftData : list) {
+      Object[] rowData = new Object[Integer.parseInt("9")];
+      rowData[0] = eftData.getTransactionTime();
+      rowData[1] = eftData.getDeviceLocalTxnTime() + eftData.getTimeZoneOffset();
+      rowData[Integer.parseInt("2")] = eftData.getDescription();
+      rowData[Integer.parseInt("3")] = eftData.getMerchantCode();
+      rowData[Integer.parseInt("4")] = eftData.getTransactionId();
+      rowData[Integer.parseInt("5")] = eftData.getCurrency();
+      rowData[Integer.parseInt("6")] = eftData.getCurrentBalance();
+      if (eftData.getTransactionCode() != null
+          && "MANUAL_CREDIT".equalsIgnoreCase(eftData.getTransactionCode())) {
+        rowData[Integer.parseInt("7")] = eftData.getCredit();
+        rowData[Integer.parseInt("8")] = " ";
+      } else if (eftData.getTransactionCode() != null
+          && "MANUAL_DEBIT".equalsIgnoreCase(eftData.getTransactionCode())) {
+        rowData[Integer.parseInt("7")] = " ";
+        rowData[Integer.parseInt("8")] = eftData.getDebit();
+      } else {
+        rowData[Integer.parseInt("7")] = " ";
+        rowData[Integer.parseInt("8")] = " ";
+      }
+      fileData.add(rowData);
+    }
+    return fileData;
   }
 
   @RequestMapping(value = GLOBAL_PENDING_TRANSACTION_PAGINATION, method = RequestMethod.POST)
@@ -157,21 +220,7 @@ public class ReportsController implements URLMappingConstants {
     List<ReportsDTO> allTransDownloadList =
         (List<ReportsDTO>) session.getAttribute(Constants.ALL_TRANSACTIONS_REPORT_LIST);
     try {
-      if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-
-        ReportsFileExportsUtil.downloadReportsPdf(allTransDownloadList, response,
-            messageSource.getMessage("chatak.header.all.transactions.reports", null,
-                LocaleContextHolder.getLocale()),
-            messageSource);
-
-      } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-
-        ReportsFileExportsUtil.downloadReportsXl(allTransDownloadList, response,
-            messageSource.getMessage("chatak.header.all.transactions.reports", null,
-                LocaleContextHolder.getLocale()),
-            messageSource);
-
-      }
+    	ReportsFileExportsUtil.exportDetailsDataForDownloadRoleReport(allTransDownloadList,messageSource,downloadType,response);	
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -232,14 +281,18 @@ public class ReportsController implements URLMappingConstants {
     
     List<ReportsDTO> overViewDownloadList =
         (List<ReportsDTO>) session.getAttribute("accessLogReportList");
+    ExportDetails exportDetails = new ExportDetails();
     try {
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        SystemRevenueReportFileExportUtil.downloadSystemOverviewPdf(overViewDownloadList, response,
-            messageSource);
+    	  exportDetails.setExportType(ExportType.PDF);
+        
       } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        SystemRevenueReportFileExportUtil.downloadSystemOverviewXl(overViewDownloadList, response,
-            messageSource);
+    	  exportDetails.setExportType(ExportType.XLS);
+  		exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
+        
       }
+      setExportDetailsDataForDownloadRevenueGeneratedReport(overViewDownloadList, exportDetails);	
+	 	ExportUtil.exportData(exportDetails, response, messageSource);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -249,6 +302,64 @@ public class ReportsController implements URLMappingConstants {
     modelAndView.addObject("accessLogs", overViewDownloadList);
     return null;
   }
+  private void  setExportDetailsDataForDownloadRevenueGeneratedReport(
+	      List<ReportsDTO> overViewDownloadList, ExportDetails exportDetails) {
+	  Date date = new Date();
+	    String dateString = new SimpleDateFormat(Constants.EXPORT_FILE_NAME_DATE_FORMAT).format(date);
+	    String filename = "Revenue" + dateString + ".xls";
+	    exportDetails.setReportName(filename);
+	    exportDetails.setHeaderMessageProperty("chatak.system.overview.reports.header.message");
+
+	    exportDetails.setHeaderList(getRoleHeaderList());
+	    exportDetails.setFileData(getRoleFileData(overViewDownloadList));
+	  }
+  private List<String> getRoleHeaderList() {
+	    String[] headerArr = {
+	        messageSource.getMessage("reports-file-exportutil-accountType", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("reports-file-exportutil-activeAndBlockedAccounts", null,
+		            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("currency-search-page.label.currencycode", null,
+		            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("reports-file-exportutil-totalBalances", null,
+		            LocaleContextHolder.getLocale())};
+	    return new ArrayList<String>(Arrays.asList(headerArr));
+	  }
+  
+  private static List<Object[]> getRoleFileData(List<ReportsDTO> list) {
+	    List<Object[]> fileData = new ArrayList<Object[]>();
+
+	    for (ReportsDTO reportDTO : list) {
+	    	Object[] rowData = new Object[Integer.parseInt("4")];
+			  rowData[0] ="Merchant";
+			  rowData[1] = reportDTO.getMerchantAccountCount().toString();
+			  rowData[Integer.parseInt("2")]= reportDTO.getCurrency();
+			  rowData[Integer.parseInt("3")]=(reportDTO.getMerchantAccountBalance() != null)
+			            ? Double.parseDouble(reportDTO.getMerchantAccountBalance()) : 0d;
+	      fileData.add(rowData);
+	    }
+	    for (ReportsDTO reportDTO : list) {
+	    	Object[] rowData = new Object[Integer.parseInt("4")];
+			  rowData[0] ="Sub Merchant";
+			  rowData[1] = reportDTO.getSubMerchantAccountCount().toString();
+			  rowData[Integer.parseInt("2")]= reportDTO.getCurrency();
+			  rowData[Integer.parseInt("3")]=(reportDTO.getSubMerchantAccountBalance() != null)
+			            ? Double.parseDouble(reportDTO.getSubMerchantAccountBalance()) : 0d;
+	      fileData.add(rowData);
+	    }
+	    for (ReportsDTO reportDTO : list) {
+	    	Object[] rowData = new Object[Integer.parseInt("4")];
+			  rowData[0] ="Revenue Account";
+			  rowData[1] = reportDTO.getChatakAccountCount().toString();
+			  rowData[Integer.parseInt("2")]= reportDTO.getCurrency();
+			  rowData[Integer.parseInt("3")]=(reportDTO.getChatakAccountBalance() != null)
+			            ? Double.parseDouble(reportDTO.getChatakAccountBalance()) : 0d;
+	      fileData.add(rowData);
+	    }
+	    
+
+	    return fileData;
+	  }
 
   /**
    * Method used for Pagination Util
@@ -635,21 +746,7 @@ public class ReportsController implements URLMappingConstants {
       }
       pendingTransDownloadList =
           transactionService.getAllAccountsExecutedTransactionsOnDate(transactionsListRequest);
-      if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-
-        ReportsFileExportsUtil.downloadReportsPdf(pendingTransDownloadList, response,
-            messageSource.getMessage("chatak.header.pending.transactions.reports", null,
-                LocaleContextHolder.getLocale()),
-            messageSource);
-
-      } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-
-        ReportsFileExportsUtil.downloadReportsXl(pendingTransDownloadList, response,
-            messageSource.getMessage("chatak.header.pending.transactions.reports", null,
-                LocaleContextHolder.getLocale()),
-            messageSource);
-
-      }
+      ReportsFileExportsUtil.setExportDetailsDataForPendingRoleReport(pendingTransDownloadList,messageSource,downloadType,response);
       transactionsListRequest.setPageSize(pageSize);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,

@@ -1,5 +1,5 @@
 
-var feeProgramNam = null;
+var feeProgramNameAlreadyExist = null;
 
 function editFeeProgram(feeProgramId) {
 	get('getFeeProgramId').value = feeProgramId;
@@ -326,21 +326,50 @@ function validateAmountValue($this,inputType) {
 	}
 	
 }
-function validateFeeProgramName($this) {
-	var currentEleId = $($this).attr('id');
-	var feeProgram = get(currentEleId).value.trim();
-	if (isEmpty(feeProgram)) {
-		setError(get(currentEleId), webMessages.feeProgramFeeProgramName);
-		loadMsgTitleText();
+function validateFeeProgram() {
+	if (!clientValidation('feeProgramName', 'fee_Program_Name','feeProgramNameErr')
+			| !clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')
+			| !clientValidation('flatFee', 'fee','flatFeeErr')
+			| !validateFeePercentValue()
+			| !validateSharing()) {
 		return false;
 	} else {
-		doAjaxFeeprogramNameDuplicate();
-		if (feeProgramNam == false) {
-			return true;
-		} else {
+		if (feeProgramNameAlreadyExist == true) {
 			return false;
 		}
 	}
+	return true;
+}
+function validateSharing(){
+	if(!clientValidation('pmShare', 'fee','pmShareErr')
+			| !clientValidation('isoShare', 'fee','isoShareErr')){
+		return false;
+	}
+	if ($('#pmShare').val() >= 0 || $('#isoShare').val() >= 0) {
+		var pmShare = Number($('#pmShare').val());
+		var isoShare = Number($('#isoShare').val());
+		var shareSum = Number(pmShare + isoShare);
+    
+		if (shareSum == 100) {
+			setDiv('errorDiv', "");
+			return true;
+		} else {
+			setDiv('errorDiv', webMessages.Validate_pm_iso_share);
+			return false;
+		}
+	}
+}
+function validateFeePercentValue(){
+	var feePercentage = Number($('#feePercentage').val());
+	if(!clientValidation('feePercentage', 'fee','feePercentageErr')){
+		return false;
+	}
+	if (feePercentage > 100) {
+		setDiv('feePercentageErr', webMessages.should_not_grt_th_100);
+		return false;
+	}
+	setDiv('feePercentageErr', '');
+	return true;
 }
 function validateFeeAmount($this,inputType,isMandatory){
 	var currentEleId = $($this).attr('id');
@@ -354,7 +383,7 @@ function validateFeeAmount($this,inputType,isMandatory){
 		loadMsgTitleText();
 		return false;
 	} else if (val.length>0&&regex.test(val) == false) {
-		setError(get(currentEleId), webMessages.feeProgramEnterValid+inputType+webMessages.feeProgramAmount);
+		setError(get(currentEleId), inputType);
 		loadMsgTitleText();
 		return false;
 	}
@@ -445,14 +474,14 @@ function doAjaxFeeprogramNameDuplicate() {
 		success : function(response) {
 			var obj = JSON.parse(response);
 			if (obj.errorCode === '00') {
-				setError(get('feeProgramName'), '');
+				setDiv('feeProgramNameErr','');
 				setLable('confirmMfeeProgramName', 	get('feeProgramName').value.trim());
 				loadMsgTitleText();
-				feeProgramNam = false;
+				feeProgramNameAlreadyExist = false;
 
 			} else {
-				setDiv("feeProgramNameEr", webMessages.feeProgramNameAlreadyinUse);
-				feeProgramName = true;
+				setDiv("feeProgramNameErr", webMessages.feeProgramNameAlreadyinUse);
+				feeProgramNameAlreadyExist = true;
 				loadMsgTitleText();
 			}
 		},

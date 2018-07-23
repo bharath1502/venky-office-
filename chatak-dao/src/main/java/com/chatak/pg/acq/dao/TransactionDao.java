@@ -1,10 +1,14 @@
 package com.chatak.pg.acq.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 
+import com.chatak.pg.acq.dao.model.PGAccountTransactions;
 import com.chatak.pg.acq.dao.model.PGTransaction;
+import com.chatak.pg.bean.settlement.SettlementEntity;
+import com.chatak.pg.model.TransactionRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.Transaction;
 
@@ -90,5 +94,19 @@ public interface TransactionDao {
 
 
   public List<Transaction> getTransactions(GetTransactionsListRequest getTransactionsListRequest);
+  
+  public List<Long> fetchCardProgramDetailsByMerchantCode(TransactionRequest transactionRequest);
+  
+  public List<SettlementEntity> getPgTransactions(String merchantId, String terminalId, String issuerTxnRefNum,
+			String transactionId);
+	
+  public List<PGTransaction> getTransactionsByBatchId(String batchId);
 
+  public List<PGTransaction> getPGTransactionListNotInAcquiring(String batchId, List<String> pgTxnIds);
+  
+  public List<PGAccountTransactions> getPGAccTransactionsByTxnId(String pgTxnId);
+    
+  public void saveorUpdate(List<String> pgTxnIdsList);
+  
+  public String generateTransactionRefNumber() throws DataAccessException;
 }

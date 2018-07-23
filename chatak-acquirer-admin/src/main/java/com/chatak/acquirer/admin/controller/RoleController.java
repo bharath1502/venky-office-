@@ -40,6 +40,8 @@ import com.chatak.pg.model.EditRoleResponse;
 import com.chatak.pg.model.FeatureDTO;
 import com.chatak.pg.model.UserRoleDTO;
 import com.chatak.pg.model.UserRolesDTO;
+import com.chatak.pg.user.bean.IsoRequest;
+import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.Properties;
@@ -86,6 +88,7 @@ public class RoleController implements URLMappingConstants {
     UserRolesDTO userRoleDTO = new UserRolesDTO();
     model.put(Constants.USER_ROLE_DTO, userRoleDTO);
     try {
+      getRoleListForRoles(session, model);
       session.setAttribute(Constants.SEARCH_ROLE_REQUEST, userRoleDTO);
       userRoleDTO.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
       userRoleDTO.setPageIndex(Constants.ONE);
@@ -122,6 +125,7 @@ public class RoleController implements URLMappingConstants {
     UserRolesDTO userRoleDTO = null;
     try {
       userRoleDTO = (UserRolesDTO) session.getAttribute(Constants.SEARCH_ROLE_REQUEST);
+      getRoleListForRoles(session, model);
       model.put(Constants.USER_ROLE_DTO, userRoleDTO);
       userRoleDTO.setPageIndex(pageNumber);
       userRoleDTO.setNoOfRecords(totalRecords);
@@ -160,6 +164,7 @@ public class RoleController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_ACCESS_ROLE_SEARCH);
     model.put(Constants.USER_ROLE_DTO, userRolesDTO);
     try {
+      getRoleListForRoles(session, model);
       userRolesDTO.setPageIndex(Constants.ONE);
       session.setAttribute(Constants.SEARCH_ROLE_REQUEST, userRolesDTO);
       List<UserRolesDTO> roleList = roleService.roleList(userRolesDTO);
@@ -349,15 +354,20 @@ public class RoleController implements URLMappingConstants {
       UserRoleDTO userRoleDTO = new UserRoleDTO();
       model.put(Constants.USER_ROLE_DTO, userRoleDTO);
       
-      List<RoleLevel> getAllTypeRoleLogin = new ArrayList<>();
-      List<RoleLevel> rolesList = Arrays.asList(RoleLevel.values());
-      getAllTypeRoleLogin = getRoleListForRoles(rolesList, session, getAllTypeRoleLogin);
-      model.put("roleLevelList", getAllTypeRoleLogin);
+      getRoleListForRoles(session, model);
       FeatureDTO featureDTO = new FeatureDTO();
       FeatureResponse roleFeatureResponse = null;
-      if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_SUPER_ADMIN.value())) {
+      if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_SUPER_ADMIN.getValue())) {
         featureDTO.setRoleType("ADMIN");
         roleFeatureResponse = roleService.getAdminFeatureForEntityType(featureDTO);
+      } else if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_PM.getValue())) {
+    	  featureDTO.setRoleType(RoleLevel.CP_PM.getValue());
+          List<Long> featureIds = roleService.getFeaturesByEntity(RoleLevel.CP_PM.getValue());
+          roleFeatureResponse = roleService.getFeatureDataByIds(featureIds);
+      } else if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_ISO.getValue())) {
+    	  featureDTO.setRoleType(RoleLevel.CP_ISO.getValue());
+            List<Long> featureIds = roleService.getFeaturesByEntity(RoleLevel.CP_ISO.getValue());
+            roleFeatureResponse = roleService.getFeatureDataByIds(featureIds);
       }
       List<FeatureDTO> featureList = null;
       if (roleFeatureResponse != null) {
@@ -368,7 +378,7 @@ public class RoleController implements URLMappingConstants {
           LocaleContextHolder.getLocale());
       StringTokenizer st = new StringTokenizer(adminRelatedFeatureIds, ",");
       getFeatureIDsList(st);
-      List<FeatureDTO> featureList2 = getAssignedFeatureList(featureList, session);
+      List<FeatureDTO> featureList2 = getAssignedFeatureList(featureList, session, featureDTO.getRoleType());
       modelAndView.addObject(Constants.FEATURE_LIST, featureList2);
     } catch (Exception e) {
       logger.info("ERROR:: UserRoleController:: showRole method", e);
@@ -379,18 +389,33 @@ public class RoleController implements URLMappingConstants {
 
   //FeatureList
   public List<FeatureDTO> getAssignedFeatureList(List<FeatureDTO> prepaidFeatureRequestList,
-      HttpSession session) {
+      HttpSession session, String roleType) {
     List<FeatureDTO> featureList2 = new ArrayList<>();
     if (StringUtil.isListNotNullNEmpty(prepaidFeatureRequestList)) {
+    	String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
       for (FeatureDTO featureIds : prepaidFeatureRequestList) {
-        FeatureDTO prepaidFeatureRequest2 = new FeatureDTO();
-        prepaidFeatureRequest2.setFeatureId(featureIds.getFeatureId());
-        prepaidFeatureRequest2.setName(featureIds.getName());
-        prepaidFeatureRequest2.setCreatedDate(featureIds.getCreatedDate());
-        prepaidFeatureRequest2.setFeatureLevel(featureIds.getFeatureLevel());
-        prepaidFeatureRequest2.setRefFeatureId(featureIds.getRefFeatureId());
-        prepaidFeatureRequest2.setStatus(featureIds.getStatus());
-        featureList2.add(prepaidFeatureRequest2);
+    	  if(!StringUtil.isNullAndEmpty(roleType)
+    			  && !roleType.equalsIgnoreCase(RoleLevel.CP_MERCHANT.getValue())){
+    		  if(existingFeature.contains(featureIds.getFeatureId().toString())){
+    			  FeatureDTO prepaidFeatureRequest2 = new FeatureDTO();
+        	      prepaidFeatureRequest2.setFeatureId(featureIds.getFeatureId());
+        	      prepaidFeatureRequest2.setName(featureIds.getName());
+        	      prepaidFeatureRequest2.setCreatedDate(featureIds.getCreatedDate());
+        	      prepaidFeatureRequest2.setFeatureLevel(featureIds.getFeatureLevel());
+        	      prepaidFeatureRequest2.setRefFeatureId(featureIds.getRefFeatureId());
+        	      prepaidFeatureRequest2.setStatus(featureIds.getStatus());
+        	      featureList2.add(prepaidFeatureRequest2);
+    		  }
+    	  } else {
+			  FeatureDTO prepaidFeatureRequest2 = new FeatureDTO();
+    	      prepaidFeatureRequest2.setFeatureId(featureIds.getFeatureId());
+    	      prepaidFeatureRequest2.setName(featureIds.getName());
+    	      prepaidFeatureRequest2.setCreatedDate(featureIds.getCreatedDate());
+    	      prepaidFeatureRequest2.setFeatureLevel(featureIds.getFeatureLevel());
+    	      prepaidFeatureRequest2.setRefFeatureId(featureIds.getRefFeatureId());
+    	      prepaidFeatureRequest2.setStatus(featureIds.getStatus());
+    	      featureList2.add(prepaidFeatureRequest2);
+		  }
       }
     }
     return featureList2;
@@ -435,7 +460,7 @@ public class RoleController implements URLMappingConstants {
               LocaleContextHolder.getLocale());
           StringTokenizer st = new StringTokenizer(adminRelatedFeatureIds, ",");
           getFeatureIDsList(st);
-          List<FeatureDTO> featureList2 = getAssignedFeatureList(featureList, session);
+          List<FeatureDTO> featureList2 = getAssignedFeatureList(featureList, session, userRoleDTO.getRoleType());
           model.put(Constants.FEATURE_LIST, featureList2);
           getFeatures(featureList2);
           String roleExistingFeatures = getRoleReatures(userRoleDTO);
@@ -523,12 +548,26 @@ public class RoleController implements URLMappingConstants {
       userRolesDTO.setDescription(editRoleResponseData.getRoleRequest().getDescription());
       userRolesDTO.setRoleType(editRoleResponseData.getRoleRequest().getRoleType());
         FeatureDTO featureDTO = new FeatureDTO();
-        featureDTO.setRoleType(editRoleResponseData.getRoleRequest().getRoleType());
+        if(!StringUtil.isNull(editRoleResponseData.getRoleRequest()) 
+        		&& editRoleResponseData.getRoleRequest().getRoleType().equalsIgnoreCase(RoleLevel.CP_PM.getValue())){
+        	featureDTO.setRoleType("PM");
+        }else{
+        	featureDTO.setRoleType(editRoleResponseData.getRoleRequest().getRoleType());
+        }
         FeatureResponse featureResponse;
-     
-        featureResponse = roleService.getAdminFeatureForEntityType(featureDTO);
+        if (!StringUtil.isNull(editRoleResponseData.getRoleRequest()) 
+        		&& editRoleResponseData.getRoleRequest().getRoleType().equalsIgnoreCase(RoleLevel.CP_PM.getValue())) {
+            List<Long> featureIds = roleService.getFeaturesByEntity(RoleLevel.CP_PM.getValue());
+            featureResponse = roleService.getFeatureDataByIds(featureIds);
+        } else if (!StringUtil.isNull(editRoleResponseData.getRoleRequest()) 
+        		&& editRoleResponseData.getRoleRequest().getRoleType().equalsIgnoreCase(RoleLevel.CP_ISO.getValue())) {
+              List<Long> featureIds = roleService.getFeaturesByEntity(RoleLevel.CP_ISO.getValue());
+              featureResponse = roleService.getFeatureDataByIds(featureIds);
+        } else {
+        	featureResponse = roleService.getAdminFeatureForEntityType(featureDTO);
+        }
         List<FeatureDTO> featureList2 =
-            getAssignedFeatureList(featureResponse.getFeatureDTO(), session);
+            getAssignedFeatureList(featureResponse.getFeatureDTO(), session, userRolesDTO.getRoleType());
         model.put(Constants.FEATURE_LIST, featureList2);
         getFeatures(featureList2);
         String roleExistingFeatures = "";
@@ -603,25 +642,21 @@ public class RoleController implements URLMappingConstants {
     return modelAndView;
   }
 
-  public List<RoleLevel> getRoleListForRoles(List<RoleLevel> roleLevelList, HttpSession session,
-      List<RoleLevel> roleLevels) {
-    LoginResponse loginResponse =
-        (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
-    if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_SUPER_ADMIN.name())) {
-      Arrays.asList(RoleLevel.CP_SUPER_ADMIN, RoleLevel.CP_MERCHANT,
-          RoleLevel.CP_RESELLER, RoleLevel.CP_TMS);
-    }
-    if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_MERCHANT.name())) {
-      Arrays.asList(RoleLevel.CP_MERCHANT);
-    }
-    if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_RESELLER.name())) {
-      Arrays.asList(RoleLevel.CP_RESELLER);
-    }
-    if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_TMS.name())) {
-      Arrays.asList(RoleLevel.CP_TMS);
-    }
-    return roleLevels;
-  }
+	public void getRoleListForRoles(HttpSession session, Map model) {
+		List<RoleLevel> roleLevels = new ArrayList<>();
+		LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+		if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_SUPER_ADMIN.getValue())) {
+			roleLevels = Arrays.asList(RoleLevel.CP_SUPER_ADMIN, RoleLevel.CP_PM, RoleLevel.CP_ISO,
+					RoleLevel.CP_MERCHANT);
+		} else if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_PM.getValue())) {
+			roleLevels = Arrays.asList(RoleLevel.CP_PM, RoleLevel.CP_ISO, RoleLevel.CP_MERCHANT);
+		} else if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_ISO.getValue())) {
+			roleLevels = Arrays.asList(RoleLevel.CP_ISO, RoleLevel.CP_MERCHANT);
+		}
+		if (StringUtil.isListNotNullNEmpty(roleLevels)) {
+			model.put("roleLevelList", roleLevels);
+		}
+	}
   
   private List<String> getRoleHeaderList() {
     String[] headerArr = {
@@ -648,4 +683,5 @@ public class RoleController implements URLMappingConstants {
 
     return fileData;
   }
+  
 }

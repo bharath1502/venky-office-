@@ -47,7 +47,8 @@ public final class Rijndael {
 
     i = Nk;
     int temp;
-    for (int n = 0; i < Nw; n--, i++) {
+    int n;
+    for (n = 0; i < Nw; n--, i++) {
       temp = rek[i - 1];
       if (n == 0) {
         n = Nk;
@@ -236,7 +237,7 @@ public final class Rijndael {
     return pt;
   }
 
-  protected void finalize() {
+  protected void done() {
     if (rek != null) {
       for (int i = 0; i < rek.length; i++) {
         rek[i] = 0;

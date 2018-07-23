@@ -80,7 +80,7 @@ public class FundsTransfersControllerTest {
 		try {
 			mockMvc.perform(get("/" + URLMappingConstants.CHATAK_SHOW_EFT_FUND_TRANSFER_PAGE)
 					.sessionAttr("loginUserMerchantId", Long.parseLong("23")))
-					.andExpect(view().name(URLMappingConstants.CHATAK_FUND_TRANSFER_RESPONSE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_SHOW_EFT_FUND_TRANSFER_PAGE));
 		} catch (NumberFormatException e) {
 			logger.info("Error:: FundsTransfersControllerTest:: testShowEFTTransferPage method", e);
 
@@ -154,7 +154,7 @@ public class FundsTransfersControllerTest {
 		try {
 			mockMvc.perform(get("/" + URLMappingConstants.CHATAK_SHOW_CHECK_FUND_TRANSFER_PAGE)
 					.sessionAttr("loginUserMerchantId", Long.parseLong("23")))
-					.andExpect(view().name(URLMappingConstants.CHATAK_FUND_TRANSFER_RESPONSE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_SHOW_CHECK_FUND_TRANSFER_PAGE));
 		} catch (NumberFormatException e) {
 			logger.info("Error:: FundsTransfersControllerTest:: testShowCheckTransferPage method", e);
 

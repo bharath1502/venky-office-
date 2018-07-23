@@ -14,7 +14,7 @@ public class LitleEFTDTOsList implements Serializable {
    */
   private static final long serialVersionUID = 4969992639074294959L;
   
-  List<LitleEFTDTO> litleEFTDTOs;
+  private List<LitleEFTDTO> litleEFTDTOs;
 
   public List<LitleEFTDTO> getLitleEFTDTOs() {
     return litleEFTDTOs;

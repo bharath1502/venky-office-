@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -23,7 +24,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -66,11 +67,13 @@
 								name="downLoadPageNumber" /> <input type="hidden"
 								id="downloadTypeId" name="downloadType" /> <input type="hidden"
 								name="downloadReportObject" id="downloadReportId" />
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
 
 						<form:form action="all-accounts-executed-transactions" name="all-accounts-executed-transactions">
 							<input type="hidden" id="fromDate" name="fromDate" />
 							<input type="hidden" id="toDate" name="toDate" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
 
 
@@ -232,16 +235,15 @@
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
-<script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/utils.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
+	<script src="../js/common-lib.js"></script>
 	<script>
 
 	$(document).ready(function() {
@@ -366,6 +368,21 @@
 						});
 		
 				  /* Common Pagination Include End */
+				  $(document).ready(function() {
+							/* Table Sorter includes Start*/
+							$(function() {
+								
+									  // call the tablesorter plugin
+									  $('#serviceResults').sortable({
+										
+										 divBeforeTable: '#divbeforeid',
+										divAfterTable: '#divafterid',
+										initialSort: false,
+										locale: 'th',
+										//negativeSort: [1, 2]
+									});
+							});
+							});
 	</script>
 </body>
 </html>

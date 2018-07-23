@@ -1,0 +1,6 @@
+Project homepage: https://mvnrepository.com/artifact/com.google.code.gson/gson/1.7.1
+
+Sources: https://github.com/google/gson
+
+License:
+Licensed under Apache License 2.0

@@ -20,6 +20,8 @@ public class CardProgramResponse  extends Response{
 	private static final long serialVersionUID = 175805499686423993L;
 	
 	private List<CardProgramRequest> cardProgramList;
+	
+	private List<CardProgramRequest> issuanceCardProgramList;
 
 	/**
 	 * @return the cardProgramList
@@ -33,6 +35,20 @@ public class CardProgramResponse  extends Response{
 	 */
 	public void setCardProgramList(List<CardProgramRequest> cardProgramList) {
 		this.cardProgramList = cardProgramList;
+	}
+
+	/**
+	 * @return the issuanceCardProgramList
+	 */
+	public List<CardProgramRequest> getIssuanceCardProgramList() {
+		return issuanceCardProgramList;
+	}
+
+	/**
+	 * @param issuanceCardProgramList the issuanceCardProgramList to set
+	 */
+	public void setIssuanceCardProgramList(List<CardProgramRequest> issuanceCardProgramList) {
+		this.issuanceCardProgramList = issuanceCardProgramList;
 	}
 
 }

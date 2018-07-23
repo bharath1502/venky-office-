@@ -133,6 +133,41 @@ public class ActionCode {
 	public static final String ERROR_CODE_WP = "WP";
 	public static final String ERROR_CODE_UID = "ID";
 	public static final String ERROR_CODE_ISO = "IS";
+	public static final String ERROR_CODE_39 = "39";
+	public static final String ERROR_CODE_41 = "41";
+	public static final String ERROR_CODE_43 = "43";
+	public static final String ERROR_CODE_T7 = "T7";
+	public static final String ERROR_CODE_IT = "IT";
+	public static final String ERROR_CODE_0A = "0A";
+	public static final String ERROR_CODE_1A = "1A";
+	public static final String ERROR_CODE_2A = "2A";
+	public static final String ERROR_CODE_3A = "3A";
+	public static final String ERROR_CODE_4A = "4A";
+	public static final String ERROR_CODE_5A = "5A";
+	public static final String ERROR_CODE_6A = "6A";
+	public static final String ERROR_CODE_7A = "7A";
+	public static final String ERROR_CODE_8A = "8A";
+	public static final String ERROR_CODE_9A = "9A";
+	public static final String ERROR_CODE_0B = "0B";
+	public static final String ERROR_CODE_1B = "1B";
+	public static final String ERROR_CODE_2B = "2B";
+	public static final String ERROR_CODE_3B = "3B";
+	public static final String ERROR_CODE_4B = "4B";
+	public static final String ERROR_CODE_5B = "5B";
+	public static final String ERROR_CODE_6B = "6B";
+	public static final String ERROR_CODE_7B = "7B";
+	public static final String ERROR_CODE_8B = "8B";
+	public static final String ERROR_CODE_9B = "9B";
+	public static final String ERROR_CODE_0C = "0C";
+	public static final String ERROR_CODE_1C = "1C";
+	public static final String ERROR_CODE_2C = "2C";
+	public static final String ERROR_CODE_3C = "3C";
+	public static final String ERROR_CODE_4C = "4C";
+	public static final String ERROR_CODE_5C = "5C";
+	public static final String ERROR_CODE_6C = "6C";
+	public static final String ERROR_CODE_7C = "7C";
+	public static final String ERROR_CODE_8C = "8C";
+	public static final String ERROR_CODE_9C = "9C";
 
 
 	private static void initMessages()
@@ -151,7 +186,7 @@ public class ActionCode {
 		 mMessages.put(ERROR_CODE_09 ,"Please wait");
 		 mMessages.put(ERROR_CODE_13 ,"Invalid amount");
 		 mMessages.put(ERROR_CODE_11 ,"Approved (VIP)");
-		 mMessages.put(ERROR_CODE_12 ,"Invalid Transaction, Currency mismatch");
+		 mMessages.put(ERROR_CODE_12 ,"Invalid Transaction");
 		 mMessages.put(ERROR_CODE_16 ,"Approved, update Track 3");
 		 mMessages.put(ERROR_CODE_14 ,"Invalid card number");
 		 mMessages.put(ERROR_CODE_15 ,"No such issuer");
@@ -168,8 +203,8 @@ public class ActionCode {
 		 mMessages.put(ERROR_CODE_28 ,"RETRY # 28");
 		 mMessages.put(ERROR_CODE_27 ,"RETRY # 27");
 		 mMessages.put(ERROR_CODE_29 ,"RETRY # 29");
-		 mMessages.put(ERROR_CODE_31 ,"RETRY # 31");
-		 mMessages.put(ERROR_CODE_30 ,"RETRY # 30");
+		 mMessages.put(ERROR_CODE_31 ,"Bank not supported by switch");
+		 mMessages.put(ERROR_CODE_30 ,"Format error");
 		 mMessages.put(ERROR_CODE_32 ,"RETRY # 32");
 		 mMessages.put(ERROR_CODE_34 ,"Suspected fraud, pick-up");
 		 mMessages.put(ERROR_CODE_33 ,"Expired card, pick-up");
@@ -205,11 +240,11 @@ public class ActionCode {
 		 mMessages.put(ERROR_CODE_71 ,"Reserved for ISO");
 		 mMessages.put(ERROR_CODE_77 ,"RETRY # 77");
 		 mMessages.put(ERROR_CODE_72 ,"Reserved for ISO");
-		 mMessages.put(ERROR_CODE_78 ,"Original transaction not found");
+		 mMessages.put(ERROR_CODE_78 ,"Customer not eligible for POS");
 		 mMessages.put(ERROR_CODE_73 ,"Reserved for ISO");
-		 mMessages.put(ERROR_CODE_79 ,"BATCH OPEN");
+		 mMessages.put(ERROR_CODE_79 ,"Invalid Digital Signature");
 		 mMessages.put(ERROR_CODE_74 ,"Reserved for ISO");
-		 mMessages.put(ERROR_CODE_80 ,"Bad Batch NO");
+		 mMessages.put(ERROR_CODE_80 ,"Stale dated transaction");
 		 mMessages.put(ERROR_CODE_82 ,"Initiate key exchange");
 		 mMessages.put(ERROR_CODE_81 ,"Issuer requested stand-in");
 		 mMessages.put(ERROR_CODE_83 ,"Reserved for private use");
@@ -226,7 +261,7 @@ public class ActionCode {
 		 mMessages.put(ERROR_CODE_93 ,"DECLINED # 93");
 		 mMessages.put(ERROR_CODE_95 ,"Total Mismatch Reconcile error");//Only for Settlements
 		 mMessages.put(ERROR_CODE_97 ,"Reserved for national use");
-		 mMessages.put(ERROR_CODE_96 ,"Format Error"); //If Mandatory fields are absent OR the Packet contains invalid characters
+		 mMessages.put(ERROR_CODE_96 ,"System Malfunction"); //If Mandatory fields are absent OR the Packet contains invalid characters
 		 mMessages.put(ERROR_CODE_98 ,"Reserved for national use");
 		 mMessages.put(ERROR_CODE_Y1 ,"OFFLINE APPROVED 1");//EMV transaction - Offline approved by terminal
 		 mMessages.put(ERROR_CODE_99 ,"Reserved for national use");
@@ -242,13 +277,48 @@ public class ActionCode {
 		 mMessages.put(ERROR_CODE_E2 ,"Invalid billing data ");//Error for Split transaction notification fail
 		 mMessages.put(ERROR_CODE_L1 ,"Litle error message");//Litle error message
 		 mMessages.put(ERROR_CODE_E3 ,"Invalid Billing Country name ");//Billing CountryTypeEnum is invalid
-		 mMessages.put(ERROR_CODE_SR ,"Invalid CVV");
+		 mMessages.put(ERROR_CODE_SR ,"BAD CVV2");
 		 mMessages.put(ERROR_CODE_QR ,"QR Code is expired");
 		 mMessages.put(ERROR_CODE_RQ ,"QR Code is Already Used");
 		 mMessages.put(ERROR_CODE_Z12 ,"Processor Error");
 		 mMessages.put(ERROR_CODE_WP ,"Wrong Mobile Pin");
 		 mMessages.put(ERROR_CODE_UID ,"Invalid Card");
 		 mMessages.put(ERROR_CODE_ISO ,"Invalid IsoMessage");
+		 mMessages.put(ERROR_CODE_39, "No credit account");
+		 mMessages.put(ERROR_CODE_41, "Lost card, pick-up");
+		 mMessages.put(ERROR_CODE_43, "Stolen card, pick-up");
+		 mMessages.put(ERROR_CODE_T7, "Only Purchase, no cash back");
+		 mMessages.put(ERROR_CODE_IT, "Invalid Card Token");
+		 mMessages.put(ERROR_CODE_0A, "Invalid transaction - MTI");
+		 mMessages.put(ERROR_CODE_1A, "Invalid transaction - No PreAuth");
+		 mMessages.put(ERROR_CODE_2A, "Invalid transaction - Invalid request type");
+		 mMessages.put(ERROR_CODE_3A, "Invalid transaction - Hce_conection_error");
+		 mMessages.put(ERROR_CODE_4A, "Invalid transaction - Invalid request type financial advice");
+		 mMessages.put(ERROR_CODE_5A, "Invalid transaction - Original transaction not found");
+		 mMessages.put(ERROR_CODE_6A, "Invalid transaction - Original Approved transaction not found");
+		 mMessages.put(ERROR_CODE_7A, "Invalid transaction - Invalid Transaction Date");
+		 mMessages.put(ERROR_CODE_8A, "Invalid transaction - Invalid Transaction Date format");
+		 mMessages.put(ERROR_CODE_9A, "Invalid transaction - detokenization error");
+		 mMessages.put(ERROR_CODE_0B, "Invalid transaction - invalid hce transaction");
+		 mMessages.put(ERROR_CODE_1B, "Invalid Currency code");
+		 mMessages.put(ERROR_CODE_2B, "Invalid Transaction Currency code");
+		 mMessages.put(ERROR_CODE_3B, "Invalid Account Type");
+		 mMessages.put(ERROR_CODE_4B, "Invalid transaction - Account not supported");
+		 mMessages.put(ERROR_CODE_5B, "Invalid transaction - ATM not supported IPD/RIPD Transaction");
+		 mMessages.put(ERROR_CODE_6B, "Inactive Account");
+		 mMessages.put(ERROR_CODE_7B, "Inactive Customer");
+		 mMessages.put(ERROR_CODE_8B, "Invalid transaction - Invalid IPD/RIPD Transaction");
+		 mMessages.put(ERROR_CODE_9B, "Invalid transaction - Invalid ECommerce Transaction");
+		 mMessages.put(ERROR_CODE_0C, "Format error - Invalid PAN");
+		 mMessages.put(ERROR_CODE_1C, "Format error - Track2 and PAN not availble");
+		 mMessages.put(ERROR_CODE_2C, "Format error - error in parse Track2 data");
+		 mMessages.put(ERROR_CODE_3C, "Invalid transaction - Card data not found");
+		 mMessages.put(ERROR_CODE_4C, "Invalid transaction - failed while matching PPE condition");
+		 mMessages.put(ERROR_CODE_5C, "Format error - Invalid Auth Cycle ID");
+		 mMessages.put(ERROR_CODE_6C, "Format error - Invalid POS Entry mode");
+		 mMessages.put(ERROR_CODE_7C, "Format error - Mandatory fields check failed for MTI");
+		 mMessages.put(ERROR_CODE_8C, "Format error - Mandatory fields missing");
+		 mMessages.put(ERROR_CODE_9C, "Invalid card data");
 
 	}
 

@@ -1,10 +1,10 @@
 package com.chatak.acquirer.admin.controller;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,23 +27,32 @@ import org.springframework.web.servlet.ModelAndView;
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.UserData;
+import com.chatak.acquirer.admin.service.IsoService;
 import com.chatak.acquirer.admin.service.MerchantUpdateService;
+import com.chatak.acquirer.admin.service.ProgramManagerService;
 import com.chatak.acquirer.admin.service.RoleService;
 import com.chatak.acquirer.admin.service.UserService;
+import com.chatak.acquirer.admin.util.CommonUtil;
 import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
-import com.chatak.acquirer.admin.util.UserListFileExportUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.enums.ExportType;
+import com.chatak.pg.enums.RoleLevel;
 import com.chatak.pg.model.GenericUserDTO;
 import com.chatak.pg.model.UserRoleDTO;
 import com.chatak.pg.model.UserRolesDTO;
+import com.chatak.pg.user.bean.IsoRequest;
+import com.chatak.pg.user.bean.IsoResponse;
+import com.chatak.pg.user.bean.ProgramManagerRequest;
+import com.chatak.pg.user.bean.ProgramManagerResponse;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 
@@ -64,6 +73,15 @@ public class UserManagementController implements URLMappingConstants {
 
   @Autowired
   MerchantUpdateService merchantUpdateService;
+  
+  @Autowired
+  RoleController roleController;
+  
+  @Autowired
+  ProgramManagerService programManagerService;
+  
+  @Autowired
+  IsoService isoService;
 
   /**
    * Method to create the user
@@ -85,6 +103,7 @@ public class UserManagementController implements URLMappingConstants {
       return setInvalidRequestPage(session, modelAndView);
     }
     try {
+      roleController.getRoleListForRoles(session, model);
       List<UserRolesDTO> userRoleList = roleService.getRoleList();
       session.setAttribute("userRoleListData", userRoleList);
       GenericUserDTO genericUserDTO = new GenericUserDTO();
@@ -132,6 +151,8 @@ public class UserManagementController implements URLMappingConstants {
       return setInvalidRequestPage(session, modelAndView);
     }
     try {
+    	roleController.getRoleListForRoles(session, model);
+    	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       List<UserRolesDTO> userRoleList = roleService.getRoleList();
       session.setAttribute("userRoleListData", userRoleList);
       userDataDto.setPageIndex(Constants.ONE);
@@ -146,7 +167,10 @@ public class UserManagementController implements URLMappingConstants {
       List<GenericUserDTO> userList = new ArrayList<GenericUserDTO>();
       List<GenericUserDTO> userList1 = new ArrayList<GenericUserDTO>();
       String userType = userDataDto.getUserType();
-      if (Constants.ADMIN_USER_TYPE.equalsIgnoreCase(userType)) {
+      if (Constants.ADMIN_USER_TYPE.equalsIgnoreCase(userType)
+    		  || Constants.PM_USER_TYPE.equalsIgnoreCase(userType)
+    		  || Constants.ISO_USER_TYPE.equalsIgnoreCase(userType)) {
+    	userDataDto.setEntityId(loginResponse.getEntityId());
         userList = userService.searchAdminUser(userDataDto);
         nofAdminUsers = userDataDto.getNoOfRecords();
       } else if (Constants.TYPE_MERCHANT.equalsIgnoreCase(userType)) {
@@ -206,6 +230,7 @@ public class UserManagementController implements URLMappingConstants {
       return setInvalidRequestPage(session, modelAndView);
     }
     try {
+    	roleController.getRoleListForRoles(session, model);
       List<UserRolesDTO> userRoleList = roleService.getRoleList();
       session.setAttribute("userRoleListData", userRoleList);
       UserData userData = new UserData();
@@ -255,6 +280,7 @@ public class UserManagementController implements URLMappingConstants {
       return setInvalidRequestPage(session, modelAndView);
     }
     try {
+    	roleController.getRoleListForRoles(session, model);
       model.put("userData", userData);
       String url = request.getRequestURL().toString();
       String uri = request.getRequestURI();
@@ -262,7 +288,9 @@ public class UserManagementController implements URLMappingConstants {
         String merchantLink = url.substring(0, url.length() - uri.length()) + "/"
             + Properties.getProperty("chatak.merchant.portal");
         userData.setMerchantLink(merchantLink);
-      } else if (Constants.ADMIN_USER_TYPE.equals(userData.getRoleType())) {
+      } else if (Constants.ADMIN_USER_TYPE.equals(userData.getRoleType()) 
+    		  || RoleLevel.CP_PM.getValue().equalsIgnoreCase(userData.getRoleType())
+    		  || RoleLevel.CP_ISO.getValue().equalsIgnoreCase(userData.getRoleType())) {
         String merchantLink = url.substring(0, url.length() - uri.length()) + "/"
             + Properties.getProperty("chatak.acquirer.admin");
         userData.setMerchantLink(merchantLink);
@@ -304,6 +332,7 @@ public class UserManagementController implements URLMappingConstants {
     GenericUserDTO userDataDto = null;
     List<GenericUserDTO> userList3 = null;
     try {
+    	roleController.getRoleListForRoles(session, model);
       userDataDto = (GenericUserDTO) session.getAttribute(Constants.USER_SEARCH_REQUEST);
       model.put("userDataDto", userDataDto);
       userDataDto.setPageIndex(pageNumber);
@@ -384,11 +413,15 @@ public class UserManagementController implements URLMappingConstants {
       List<GenericUserDTO> userList1 = userService.searchMerchantUser(userData);
       userList3.addAll(userList);
       userList3.addAll(userList1);
+      ExportDetails exportDetails = new ExportDetails();
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        UserListFileExportUtil.downloadUserPdf(userList3, response, messageSource);
+        exportDetails.setExportType(ExportType.PDF);
       } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        UserListFileExportUtil.downloadUserXl(userList3, response, messageSource);
-      }
+        exportDetails.setExportType(ExportType.XLS);
+        exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
+    }
+    setExportDetailsDataForDownloadRoleReport(userList, exportDetails); 
+    ExportUtil.exportData(exportDetails, response, messageSource);
       userData.setPageSize(pageSize);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
@@ -398,7 +431,107 @@ public class UserManagementController implements URLMappingConstants {
     logger.info("Exit:: UserManagementController:: downloadUserReport method");
     return null;
   }
+  
+  private void setExportDetailsDataForDownloadRoleReport(List<GenericUserDTO> userList,
+      ExportDetails exportDetails) {
+    exportDetails.setReportName("User_");
+    exportDetails.setHeaderMessageProperty("chatak.header.user.messages");
 
+    exportDetails.setHeaderList(getRoleHeaderList());
+    exportDetails.setFileData(getRoleFileData(userList));
+  }
+
+  private List<String> getRoleHeaderList() {
+    String[] headerArr = {
+        messageSource.getMessage("report-common-created-date", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("userList-file-exportutil-userType", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("userList-file-exportutil-roleName", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant.label.merchantcode", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant.label.merchantname", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("merchant.label.submerchantcode", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("sub-merchant-account-search.label.sub-merchantname", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("reports-file-exportutil-userName", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("userList-file-exportutil-firstName", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("userList-file-exportutil-lastName", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("userList-file-exportutil-emailId", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("userList-file-exportutil-status", null,
+            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("report-common-suspended-date", null,
+            LocaleContextHolder.getLocale())};
+    return new ArrayList<String>(Arrays.asList(headerArr));
+  }
+
+  private static List<Object[]> getRoleFileData(List<GenericUserDTO> userList) {
+    List<Object[]> fileData = new ArrayList<Object[]>();
+
+    for (GenericUserDTO userData : userList) {
+      String status = "";
+      status = getStatus(userData);
+          
+      Object[] rowData = new Object[Integer.parseInt("13")];
+      rowData[0] = getTimeString(userData.getCreatedDate());
+      rowData[1] = userData.getUserType();
+      rowData[Integer.parseInt("2")] = userData.getUserRoleName();
+      if (userData.getUserType().equals("Merchant")) {
+        rowData[Integer.parseInt("3")] =userData.getMerchantCode();
+        rowData[Integer.parseInt("4")] =userData.getMerchantName();
+      } else {
+        rowData[Integer.parseInt("3")] = " ";
+        rowData[Integer.parseInt("4")] = " ";
+      }
+      if (userData.getUserType().equals("SubMerchant")) {
+        rowData[Integer.parseInt("5")] =userData.getMerchantCode();
+        rowData[Integer.parseInt("6")] =userData.getMerchantName();
+      } else {
+        rowData[Integer.parseInt("5")] = " ";
+        rowData[Integer.parseInt("6")] = " ";
+      }
+      rowData[Integer.parseInt("7")] = userData.getUserName();
+      rowData[Integer.parseInt("8")] = userData.getFirstName();
+      rowData[Integer.parseInt("9")] = userData.getLastName();
+      rowData[Integer.parseInt("10")] = userData.getEmail();
+      rowData[Integer.parseInt("11")] = status;
+      if (userData.getStatus() == Constants.TWO) {
+        rowData[Integer.parseInt("12")] = userData.getUpdatedDate();
+      } else {
+        rowData[Integer.parseInt("12")] = " ";
+      }
+      fileData.add(rowData);
+      }
+    return fileData;
+    }
+  
+  private static String getStatus(GenericUserDTO userData) {
+    String status;
+    if (userData.getStatus() == 0) {
+      status = "Active";
+    } else if (userData.getStatus() == Constants.ONE) {
+      status = "Pending";
+    } else if (userData.getStatus() == Constants.TWO) {
+      status = "Suspended";
+    } else if (userData.getStatus() == Constants.THREE) {
+      status = "Deleted";
+    } else {
+      status = "Declined";
+    }
+    return status;
+  }
+  
+  private static String getTimeString(Timestamp time) {
+    return (DateUtil.toDateStringFormat(time, DateUtil.VIEW_DATE_TIME_FORMAT));
+  }
+  
   /**
    * Method for edit user
    * @param model
@@ -419,7 +552,7 @@ public class UserManagementController implements URLMappingConstants {
     }
     try {
 
-      UserData userData = validateUserRoleList(request, session, userIdData, usersGroupType);
+      UserData userData = validateUserRoleList(request, session, userIdData, usersGroupType, model);
       model.put(Constants.USER_EDIT_DATA, userData);
       validateSessionAttribute(session, modelAndView);
     } catch (Exception e) {
@@ -443,7 +576,7 @@ public class UserManagementController implements URLMappingConstants {
   }
 
   private UserData validateUserRoleList(HttpServletRequest request, HttpSession session, final Long userIdData,
-		final String usersGroupType) throws ChatakAdminException {
+		final String usersGroupType,Map model) throws ChatakAdminException {
 	List<UserRoleDTO> userRoleList = roleService.getRoleListByType(usersGroupType);
     session.setAttribute("userRoleListData", userRoleList);
     UserData userData = userService.getUserDataOnUsersGroupType(userIdData, usersGroupType);
@@ -454,6 +587,21 @@ public class UserManagementController implements URLMappingConstants {
         && requestType.equalsIgnoreCase(Constants.USERS_GROUP_MERCHANT)) {
       userData.setRequestType(Constants.USERS_GROUP_MERCHANT);
     }
+    ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
+    Map<Long, String> entityMap = new HashMap<>();
+    if(userData.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE) && !StringUtil.isNull(userData.getEntityId())) {
+    	programManagerRequest.setId(userData.getEntityId());
+        ProgramManagerResponse programManagerResponse = programManagerService
+      		  .getAllProgramManagers(programManagerRequest);
+    	entityMap = getEntityKeyValuePairs(programManagerResponse);
+    }else if(userData.getUserType().equalsIgnoreCase(Constants.ISO_USER_TYPE) && !StringUtil.isNull(userData.getEntityId())) {
+    	IsoRequest isoRequest = new IsoRequest();
+        isoRequest.setProgramManagerRequest(programManagerRequest);
+        isoRequest.setId(userData.getEntityId());
+        IsoResponse isoResponse = isoService.getAllIso(isoRequest);
+    	entityMap = getEntityKeyValuePairs(isoResponse);
+    }
+    model.put("entityList", entityMap);
 	return userData;
   }
 
@@ -479,7 +627,7 @@ public class UserManagementController implements URLMappingConstants {
     }
     try {
 
-      UserData userData = validateUserRoleList(request, session, userIdData, usersGroupType);
+      UserData userData = validateUserRoleList(request, session, userIdData, usersGroupType, model);
       model.put(Constants.USER_VIEW_DATA, userData);
       validateSessionAttribute(session, modelAndView);
     } catch (Exception e) {
@@ -580,8 +728,24 @@ public class UserManagementController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_USER_CREATE);
     try {
+    	roleController.getRoleListForRoles(session, model);
       List<UserRoleDTO> userRoleList = roleService.getRoleListByType(rolesType);
       session.setAttribute("userRoleListData", userRoleList);
+      ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
+      IsoRequest isoRequest = new IsoRequest();
+      CommonUtil.setEntityIdsFromUserType(programManagerRequest, isoRequest, session);
+      programManagerRequest.setStatuses(Arrays.asList("Active"));
+      ProgramManagerResponse programManagerResponse = programManagerService
+    		  .getAllProgramManagers(programManagerRequest);
+      isoRequest.setProgramManagerRequest(programManagerRequest);
+      IsoResponse isoResponse = isoService.getAllIso(isoRequest);
+      Map<Long, String> entityMap = new HashMap<>();
+      if (rolesType.equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+    	  entityMap = getEntityKeyValuePairs(programManagerResponse);
+      } else if (rolesType.equalsIgnoreCase(Constants.ISO_USER_TYPE)) {
+    	  entityMap = getEntityKeyValuePairs(isoResponse);
+      }
+      model.put("entityList", entityMap);
       UserData userData = new UserData();
       userData.setRoleType(rolesType);
       model.put("userData", userData);
@@ -600,10 +764,14 @@ public class UserManagementController implements URLMappingConstants {
     } else {
       Collections.sort(list, (GenericUserDTO o1, GenericUserDTO o2) -> {
         return o1.getCreatedDate().before(o2.getCreatedDate()) ? 1
-            : o1.getCreatedDate().after(o2.getCreatedDate()) ? -1 : 0;
+            : validateCreatedDate(o1, o2);
       });
       return list;
     }
+  }
+
+  private static int validateCreatedDate(GenericUserDTO o1, GenericUserDTO o2) {
+    return o1.getCreatedDate().after(o2.getCreatedDate()) ? -1 : 0;
   }
 
   @RequestMapping(value = USER_ACTIVATION_SUSPENTION, method = RequestMethod.POST)
@@ -694,5 +862,21 @@ public class UserManagementController implements URLMappingConstants {
         messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     userResponse.setRequestType(Constants.USERS_GROUP_MERCHANT);
   }
-  
+	
+	private Map<Long,String> getEntityKeyValuePairs(Object entityObj) {
+		Map<Long,String> entityMap = new HashMap<>();
+		if(entityObj instanceof ProgramManagerResponse) {
+			List<ProgramManagerRequest> programManagerList = ((ProgramManagerResponse) entityObj).getProgramManagersList();
+			for(ProgramManagerRequest programManagerRequest : programManagerList) {
+				entityMap.put(programManagerRequest.getId(), programManagerRequest.getProgramManagerName());
+			}
+		} else if(entityObj instanceof IsoResponse) {
+			List<IsoRequest> isoList = ((IsoResponse) entityObj).getIsoRequest();
+			for(IsoRequest isoRequest : isoList) {
+				entityMap.put(isoRequest.getId(), isoRequest.getIsoName());
+			}
+		}
+		return entityMap;
+	}
+	
 }

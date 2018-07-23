@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -18,7 +19,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -50,15 +51,18 @@
 						<form:form action="processing-transaction-details-pagination" name="paginationForm" method="post">
 							<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 							<input type="hidden" id="totalRecordsId" name="totalRecords" />
+						    <input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
 
 						<form:form action="processing-transaction-details-report" name="downloadReport" method="post">
 							<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" />
 							<input type="hidden" id="downloadTypeId" name="downloadType" />
+						    <input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
 						
 						<form:form action="pending-merchant-show" name="viewPendingMerchant" method="post">
 									<input type="hidden" id="merchantViewId" name="merchantViewId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
 								
 			
@@ -151,9 +155,7 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/backbutton.js"></script>
 	 <script src="../js/messages.js"></script>
@@ -165,6 +167,22 @@
 			document.forms["viewPendingMerchant"].submit();
 			
 		}
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 		</script>
 </body>
 </html>

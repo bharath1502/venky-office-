@@ -17,6 +17,14 @@ public class CrossScriptingFilter implements Filter {
 
   private FilterConfig filterConfig;
 
+  public FilterConfig getFilterConfig() {
+    return filterConfig;
+  }
+
+  public void setFilterConfig(FilterConfig filterConfig) {
+    this.filterConfig = filterConfig;
+  }
+
   public void init(FilterConfig filterConfig) throws ServletException {
     this.filterConfig = filterConfig;
   }

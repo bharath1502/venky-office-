@@ -24,6 +24,16 @@ public class LoginDetails implements Serializable {
   private String acqP;
 
   private String jSession;
+  
+  private String currentLoginTime;
+
+  public String getCurrentLoginTime() {
+    return currentLoginTime;
+  }
+
+  public void setCurrentLoginTime(String currentLoginTime) {
+    this.currentLoginTime = currentLoginTime;
+  }
 
   /**
    * @return the acqU

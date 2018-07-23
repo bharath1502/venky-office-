@@ -52,7 +52,7 @@
 	}
 </script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -109,6 +109,7 @@
 							<!-- Page Form Start -->
 							<form:form action="do-virtual-terminal-preAuth"
 								commandName="virtualTerminalPreAuth" id="txnForm">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12" id="hideAllFields">
 									<div class="row">
 										<div class="field-element-row">

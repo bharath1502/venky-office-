@@ -226,26 +226,32 @@ public class TerminalController implements URLMappingConstants {
       terminal.setPageIndex(pageNumber);
       terminal.setNoOfRecords(totalRecords);
       terminal.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
-      try {
-        TerminalSearchResponse searchResponse = terminalService.searchTerminal(terminal);
-        List<Terminals> terminals = new ArrayList<Terminals>();
-        if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getTerminalList())) {
-          terminals = searchResponse.getTerminalList();
-          modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
-              searchResponse.getTotalNoOfRows());
-        }
-        modelAndView.addObject(Constants.TERMINALS_MODEL, terminals);
-      } catch (Exception e) {
-        logger.error("ERROR:: TerminalController:: getPaginationList method", e);
-        modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
-            null, LocaleContextHolder.getLocale()));
-      }
+      modelAndView = validateTerminalSearchResponse(pageNumber, modelAndView, terminal);
     } catch (Exception e) {
       logger.error("ERROR:: TerminalController:: getPaginationList method", e);
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting:: TerminalController:: getPaginationList method");
+    return modelAndView;
+  }
+
+  private ModelAndView validateTerminalSearchResponse(final Integer pageNumber,
+      ModelAndView modelAndView, TerminalData terminal) {
+    try {
+      TerminalSearchResponse searchResponse = terminalService.searchTerminal(terminal);
+      List<Terminals> terminals = new ArrayList<Terminals>();
+      if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getTerminalList())) {
+        terminals = searchResponse.getTerminalList();
+        modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
+            searchResponse.getTotalNoOfRows());
+      }
+      modelAndView.addObject(Constants.TERMINALS_MODEL, terminals);
+    } catch (Exception e) {
+      logger.error("ERROR:: TerminalController:: getPaginationList method", e);
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+    }
     return modelAndView;
   }
 

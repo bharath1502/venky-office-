@@ -11,10 +11,14 @@ import org.springframework.stereotype.Repository;
 import com.chatak.pg.acq.dao.CountryDao;
 import com.chatak.pg.acq.dao.model.PGCountry;
 import com.chatak.pg.acq.dao.model.PGState;
+import com.chatak.pg.acq.dao.model.TimeZone;
 import com.chatak.pg.acq.dao.repository.CountryRepository;
 import com.chatak.pg.acq.dao.repository.StateRepository;
+import com.chatak.pg.acq.dao.repository.TimeZoneRepository;
 import com.chatak.pg.bean.CountryRequest;
 import com.chatak.pg.bean.StateRequest;
+import com.chatak.pg.bean.TimeZoneRequest;
+import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.util.CommonUtil;
 
 @Repository("countryDao")
@@ -27,6 +31,9 @@ public class CountryDaoImpl implements CountryDao {
 
 	@Autowired
 	private StateRepository stateRepository;
+	
+	@Autowired
+	private TimeZoneRepository timeZoneRepository;
 
 
 	@Override
@@ -95,5 +102,44 @@ public class CountryDaoImpl implements CountryDao {
   }
   return countryRequest;
   }
+  
+  @Override
+  public CountryRequest getPmCountryById(Long countryId) throws DataAccessException {
+	  List<PGCountry> pgCountry =countryRepository.findById(countryId);
+   CountryRequest countryRequest=new CountryRequest();
+   if(pgCountry!=null) {
+    countryRequest.setId(pgCountry.get(0).getId());
+    countryRequest.setName(pgCountry.get(0).getName());
+  }
+  return countryRequest;
+  }
 
+  @Override
+	//@Cacheable("getAllStates")
+	public List<TimeZoneRequest> findAllTimeZone(Long countryId) throws DataAccessException {
+		List<TimeZoneRequest> list = new ArrayList<TimeZoneRequest>();
+		try {
+			List<TimeZone> timeZoneList = timeZoneRepository.findByCountryId(countryId);
+			list = CommonUtil.copyListBeanProperty(timeZoneList, TimeZoneRequest.class);
+		} catch (Exception e) {
+			logger.error("Error in retrieving the list of time Zone for country id " + countryId, e);
+		}
+
+		return list;
+	}
+	
+	@Override
+	public TimeZoneRequest findTimeZoneByID(Long timeZoneId) throws DataAccessException{
+		TimeZoneRequest timeZoneRequest = null;
+		try {
+			List<TimeZone> timeZoneList = timeZoneRepository.findById(timeZoneId);
+			if (StringUtil.isListNotNullNEmpty(timeZoneList)) {
+				timeZoneRequest = CommonUtil.copyBeanProperties(timeZoneList.get(0), TimeZoneRequest.class);
+			}
+		} catch (Exception e) {
+			logger.error("Error in retrieving the timeZone for timeZone id " + timeZoneId, e);
+		}
+
+		return timeZoneRequest;
+	}
 }

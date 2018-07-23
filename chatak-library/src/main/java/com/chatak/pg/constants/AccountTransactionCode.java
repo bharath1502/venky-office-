@@ -28,9 +28,9 @@ public class AccountTransactionCode {
 
   public static final String CC_MERCHANT_FEE_DEBIT = "CC_MERCHANT_FEE_DEBIT";
 
-  public static final String CC_ACQUIRER_FEE_CREDIT = "CC_ACQUIRER_FEE_CREDIT"; //ReBrand
+  public static final String CC_ACQUIRER_FEE_CREDIT = "CC_ACQUIRER_FEE_CREDIT";
 
-  public static final String CC_ACQUIRER_FEE_DEBIT = "CC_ACQUIRER_FEE_DEBIT"; //ReBrand
+  public static final String CC_ACQUIRER_FEE_DEBIT = "CC_ACQUIRER_FEE_DEBIT";
   
   public static final String FT_CHECK="FT_CHECK";
   
@@ -52,8 +52,12 @@ public class AccountTransactionCode {
   
   public static final String ACC_DEBIT = "Debit";
   
+  public static final String SYSTEM_REVENUE_CREDIT = "SYS_REVENUE_CREDIT";
+
+  public static final String SYSTEM_REVENUE_DEBIT = "SYS_REVENUE_DEBIT";
+
+  public static final String CC_PM_FEE_CREDIT = "CC_PM_FEE_CREDIT";
   
-  
-  
+  public static final String CC_ISO_FEE_CREDIT = "CC_ISO_FEE_CREDIT";
   
 }

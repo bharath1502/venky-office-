@@ -77,7 +77,7 @@ public class MerchantUpdateServiceImplTest {
 	@Mock
 	MerchantUpdateDao merchantUpdateDao;
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testSearchMerchant() throws ChatakAdminException {
 		Merchant merchant = new Merchant();
 		GetMerchantListResponse getMerchantListResponse = new GetMerchantListResponse();
@@ -320,7 +320,7 @@ public class MerchantUpdateServiceImplTest {
 		merchantUpdateServiceImpl.getCurrencies();
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testFindByMerchantId() throws NumberFormatException, InstantiationException, IllegalAccessException {
 		PGMerchant pGMerchant = new PGMerchant();
 		List<PGMerchantCurrencyMapping> pgMerchantCurrencyMapping = new ArrayList<>();

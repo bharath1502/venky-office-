@@ -26,5 +26,4 @@ public interface MerchantService {
 	
 	public Response findProgramManagerByPartnerId(String partnerId) throws ChatakAdminException;
 	
-	public Response findPartnerByMerchantCode(String merchantId);
 }

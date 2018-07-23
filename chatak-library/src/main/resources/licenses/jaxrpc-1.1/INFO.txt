@@ -1,0 +1,6 @@
+Project homepage: https://mvnrepository.com/artifact/javax.xml/jaxrpc/1.1
+
+Sources: https://mvnrepository.com/artifact/javax.xml/jaxrpc
+
+License:
+Licensed under Java Specifications

@@ -66,6 +66,15 @@ public class PGFeeProgram implements Serializable {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "FEE_PROGRAM_ID")
   private List<PGAcquirerFeeValue> acquirerFeeValueList;
+  
+  @Column(name = "CARD_PROGRAM_ID")
+  private Long cardProgramId;
+  
+  @Column(name = "PM_SHARE")
+  private Double pmShare;
+  
+  @Column(name = "ISO_SHARE")
+  private Double isoShare;
 
   /**
    * @return the feeProgramId
@@ -243,6 +252,48 @@ public class PGFeeProgram implements Serializable {
    */
   public void setPgOtherFeeValue(PGOtherFeeValue pgOtherFeeValue) {
     this.pgOtherFeeValue = pgOtherFeeValue;
+  }
+
+  /**
+   * @return the cardProgramId
+   */
+  public Long getCardProgramId() {
+    return cardProgramId;
+  }
+
+  /**
+   * @param cardProgramId the cardProgramId to set
+   */
+  public void setCardProgramId(Long cardProgramId) {
+    this.cardProgramId = cardProgramId;
+  }
+
+  /**
+   * @return the pmShare
+   */
+  public Double getPmShare() {
+    return pmShare;
+  }
+
+  /**
+   * @param pmShare the pmShare to set
+   */
+  public void setPmShare(Double pmShare) {
+    this.pmShare = pmShare;
+  }
+
+  /**
+   * @return the isoShare
+   */
+  public Double getIsoShare() {
+    return isoShare;
+  }
+
+  /**
+   * @param isoShare the isoShare to set
+   */
+  public void setIsoShare(Double isoShare) {
+    this.isoShare = isoShare;
   }
 
 }

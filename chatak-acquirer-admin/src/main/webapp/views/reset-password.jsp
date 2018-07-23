@@ -7,6 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page import="java.util.Calendar"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -28,7 +29,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -37,7 +38,7 @@
 			<header class="col-sm-12 login-page-main">
 				<!--Header Logo Start -->
 				<div class="col-sm-4"></div>
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<img src="../images/Chatak-logo.jpg" height="63px" alt="Logo" />
 				</div>
 				<!--Header Logo End -->
@@ -61,6 +62,7 @@
 							<!-- Page Form Start -->
 							<form:form action="password-reset"
 								commandName="resetPasswordData" method="post">
+							 <input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12 login-elements-holder">
 
 									<fieldset class="col-sm-12">
@@ -74,7 +76,7 @@
 												name="newPassword" id="newPassword" class="form-control"
 												placeholder="New Password" onblur="validateNewPassword()" />
 										</div>
-										<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+										<div class="discriptionErrorMsgReset" data-toggle="tooltip" data-placement="top" title="">
 											<span class="red-error" id="newPasswordDiv">&nbsp;</span>
 										</div>
 									</fieldset>

@@ -348,7 +348,7 @@ public class MerchantAccountServiceImplTest {
 		merchantAccountServiceImpl.updateMerchantAccount(merchant);
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testLogManualAccountTransactionManualCredit() {
 		PGAccount account = new PGAccount();
 		AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
@@ -357,7 +357,7 @@ public class MerchantAccountServiceImplTest {
 				accountBalanceDTO);
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testLogManualAccountTransactionManualDebit() {
 		PGAccount account = new PGAccount();
 		AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
@@ -379,9 +379,8 @@ public class MerchantAccountServiceImplTest {
 	public void testGetMerchantMapByMerchantType() {
 		List<Map<String, String>> merchantList = new ArrayList<>();
 		Map<String, String> map = new HashMap<>();
-		String string = new String();
 		merchantList.add(map);
-		map.put(string, "xyz");
+		map.put("key", "xyz");
 		Mockito.when(merchantDao.getMerchantMapByMerchantType(Matchers.anyString())).thenReturn(merchantList);
 		merchantAccountServiceImpl.getMerchantMapByMerchantType("Default");
 

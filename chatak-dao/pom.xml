@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.chatak.pg</groupId>
 	<artifactId>chatak-dao</artifactId>
-	<version>0.0.1</version>
+	<version>1.3.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>chatak-dao</name>
@@ -15,6 +15,7 @@
 		<spring-version>4.0.2.RELEASE</spring-version>
 		<spring-security-version>3.2.5.RELEASE</spring-security-version>
 		<commons-logging-version>1.1.1</commons-logging-version>
+    	<release-version>1.3.2-SNAPSHOT</release-version>
 	</properties>
 	
 	<build>
@@ -70,6 +71,28 @@
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<manifest>
+						<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+					</manifest>
+					<archive>
+						<manifestEntries>
+							<Project-Name>${project.name}</Project-Name>
+						<Project-Version>${project.version}</Project-Version>
+						<Build-Time>${maven.build.timestamp}</Build-Time>
+						<Build-User>${user.name}</Build-User>
+						<Build-Number>${BUILD_NUMBER}</Build-Number>
+						<Git-Revision>${GIT_COMMIT}</Git-Revision>
+						<Git-Branch>${GIT_BRANCH}</Git-Branch>
+						<Codebuild-Number>${CODEBUILD_BUILD_ID}</Codebuild-Number>
+                        <Codecommit-Revision>${CODEBUILD_SOURCE_VERSION}</Codecommit-Revision>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -213,7 +236,7 @@
 		<dependency>
 			<groupId>com.chatak.pg</groupId>
 			<artifactId>chatak-library</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${release-version}</version>
 		</dependency>
 		<!-- pg-library dependencies -->
 		

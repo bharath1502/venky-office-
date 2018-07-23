@@ -1,0 +1,6 @@
+Project homepage: https://mvnrepository.com/artifact/org.codehaus.jettison/jettison
+
+Sources: https://mvnrepository.com/artifact/org.codehaus.jettison/jettison/1.3.3
+
+License:
+Licensed under Apache License 2.0

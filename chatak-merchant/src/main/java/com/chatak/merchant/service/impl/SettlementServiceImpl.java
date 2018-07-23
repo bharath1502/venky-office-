@@ -9,7 +9,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +45,11 @@ import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.constants.AccountTransactionCode;
+import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.FeePostingStatus;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ProcessorType;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.BulkSettlementResponse;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.model.SettlementActionDTOList;
@@ -59,11 +60,9 @@ import com.chatak.pg.model.virtualAccFeePostRequest;
 import com.chatak.pg.model.virtualAccFeePostResponse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
-import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * << Add Comments Here >>
@@ -190,7 +189,7 @@ public class SettlementServiceImpl implements SettlementService {
       PGTransaction pgTransaction, PGOnlineTxnLog pgOnlineTxnLog)  {
     Long chatakFeeAmountTotal;
     List<Object> objectResult =
-        getProcessingFee(PGUtils.getCCType(EncryptionUtil.decrypt(pgTransaction.getPan())),
+        getProcessingFee(PGUtils.getCCType(),
             1L, pgTransaction.getMerchantId(), pgTransaction.getTxnTotalAmount());
     chatakFeeAmountTotal = (Long) objectResult.get(1);
     Long merchantFeeAmount = 0l;
@@ -394,7 +393,7 @@ public class SettlementServiceImpl implements SettlementService {
       PGTransaction pgTransaction, PGOnlineTxnLog pgOnlineTxnLog) {
     Long chatakFeeAmountTotal;
     List<Object> objectResult =
-        getProcessingFee(PGUtils.getCCType(EncryptionUtil.decrypt(pgTransaction.getPan())),
+        getProcessingFee(PGUtils.getCCType(),
             1L, pgTransaction.getMerchantId(), pgTransaction.getTxnTotalAmount());
     chatakFeeAmountTotal = (Long) objectResult.get(1);
     Long merchantFeeAmount = 0l;
@@ -451,7 +450,7 @@ public class SettlementServiceImpl implements SettlementService {
         feeProgramDao.getAcquirerFeeValueByMerchantIdAndCardType(merchantCode, cardType);
     if (CommonUtil.isListNotNullAndEmpty(acquirerFeeValueList)) {
 
-      logger.info(                                                                
+      logger.info(
           " SettlementServiceImpl:: getProcessingFee method :: Applying this merchant fee code ");
       for (PGAcquirerFeeValue acquirerFeeValue : acquirerFeeValueList) {
         calculatedProcessingFee = 0.00;
@@ -502,75 +501,62 @@ public class SettlementServiceImpl implements SettlementService {
         .setTotalTxnAmount(feeLog.getTxnAmount() + feeLog.getChatakFee() + feeLog.getMerchantFee());// sending total txn
                                                                                                            // amount to issuance
                                                                                                            /* Start posting fee to issuance */
-    ClientResponse response = new ClientResponse(null, null, null, null);
-    try {
+   try {
+			String output = JsonUtil.sendToIssuance(request, Properties.getProperty("chatak-issuance.virtual.post.fee"),
+					mode, String.class);
+			/* End posting fee to issuance */
+			virtualAccFeePostResponse feeResponse = mapper.readValue(output, virtualAccFeePostResponse.class);
+			if (null != feeResponse) {
+				if (feeResponse.getErrorCode().equals("CEC_0001")) {
+					feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_SUCCESS);
+					feeLog.setIssuanceFeeTxnId(feeResponse.getCiVirtualAccTxnId());
+				} else {
+					feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_DECLINED);
+				}
+				feeLog.setIssuanceMessage(feeResponse.getErrorMessage());
+			}
+		} catch (HttpClientException e) {
+			logger.error("ERROR:: RestPaymentServiceImpl:: doVoid method", e);
+			throw new ChatakMerchantException(messageSource.getMessage(ActionErrorCode.ERROR_CODE_API_CONNECT, null,
+					LocaleContextHolder.getLocale()));
+		}  catch (Exception e) {
+		      logger.error("ERROR:: SettlementServiceImpl:: postVirtualAccFee method ", e);
+		}
+		return feeLog;
 
-      response = JsonUtil.sendToIssuance(request,
-          Properties.getProperty("chatak-issuance.virtual.post.fee"), mode);
-      /* End posting fee to issuance */
-
-    } catch (Exception e) {
-      response.setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);// setting if any connectivity exception occurs
-      logger.error("ERROR:: SettlementServiceImpl:: postVirtualAccFee method ", e);
-    }
-    feeLog.setFeeTxnDate(new Timestamp(System.currentTimeMillis()));
-    if (response.getStatus() != HttpStatus.SC_OK) {
-      feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_NETWORK_FAIL);
-    } else {
-      String output = response.getEntity(String.class);
-      virtualAccFeePostResponse feeResponse =
-          mapper.readValue(output, virtualAccFeePostResponse.class);
-      if (null != feeResponse) {
-        if (feeResponse.getErrorCode().equals("CEC_0001")) {
-          feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_SUCCESS);
-          feeLog.setIssuanceFeeTxnId(feeResponse.getCiVirtualAccTxnId());
-        } else {
-          feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_DECLINED);
-        }
-        feeLog.setIssuanceMessage(feeResponse.getErrorMessage());
-      }
-    }
-    return feeLog;
-  }
+	}
 
   @Override
   public PGAccountFeeLog postVirtualAccFeeReversal(PGAccountFeeLog pgAccountFeeLog, String agentId,
-      String ciVirtualAccTxnId, String mode) throws IOException {
+      String ciVirtualAccTxnId, String mode) throws IOException, HttpClientException {
     PGAccountFeeLog feeLog = pgAccountFeeLog;
     VirtualAccFeeReversalRequest request = new VirtualAccFeeReversalRequest();
     request.setCiVirtualAccTxnId(ciVirtualAccTxnId);
-    ClientResponse response = new ClientResponse(null, null, null, null);
-    try {
-      /* Start posting fee to issuance */
-      response = JsonUtil.sendToIssuance(request,
-          Properties.getProperty("chatak-issuance.virtual.reverse.fee"), mode);
-      /* End posting fee to issuance */
-    } catch (Exception e) {
-      response.setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);// setting if any connectivity exception occurs
-      logger.info("ERROR:: SettlementServiceImpl:: postVirtualAccFeeReversal method ", e);
-    }
+		try {
+			/* Start posting fee to issuance */
+			String output = JsonUtil.sendToIssuance(request,
+					Properties.getProperty("chatak-issuance.virtual.reverse.fee"), mode, String.class);
+			/* End posting fee to issuance */
 
-    feeLog.setFeeTxnDate(new Timestamp(System.currentTimeMillis()));
-    if (response.getStatus() != HttpStatus.SC_OK) {
-      feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_NETWORK_FAIL);
-    } else {
-      String output = response.getEntity(String.class);
-      virtualAccFeePostResponse feeResponse =
-          mapper.readValue(output, virtualAccFeePostResponse.class);
-      if (null != feeResponse) {
-        if (feeResponse.getErrorCode().equals("CEC_0001")) {
-          feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_SUCCESS);
-        } else {
-          feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_DECLINED);
+			feeLog.setFeeTxnDate(new Timestamp(System.currentTimeMillis()));
+			virtualAccFeePostResponse feeResponse = mapper.readValue(output, virtualAccFeePostResponse.class);
+			if (null != feeResponse) {
+				if (feeResponse.getErrorCode().equals("CEC_0001")) {
+					feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_SUCCESS);
+				} else {
+					feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_DECLINED);
 
-        }
-        feeLog.setIssuanceMessage(feeResponse.getErrorMessage());
-        feeLog.setFeeTxnDate(new Timestamp(System.currentTimeMillis()));
-      }
+				}
+				feeLog.setIssuanceMessage(feeResponse.getErrorMessage());
+				feeLog.setFeeTxnDate(new Timestamp(System.currentTimeMillis()));
+			}
+		} catch (HttpClientException e) {
+			logger.error("ERROR:: RestPaymentServiceImpl:: doVoid method", e);
+			feeLog.setFeePostStatus(FeePostingStatus.FEE_POST_NETWORK_FAIL);
+		}
 
-    }
-    return feeLog;
-  }
+		return feeLog;
+	}
 
   private ProcessingFee getProcessingFeeItem(PGAcquirerFeeValue acquirerFeeValue,
       Long txnTotalAmount, Double calculatedProcessingFee) {
@@ -604,7 +590,7 @@ public class SettlementServiceImpl implements SettlementService {
             accTxn.setProcessedTime(currentTime);
             accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
             break;
-          case AccountTransactionCode.CC_FEE_DEBIT:  
+          case AccountTransactionCode.CC_FEE_DEBIT:
             updateFeeDebitCase(accTxn);
             accTxn.setProcessedTime(currentTime);
             accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
@@ -614,10 +600,8 @@ public class SettlementServiceImpl implements SettlementService {
             accTxn.setProcessedTime(currentTime);
             accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
             break;
-            
-            case AccountTransactionCode.CC_FEE_CREDIT:
-            //ReBrand
-        	updateFeeCreditCase(accTxn);
+          case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
+            updateChatakFeeCreditCase(accTxn);
             accTxn.setProcessedTime(currentTime);
             accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
             break;
@@ -629,8 +613,8 @@ public class SettlementServiceImpl implements SettlementService {
 
     logger.info("Exiting:: SettlementServiceImpl:: updateAccountCCTransactions method ");
   }
-//ReBrand
-  private void updateFeeCreditCase(PGAccountTransactions accTxn) {
+
+  private void updateChatakFeeCreditCase(PGAccountTransactions accTxn) {
     logger.info(
         "SettlementServiceImpl:: updateAccountCCTransactions method :: fetching currencyConfig for fee credit with numeric code: "
             + accTxn.getTxnCurrencyCode());

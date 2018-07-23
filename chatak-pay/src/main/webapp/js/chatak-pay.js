@@ -24,25 +24,12 @@ var chataPay = function() {
 	var CHATAKPG = {};
 
 	var Cards = {
-		amex : /^(34|37)/,
-		visa : /^4/,
-		master : /^5[1-5]/,
 		maestro : /^(50|63|66|5[6-8]|6[8-9]|600[0-9]|6010|601[2-9]|60[2-9]|61|620|621|6220|6221[0-1])/,
 		maestro16d : /^(508125|508126|508159|508192|508227|504809)/,
-		diners : /^(30|36|38)/,
-		misc : /^(0)/,
-		discover : /^(6011)/,
-		jcb : /^(35|2131|1800)/
 	};
 	var setLen = {
-		amex : 15,
-		visa : 16,
-		master : 16,
 		maestro : 19,
 		maestro16d : 16,
-		diners : 14,
-		discover : 16,
-		jcb : 16
 	};
 
 	// Card Expiry Validation
@@ -132,28 +119,9 @@ var chataPay = function() {
 					setCardType = T;
 					$('#cardTypeid').addClass(tmplen);
 					cardAsocType = tmplen;
-					if (tmplen === "amex") {
-						$('input[id$=code' + type + ']').attr('maxlength', '4');
-						cardAsocType = 'AX';
-						$(".cards-info").css("background-position", "0 -145px");
-					} else if (tmplen === "visa") {
-						cardAsocType = 'VI';
-						$(".cards-info").css("background-position", "0 -37px");
-					} else if (tmplen === "master") {
-						cardAsocType = 'MC';
-						$(".cards-info").css("background-position", "0 -74px");
-					} else if (tmplen === "maestro" || tmplen === "maestro16d") {
+					 if (tmplen === "maestro" || tmplen === "maestro16d") {
 						cardAsocType = 'ME';
 						$(".cards-info").css("background-position", "0 -109px");
-					} else if (tmplen === "diners") {
-						cardAsocType = 'DI';
-						$(".cards-info").css("background-position", "0 -180px");
-					} else if (tmplen === "discover") {
-						cardAsocType = 'DC';
-						$(".cards-info").css("background-position", "0 -216px");
-					} else if (tmplen === "jcb") {
-						cardAsocType = 'JC';
-						$(".cards-info").css("background-position", "0 -252px");
 					} else {
 						cardAsocType = '';
 						$(".cards-info").css("background-position", "0 0");
@@ -192,9 +160,6 @@ var chataPay = function() {
 				if (!mod10(setCardNumber)) {
 					alert("This is not a valid card number.");
 					return false;
-				}
-				if (getCardType == "amex") {
-					$(".cards-info").css("background-position", "0 -145px");
 				}
 				if ((getCardType == "maestro" || getCardType == "maestro16d")
 						&& document.form1.paymentMode.value == 'DEBIT') {

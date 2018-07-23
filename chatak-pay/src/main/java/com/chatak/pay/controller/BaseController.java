@@ -3,11 +3,13 @@
  */
 package com.chatak.pay.controller;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.chatak.crypto.dukpt.DUKPTUtil;
@@ -40,6 +42,7 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.OriginalChannelEnum;
 import com.chatak.pg.enums.TransactionType;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.EncryptionUtil;
@@ -58,6 +61,8 @@ import com.chatak.switches.sb.util.ProcessorConfig;
 public abstract class BaseController {
 
   private Logger logger = Logger.getLogger(BaseController.class);
+  
+  private static ObjectMapper mapper=new ObjectMapper();
 
   @Autowired
   protected PGTransactionService pgTransactionService;
@@ -96,11 +101,15 @@ public abstract class BaseController {
    * @param transactionRequest
    * @throws Exception
    * @throws ChatakPayException
+ * @throws IllegalAccessException 
+ * @throws InstantiationException 
+ * @throws IOException 
+ * @throws HttpClientException 
    */
-  protected void validateProcessRequest(TransactionRequest transactionRequest)
-      throws ChatakPayException, InvalidRequestException {
+  protected PGMerchant validateProcessRequest(TransactionRequest transactionRequest)
+      throws ChatakPayException, InvalidRequestException, InstantiationException, IllegalAccessException,IOException, HttpClientException {
     logger.info("Validating the request");
-    if (CommonUtil.isNullAndEmpty(transactionRequest.getMerchantId())
+    if (CommonUtil.isNullAndEmpty(transactionRequest.getMerchantCode())
         || CommonUtil.isNullAndEmpty(transactionRequest.getTerminalId())) {
       throw new InvalidRequestException(ChatakPayErrorCode.TXN_0007.name(),
           ChatakPayErrorCode.TXN_0007.value());
@@ -111,37 +120,39 @@ public abstract class BaseController {
 
     logger
         .info("validateProcessRequest :: origin channel: " + transactionRequest.getOriginChannel());
-
+   
     PGMerchant pgMerchant = null;
-    if (transactionRequest.getOriginChannel() != null
+    pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
+    /*if (transactionRequest.getOriginChannel() != null
         && (transactionRequest.getOriginChannel().equals(OriginalChannelEnum.ADMIN_WEB.value())
             || transactionRequest.getOriginChannel()
                 .equals(OriginalChannelEnum.MERCHANT_WEB.value()))) {
       logger.info("validateProcessRequest :: origin channel: VT");
 
-      pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantId());
+      pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
     } else {
       logger.info("validateProcessRequest :: origin channel: mPOS");
 
       // Sale from mPOS
       TSMRequest request = new TSMRequest();
-      request.setMerchantCode(transactionRequest.getMerchantId());
+      request.setMerchantCode(transactionRequest.getMerchantCode());
       request.setTid(transactionRequest.getTerminalId());
 
-      TSMResponse tsmResponse = (TSMResponse) JsonUtil.sendToTSM(TSMResponse.class, request,
-          Properties.getProperty("chatak-tsm.service.fetch.merchant.tid"));
-
+      String output = (String) JsonUtil.sendToTSM(String.class, request,
+              Properties.getProperty("chatak-tsm.service.fetch.merchant.tid"));
+      TSMResponse tsmResponse =mapper.readValue(output, TSMResponse.class);
       pgMerchant = getMerchantOnCode(transactionRequest, pgMerchant, tsmResponse);
-    }
+    }*/
 
     if (null != pgMerchant) {
 
-      logger.info("Valid Merchant: " + transactionRequest.getMerchantId());
+      logger.info("Valid Merchant: " + transactionRequest.getMerchantCode());
       logger.info("Valid Terminal: " + transactionRequest.getTerminalId());
 
       transactionRequest.setMode(pgMerchant.getAppMode());
       transactionRequest.setProcessorMid(pgMerchant.getLitleMID());
       transactionRequest.setMerchantName(pgMerchant.getBusinessName());
+      transactionRequest.setMerchantCode(pgMerchant.getMerchantCode());
       logger.info("Litle Merchant ID: " + pgMerchant.getLitleMID());
 
       // Set merchant currency code
@@ -171,10 +182,12 @@ public abstract class BaseController {
       }
 
     } else {
-      logger.info("Invalid Merchant: " + transactionRequest.getMerchantId());
+      logger.info("Invalid Merchant: " + transactionRequest.getMerchantCode());
       throw new InvalidRequestException(ChatakPayErrorCode.TXN_0007.name(),
           ChatakPayErrorCode.TXN_0007.value());
     }
+    
+    return pgMerchant;
   }
 
   private PGMerchant getMerchantOnCode(TransactionRequest transactionRequest, PGMerchant pgMerchant,
@@ -182,11 +195,11 @@ public abstract class BaseController {
     if (tsmResponse.getErrorCode() != null && tsmResponse.getErrorCode().equals("0")
         && tsmResponse.getErrorMessage() != null
         && tsmResponse.getErrorMessage().equalsIgnoreCase("success")) {
-      pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantId());
+      pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
       logger.info("validateProcessRequest :: validated mPOS");
 
     } else {
-      logger.info("Invalid Merchant/Terminal ID: " + transactionRequest.getMerchantId());
+      logger.info("Invalid Merchant/Terminal ID: " + transactionRequest.getMerchantCode());
       throw new InvalidRequestException(ChatakPayErrorCode.TXN_0114.name(),
           ChatakPayErrorCode.TXN_0114.value());
     }
@@ -199,9 +212,11 @@ public abstract class BaseController {
    * @param transactionRequest
    * @throws Exception
    * @throws ChatakPayException
+ * @throws IllegalAccessException 
+ * @throws InstantiationException 
    */
   private void validateSALEOrAUTHRequest(TransactionRequest transactionRequest)
-      throws ChatakPayException, InvalidRequestException {
+      throws ChatakPayException, InvalidRequestException, InstantiationException, IllegalAccessException {
     logger.info("Entering :: validateSALEOrAUTHRequest");
     
     amountValidation(transactionRequest);
@@ -245,12 +260,12 @@ public abstract class BaseController {
     logger.info("Entering :: validateSALEOrAUTHRequest :: proceeding to validate card data");
     validateCardData(transactionRequest);
 
-    cardPaymentProcessor.duplicateInvoice(transactionRequest.getMerchantId(),
+    cardPaymentProcessor.duplicateInvoice(transactionRequest.getMerchantCode(),
         transactionRequest.getTerminalId(), transactionRequest.getInvoiceNumber());//duplicate invoice check
 
     try {
 
-      cardPaymentProcessor.duplicateOrderRequest(transactionRequest.getMerchantId(),
+      cardPaymentProcessor.duplicateOrderRequest(transactionRequest.getMerchantCode(),
           transactionRequest.getOrderId(), transactionRequest.getTotalTxnAmount(),
           EncryptionUtil.encrypt(transactionRequest.getCardData().getCardNumber()),
           transactionRequest.getTransactionType().toString());
@@ -306,7 +321,7 @@ public abstract class BaseController {
     try {
 
       PGTransaction saleOrRefundransaction = voidTransactionDao.getTransactionToVoid(
-          transactionRequest.getMerchantId(), transactionRequest.getTerminalId(),
+          transactionRequest.getMerchantCode(), transactionRequest.getTerminalId(),
           transactionRequest.getTxnRefNumber(), transactionRequest.getAuthId());
       if (saleOrRefundransaction == null || PGConstants.PG_SETTLEMENT_REJECTED
           .equalsIgnoreCase(saleOrRefundransaction.getMerchantSettlementStatus())) {
@@ -328,9 +343,11 @@ public abstract class BaseController {
    * 
    * @param transactionRequest
    * @throws InvalidRequestException
+ * @throws IllegalAccessException 
+ * @throws InstantiationException 
    */
   private void validateCardData(TransactionRequest transactionRequest)
-      throws InvalidRequestException {
+      throws InvalidRequestException, InstantiationException, IllegalAccessException {
     logger.info("Entering :: validateCardData");
     CardData cardData = transactionRequest.getCardData();
     if (null == cardData || (!Constants.FLAG_TRUE
@@ -343,11 +360,8 @@ public abstract class BaseController {
           ? EntryModeEnum.MANUAL : transactionRequest.getEntryMode());
       switch (transactionRequest.getEntryMode()) {
         case MANUAL:
-          // BIN check
-          binService.validateBin(cardData.getCardNumber());
-          break;
         case PAN_MANUAL_ENTRY_ECOMMERCE:
-        case PAN_MANUAL_ENTRY_CONTACTLESS:
+        case PAN_MANUAL_ENTRY_CONTACTLESS: 
         case PAN_MANUAL_ENTRY_CHIP:
         case MANUAL_KEY_ENTRY:
         case PAN_TAP_NFC:
@@ -358,6 +372,8 @@ public abstract class BaseController {
         case PAN_SWIPE_CONTACTLESS:
         case CARD_TAP:
         case QR_SALE:
+        // CradProgram check
+          binService.validateCardProgram(cardData.getCardNumber(), transactionRequest); 	
           isValidCard(cardData);
           isValidExpDate(cardData);
           validateCardType(transactionRequest, cardData);
@@ -489,7 +505,7 @@ public abstract class BaseController {
       if (isValidCard) {
 
         validateExpDate(cardData);
-        validateCardTypeWithPAN(transactionRequest.getCardData());
+        validateCardTypeWithPAN();
       } else {
         throw new InvalidRequestException(ChatakPayErrorCode.TXN_0004.name(),
             ChatakPayErrorCode.TXN_0004.value());
@@ -524,73 +540,20 @@ public abstract class BaseController {
           ChatakPayErrorCode.TXN_0009.value());
     }
   }
-
-  /**
-   * Method to check given card type is matching with card number
-   * 
-   * @param card
-   * @return
-   * @throws InvalidRequestException
-   */
-  public static boolean validateCardTypeWithPAN(CardData card) throws InvalidRequestException {
-    String cardNumber = card.getCardNumber().substring(0, Constants.TWO) ;
-    if (Constants.FLAG_TRUE
-        .equals(Properties.getProperty("chatak-pay.skip.card.type.check", "false"))) {
-      return true;
-    }
-    switch (card.getCardType()) {
-
-      case VI:
-        return isVisaCard(card);
-      case AX:
-        return isAmexCard(cardNumber);
-      case MC:
-        if ("5".equals(String.valueOf(card.getCardNumber().charAt(0))))
-          return true;
-        else
-          throw new InvalidRequestException(ChatakPayErrorCode.TXN_0010.name(),
-              ChatakPayErrorCode.TXN_0010.value());
-      case DC:
-        if ("36".equals(cardNumber) || "38".equals(cardNumber) || "30".equals(cardNumber))
-          return true;
-        else
-          throw new InvalidRequestException(ChatakPayErrorCode.TXN_0010.name(),
-              ChatakPayErrorCode.TXN_0010.value());
-      case ME:
-        if ("6".equals(String.valueOf(card.getCardNumber().charAt(0))))
-          return true;
-        else
-          throw new InvalidRequestException(ChatakPayErrorCode.TXN_0010.name(),
-              ChatakPayErrorCode.TXN_0010.value());
-      case DI:
-        if ("6011".equals(card.getCardNumber().substring(0, Constants.FOUR)))
-          return true;
-        else
-          throw new InvalidRequestException(ChatakPayErrorCode.TXN_0010.name(),
-              ChatakPayErrorCode.TXN_0010.value());
-      default:
-        throw new InvalidRequestException(ChatakPayErrorCode.TXN_0010.name(),
-            ChatakPayErrorCode.TXN_0010.value());
-
-    }
-
-  }
-
-  private static boolean isAmexCard(String cardNumber) throws InvalidRequestException {
-    if ("37".equals(cardNumber) || "34".equals(cardNumber))
-      return true;
-    else
-      throw new InvalidRequestException(ChatakPayErrorCode.TXN_0010.name(),
-          ChatakPayErrorCode.TXN_0010.value());
-  }
-
-  private static boolean isVisaCard(CardData card) throws InvalidRequestException {
-    if ("4".equals(String.valueOf(card.getCardNumber().charAt(0))))
-      return true;
-    else
-      throw new InvalidRequestException(ChatakPayErrorCode.TXN_0010.name(),
-          ChatakPayErrorCode.TXN_0010.value());
-  }
+  
+	/**
+	 * Method to check given card type is matching with card number
+	 * 
+	 * @param card
+	 * @return
+	 * @throws InvalidRequestException
+	 */
+	public static boolean validateCardTypeWithPAN() throws InvalidRequestException {
+		if (Constants.FLAG_TRUE.equals(Properties.getProperty("chatak-pay.skip.card.type.check", "false"))) {
+			return true;
+		}
+		return false;
+	}
 
   /**
    * Method to validate billing details
@@ -625,17 +588,11 @@ public abstract class BaseController {
 
   public static boolean validateSplitStatusRequest(SplitStatusRequest splitReStatusRequest)
       throws InvalidRequestException {
-    if (CommonUtil.isNullAndEmpty(splitReStatusRequest.getMerchantId())) {
+    if ((CommonUtil.isNullAndEmpty(splitReStatusRequest.getMerchantCode())) || (CommonUtil.isNullAndEmpty(splitReStatusRequest.getSplitRefNumber())) || (null == splitReStatusRequest.getSplitTxnAmount()
+            || splitReStatusRequest.getSplitTxnAmount() <= 0l)) {
       throw new InvalidRequestException(ChatakPayErrorCode.TXN_0016.name(),
           ChatakPayErrorCode.TXN_0016.value());
-    } else if (CommonUtil.isNullAndEmpty(splitReStatusRequest.getSplitRefNumber())) {
-      throw new InvalidRequestException(ChatakPayErrorCode.TXN_0016.name(),
-          ChatakPayErrorCode.TXN_0016.value());
-    } else if (null == splitReStatusRequest.getSplitTxnAmount()
-        || splitReStatusRequest.getSplitTxnAmount() <= 0l) {
-      throw new InvalidRequestException(ChatakPayErrorCode.TXN_0016.name(),
-          ChatakPayErrorCode.TXN_0016.value());
-    }
+    } 
     return true;
   }
 

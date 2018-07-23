@@ -75,13 +75,13 @@ public class AccountHistoryDaoImplTest {
     Timestamp time = new Timestamp(Integer.parseInt("2018"));
     List<Object[]> tuplelist = new ArrayList<>();
     Object objects[] = new Object[Integer.parseInt("8")];
-    objects[0] = new Long(Long.parseLong("123456789012"));
-    objects[1] = new String("USD");
-    objects[Integer.parseInt("2")] = new Long(Long.parseLong("12345"));
-    objects[Integer.parseInt("3")] = new String("Active");
-    objects[Integer.parseInt("4")] = new Long(Long.parseLong("12345"));
-    objects[Integer.parseInt("5")] = new Long(Long.parseLong("12345"));
-    objects[Integer.parseInt("6")] = new String("Cheque");
+    objects[0] = Long.valueOf("123456789012");
+    objects[1] = "USD";
+    objects[Integer.parseInt("2")] = Long.valueOf("12345");
+    objects[Integer.parseInt("3")] = "Active";
+    objects[Integer.parseInt("4")] = Long.valueOf("12345");
+    objects[Integer.parseInt("5")] = Long.valueOf("12345");
+    objects[Integer.parseInt("6")] = "Cheque";
     objects[Integer.parseInt("7")] = time;
     tuplelist.add(objects);
     

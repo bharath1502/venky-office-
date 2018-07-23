@@ -138,9 +138,9 @@
 <spring:message code="admin.services.pm.create.feature.id" var="programManagerCreate"></spring:message>
 <spring:message code="admin.services.pm.edit.feature.id" var="programManagerEdit"></spring:message>
 
-<spring:message code="admin.services.partner.feature.id" var="partner"></spring:message>
-<spring:message code="admin.services.partner.create.feature.id" var="partnerCreate"></spring:message>
-<spring:message code="admin.services.partner.edit.feature.id" var="partnerEdit"></spring:message>
+ <spring:message code="admin.services.iso.feature.id" var="iso"></spring:message>
+<spring:message code="admin.services.iso.create.feature.id" var="isoCreate"></spring:message>
+<spring:message code="admin.services.iso.edit.feature.id" var="isoEdit"></spring:message> 
 
 <spring:message code="admin.services.merchant.feature.id" var="merchant"></spring:message>
 <spring:message code="admin.services.merchant.create.feature.id" var="merchantCreate"></spring:message>
@@ -239,6 +239,11 @@
 <spring:message code="reseller.services.menu.feature.id" var="resellerMenu"></spring:message>
 <spring:message code="reseller.services.menu.changePassword.feature.id" var="resellerChangePassword"></spring:message>
 <spring:message code="reseller.services.menu.myProfile.feature.id" var="resellerMyProfile"></spring:message>
+<spring:message code="admin.services.fee.report.feature.id" var="feeReport"></spring:message>
+<spring:message code="admin.services.isoRevenue.report.feature.id" var="isoRevenueReport"></spring:message>
+<spring:message code="admin.services.merchantRevenue.report.feature.id" var="merchantRevenueReport"></spring:message>
+<spring:message code="admin.services.pmRevenue.report.feature.id" var="pmRevenueReport"></spring:message>
+
 
 <!--Header Block Start -->
 
@@ -250,6 +255,7 @@
 	</div>
 	<!--Header Logo End -->
 	<!--Header Welcome Text and Logout button Start -->
+	<c:if test="${loginUserType ne 'NEW-USER'}">
 	<div class="col-sm-6 col-xs-offset-3">
 		<div class="pull-right user-settings">
 			<table>
@@ -258,13 +264,16 @@
 					<td align="right"><a href="logout"><span
 							class="glyphicon glyphicon-log-out"></span> </span> <spring:message code="header.label.logout"/></a></td>
 				</tr>
-				<tr><td align="right" id="time" style="color:#0072C6;"></td></tr>
+				<tr>
+				<td><spring:message code="header.label.lastLoginTime"/> ${loginResponse.lastLonginTime }</td>
+				</tr>
 				<!-- <tr>
 					<td><div id="showTimer" style="font-weight: bold;"></div></td>
 				</tr> -->
 			</table>
 		</div>
 	</div>
+	</c:if>
 	<!--Header Welcome Text and Logout button End -->
 </header>
 <%-- <head>
@@ -346,9 +355,9 @@
 					<c:if test="${fn:contains(existingFeatures, programManager)}">
 						<li style="text-align:left;"><a href="showProgramManager"><spring:message code="admin.pm.message"/></a></li>
 					</c:if>
-					<c:if test="${fn:contains(existingFeatures, partner)}">
-						<li style="text-align:left;"><a href="showSearchPartner"><spring:message code="admin.partner.message"/></a></li>
-					</c:if>
+					 <c:if test="${fn:contains(existingFeatures, iso)}">
+					 	<li style="text-align:left;"><a href="showIsoSearch"><spring:message code="admin.iso.label"/></a></li>
+					</c:if> 
 					<c:if test="${fn:contains(existingFeatures,merchant) || fn:contains(existingFeatures,resellerMerchant)}">
 						<li style="text-align:left;"><a href="merchant-search-page"><spring:message code="show-all-pending-merchants.label.merchant"/></a></li>
 					</c:if>
@@ -456,6 +465,24 @@
 						<li style="text-align: left;"><a href="batch-report"><spring:message
 									code="chatak-batch-report" /></a></li>
 					</c:if>
+					<c:if test="${fn:contains(existingFeatures, feeReport)}">
+						<li style="text-align: left;"><a href="showFeeReport"><spring:message
+									code="fee-report.label.fee.report" /></a></li>
+									</c:if>
+
+				 	<c:if test="${fn:contains(existingFeatures, isoRevenueReport)}"> 
+						<li style="text-align: left;"><a href="showIsoRevenueReport"><spring:message
+									code="admin.label.isorevenue" /></a></li>
+					 </c:if>
+					
+					 <c:if test="${fn:contains(existingFeatures, merchantRevenueReport)}"> 
+						<li style="text-align: left;"><a href="showMerchantRevenueReport"><spring:message
+									code="admin.label.merchantrevenue" /></a></li>
+					 </c:if>
+					<c:if test="${fn:contains(existingFeatures, pmRevenueReport)}">
+						<li style="text-align: left;"><a href="showPmRevenueReport"><spring:message
+									code="admin.label.pmrevenue" /></a></li>
+					</c:if>
 				</ul></li>
 		</c:if>
 		<c:if test="${fn:contains(existingFeatures, scheduleReport)}">
@@ -527,6 +554,7 @@
 <script src="../js/utils.js"></script>
 <script src="../js/jquery.cookie.js"></script>
 <script src="../js/messages.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js"></script> 
 <script>
 function getLitleEFTTxns() {
 	document.forms["litleEFTTxn"].submit();
@@ -626,12 +654,23 @@ function closeBatch() {
 			root.find('.left-caret').toggleClass('right-caret left-caret');
 		});
 	});
-</script>
-<script>
-	var serverTimeStamp = <%=System.currentTimeMillis()%>;
-	$(document).ready(function(){
-	   showCurrentTime(serverTimeStamp);
+	
+	$(document).ready(function() {
+		getUserOffsetAndRegion();
 	});
 	
+	function getUserOffsetAndRegion(){
+		var offset = new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
+		var region = jstz.determine().name();
+		if(!(typeof region != 'undefined' && region != null && region != '')){
+			region = offset;
+		}
+		$('#deviceTimeZoneOffset').val(offset);
+		$('#deviceTimeZoneRegion').val(region);
+		$('#deviceTzOffset').val(offset);
+		$('#deviceTzRegion').val(region);
+	}
+</script>
+<script>
 </script>
 <!--Navigation Block End -->

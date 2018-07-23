@@ -33,10 +33,6 @@ function get(id) {
 	return document.getElementById(id);
 }
 
-function get(id) {
-	return document.getElementById(id);
-}
-
 function getVal(id) {
 	return get(id).value;
 }
@@ -411,7 +407,7 @@ function validatePopupDesc() {
 	// check for empty text.
 	// If so return true.
 	if (isEmpty(text)) {
-		  setDiv("popDescError_div", webMessages.validationthisfieldismandatory);
+		  setDiv("popDescError_div", webMessages.Enter_reason);
 		return false;
 	}
 	if (!invalidWords(text)) {
@@ -593,25 +589,31 @@ function downloadSubMerchantReport(curPageNumber, type) {
 }
 
 function amountValidate(el, evt) {
-    var charCode = (evt.which) ? evt.which : event.keyCode;
-    if (evt.which === 8) { 
+	var charCode = (evt.which) ? evt.which : event.keyCode;
+    if (evt.which===8)
+    { 
         return;                                          
     }
     var number = el.value.split('.');
     if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
         return false;
     }
-    
-    if(number[1] != undefined && number[1].length > 1) {
-    	return false;
-    }
 
-   /* var caratPos = getSelectionStart(el);
+    var caratPos = getSelectionStart(el);
     var dotPos = el.value.indexOf(".");
     if( caratPos > dotPos && dotPos>-1 && (number[1].length > 1)){
         return false;
-    } */   
+    }    
     return true;
+}
+
+function getSelectionStart(o) {
+	if (o.createTextRange) {
+		var r = document.selection.createRange().duplicate();
+		r.moveEnd('character', o.value.length);
+		if (r.text == '') return o.value.length;
+		return o.value.lastIndexOf(r.text);
+	} else return o.selectionStart;
 }
 
 function downloadSelectedReport(curPageNumber, type) {
@@ -782,24 +784,26 @@ function downloadDashboardReport(curPageNumber, type, reportType, requestFrom) {
 		get('processingTxnDownloadPageNumberId').value = curPageNumber;
 		get('processingTxnDownloadTypeId').value = type;
 		get('requestFromId1').value = requestFrom;
+		setValue('pendingTotalRecords', true);
 		document.forms["downloadProcessingTxnReport"].submit();
 	} else if(reportType == 'exetutedTxn') {
 		get('executedTxnDownloadPageNumberId').value = curPageNumber;
 		get('executedTxnDownloadTypeId').value = type;
 		get('requestFromId').value = requestFrom;
+		setValue('executedTotalRecords', true);
 		document.forms["downloadExecutedTxnReport"].submit();
 	}
 }
 
 function validateRefundAmount(id) {
 	if($('#'+id).val().trim().length == 0) {
-		$('#'+id+'Er').text('Enter The Amount To Refund.');
+		$('#'+id+'Er').text(webMessages.enterTheAmountToRefund);
 		return false;
 	} else if(parseFloat($('#'+id).val()) <= 0.0) {
-		$('#'+id+'Er').text('Enter Valid Amount To Refund.');
+		$('#'+id+'Er').text(webMessages.enterValidAmountToRefund);
 		return false;
 	} else if((parseFloat($('#'+id).val()) * 100) > (parseFloat($('#refundAmt').text()) * 100)) {
-		$('#'+id+'Er').text('Entered Amount Exceeds Refund Amount.');
+		$('#'+id+'Er').text(webMessages.enteredAmountExceedsRefundAmount);
 		return false;
 	} else {
 		$('#'+id+'Er').text('');
@@ -821,30 +825,30 @@ $(document).ready(function() {
 		if(null == timeZoneOffset || "" == timeZoneOffset || timeZoneOffset == undefined){
 			timeZoneOffset = "";
 		}
-		var popupData = "<div><span class='glyphicon glyphicon-remove' onclick='closeTxnPopup()'></span><span align='center'><h2>Transaction Details</h2></span><hr/></div><div class='row'><div class='col-sm-6'>";
+		var popupData = "<div><span class='glyphicon glyphicon-remove' onclick='closeTxnPopup()'></span><span align='center'><h2>"+webMessages.transactionDetails+"</h2></span><hr/></div><div class='row'><div class='col-sm-6'>";
 		
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Transaction Type :</b></label><span class='col-sm-6'> " + txnObj.transaction_type.toUpperCase() + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Auth Id :</b></label><span class='col-sm-6'> " + txnObj.auth_id + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Gateway Txn ID :</b></label><span class='col-sm-6'> " + txnObj.transactionId + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Ref Transaction Id :</b></label><span class='col-sm-6'> " + txnObj.ref_transaction_id + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Terminal Id :</b></label><span class='col-sm-6'> " + txnObj.terminal_id + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Invoice No :</b></label><span class='col-sm-6'> " + txnObj.invoice_number + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Masked Card No :</b></label><span class='col-sm-6'> " + txnObj.maskCardNumber + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Merchant Code :</b></label><span class='col-sm-6'> " + txnObj.merchant_code + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Processor :</b></label><span class='col-sm-6'> " + txnObj.processor + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.transactionType+" :</b></label><span class='col-sm-6'> " + txnObj.transaction_type.toUpperCase() + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.authId+" :</b></label><span class='col-sm-6'> " + txnObj.auth_id + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.gatewayTxnID+" :</b></label><span class='col-sm-6'> " + txnObj.transactionId + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.refTransactionId+" :</b></label><span class='col-sm-6'> " + txnObj.ref_transaction_id + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.terminalId+" :</b></label><span class='col-sm-6'> " + txnObj.terminal_id + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.invoiceNo+" :</b></label><span class='col-sm-6'> " + txnObj.invoice_number + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.maskedCardNo+" :</b></label><span class='col-sm-6'> " + txnObj.maskCardNumber + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.merchantCode+" :</b></label><span class='col-sm-6'> " + txnObj.merchant_code + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.processorType+" :</b></label><span class='col-sm-6'> " + txnObj.processor + " </span></div>";
 		
 		popupData += "</div><div class='col-sm-6'>";
 		
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>System Txn Time :</b></label><span class='col-sm-6'> " + txnObj.transactionDate + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Device Local Txn Time :</b></label><span class='col-sm-6'> " +  deviceLocalTxnTime +" "+ timeZoneOffset+ " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Transaction Amount :</b></label><span class='col-sm-6'> " + txnObj.transactionAmount + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Fee Amount :</b></label><span class='col-sm-6'> " + txnObj.fee_amount + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Transaction Total Amount :</b></label><span class='col-sm-6'> " + txnObj.txn_total_amount + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Acquirer Transaction Mode :</b></label><span class='col-sm-6'> " + txnObj.acqTxnMode.toUpperCase() + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Acquirer Channel :</b></label><span class='col-sm-6'> " + txnObj.acqChannel.toUpperCase() + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Status Message :</b></label><span class='col-sm-6'> " + txnObj.statusMessage + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Merchant Settlement Status:</b></label><span class='col-sm-6'> " + txnObj.merchantSettlementStatus + " </span></div>";
-		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>BatchId :</b></label><span class='col-sm-6'> " + txnObj.batchId + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.systemTxnTime+" :</b></label><span class='col-sm-6'> " + txnObj.transactionDate + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.deviceLocalTxnTime+" :</b></label><span class='col-sm-6'> " +  deviceLocalTxnTime +" "+ timeZoneOffset+ " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.transactionAmount+" :</b></label><span class='col-sm-6'> " + txnObj.transactionAmount + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.feeAmount+" :</b></label><span class='col-sm-6'> " + txnObj.fee_amount + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.transactionTotalAmount+" :</b></label><span class='col-sm-6'> " + txnObj.txn_total_amount + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.acquirerTransactionMode+" :</b></label><span class='col-sm-6'> " + txnObj.acqTxnMode.toUpperCase() + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.acquirerChannel+" :</b></label><span class='col-sm-6'> " + txnObj.acqChannel.toUpperCase() + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.statusMessage+" :</b></label><span class='col-sm-6'> " + txnObj.statusMessage + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.merchantSettlementStatus+" :</b></label><span class='col-sm-6'> " + txnObj.merchantSettlementStatus + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.BatchId+" :</b></label><span class='col-sm-6'> " + txnObj.batchId + " </span></div>";
 		
 		popupData += "</div></div><div><input class='form-control button pull-right' value='OK' onclick='closeTxnPopup()' type='button'></div>";
 		
@@ -863,7 +867,7 @@ $(document).ready(function() {
 					
 					if(undefined != response) {
 						
-						var popupData = "<div><span class='glyphicon glyphicon-remove' onclick='closeTxnPopup()'></span><span style='text-align:center;'><h2>Transaction Details</h2></span><hr/></div><div class='row'>";
+						var popupData = "<div><span class='glyphicon glyphicon-remove' onclick='closeTxnPopup()'></span><span style='text-align:center;'><h2>"+webMessages.transactionDetails+"</h2></span><hr/></div><div class='row'>";
 						txnObj = response;
 						if(response.dtoType == "TXN_CC") {
 							var txnAmtLabel = "Merchant Amount :";
@@ -879,31 +883,31 @@ $(document).ready(function() {
 								timeZoneOffset = "";
 							}
 							popupData += "<div class='col-sm-6'>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Transaction Type :</b></label><span class='col-sm-6'> " + txnObj.transaction_type.toUpperCase() + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Auth Id :</b></label><span class='col-sm-6'> " + txnObj.auth_id + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Account Transaction Id :</b></label><span class='col-sm-6'> " + txnObj.accountTransactionId + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Gateway Txn ID :</b></label><span class='col-sm-6'> " + txnObj.transactionId + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Ref Transaction Id :</b></label><span class='col-sm-6'> " + txnObj.ref_transaction_id + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Terminal Id :</b></label><span class='col-sm-6'> " + txnObj.terminal_id + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Invoice No :</b></label><span class='col-sm-6'> " + txnObj.invoice_number + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Card Holder Name :</b></label><span class='col-sm-6'> " + txnObj.cardHolderName + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Masked Card No :</b></label><span class='col-sm-6'> " + txnObj.maskCardNumber + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Merchant Name :</b></label><span class='col-sm-6'> " + txnObj.merchantBusinessName + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Merchant Code :</b></label><span class='col-sm-6'> " + txnObj.merchant_code + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.transactionType+" :</b></label><span class='col-sm-6'> " + txnObj.transaction_type.toUpperCase() + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.authId+" :</b></label><span class='col-sm-6'> " + txnObj.auth_id + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.accountTransactionId+" :</b></label><span class='col-sm-6'> " + txnObj.accountTransactionId + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.gatewayTxnID+" :</b></label><span class='col-sm-6'> " + txnObj.transactionId + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.refTransactionId+" :</b></label><span class='col-sm-6'> " + txnObj.ref_transaction_id + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.terminalId+" :</b></label><span class='col-sm-6'> " + txnObj.terminal_id + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.invoiceNo+" :</b></label><span class='col-sm-6'> " + txnObj.invoice_number + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.cardHolderName+" :</b></label><span class='col-sm-6'> " + txnObj.cardHolderName + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.maskedCardNo+" :</b></label><span class='col-sm-6'> " + txnObj.maskCardNumber + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.merchantName+" :</b></label><span class='col-sm-6'> " + txnObj.merchantBusinessName + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.merchantCode+" :</b></label><span class='col-sm-6'> " + txnObj.merchant_code + " </span></div>";
 							
 							popupData += "</div><div class='col-sm-6'>";
 							
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>System Txn Time :</b></label><span class='col-sm-6'> " + txnObj.transactionDate + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Device Local Txn Time :</b></label><span class='col-sm-6'> " + deviceLocalTxnTime +" "+ timeZoneOffset +  " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>" + txnAmtLabel + "</b></label><span class='col-sm-6'> " + txnObj.transactionAmount + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Fee Amount :</b></label><span class='col-sm-6'> " + txnObj.fee_amount + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Transaction Total Amount :</b></label><span class='col-sm-6'> " + txnObj.txn_total_amount + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Processor :</b></label><span class='col-sm-6'> " + txnObj.processor + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Acquirer Transaction Mode :</b></label><span class='col-sm-6'> " + txnObj.acqTxnMode.toUpperCase() + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Acquirer Channel :</b></label><span class='col-sm-6'> " + txnObj.acqChannel.toUpperCase() + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Status Message :</b></label><span class='col-sm-6'> " + txnObj.statusMessage + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>Merchant Settlement Status:</b></label><span class='col-sm-6'> " + txnObj.merchantSettlementStatus + " </span></div>";
-							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>BatchId :</b></label><span class='col-sm-6'> " + txnObj.batchId + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.systemTxnTime+" :</b></label><span class='col-sm-6'> " + txnObj.transactionDate + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.deviceLocalTxnTime+" :</b></label><span class='col-sm-6'> " + deviceLocalTxnTime +" "+ timeZoneOffset +  " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.merchantAmount+" :</b></label><span class='col-sm-6'> " + txnObj.transactionAmount + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.feeAmount+" :</b></label><span class='col-sm-6'> " + txnObj.fee_amount + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.transactionTotalAmount+" :</b></label><span class='col-sm-6'> " + txnObj.txn_total_amount + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.processorType+" :</b></label><span class='col-sm-6'> " + txnObj.processor + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.acquirerTransactionMode+" :</b></label><span class='col-sm-6'> " + txnObj.acqTxnMode.toUpperCase() + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.acquirerChannel+" :</b></label><span class='col-sm-6'> " + txnObj.acqChannel.toUpperCase() + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.statusMessage+" :</b></label><span class='col-sm-6'> " + txnObj.statusMessage + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.merchantSettlementStatus+" :</b></label><span class='col-sm-6'> " + txnObj.merchantSettlementStatus + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.BatchId+" :</b></label><span class='col-sm-6'> " + txnObj.batchId + " </span></div>";
 							
 						}
 						else if(response.dtoType == "ACCOUNT_DEBIT" || response.dtoType == "TXN_ACCOUNT") {
@@ -1072,4 +1076,19 @@ function changeStatus(id, status, statusText,roleType) {
 	$('#'+roleType).popup('show');
 	get('suspendActiveId').value = id;
 	get('suspendActiveStatus').value = status;
+}
+
+function errorFieldFocus(id) {
+	document.getElementById(id).focus();
+}
+
+function disableRightClick(data){
+	if(data == true){
+		return true;
+	}else{
+		window.oncontextmenu = function () {
+			alert(webMessages.RIGHT_CLICK_NOT_ALLOWED);
+			return false;
+	 };
+	}
 }

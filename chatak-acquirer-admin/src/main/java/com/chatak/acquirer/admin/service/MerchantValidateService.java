@@ -27,10 +27,6 @@ public interface MerchantValidateService {
   
   public CIEntityDetailsResponse getPartnerList(String mode)throws ChatakAdminException, IOException;
   
-  public String getPartnerLinkedToMerchant(Long parentMerchantId);
-  
-  public List<String> getlinkedPartners();
-  
   public List<String> getlinkedAgents(String parentMerchantId);
   
   public List<Option> getFeeProgramNamesForEdit(String feeProgram);

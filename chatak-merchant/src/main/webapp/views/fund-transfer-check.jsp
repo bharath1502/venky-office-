@@ -7,6 +7,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 
 
 <html lang="en">
@@ -16,7 +17,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -26,7 +27,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
 
 	<!-- <script src="../js/common-lib.min.js"></script> -->
@@ -55,6 +56,7 @@
 						</div>
 						<form:form commandName="fundTransferDTO"
 							action="check-process-fund-transfer" method="post">
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 
 
 							<%-- <form:form commandName="" action="chatak_merchant_myprofile"

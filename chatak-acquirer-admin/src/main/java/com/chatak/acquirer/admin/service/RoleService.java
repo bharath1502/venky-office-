@@ -47,5 +47,9 @@ public interface RoleService {
 	public Response changeRoleStatus(UserRoleDTO userRoleDTO) throws ChatakAdminException;
 	
 	public RoleResponse validateRolename(String roleName)throws ChatakAdminException;
+	
+	public List<Long> getFeaturesByEntity(String entity)throws ChatakAdminException;
+	
+	public FeatureResponse getFeatureDataByIds(List<Long> featureIds);
 
 } 

@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -271,10 +272,10 @@ public class StringUtils {
     if(null == rawVal)
       return 0D;
     String rawString = rawVal.toString();
-    if(rawString.indexOf(".") != -1) {
+    if(rawString.indexOf('.') != -1) {
       String[] rawStringAr = rawString.split("\\.");
       if(rawStringAr[1].length() > Integer.parseInt("2"))
-        rawString = rawString.substring(0, rawString.indexOf(".") + Integer.parseInt("3"));
+        rawString = rawString.substring(0, rawString.indexOf('.') + Integer.parseInt("3"));
       return Double.valueOf(rawString);
     }
     return rawVal;
@@ -522,7 +523,7 @@ public class StringUtils {
       amount = input.substring(matcher.start(), matcher.end());
       if(amount == null)
         return null;
-      if(input.indexOf(" ") != -1) {
+      if(input.indexOf(' ') != -1) {
         boolean isInValidAmount = true;
         String[] strArray = input.split(" ");
         isInValidAmount = amountValidation(amount, strArray);
@@ -703,5 +704,14 @@ public class StringUtils {
     }
 
     return null;
+  }
+
+  public static String randomNumeric(int numberOfDigit) {
+    SecureRandom rnd = new SecureRandom();
+    StringBuilder ret = new StringBuilder(numberOfDigit);
+    for(int i = 0; i < numberOfDigit; i++) {
+      ret.append(rnd.nextInt(Integer.parseInt("10")));
+    }
+    return ret.toString();
   }
 }

@@ -259,7 +259,7 @@ public final class DateUtil {
 
 	public static String getValidSysDate(String dates,String pat,String oldFormat)
 	{
-		if ( oldFormat.indexOf(".")>-1)
+		if ( oldFormat.indexOf('.')>-1)
 		{
 			oldFormat=oldFormat.replace(".","/");
 			dates=dates.replace(".","/");

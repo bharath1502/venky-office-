@@ -38,6 +38,14 @@ public class FeeProgramDTO extends SearchRequest {
   private String processor;
 
   private OtherFeesDTO otherFee;
+  
+  private Long cardProgramId;
+  
+  private double pmShare;
+  
+  private double isoShare;
+  
+  private String cardProgramName;
 
   /**
    * @return the feeProgramId
@@ -246,6 +254,62 @@ public class FeeProgramDTO extends SearchRequest {
    */
   public void setOtherFee(OtherFeesDTO otherFee) {
     this.otherFee = otherFee;
+  }
+
+  /**
+   * @return the cardProgramId
+   */
+  public Long getCardProgramId() {
+    return cardProgramId;
+  }
+
+  /**
+   * @param cardProgramId the cardProgramId to set
+   */
+  public void setCardProgramId(Long cardProgramId) {
+    this.cardProgramId = cardProgramId;
+  }
+
+  /**
+   * @return the pmShare
+   */
+  public double getPmShare() {
+    return pmShare;
+  }
+
+  /**
+   * @param pmShare the pmShare to set
+   */
+  public void setPmShare(double pmShare) {
+    this.pmShare = pmShare;
+  }
+
+  /**
+   * @return the isoShare
+   */
+  public double getIsoShare() {
+    return isoShare;
+  }
+
+  /**
+   * @param isoShare the isoShare to set
+   */
+  public void setIsoShare(double isoShare) {
+    this.isoShare = isoShare;
+  }
+
+  /**
+   * @return the cardProgramName
+   */
+  public String getCardProgramName() {
+    return cardProgramName;
+  }
+
+  /**
+   * @param cardProgramName the cardProgramName to set
+   */
+  public void setCardProgramName(String cardProgramName) {
+    this.cardProgramName = cardProgramName;
   }
 
 }

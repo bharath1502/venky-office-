@@ -6,6 +6,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -22,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
@@ -47,16 +48,19 @@
 									method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 										type="hidden" id="totalRecordsId" name="totalRecords" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="showChatakPartnerFeeEdit" name="showChatakPartnerFeeEdit">
 									<input type="hidden" id="getMerchantId" name="getMerchantId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="editFeeProgram" name="editFeeProgramForm"
 									method="post">
 									<input type="hidden" id="getFeeProgramId"
 										name="getFeeProgramId" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 				<div class="col-xs-12 content-wrapper">
 					<!-- Breadcrumb start -->
@@ -86,6 +90,7 @@
 							
 							<div class="">
 								<form:form action="chatak-partner-fee-create">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-1"></div>
 									<fieldset class="col-sm-8">
 										<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-void.label.merchantcode"/><input class="form-control"
@@ -113,6 +118,7 @@
 						<div class="main-content-holder padding0" id="showFeeDivId">
 							<form:form action="chatak-partner-fee-create"
 								commandName="partnerFeeCodeDTO" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<form:hidden path="accountNumber" />
 								<input type="hidden" name="merchantCode" id="merchantCode" />
 								<form:hidden path="merchantCode" />

@@ -94,10 +94,10 @@ public class CurrencyController implements URLMappingConstants {
       Response currencyDTOlist = currencyConfigService.searchCurrencyConfig(currencyDTO);
       if (StringUtil.isListNotNullNEmpty(currencyDTOlist.getResponseList())) {
         session.setAttribute(Constants.CURRENCY_MODEL, currencyDTO);
-        modelAndView =
-            PaginationUtil.getPagenationModel(modelAndView, currencyDTOlist.getTotalNoOfRows());
         modelAndView.addObject("currencyDTOlist", currencyDTOlist.getResponseList());
       }
+      modelAndView =
+              PaginationUtil.getPagenationModel(modelAndView, currencyDTOlist.getTotalNoOfRows());
       model.put(Constants.CURRENCY_DTO, currencyDTO);
       modelAndView.addObject(Constants.CURRENCY_MODEL, currencyDTO);
     } catch (Exception exception) {

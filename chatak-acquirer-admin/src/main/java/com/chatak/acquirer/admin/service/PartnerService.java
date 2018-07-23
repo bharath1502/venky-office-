@@ -38,7 +38,5 @@ public interface PartnerService {
 
   public PartnerResponse editPartner(PartnerRequest partnerRequest) throws ChatakAdminException;
 
-  public List<Option> getActivePartners();
-
   public Response getPartnersByProgramManagerId(String programManagerId);
 }

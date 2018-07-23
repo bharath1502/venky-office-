@@ -1,14 +1,15 @@
 package com.chatak.acquirer.admin.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.FormParam;
-
 import org.apache.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +22,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
+import com.chatak.acquirer.admin.controller.model.ExportDetails;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.FundTransfersService;
 import com.chatak.acquirer.admin.service.RestPaymentService;
 import com.chatak.acquirer.admin.service.SettlementService;
 import com.chatak.acquirer.admin.service.TransactionService;
-import com.chatak.acquirer.admin.util.DashBoardTransactionFileExportUtil;
+import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.pg.bean.LitleEFTRequest;
 import com.chatak.pg.bean.TransactionPopUpDataDto;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.LitleEFTDTO;
 import com.chatak.pg.model.LitleEFTDTOsList;
 import com.chatak.pg.model.SettlementActionDTOList;
@@ -43,8 +45,10 @@ import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.user.bean.Response;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.LogHelper;
 import com.chatak.pg.util.LoggerMessage;
+import com.chatak.pg.util.StringUtils;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Controller
@@ -241,14 +245,16 @@ public class TransactionsEFTController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(LITLE_EFT_EXECUTED_TRANSACTIONS_SHOW);
     List<LitleEFTDTO> litleEFTRequestFromDashBoard =
         (List<LitleEFTDTO>) session.getAttribute("litleEFTExecutedTransList");
+    ExportDetails exportDetails = new ExportDetails();
     try {
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        DashBoardTransactionFileExportUtil.downloadDashBoardEFTTransPdf(litleEFTRequestFromDashBoard,
-            response, messageSource);
+    	  exportDetails.setExportType(ExportType.PDF);
       } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        DashBoardTransactionFileExportUtil.downloadDashBoardEFTTransXl(litleEFTRequestFromDashBoard,
-            response, messageSource);
+    	  exportDetails.setExportType(ExportType.XLS);
+			exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
       }
+      setExportDetailsDataForDownloadRoleRprt(litleEFTRequestFromDashBoard, exportDetails, response);	
+	 	ExportUtil.exportData(exportDetails, response, messageSource);
       modelAndView.addObject(litleEFTRequestFromDashBoard);
     } catch (Exception e) {
       modelAndView.addObject(litleEFTRequestFromDashBoard);
@@ -261,6 +267,51 @@ public class TransactionsEFTController implements URLMappingConstants {
         "Exiting :: TransactionsEFTController :: downloadEFTTransactionsFromDashBoard method");
     return null;
   }
+	private void setExportDetailsDataForDownloadRoleRprt(List<LitleEFTDTO> transactionEFT,
+	      ExportDetails exportDetails, HttpServletResponse response) {
+		Date date = new Date();
+		String dateString = new SimpleDateFormat(Constants.EXPORT_FILE_NAME_DATE_FORMAT).format(date);
+		String selectedFlag = response.getHeader("selectedFlag");
+	    if (null == selectedFlag) {
+	      selectedFlag = "";
+	    }
+	    String filename = "Transactions" + selectedFlag + dateString + ".xls";
+		
+	    exportDetails.setReportName(filename);
+	    exportDetails.setHeaderMessageProperty("chatak.header.eftexecuted.transaction.messages");
+
+	    exportDetails.setHeaderList(getRoleHeaderLists());
+	    exportDetails.setFileData(getRoleFilesData(transactionEFT));
+	  }
+	private List<String> getRoleHeaderLists() {
+	    String[] headerArr = {
+	        messageSource.getMessage("comm.program.exportutil.date.time", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("transaction-file-exportutil-txnId", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("fundtransferfile.merchant.code", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("fundtransferfile.amount", null,
+		        LocaleContextHolder.getLocale())};
+	    return new ArrayList<String>(Arrays.asList(headerArr));
+	  }
+  private static List<Object[]> getRoleFilesData(List<LitleEFTDTO> list) {
+	    List<Object[]> fileData = new ArrayList<Object[]>();
+
+	    for (LitleEFTDTO litleEFTDTO: list) {
+	    	Object[] rowData = new Object[Integer.parseInt("4")];
+			  rowData[0] = (litleEFTDTO.getDateTime() != null) ? DateUtil
+		                .toDateStringFormat(litleEFTDTO.getDateTime(), DateUtil.VIEW_DATE_TIME_FORMAT) + ""
+		                : "";
+			  rowData[1] = litleEFTDTO.getTransactionId();
+			  rowData[Integer.parseInt("2")]= litleEFTDTO.getMerchantCode();
+			  rowData[Integer.parseInt("3")]=(litleEFTDTO.getAmount() != null)
+			            ? (PGConstants.DOLLAR_SYMBOL + StringUtils.amountToString(litleEFTDTO.getAmount())) + ""
+			                    : "";
+	      fileData.add(rowData);
+	    }
+	    return fileData;
+	  }
 
   @RequestMapping(value = CHATAK_ADMIN_SETTLEMRNT_ACTION, method = RequestMethod.POST)
   public ModelAndView processSettlementAction(HttpServletRequest request,
@@ -495,14 +546,16 @@ public class TransactionsEFTController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_DASH_BOARD_SEARCH_TRANSACTION_PAGE);
     List<Transaction> transactionListFromDashBoard =
         (List<Transaction>) session.getAttribute("transactionsFromDashBoard");
+    ExportDetails exportDetails = new ExportDetails();
     try {
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        DashBoardTransactionFileExportUtil.downloadDashBoardTransPdf(transactionListFromDashBoard, response,
-            messageSource);
+      	exportDetails.setExportType(ExportType.PDF);
       } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-        DashBoardTransactionFileExportUtil.downloadDashBoardTransXl(transactionListFromDashBoard, response,
-            messageSource);
+    	  exportDetails.setExportType(ExportType.XLS);
+			exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
       }
+      setExportDetailsDataForDownloadRoleReport(transactionListFromDashBoard, exportDetails,response);	
+	 	ExportUtil.exportData(exportDetails, response, messageSource);
       modelAndView.addObject(transactionListFromDashBoard);
     } catch (Exception e) {
       modelAndView.addObject(transactionListFromDashBoard);
@@ -514,4 +567,74 @@ public class TransactionsEFTController implements URLMappingConstants {
     logger.info("Exiting :: TransactionsEFTController :: downloadTransactionsFromDashBoard method");
     return null;
   }
+  
+  private void setExportDetailsDataForDownloadRoleReport(List<Transaction> transactionList,
+	      ExportDetails exportDetails,HttpServletResponse response) {
+	    Date date = new Date();
+		String dateString = new SimpleDateFormat(Constants.EXPORT_FILE_NAME_DATE_FORMAT).format(date);
+		String selectedFlag = response.getHeader("selectedFlag");
+	    if (null == selectedFlag) {
+	      selectedFlag = "";
+	    }
+	    String filename = "Transactions" + selectedFlag + dateString + ".xls";
+	  
+	    exportDetails.setReportName(filename);
+	    exportDetails.setHeaderMessageProperty("chatak.header.transaction.messages");
+
+	    exportDetails.setHeaderList(getRoleHeaderList());
+	    exportDetails.setFileData(getRoleFileData(transactionList));
+	  }
+  
+  private List<String> getRoleHeaderList() {
+	    String[] headerArr = {
+	        messageSource.getMessage("comm.program.exportutil.date.time", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("transaction-file-exportutil-txnId", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("fundtransferfile.proc.txn.id", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("fundtransferfile.card.number", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("transaction-file-exportutil-merchantCode", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("transaction-file-exportutil-txnType", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("transaction-file-exportutil-amount", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("transaction-file-exportutil-description", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("fundtransferfile.status", null,
+		        LocaleContextHolder.getLocale())};
+	    return new ArrayList<String>(Arrays.asList(headerArr));
+	  }
+  
+  private static List<Object[]> getRoleFileData(List<Transaction> list) {
+	    List<Object[]> fileData = new ArrayList<Object[]>();
+
+	    for (Transaction transactionData : list) {
+	    	Object[] rowData = new Object[Integer.parseInt("9")];
+			  rowData[0] = transactionData.getTransactionDate();
+			  rowData[1] = transactionData.getTransactionId();
+			  rowData[Integer.parseInt("2")]= ((transactionId(transactionData) != null)
+		                ? validateTransactionId(transactionData)
+		                        : "");
+			  rowData[Integer.parseInt("3")]= transactionData.getMaskCardNumber();
+			  rowData[Integer.parseInt("4")]= transactionData.getMerchant_code();
+			  rowData[Integer.parseInt("5")]= transactionData.getTransaction_type();
+			  rowData[Integer.parseInt("6")]= transactionData.getTransactionAmount();
+			  rowData[Integer.parseInt("7")]= transactionData.getTxnDescription();
+			  rowData[Integer.parseInt("8")]= transactionData.getMerchantSettlementStatus();
+	      fileData.add(rowData);
+	    }
+	    return fileData;
+	  }
+  
+  private static Long transactionId(Transaction transaction) {
+	    return transaction.getRef_transaction_id();
+	  }
+  private static Object validateTransactionId(Transaction transaction) {
+	    return 0L == transactionId(transaction) ? "NA"
+	        : transactionId(transaction);
+	  }
 }
+

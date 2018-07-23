@@ -68,7 +68,7 @@ public class CommonUtilTest {
 
 	@Test(expected=NumberFormatException.class)
 	public void testGenerateNumericString() {
-		commonUtil.generateNumericString(1);
+		commonUtil.generateNumericString(Integer.parseInt("534"));
 
 	}
 

@@ -38,22 +38,22 @@ public final class ProcessorConfig {
 
   public static final String FEE_SERVICE = "FEE_SERVICE_";
 
-  protected static Map<String, String> processorConfig = new HashMap<String, String>();
+  protected static Map<String, String> processorConfiguration = new HashMap<String, String>();
 
   private ProcessorConfig() {
    
   }
 
-  public static void setProcessorConfig(List<PGParams> pgParams) {
+  public static void setProcessorConfiguration(List<PGParams> pgParams) {
     for(PGParams pgParam : pgParams) {
 
-      processorConfig.put(pgParam.getParamName(), pgParam.getParamValue());
+      processorConfiguration.put(pgParam.getParamName(), pgParam.getParamValue());
 
     }
   }
 
   public static String get(String key) {
-    return processorConfig.get(key);
+    return processorConfiguration.get(key);
   }
 
 }

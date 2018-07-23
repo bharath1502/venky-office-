@@ -6,7 +6,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -23,7 +23,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<script src="../js/jquery.min.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
@@ -78,6 +78,7 @@
 								<!-- Page Form Start -->
 								<form:form action="#" commandName="bank" name="bank"
 									method="post">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -90,7 +91,20 @@
 														<span class="red-error" id="bankNameEr">&nbsp;</span>
 													</div>
 												</fieldset>
-												<fieldset class="col-sm-3">
+													<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.bankcode" /><span
+														class="required-field">*</span></label>
+													<form:input path="bankCode" id="bankCode"
+														cssClass="form-control"
+														readonly="true"
+														maxlength="<%=Constants.BANK_CODE.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="bankCodeEr">&nbsp;</span>
+													</div>
+												</fieldset>
+												<%-- <fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="bank.label.bankshortname"/><span class="required-field">*</span></label>
 
 													<form:input path="bankShortName" id="bankShortName"
@@ -109,8 +123,33 @@
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error" id="acquirerIdEr">&nbsp;</span>
 													</div>
+												</fieldset> --%>
+                                                 <fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.settlementroutingnumber" /><span
+														class="required-field">*</span></label>
+													<form:input path="settlRoutingNumber" id="settlRoutingNumber"
+														cssClass="form-control"
+														readonly="true"
+														maxlength="<%=Constants.ACCOUNT_ROUTING_NUMBER.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="settlRoutingNumberEr">&nbsp;</span>
+													</div>
 												</fieldset>
-
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.settlementaccountnumber" /><span
+														class="required-field">*</span></label>
+													<form:input path="settlAccountNumber" id="settleAccountNo"
+														cssClass="form-control"
+														readonly="true"
+														maxlength="<%=Constants.BANK_ACCOUNT_NUMBER.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="settleAccountNoEr">&nbsp;</span>
+													</div>
+												</fieldset>
 
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/><span class="required-field">*</span></label>
@@ -161,7 +200,79 @@
 														<span id="zipEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-
+                                                 <fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.primarycontactname" /><span
+														class="required-field">*</span></label>
+													<form:input path="contactPersonName" id="contactName"
+														cssClass="form-control"
+														readonly="true"
+														maxlength="<%=Constants.CONTACT_PERSON_NAME.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="contactNameEr">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.contactmobilenumber" /></label>
+													<form:input path="contactPersonCell" id="bankMobile"
+														cssClass="form-control"
+														readonly="true"
+														maxlength="<%=Constants.PHONE.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="bankMobileEr">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.contactphonenumber" /><span
+														class="required-field">*</span></label>
+													<form:input path="contactPersonPhone" id="bankPhone"
+														cssClass="form-control"
+														readonly="true"
+														maxlength="<%=Constants.PHONE.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="bankPhoneEr">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.extension" /></label>
+													<form:input path="extension" id="extension"
+														cssClass="form-control" readonly="true"
+														maxlength="<%=Constants.EXTENSION.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="extensionEr">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.fax" /></label>
+													<form:input path="contactPersonFax" id="bankFax"
+														cssClass="form-control" readonly="true"
+														maxlength="<%=Constants.FAX.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="bankFaxEr">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.emailaddress" /><span
+														class="required-field">*</span></label>
+													<form:input path="contactPersonEmail" id="bankEmailId"
+														cssClass="form-control"
+														readonly="true"
+														maxlength="<%=Constants.EMAIL_ID.toString()%>" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span class="red-error" id="bankEmailIdEr">&nbsp;</span>
+													</div>
+												</fieldset>
 												<%-- <fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.status"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="status" id="status" readonly="true"/>

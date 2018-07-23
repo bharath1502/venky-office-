@@ -166,13 +166,8 @@ public class MerchantAccountController implements URLMappingConstants {
           merchantAccountService.createMerchantAccount(merchant, loggedInUserId);
       if (null != accountCreateResponse) {
 
-        if (merchant.getMerchantType().equals(PGConstants.MERCHANT)) {
           modelAndView.addObject(Constants.SUCESS, messageSource.getMessage(
               "chatak.merchant.account.create.success", null, LocaleContextHolder.getLocale()));
-        } else {
-          modelAndView.addObject(Constants.SUCESS, messageSource.getMessage(
-              "chatak.merchant.account.create.success", null, LocaleContextHolder.getLocale()));
-        }
 
         modelAndView.addObject(Constants.ERROR, null);
         session.setAttribute(Constants.ERROR, null);

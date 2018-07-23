@@ -20,8 +20,6 @@ public class PGTransaction implements Serializable {
   private static final long serialVersionUID = 5593907271831728272L;
 
   @Id
-  /*@SequenceGenerator(name = "SEQ_PG_TRANSACTION_ID", sequenceName = "SEQ_PG_TRANSACTION")
-  @GeneratedValue(generator = "SEQ_PG_TRANSACTION_ID")*/
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "ID")
   private Long id;
@@ -90,7 +88,7 @@ public class PGTransaction implements Serializable {
   private Long settlementBatchId;
 
   @Column(name = "SETTLEMENT_BATCH_STATUS")
-  private Integer settlementBatchStatus;
+  private String settlementBatchStatus;
 
   @Column(name = "INVOICE_NUMBER")
   private String invoiceNumber;
@@ -197,6 +195,18 @@ public class PGTransaction implements Serializable {
   
   @Column(name = "DEVICE_LOCAL_TXN_TIME")
   private String deviceLocalTxnTime;
+  
+  @Column(name = "PM_ID")
+  private Long pmId;
+  
+  @Column(name = "ISO_ID")
+  private Long isoId;
+  
+  @Column(name = "CP_ID")
+  private Long cpId;
+  
+  @Column(name = "ISS_PARTNER")
+  private String issuancePartner;
 
   public Long getId() {
     return id;
@@ -374,11 +384,11 @@ public class PGTransaction implements Serializable {
     this.settlementBatchId = settlementBatchId;
   }
 
-  public Integer getSettlementBatchStatus() {
+  public String getSettlementBatchStatus() {
     return settlementBatchStatus;
   }
 
-  public void setSettlementBatchStatus(Integer settlementBatchStatus) {
+  public void setSettlementBatchStatus(String settlementBatchStatus) {
     this.settlementBatchStatus = settlementBatchStatus;
   }
 
@@ -663,5 +673,61 @@ public class PGTransaction implements Serializable {
   public void setDeviceLocalTxnTime(String deviceLocalTxnTime) {
     this.deviceLocalTxnTime = deviceLocalTxnTime;
   }
+
+/**
+ * @return the pmId
+ */
+public Long getPmId() {
+	return pmId;
+}
+
+/**
+ * @param pmId the pmId to set
+ */
+public void setPmId(Long pmId) {
+	this.pmId = pmId;
+}
+
+/**
+ * @return the isoId
+ */
+public Long getIsoId() {
+	return isoId;
+}
+
+/**
+ * @param isoId the isoId to set
+ */
+public void setIsoId(Long isoId) {
+	this.isoId = isoId;
+}
+
+/**
+ * @return the cpId
+ */
+public Long getCpId() {
+	return cpId;
+}
+
+/**
+ * @param cpId the cpId to set
+ */
+public void setCpId(Long cpId) {
+	this.cpId = cpId;
+}
+
+/**
+ * @return the issuancePartner
+ */
+public String getIssuancePartner() {
+	return issuancePartner;
+}
+
+/**
+ * @param issuancePartner the issuancePartner to set
+ */
+public void setIssuancePartner(String issuancePartner) {
+	this.issuancePartner = issuancePartner;
+}
 
 }

@@ -1,6 +1,9 @@
 package com.chatak.pay.service.impl;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -22,12 +25,15 @@ import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.TerminalDao;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTerminal;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.util.Properties;
 
 @Service
 public class TopupServiceImpl implements TopupService {
 
 	private Logger logger = Logger.getLogger(TopupServiceImpl.class);
+	
+	private static ObjectMapper mapper=new ObjectMapper();	
 
 	@Autowired
 	private MessageSource messageSource;
@@ -43,11 +49,11 @@ public class TopupServiceImpl implements TopupService {
 		logger.debug("Entering:: IssuanceServiceImpl:: getOperators method");
 		GetOperatorsResponse getOperatorsResponse = new GetOperatorsResponse();
 		try {
-			PGMerchant pgMerchant = merchantUpdateDao.getMerchant(request.getMerchantId());
+			PGMerchant pgMerchant = merchantUpdateDao.getMerchant(request.getMerchantCode());
 			if (pgMerchant != null && !StringUtil.isNullAndEmpty(request.getTerminalId())) {
 				PGTerminal pgTerminal = terminalDao.getTerminal(Long.valueOf(request.getTerminalId()));
 				if (pgTerminal == null) {
-					logger.info("Invalid Merchant: " + request.getMerchantId());
+					logger.info("Invalid Merchant: " + request.getMerchantCode());
 					getOperatorsResponse.setErrorCode(ChatakPayErrorCode.TXN_0007.name());
 					getOperatorsResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0007.name(),
 							null, LocaleContextHolder.getLocale()));
@@ -55,7 +61,7 @@ public class TopupServiceImpl implements TopupService {
 					getOperatorsResponse = pgTerminalNotNull();
 				}
 			} else {
-				logger.info("Invalid Merchant: " + request.getMerchantId());
+				logger.info("Invalid Merchant: " + request.getMerchantCode());
 				getOperatorsResponse.setErrorCode(ChatakPayErrorCode.TXN_0007.name());
 				getOperatorsResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0007.name(), null,
 						LocaleContextHolder.getLocale()));
@@ -70,10 +76,11 @@ public class TopupServiceImpl implements TopupService {
 		return getOperatorsResponse;
 	}
 
-	private GetOperatorsResponse pgTerminalNotNull() throws ChatakPayException {
+	private GetOperatorsResponse pgTerminalNotNull() throws ChatakPayException, IOException, HttpClientException {
 		GetOperatorsResponse getOperatorsResponse;
-		getOperatorsResponse = (GetOperatorsResponse) JsonUtil.sendToIssuance(GetOperatorsResponse.class,
+		String output = (String) JsonUtil.sendToIssuance(String.class,
 				"", Properties.getProperty("chatak-issuance.get.operators"));
+		getOperatorsResponse=mapper.readValue(output, GetOperatorsResponse.class);
 		if (getOperatorsResponse == null) {
 			throw new ChatakPayException();
 		}
@@ -88,11 +95,11 @@ public class TopupServiceImpl implements TopupService {
 		logger.debug("Entering:: IssuanceServiceImpl:: getTopupCategories method");
 		GetTopupCategoriesResponse getTopupCategoriesResponse = new GetTopupCategoriesResponse();
 		try {
-			PGMerchant pgMerchant = merchantUpdateDao.getMerchant(topupRequest.getMerchantId());
+			PGMerchant pgMerchant = merchantUpdateDao.getMerchant(topupRequest.getMerchantCode());
 			if (pgMerchant != null && !StringUtil.isNullAndEmpty(topupRequest.getTerminalId())) {
 				PGTerminal pgTerminal = terminalDao.getTerminal(Long.valueOf(topupRequest.getTerminalId()));
 				if (pgTerminal == null) {
-					logger.info("Invalid Merchant: " + topupRequest.getMerchantId());
+					logger.info("Invalid Merchant: " + topupRequest.getMerchantCode());
 					getTopupCategoriesResponse.setErrorCode(ChatakPayErrorCode.TXN_0007.name());
 					getTopupCategoriesResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0007.name(),
 							null, LocaleContextHolder.getLocale()));
@@ -100,7 +107,7 @@ public class TopupServiceImpl implements TopupService {
 					getTopupCategoriesResponse = pgTerminalIsNotNull(topupRequest);
 				}
 			} else {
-				logger.info("Invalid Merchant: " + topupRequest.getMerchantId());
+				logger.info("Invalid Merchant: " + topupRequest.getMerchantCode());
 				getTopupCategoriesResponse.setErrorCode(ChatakPayErrorCode.TXN_0007.name());
 				getTopupCategoriesResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0007.name(), null,
 						LocaleContextHolder.getLocale()));
@@ -115,7 +122,7 @@ public class TopupServiceImpl implements TopupService {
 		return getTopupCategoriesResponse;
 	}
 
-	private GetTopupCategoriesResponse pgTerminalIsNotNull(TopupRequest topupRequest) throws ChatakPayException {
+	private GetTopupCategoriesResponse pgTerminalIsNotNull(TopupRequest topupRequest) throws ChatakPayException, HttpClientException,IOException {
 		GetTopupCategoriesResponse getTopupCategoriesResponse;
 		IssuanceTopupRequest issuanceTopupRequest = new IssuanceTopupRequest();
 		issuanceTopupRequest.setAmount(topupRequest.getAmount());
@@ -123,8 +130,9 @@ public class TopupServiceImpl implements TopupService {
 		issuanceTopupRequest.setOperatorId(topupRequest.getOperatorId());
 		issuanceTopupRequest.setCategoryId(topupRequest.getCategoryId());
 		issuanceTopupRequest.setTopupOfferId(topupRequest.getTopupOfferId());
-		getTopupCategoriesResponse = (GetTopupCategoriesResponse) JsonUtil.sendToIssuance(GetTopupCategoriesResponse.class,
+		String output=(String)JsonUtil.sendToIssuance(String.class,
 				issuanceTopupRequest, Properties.getProperty("chatak-issuance.get.topupCategoryList"));
+		getTopupCategoriesResponse=mapper.readValue(output, GetTopupCategoriesResponse.class);
 		if (getTopupCategoriesResponse == null) {
 			throw new ChatakPayException();
 		}
@@ -139,11 +147,11 @@ public class TopupServiceImpl implements TopupService {
 		logger.debug("Entering:: IssuanceServiceImpl:: getTopupOffers method");
 		GetTopupOffersResponse getTopupOffersResponse = new GetTopupOffersResponse();
 		try {
-			PGMerchant pgMerchant = merchantUpdateDao.getMerchant(topupRequest.getMerchantId());
+			PGMerchant pgMerchant = merchantUpdateDao.getMerchant(topupRequest.getMerchantCode());
 			if (pgMerchant != null && !StringUtil.isNullAndEmpty(topupRequest.getTerminalId())) {
 				PGTerminal pgTerminal = terminalDao.getTerminal(Long.valueOf(topupRequest.getTerminalId()));
 				if (pgTerminal == null) {
-					logger.info("Invalid Merchant: " + topupRequest.getMerchantId());
+					logger.info("Invalid Merchant: " + topupRequest.getMerchantCode());
 					getTopupOffersResponse.setErrorCode(ChatakPayErrorCode.TXN_0007.name());
 					getTopupOffersResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0007.name(),
 							null, LocaleContextHolder.getLocale()));
@@ -151,7 +159,7 @@ public class TopupServiceImpl implements TopupService {
 					getTopupOffersResponse = pgTerminalValidation(topupRequest);
 				}
 			} else {
-				logger.info("Invalid Merchant: " + topupRequest.getMerchantId());
+				logger.info("Invalid Merchant: " + topupRequest.getMerchantCode());
 				getTopupOffersResponse.setErrorCode(ChatakPayErrorCode.TXN_0007.name());
 				getTopupOffersResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0007.name(), null,
 						LocaleContextHolder.getLocale()));
@@ -166,7 +174,7 @@ public class TopupServiceImpl implements TopupService {
 		return getTopupOffersResponse;
 	}
 
-	private GetTopupOffersResponse pgTerminalValidation(TopupRequest topupRequest) throws ChatakPayException {
+	private GetTopupOffersResponse pgTerminalValidation(TopupRequest topupRequest) throws ChatakPayException, HttpClientException, IOException {
 		GetTopupOffersResponse getTopupOffersResponse;
 		IssuanceTopupRequest issuanceTopupRequest = new IssuanceTopupRequest();
 		issuanceTopupRequest.setAmount(topupRequest.getAmount());
@@ -174,8 +182,9 @@ public class TopupServiceImpl implements TopupService {
 		issuanceTopupRequest.setOperatorId(topupRequest.getOperatorId());
 		issuanceTopupRequest.setCategoryId(topupRequest.getCategoryId());
 		issuanceTopupRequest.setTopupOfferId(topupRequest.getTopupOfferId());
-		getTopupOffersResponse = (GetTopupOffersResponse) JsonUtil.sendToIssuance(GetTopupOffersResponse.class,
-				issuanceTopupRequest, Properties.getProperty("chatak-issuance.get.topupOfferList"));
+		String output=(String)JsonUtil.sendToIssuance(String.class,
+				issuanceTopupRequest, Properties.getProperty("chatak-issuance.get.topupCategoryList"));
+		getTopupOffersResponse=mapper.readValue(output, GetTopupOffersResponse.class);
 		if (getTopupOffersResponse == null) {
 			throw new ChatakPayException();
 		}
@@ -190,11 +199,11 @@ public class TopupServiceImpl implements TopupService {
 		logger.debug("Entering:: IssuanceServiceImpl:: doTopup method");
 		TopupResponse topupResponse = new TopupResponse();
 		try {
-			PGMerchant pgMerchant = merchantUpdateDao.getMerchant(topupRequest.getMerchantId());
+			PGMerchant pgMerchant = merchantUpdateDao.getMerchant(topupRequest.getMerchantCode());
 			if (pgMerchant != null) {
 				PGTerminal pgTerminal = terminalDao.getTerminal(Long.valueOf(topupRequest.getTerminalId()));
 				if (pgTerminal == null) {
-					logger.info("Invalid Merchant: " + topupRequest.getMerchantId());
+					logger.info("Invalid Merchant: " + topupRequest.getMerchantCode());
 					topupResponse.setErrorCode(ChatakPayErrorCode.TXN_0007.name());
 					topupResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0007.name(), null,
 							LocaleContextHolder.getLocale()));
@@ -202,7 +211,7 @@ public class TopupServiceImpl implements TopupService {
 					topupResponse = validatePGTerminal(topupRequest);
 				}
 			} else {
-				logger.info("Invalid Merchant: " + topupRequest.getMerchantId());
+				logger.info("Invalid Merchant: " + topupRequest.getMerchantCode());
 				topupResponse.setErrorCode(ChatakPayErrorCode.TXN_0007.name());
 				topupResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0007.name(), null,
 						LocaleContextHolder.getLocale()));
@@ -217,7 +226,7 @@ public class TopupServiceImpl implements TopupService {
 		return topupResponse;
 	}
 
-	private TopupResponse validatePGTerminal(TopupRequest topupRequest) throws ChatakPayException {
+	private TopupResponse validatePGTerminal(TopupRequest topupRequest) throws ChatakPayException,IOException, HttpClientException {
 		TopupResponse topupResponse;
 		IssuanceTopupRequest issuanceTopupRequest = new IssuanceTopupRequest();
 		issuanceTopupRequest.setAmount(topupRequest.getAmount());
@@ -225,8 +234,9 @@ public class TopupServiceImpl implements TopupService {
 		issuanceTopupRequest.setOperatorId(topupRequest.getOperatorId());
 		issuanceTopupRequest.setCategoryId(topupRequest.getCategoryId());
 		issuanceTopupRequest.setTopupOfferId(topupRequest.getTopupOfferId());
-		topupResponse = (TopupResponse) JsonUtil.sendToIssuance(TopupResponse.class, issuanceTopupRequest,
-				Properties.getProperty("chatak-issuance.do.topup"));
+		String output = (String) JsonUtil.sendToIssuance(String.class,
+				"", Properties.getProperty("chatak-issuance.get.operators"));
+		topupResponse=mapper.readValue(output, TopupResponse.class);
 		if (topupResponse == null) {
 			throw new ChatakPayException();
 		}

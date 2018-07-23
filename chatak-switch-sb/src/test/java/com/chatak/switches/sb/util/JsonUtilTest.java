@@ -5,16 +5,15 @@ import org.codehaus.jackson.map.ObjectWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.chatak.pg.exception.PrepaidAdminException;
+import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.HttpClient;
 import com.chatak.switches.sb.exception.ServiceException;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
 
+@SuppressWarnings("static-access")
 @RunWith(MockitoJUnitRunner.class)
 public class JsonUtilTest {
 
@@ -23,14 +22,11 @@ public class JsonUtilTest {
 	@InjectMocks
 	JsonUtil jsonUtil;
 
-	@Mock
 	ObjectWriter objectWriter;
 
-	@Mock
-	WebResource webResource;
+	HttpClient httpClient;
 
-	@Mock
-	Builder builder;
+	String output;
 
 	@Test(expected = ServiceException.class)
 	public void testConvertObjectToJSON() throws ServiceException {
@@ -50,38 +46,16 @@ public class JsonUtilTest {
 		jsonUtil.convertJSONToObject("111", c);
 	}
 
-	@Test(expected = ServiceException.class)
-	public void testPostRequest() throws ServiceException {
-		Object object = new Object();
-		jsonUtil.postRequest(null, object, "123");
-	}
-
-	@Test(expected = ServiceException.class)
-	public void testPostRequestElse() throws ServiceException {
-		Object object = null;
-		jsonUtil.postRequest(null, object, "123");
-	}
-
-	@Test(expected = ClientHandlerException.class)
-	public void testPostRequestString() throws ServiceException {
-		jsonUtil.postRequest("123");
-	}
-
-	@Test(expected = ClientHandlerException.class)
-	public void testPostRequestLogin() throws ServiceException {
-		jsonUtil.postRequestLogin("123");
-	}
-
 	@Test
-	public void testSendToIssuance() {
+	public void testSendToIssuance() throws PrepaidAdminException {
 		Object request = new Object();
-		Mockito.when(webResource.header(Matchers.anyString(), Matchers.any(Object.class))).thenReturn(builder);
 		try {
-			jsonUtil.sendToIssuance(request, "123", "543");
+			Mockito.when(httpClient.invokePost(request, String.class, Constants.ACC_ACTIVE)).thenReturn(Constants.ACC_TERMINATED);
+
+			jsonUtil.sendToIssuance(request, "123", "543", String.class);
 		} catch (Exception e) {
 			logger.error("ERROR:: JsonUtilTest:: testSendToIssuance method", e);
 
 		}
 	}
-
 }

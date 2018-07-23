@@ -19,8 +19,8 @@ import com.chatak.license.exception.InvalidChatakLicenseException;
 public class ChatakPGLicense {
 
   public ChatakPGLicense() throws InvalidChatakLicenseException {
-   // ChatakLicenseValidator.getInstance().validateChatakLicenseKey();
-   // ChatakLicenseValidator.getInstance().validateChatakLicenseKey();
+   // ChatakLicenseValidator.getInstance().validateChatakLicenseKey()
+   // ChatakLicenseValidator.getInstance().validateChatakLicenseKey()
   }
   
 }

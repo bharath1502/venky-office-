@@ -106,7 +106,7 @@ public class TransactionsControllerTest {
           .perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE)
               .sessionAttr(Constants.EXISTING_FEATURES, "notExist")
               .sessionAttr("loginUserMerchantId", Long.parseLong("1234")))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE));
     } catch (Exception e) {
       logger.error(
           "ERROR :: TransactionsControllerTest :: testShowSearchTransactionPageExistingFeature:",
@@ -211,7 +211,7 @@ public class TransactionsControllerTest {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_SEARCH_TRANSACTION)
               .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE));
     } catch (Exception e) {
       logger.error(
           "ERROR :: TransactionsControllerTest :: testSearchTransactionsExistingFeatureNotExist:",
@@ -292,7 +292,7 @@ public class TransactionsControllerTest {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS)
               .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS));
     } catch (Exception e) {
       logger.error(
           "ERROR :: TransactionsControllerTest :: testshowProcessingTransactionsExistingFeatureNotExist:",

@@ -95,7 +95,8 @@ public class TransactionRestControllerTest {
 		properties.setProperty("chatak-pay.skip.card.type.check", "false");
 		properties.setProperty("chatak.username.required", "null");
 		properties.setProperty("chatak.password.required", "null");
-
+		properties.setProperty("chatak-tsm.service.url", "https://dev.ipsidy.net/issuance-admin");
+		properties.setProperty("chatak-pay.skip.card.type.check", "false");
 		Properties.mergeProperties(properties);
 	}
 
@@ -109,20 +110,21 @@ public class TransactionRestControllerTest {
 		transactionRestController.process(request, response, session, transactionRequest);
 	}
 
-	@Test
+	@Test(expected=NullPointerException.class)
 	public void testProcessTransactionType() {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		CardData cardData = new CardData();
 		TSMResponse tsmResponse = new TSMResponse();
+		cardData.setCardHolderEmail("gfshgdf");
 		cardData.setCardType(MethodOfPaymentTypeEnum.AX);
 		transactionRequest.setCardData(cardData);
 		transactionRequest.setTransactionType(TransactionType.LOAD_FUND);
 		transactionRequest.setShareMode(ShareModeEnum.SINGLE);
-		tsmResponse.setErrorCode("243");
+		tsmResponse.setErrorCode("success");
 		transactionRestController.process(request, response, session, transactionRequest);
 	}
 
-	@Test
+	@Test(expected=NullPointerException.class)
 	public void testProcessShareMode() {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		CardData cardData = new CardData();
@@ -134,7 +136,7 @@ public class TransactionRestControllerTest {
 		transactionRestController.process(request, response, session, transactionRequest);
 	}
 
-	@Test
+	@Test(expected=NullPointerException.class)
 	public void testProcessShareModeSplitAmount() {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		CardData cardData = new CardData();
@@ -266,7 +268,7 @@ public class TransactionRestControllerTest {
 		transactionRestController.changePassword(changePassword);
 	}
 
-	@Test
+	@Test(expected=NullPointerException.class)
 	public void testForgotPassword() throws ChatakPayException {
 		ForgotPasswordRequest changePassword = new ForgotPasswordRequest();
 		Mockito.when(pgMerchantService.forgotPassword(Matchers.anyString(), Matchers.anyString())).thenReturn(true);

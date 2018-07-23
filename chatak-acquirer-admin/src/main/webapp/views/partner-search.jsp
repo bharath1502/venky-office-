@@ -7,6 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -23,7 +24,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -40,8 +41,8 @@
 						<span class="breadcrumb-text"><spring:message
 								code="manage.label.manage" /></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
-							class="breadcrumb-text"><a href="showSearchPartner"><spring:message
-									code="admin.partner.message" /></a></span> <span
+							class="breadcrumb-text"><spring:message
+									code="admin.partner.message" /></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
 							class="breadcrumb-text"><spring:message
 								code="common.label.search" /></span>
@@ -50,11 +51,13 @@
 					<form:form action="showEditPartner" name="editPartnerForm" method="post">
 						<input type="hidden" id="partnerId" name="partnerId" /> <input
 							type="hidden" id="managerId" name="managerId" />
+					   <input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="partnerPaginationAction" name="paginationForm"
 						method="post">
 						<input type="hidden" id="pageNumberId" name="partnerPageData" />
 						<input type="hidden" id="totalRecordsId" name="totalRecords" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="downloadPartnerReport" name="downloadReport"
 						method="post">
@@ -63,6 +66,7 @@
 							id="downloadTypeId" name="downloadType" /> <input type="hidden"
 							id="totalRecords" name="totalRecords" /> <input type="hidden"
 							id="downloadAllRecords" name="downloadAllRecords" />
+						 <input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<!-- Tab Buttons Start -->
 					<div class="marginL40">
@@ -95,6 +99,7 @@
 								</c:set>
 								<form:form action="searchPartner"
 									modelAttribute="partnerRequest" method="post">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -399,6 +404,7 @@
 			<input type="hidden" id="managePartnerId" name="managePartnerId" />
 			<input type="hidden" id="partnerStatus" name="partnerStatus" /> <input
 				type="hidden" id="partnerName" name="partnerName" />
+			 <input type="hidden" name="CSRFToken" value="${tokenval}">
 			<!--  <input type="hidden" id="totalRecordsId" name="totalRecords" /> -->
 			<label><span class="requiredFiled">*</span>
 			<spring:message code="prepaid-admin-label.Reason" /></label>
@@ -455,16 +461,31 @@
 		$(".table-hide-btn").click(function() {
 			$(".search-results-table").slideUp();
 		});
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	<script src="../js/sorting.js"></script>
+	
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/partner.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>

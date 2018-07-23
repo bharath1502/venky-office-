@@ -42,6 +42,8 @@ public class UserData extends SearchRequest {
 
   private String userType;
   
+  private Long entityId;
+  
   /**
    * @return the userId
    */
@@ -243,5 +245,20 @@ public class UserData extends SearchRequest {
   public void setRoleType(String roleType) {
     this.roleType = roleType;
   }
+
+	/**
+	 * @return the entityId
+	 */
+	public Long getEntityId() {
+		return entityId;
+	}
+
+	/**
+	 * @param entityId
+	 *            the entityId to set
+	 */
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
+	}
 
 }

@@ -5,6 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -19,8 +20,18 @@
 	type="text/css">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<script type="text/javascript">
+	var entitiesId = [];
+	var cardProgramIdList = [];
+	function setEntityId(pmId){
+		entitiesId.push(pmId);
+	}
+	function setCardProgramId(cpId){
+		cardProgramIdList.push(cpId);
+	}
+	</script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
@@ -37,10 +48,12 @@
 				<div class="col-xs-12 content-wrapper">
 					<form:form action="pending-nmas-download" name="downloadNMASToShow" method="post">
 									<input type="hidden" id="merchantDownloadId" name="merchantDownloadId" />
+								    <input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					
 					<form:form action="merchant-pending-to-active" name="merchantActive" method="post">
 									<input type="hidden" id="getMerchantId" name="getMerchantId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<!-- Breadcrumb start -->
 					<div class="breadCrumb">
@@ -81,26 +94,13 @@
 										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.bankinfo"/></label>
 										<div class="arrow-down bank-info-arrow"></div>
 									</li>
-									<li class="legal-entiy-list">
+									<li class="pm-iso-carprogram-list">
 										<div class="circle-div">
 											<div class="hr"></div>
-											<span class="legal-circle-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.entityrepresentative"/></label>
-										<div class="arrow-down legal-arrow"></div>
-									</li>
-									<li class="legal-entiy-rep-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="legal-circle-rep-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.entity"/></label>
-										<div class="arrow-down legal-rep-arrow"></div>
-									</li>
-									<li class="free-transactions-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="contact-circle-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.additional"/></label>
-										<div class="arrow-down contact-arrow"></div>
+											<span class="pic-circle-tab"></span>
+										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
+												code="merchant.label.pmisoandcardprogram" /></label>
+										<div class="arrow-down pic-arrow"></div>
 									</li>
 									<li class="atm-transactions-list">
 										<div class="circle-div">
@@ -125,6 +125,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="merchant-pending-to-active" modelAttribute="merchant" name="merchant" method="post">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Account Details Content Start -->
@@ -280,290 +281,11 @@
 												<!--Panel Action Button End -->
 											</section>
 											<!-- Free Transactions Content End -->
-											<!-- ATM Transactions Content Start -->
-											<section class="field-element-row legal-details-content"
-												style="display: none;">
-												<fieldset class="col-sm-12">
-
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.ssn"/><!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalSSN"
-															onkeypress="return amountValidate(this,event)"
-															id="legalSSN" maxlength="20" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalSSNErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.firstname"/><!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalFirstName"
-															id="legalFirstName" maxlength="50" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalFirstNameErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.lastname"/><!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalLastName"
-															id="legalLastName" maxlength="50" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalLastNameErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.mobilephone"/><!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control"
-															path="legalMobilePhone" id="legalMobilePhone" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalMobilePhoneErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.dateofbirth"/><!-- <span class="required-field">*</span> --></label>
-														<div class="input-group focus-field">
-															<form:input cssClass="form-control effectiveDate"
-																path="legalDOB" id="legalDOB" />
-															<span class="input-group-addon"><span
-																class="glyphicon glyphicon-calendar"></span></span>
-														</div>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalDOBErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.passportnumber"/><!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalPassport"
-															id="legalPassport" maxlength="20" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalPassportErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.countryofresidence"/><!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control"
-															path="legalCountryResidence" id="legalCountryResidence"
-															maxlength="50" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalCountryResidenceErrorDiv"
-																class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.countryofcitizenship"/><!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalCitizen"
-															id="legalCitizen" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalCitizenErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.homephone"/><!-- <span class="required-field">*</span> --></label>
-														<form:input cssClass="form-control" path="legalHomePhone"
-															onkeypress="return amountValidate(this,event)"
-															id="legalHomePhone" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalHomePhoneErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												<!--Panel Action Button Start -->
-												<div class="col-sm-12 button-content">
-													<fieldset class="col-sm-7 pull-right">
-														<input type="button"
-															class="form-control button pull-right legal-next"
-															value="<spring:message code="pending-merchant-show.label.continuebutton"/>"> <input type="button"
-															class="form-control button pull-right marginL10 legal-prev"
-															value="<spring:message code="pending-merchant-show.label.previousbutton"/>"> <input type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="pending-merchant-show.label.cancelbutton"/>" onclick="goToDashBoard()">
-													</fieldset>
-												</div>
-												<!--Panel Action Button End -->
-											</section>
-											<!-- ATM Transactions Content End -->
-											<!-- POS Transactions Content Start -->
-											<section class="field-element-row legal-details-rep-content"
-												style="display: none;">
-												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.entityleganame"/><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalName"
-															id="legalName" maxlength="50"
-															onblur="return clientValidation('legalName', 'first_name_SplChar','legalNameErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalNameErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.eintaxid"/>:<span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalTaxId"
-															id="legalTaxId" maxlength="50"
-															onblur="return clientValidation('legalTaxId', 'eIN_taxId','legalTaxIdErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalTaxIdErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.type"/><span class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalType"
-															id="legalType"
-															onblur="return clientValidation('legalType', 'state','legalTypeErrorDiv');">
-															<form:option value="">..:<spring:message code="pending-merchant-show.label.select"/>:..</form:option>
-															<form:option value="1"><spring:message code="pending-merchant-show.label.associationestatetrust"/></form:option>
-															<form:option value="2"><spring:message code="pending-merchant-show.label.corporation"/></form:option>
-															<form:option value="3"><spring:message code="pending-merchant-show.label.governmentagency"/></form:option>
-															<form:option value="4"><spring:message code="pending-merchant-show.label.individual"/></form:option>
-															<form:option value="5"><spring:message code="pending-merchant-show.label.internationalorganization"/></form:option>
-															<form:option value="6"><spring:message code="pending-merchant-show.label.llc"/></form:option>
-															<form:option value="7"><spring:message code="pending-merchant-show.label.partnership"/></form:option>
-															<form:option value="8"><spring:message code="pending-merchant-show.label.taxexemptorganization"/></form:option>
-															<form:option value="11"><spring:message code="pending-merchant-show.label.testing"/></form:option>
-														</form:select>
-
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalTypeErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title="">
-															<spring:message code="merchant.label.expectedannualcardsales" />
-															<span class="required-field">*</span>
-														</label> 
-														<fmt:formatNumber type="currency" value="${merchant.legalAnnualCard}" pattern="<%=Constants.AMOUNT_FORMAT%>" var="legalAnnualCard" />
-														<input name="legalAnnualCard" id="legalAnnualCard" disabled="disabled"
-															cssClass="form-control" value="${ legalAnnualCard}" maxlength="12"
-															onblur="this.value=this.value.trim();appendDollarSymbol();return clientValidation('legalAnnualCard', 'dollar_amount','legalAnnualCardErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalAnnualCardErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.address1"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalAddress1"
-															id="legalAddress1"
-															onblur="return clientValidation('legalAddress1', 'bank_address1','legalAddress1ErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalAddress1ErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.address2"/></label>
-														<form:input cssClass="form-control" path="legalAddress2"
-															id="legalAddress2"
-															onblur="return clientValidation('legalAddress2', 'bank_address2','legalAddress2ErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalAddress2ErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.city"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalCity"
-															id="legalCity"
-															onblur="return clientValidation('legalCity', 'bank_city','legalCityErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalCityErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.country"/><span class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalCountry"
-															id="legalCountry"
-															onblur="return clientValidation('legalCountry', 'country','legalCountryErrorDiv');"
-															onchange="fetchMerchantState(this.value, 'legalState')">
-															<form:option value="">..:<spring:message code="pending-merchant-show.label.select"/>:..</form:option>
-															<c:forEach items="${countryList}" var="country">
-																<form:option value="${country.label}">${country.label}</form:option>
-															</c:forEach>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalCountryErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.state"/><span class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="legalState"
-															id="legalState"
-															onblur="return clientValidation('legalState', 'state','legalStateErrorDiv');">
-															<form:option value="">..:<spring:message code="pending-merchant-show.label.select"/>:..</form:option>
-															<c:forEach items="${legalStateList}" var="state">
-																<form:option value="${state.label}">${state.label}</form:option>
-															</c:forEach>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalStateErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.zipcode"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="legalPin"
-															id="legalPin"
-															onblur="return clientValidation('legalPin', 'zip_code','legalPinErrorDiv');" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="legalPinErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												<!--Panel Action Button Start -->
-												<div class="col-sm-12 button-content">
-													<fieldset class="col-sm-7 pull-right">
-														<input type="button"
-															class="form-control button pull-right legal-rep-next"
-															value="<spring:message code="pending-merchant-show.label.continuebutton"/>"> <input type="button"
-															class="form-control button pull-right marginL10 legal-rep-prev"
-															value="<spring:message code="pending-merchant-show.label.previousbutton"/>"> <input type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="pending-merchant-show.label.cancelbutton"/>" onclick="goToDashBoard()">
-													</fieldset>
-												</div>
-												<!--Panel Action Button End -->
-											</section>
-											<section class="field-element-row free-transactions-content"
-												style="display: none;">
-												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.username"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="userName"
-															id="userName" maxlength="50" readonly="true" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="userNameEr" class="red-error">&nbsp;</span> <span
-																id="userNamegreenEr" class="green-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												<!--Panel Action Button Start -->
-												<div class="col-sm-12 button-content">
-													<fieldset class="col-sm-7 pull-right">
-														<input type="button"
-															class="form-control button pull-right free-next"
-															value="<spring:message code="pending-merchant-show.label.continuebutton"/>"> <input type="button"
-															class="form-control button pull-right marginL10 free-prev"
-															value="<spring:message code="pending-merchant-show.label.previousbutton"/>"> <input type="button"
-															class="form-control button pull-right marginL10"
-															value="<spring:message code="pending-merchant-show.label.cancelbutton"/>" onclick="goToDashBoard()">
-													</fieldset>
-												</div>
-												<!--Panel Action Button End -->
-											</section>
+											<!--Pm ISO CardProgarm  Action Button Start -->
+											<jsp:include page="merchant-pending-PmIsoCardProgram.jsp"></jsp:include>
+											<!--Pm ISO CardProgarm  Action Button End -->
 											<section class="field-element-row atm-transaction-content"
 												style="display: none;">
-												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-12">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.autosettlementoptions"/><span
-															class="required-field">*</span></label><br> <input
-															type="radio" id="allowAutoSettlement"
-															name="autoSettlement" value="<spring:message code="pending-merchant-show.label.1"/>" onclick="validateRadio()"><spring:message code="manage.option.radio.sub-merchant.yes"/>
-														<input type="radio" id="noAutoSettlement"
-															name="autoSettlement" value="<spring:message code="pending-merchant-show.label.0"/>" onclick="validateRadio()"><spring:message code="manage.option.radio.sub-merchant.no"/>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="noAutoSettlementEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.merchanttype"/><span class="required-field">*</span></label>
 													<form:select cssClass="form-control"
@@ -578,19 +300,6 @@
 													</div>
 												</fieldset>
 													
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.feeprogram"/><span class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="feeProgram"
-															id="feeProgram" onblur="validatefeeProgram()">
-															<form:option value="">..:<spring:message code="pending-merchant-show.label.select"/>:..</form:option>
-															<c:forEach items="${feeprogramnames}" var="feename">
-																<form:option value="${feename.label}">${feename.label}</form:option>
-															</c:forEach>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="feeProgramEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.processor"/><span class="required-field">*</span></label>
 														<!-- <select class="form-control">
@@ -770,7 +479,7 @@
 							</fieldset>
 							<!-- Add Issuance Agent Configuration START -->
 													
-							<fieldset class="col-sm-12" id="issuanceAgentSettings">
+							<%-- <fieldset class="col-sm-12" id="issuanceAgentSettings">
 								<fieldset class="col-sm-12 padding0 border-style-section">
 									<fieldset class="col-sm-12">
 										<div class="container-heading-separator">
@@ -837,12 +546,10 @@
 										</div>
 									</fieldset>
 								</fieldset>
-							</fieldset>
+							</fieldset> --%>
+					           <!-- Add Issuance Agent Configuration END-->
 													
-					<!-- Add Issuance Agent Configuration END-->
-													
-<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS START-->
-													
+                              <!-- ADDED VIRTUAL, POS and ONLINE TERMINALS START-->
 													<fieldset class="col-sm-12" id="">
 														<fieldset class="col-sm-12 padding0 border-style-section">
 															<fieldset class="col-sm-12">
@@ -931,22 +638,6 @@
 															</fieldset>
 														</fieldset>
 													</fieldset>
-													
-<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS END-->
-													
-													
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="pending-merchant-show.label.payoutat"/></label>
-														<form:select cssClass="form-control" path="payOutAt"
-															id="payOutAt"  onblur="doCheckPayoutAt()">
-															<form:option value="">..:<spring:message code="pending-merchant-show.label.select"/>:..</form:option>
-															<form:option value="Merchant"><spring:message code="pending-merchant-show.label.merchant"/></form:option>
-															<form:option value="Sub-Merchant"><spring:message code="pending-merchant-show.label.submerchant"/></form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="MerchantErrorDiv" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset> 
 												</fieldset>
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
@@ -991,6 +682,7 @@
 		<form:form action="merchant-decline" name="declineMerchant" method="post">
 		<input type="hidden" id="merchantId" name="merchantId" />
         <input type="hidden" id="declineReason" name="declineReason" />
+        <input type="hidden" name="CSRFToken" value="${tokenval}">
 		<label data-toggle="tooltip" data-placement="top" title=""><span class="requiredFiled">*</span><spring:message code="pending-merchant-show.label.reason"/></label>
 		<textarea id="reason" name="declineReason" maxlength="100" onblur="validatePopupDesc();clientValidation('reason', 'declineReason','popDescError_div')"></textarea>
 		<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -1014,9 +706,8 @@
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	
+	<script src="../js/sortable.js"></script>
 	<script src="../js/merchant.js"></script>
 	<script src="../js/chatak-ajax.js"></script>
 	<script src="../js/backbutton.js"></script>
@@ -1028,6 +719,16 @@
 
 		/* DatePicker Javascript Strat*/
 		$(document).ready(function() {
+			if(associatedTo.value == "Program Manager"){
+				document.getElementById("entityType").innerHTML = "PM Name";
+				document.getElementById("associatedID").innerHTML = "Associated with PM Name";
+				document.getElementById("userType").innerHTML = "PM Name";
+			}else{
+				document.getElementById("entityType").innerHTML = "ISO Name";
+				document.getElementById("associatedID").innerHTML = "Associated with ISO Name";
+				document.getElementById("userType").innerHTML = "ISO Name";
+			}
+			fetchCardProgramByMerchantId('${merchant.id}');
 			showButtonForPosAndRemaining();
 			validateVirtualTerminal();
 			validateOnlineOptions();
@@ -1059,72 +760,54 @@
 			//showAddSubMerchant();
 		});
 		/* DatePicker Javascript End*/
-		$(".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content").hide();
+		$(".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content,.pm-iso-carprogram-content").hide();
 		$(".account-details-content").show();
 		$(".merchant-arrow").show();
-		$(".contact-arrow, .bank-info-arrow, .legal-arrow, .legal-rep-arrow, .bank-legal-arrow, .bank-arrow, .configuration-arrow, .final-arrow").hide();
+		$(".contact-arrow, .bank-info-arrow, .legal-arrow, .legal-rep-arrow, .bank-legal-arrow, .bank-arrow, .configuration-arrow, .final-arrow,.pic-arrow").hide();
 		
 		$(".account-details-list, .bank-prev").click(function() {
 			$(".merchant-circle-tab").addClass("active-circle");
-			$(".bank-info-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab").removeClass("active-circle");
+			$(".bank-info-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab,.pic-circle-tab").removeClass("active-circle");
 			$(".merchant-arrow").show();
-			$(".bank-info-arrow, .legal-arrow, .legal-rep-arrow, .contact-arrow, .bank-arrow, .final-arrow").hide();
+			$(".bank-info-arrow, .legal-arrow, .legal-rep-arrow, .contact-arrow, .bank-arrow, .final-arrow,.pic-arrow").hide();
 			$(".account-details-content").show();
-			$(".atm-transaction-content,.bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .free-transactions-content").hide();
+			$(".atm-transaction-content,.bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .free-transactions-content,.pm-iso-carprogram-content").hide();
 		});
 
-		$(".bank-list, .acc-next, .legal-prev").click(function() {
+		$(".bank-list, .acc-next, .pic-prev").click(function() {
 			$(".bank-info-circle-tab").addClass("active-circle");
-			$(".merchant-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab").removeClass("active-circle");
+			$(".merchant-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab,.pic-circle-tab").removeClass("active-circle");
 			$(".bank-info-arrow").show();
-			$(".merchant-arrow, .legal-arrow, .legal-rep-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow").hide();
+			$(".merchant-arrow, .legal-arrow, .legal-rep-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow,.pic-arrow").hide();
 			$(".bank-info-details-content").show();
-			$(".account-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content").hide();
-		});
-
-		$(".legal-entiy-list, .bank-next, .legal-rep-prev").click(function() {
-			$(".legal-circle-tab").addClass("active-circle");
-			$(".merchant-circle-tab, .bank-info-circle-tab, .legal-circle-rep-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab").removeClass("active-circle");
-			$(".legal-arrow").show();
-			$(".merchant-arrow, .legal-rep-arrow, .bank-info-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow").hide();
-			$(".legal-details-content").show();
-			$(".account-details-content, .legal-details-rep-content, .bank-info-details-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content").hide();
+			$(".account-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content,.pm-iso-carprogram-content").hide();
 		});
 		
-		$(".legal-entiy-rep-list, .legal-next, .free-prev").click(function() {
-			$(".legal-circle-rep-tab").addClass("active-circle");
-			$(".merchant-circle-tab, .bank-info-circle-tab, .legal-circle-tab, .contact-circle-tab, .bank-circle-tab, .final-circle-tab").removeClass("active-circle");
-			$(".legal-rep-arrow").show();
-			$(".merchant-arrow, .bank-info-arrow, .legal-arrow, .contact-arrow, .configuration-arrow, .bank-arrow, .configuration-arrow, .final-arrow").hide();
-			$(".legal-details-rep-content").show();
-			$(".account-details-content, .bank-info-details-content, .legal-details-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content").hide();
+		$(".pm-iso-carprogram-list, .bank-next, .atm-prev").click(function() {
+			$(".pic-circle-tab").addClass("active-circle");
+			$(".merchant-circle-tab,.bank-info-circle-tab, .bank-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab,.contact-circle-tab").removeClass("active-circle");
+			$(".pic-arrow").show();
+			$(".merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .configuration-arrow, .bank-arrow, .final-arrow,.contact-arrow").hide()
+			$(".pm-iso-carprogram-content").show();
+			$(".atm-transaction-content, .legal-details-content, .legal-details-rep-content, .bank-info-details-content, .pos-transaction-content, .account-details-content,.free-transactions-content").hide();
 		});
 		
-		$(".free-transactions-list, .legal-rep-next, .atm-prev").click(function() {
-			$(".contact-circle-tab").addClass("active-circle");
-			$(".merchant-circle-tab,.bank-info-circle-tab, .bank-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab").removeClass("active-circle");
-			$(".contact-arrow").show();
-			$(".merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .configuration-arrow, .bank-arrow, .final-arrow").hide()
-			$(".free-transactions-content").show();
-			$(".atm-transaction-content, .legal-details-content, .legal-details-rep-content, .bank-info-details-content, .pos-transaction-content, .account-details-content").hide();
-		});
-		
-		$(".atm-transactions-list, .free-next, .pos-prev").click(function() {
+		$(".atm-transactions-list, .pic-next, .pos-prev").click(function() {
 			$(".bank-circle-tab").addClass("active-circle");
-			$(".merchant-circle-tab,.bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab").removeClass("active-circle");
+			$(".merchant-circle-tab,.bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab,.pic-circle-tab").removeClass("active-circle");
 			$(".configuration-arrow").show();
-			$(".contact-arrow, .merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .final-arrow").hide()
+			$(".contact-arrow, .merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .final-arrow,.pic-arrow").hide()
 			$(".atm-transaction-content").show();
-			$(".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .account-details-content").hide();
+			$(".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .account-details-content,.pm-iso-carprogram-content").hide();
 		});
 		
 		$(".pos-transactions-list, .atm-next").click(function() {
 			$(".final-circle-tab").addClass("active-circle");
-			$(".merchant-circle-tab, .bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .bank-circle-tab").removeClass("active-circle");
+			$(".merchant-circle-tab, .bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .bank-circle-tab,.pic-circle-tab").removeClass("active-circle");
 			$(".final-arrow").show();
-			$(".contact-arrow, .bank-arrow,.configuration-arrow, .bank-info-arrow, .legal-arrow, .legal-rep-arrow, .merchant-arrow").hide()
+			$(".contact-arrow, .bank-arrow,.configuration-arrow, .bank-info-arrow, .legal-arrow, .legal-rep-arrow, .merchant-arrow,.pic-arrow").hide()
 			$(".pos-transaction-content").show();
-			$(".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .account-details-content").hide();
+			$(".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .account-details-content,.pm-iso-carprogram-content").hide();
 		});
 
 		function loadRadio(data) {
@@ -1159,6 +842,165 @@
 			$('#declineMerchantDiv').popup("hide");
 		}
 		
+		function SelectMoveRows(left, right) {
+			var SelID = '';
+			var SelText = '';
+			// Move rows from left to right from bottom to top
+			for (i = left.options.length - 1; i >= 0; i--) {
+				if (left.options[i].selected == true) {
+					SelID = left.options[i].value;
+					SelText = left.options[i].text;
+					var newRow = new Option(SelText, SelID);
+					right.options[right.length] = newRow;
+					left.options[i] = null;
+				}
+			}
+			SelectSort(right);
+			removeFetchedOperators(SelID);
+		}
+
+		$("#dcc_enable").click(function() {
+			if ($(this).is(":checked")) {
+				$(".hide-block").show();
+				$(".hide-localCurrency").show();
+			} else {
+				$(".hide-block").hide();
+				$(".hide-localCurrency").hide();
+			}
+		});
+
+		$('#legalSSN').keyup(function() {
+			var val = this.value.replace(/\D/g, '');
+			var newVal = '';
+			if (val.length > 4) {
+				this.value = val;
+			}
+			if ((val.length > 3) && (val.length < 6)) {
+				newVal += val.substr(0, 3) + '-';
+				val = val.substr(3);
+			}
+			if (val.length > 5) {
+				newVal += val.substr(0, 3) + '-';
+				newVal += val.substr(3, 2) + '-';
+				val = val.substr(5);
+			}
+			newVal += val;
+			this.value = newVal;
+		});
+		$('#my_popup1').popup({
+			blur : false
+		});
+		/* Select Services moving form Left to Right and Right to Left functionality Start */
+        function SelectMoveRows(left, right, action) {
+        	var tempProgramManagerIds = [];
+			var j=0;
+            var SelID = '';
+            var SelText = '';
+            // Move rows from left to right from bottom to top
+            if(action == 'ADD'){
+				for (i = left.options.length - 1; i >= 0; i--) {
+					if (left.options[i].selected == true) {
+						SelID = left.options[i].value;
+						SelText = left.options[i].text;
+						var newRow = new Option(SelText, SelID);
+						right.options[right.length] = newRow;
+						left.options[i] = null;
+						getCardProgramByPmId(SelID);
+						entitiesId.push(SelID);
+					}
+				}				
+			}else if(action == 'REMOVE'){
+				for (i = left.options.length - 1; i >= 0; i--) {
+					if (left.options[i].selected == true) {
+						SelID = left.options[i].value;
+						SelText = left.options[i].text;
+						var newRow = new Option(SelText, SelID);
+						right.options[right.length] = newRow;
+						left.options[i] = null;
+						removeCardProgramFromList(SelID);
+						for(var k=0; k < entitiesId.length; k++){
+							if(entitiesId[k] != SelID){
+								tempProgramManagerIds[j] = entitiesId[k];
+								j++;
+							}
+						}
+						entitiesId = tempProgramManagerIds;
+						j=0;
+						tempProgramManagerIds = [];
+					}
+				}
+			}
+			SelectSort(right);
+        }
+        function SelectSort(SelList) {
+            var ID = '';
+            var Text = '';
+            for (x = 0; x < SelList.length - 1; x++) {
+                for (y = x + 1; y < SelList.length; y++) {
+                    if (SelList[x].text > SelList[y].text) {
+                        // Swap rows
+                        ID = SelList[x].value;
+                        Text = SelList[x].text;
+                        SelList[x].value = SelList[y].value;
+                        SelList[x].text = SelList[y].text;
+                        SelList[y].value = ID;
+                        SelList[y].text = Text;
+                    }
+                }
+            }
+        }
+        /* Select Services moving form Left to Right and Right to Left functionality End */
+		function addCardProgram(cardProgramId){
+			var tempCardProgramIds = [];
+			var j=0;
+			var selectedId = 'cpId' + cardProgramId;
+			
+			if($('#' + selectedId).is(":checked")){
+				cardProgramIdList.push(cardProgramId);				
+			}else if(!($('#' + selectedId).is(":checked"))){
+				for(var i=0; i < cardProgramIdList.length; i++){
+					if(cardProgramIdList[i] != cardProgramId){
+						tempCardProgramIds[j] = cardProgramIdList[i];
+						j++;
+					}
+				}
+				cardProgramIdList = tempCardProgramIds;			
+			}
+		}
+		
+		function setSelectedPmAndCpId() {
+			//set selected pm ids
+			$('#entitiesId').val(entitiesId);
+			//set selected card pogram ids
+			$('#cardProgramIds').val(cardProgramIdList);
+		}
+		function doUnCheckedToCardProgram(cardProgramId) {
+			var tempCardProgramIds = [];
+			var j = 0;
+			for (var i = 0; i < cardProgramIdList.length; i++) {
+				if (cardProgramIdList[i] != cardProgramId) {
+					tempCardProgramIds[j] = cardProgramIdList[i];
+					j++;
+				}
+			}
+			cardProgramIdList = tempCardProgramIds;
+		}
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

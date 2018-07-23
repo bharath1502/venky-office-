@@ -1,0 +1,7 @@
+Project homepage: http://www.jcraft.com/jsch/
+
+
+Sources: https://mvnrepository.com/artifact/com.jcraft/jsch/0.1.51
+
+License:
+Licensed under BSD

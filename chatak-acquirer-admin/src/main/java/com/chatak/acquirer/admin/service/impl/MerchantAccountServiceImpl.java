@@ -132,14 +132,13 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
     PGCurrencyConfig pgCurrencyConfig =
         currencyConfigDao.getCurrencyCodeNumeric(pgMerchant.getLocalCurrency());
     AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
-    if (null != pgAccount && null != pgMerchant && null != pgCurrencyConfig
+    if (null != pgCurrencyConfig
         && !(pgAccount.getStatus().equals(PGConstants.S_STATUS_TERMINATED)
             || pgAccount.getStatus().equals(PGConstants.S_STATUS_INACTIVE)
             || pgAccount.getStatus().equals(PGConstants.S_STATUS_PENDING)
             || pgAccount.getStatus().equals(PGConstants.S_STATUS_DELETED))) {
 
-      if (null != pgAccount && null != pgMerchant
-          && !(pgAccount.getStatus().equals(PGConstants.S_STATUS_TERMINATED)
+      if (!(pgAccount.getStatus().equals(PGConstants.S_STATUS_TERMINATED)
               || pgAccount.getStatus().equals(PGConstants.S_STATUS_SUSPENDED)
               || pgAccount.getStatus().equals(PGConstants.S_STATUS_PENDING)
               || pgAccount.getStatus().equals(PGConstants.S_STATUS_DELETED))) {
@@ -181,7 +180,7 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
     accountBalanceDTO.setCurrencyThousandsUnit(pgCurrencyConfig.getCurrencyThousandsUnit());
     Response response = new Response();
     if (pgMerchant.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
-      if (null != pgMerchant && null != pgAccount) {
+      if (null != pgAccount) {
         if (PGConstants.PAYMENT_METHOD_CREDIT.equals(type)) {
           pgAccount.setAvailableBalance(
               pgAccount.getAvailableBalance() + accountBalanceDTO.getInputAmount());
@@ -267,7 +266,7 @@ private Response processsPGAccount(AccountBalanceDTO accountBalanceDTO, String t
     merchant.setMerchantCallBackURL(pgMerchant.getMerchantCallBack());
     merchant.setMerchantConfigId(pgMerchant.getMerchantConfig().getId());
     merchant.setLitleMID(pgMerchant.getLitleMID());
-    merchant.setAutoSettlementStatus(pgMerchant.getMerchantConfig().getAutoSettlement().toString());
+    //merchant.setAutoSettlementStatus(pgMerchant.getMerchantConfig().getAutoSettlement().toString());
     merchantDao.getMerchantConfigDetailsForAccountCreate(merchant);
   }
 

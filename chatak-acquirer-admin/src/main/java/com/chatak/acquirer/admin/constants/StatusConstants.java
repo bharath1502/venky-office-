@@ -1,5 +1,7 @@
 package com.chatak.acquirer.admin.constants;
 
+import com.chatak.pg.util.Properties;
+
 public interface StatusConstants
 {
 	public static final String STATUS_CODE_SUCCESS = "0";
@@ -21,5 +23,8 @@ public interface StatusConstants
 	public static final String USER_INACTIVE_ERROR_CODE = "1100";
 	
 	public static final String ERROR = "error";
+	
+	public static final String ALLOW_RIGHT_CLICK =
+		      Properties.getProperty("chatak.admin.allow.right.click.flag");
 	
 }

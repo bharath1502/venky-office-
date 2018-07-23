@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html>
 <head>
 <meta charset="utf-8">
@@ -21,7 +22,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -54,6 +55,7 @@
 										<span class="green-error">&nbsp;${sucess}</span>
 									</div>
 								<form:form action="show-account-transfer" method="post">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="breadCrumb">
 											<span class="breadcrumb-text"><spring:message code="show-account-transfer.label.transferfrom"/></span>

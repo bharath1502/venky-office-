@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ page import="com.chatak.pg.constants.PGConstants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -24,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -60,6 +61,7 @@
 								<form:form action="get-transaction-report-from-dashBoard" name="downloadReport" method="post">
 									<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" />
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<!-- <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" /> -->
 								</form:form>
 								<!--Success and Failure Message End-->
@@ -72,9 +74,11 @@
 						<input type="hidden" id="totalRecordsId" name="totalRecords" />
 						<input type="hidden" id="selectedTxnsReqObj" name="requestObject" />
 						<input type="hidden" id="removedTxns" name="removedTxns" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="editMerchant" name="editMercahntForm" method="post">
 						<input type="hidden" id="getMerchantId" name="getMerchantId" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="process-dash-board-settlement-action" commandName="settlementDto" name="processAction" method="post">
 						<form:hidden path="merchantId" id="merchantId" />
@@ -83,11 +87,13 @@
 						<form:hidden path="txnType" id="txnType" />
 						<form:hidden path="settlementStatus" id="settlementStatus" />
 						<form:hidden path="comments" id="comments" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="process-bulk-settlement-action" method="post" name="bulkSettlement">
 						<input type="hidden" name="requestObject" id="requestObjectId" />
 						<input type="hidden" name="status" id="statusId" />
 						<input type="hidden" id="removedTxns" name="removedTxns" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<!-- Search Table Block Start -->
 					<div class="search-results-table">
@@ -318,13 +324,12 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
+	<script src="../js/common-lib.js"></script>
 	<script>
 		/* Common Navigation Include Start */
 		$(function() {
@@ -513,7 +518,21 @@
 			
 			$('#removedTxns').val(removedTxn);
 		}
-		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

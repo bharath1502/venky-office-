@@ -36,7 +36,6 @@ import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.CommissionDTO;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
-import com.itextpdf.text.DocumentException;
 
 import jxl.write.WriteException;
 
@@ -391,7 +390,7 @@ public class CommissionController implements URLMappingConstants {
   }
 
   private void downloadCommProgramReportConditions(String downloadType,
-      List<CommissionDTO> commList, HttpServletResponse response) throws WriteException, IOException, DocumentException {
+      List<CommissionDTO> commList, HttpServletResponse response) throws WriteException, IOException {
     ExportDetails exportDetails = new ExportDetails();
 
     if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
@@ -406,7 +405,7 @@ public class CommissionController implements URLMappingConstants {
   }
 
   private void downloadCommProgramReportStatements(String downloadType,
-      List<CommissionDTO> commList, HttpServletResponse response) throws WriteException, IOException, DocumentException {
+      List<CommissionDTO> commList, HttpServletResponse response) throws WriteException, IOException {
     ExportDetails exportDetails = new ExportDetails();
     if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
       exportDetails.setExportType(ExportType.PDF);

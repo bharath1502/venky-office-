@@ -1,0 +1,7 @@
+Project homepage: http://www.slf4j.org
+
+
+Sources: https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j/1.7.5
+
+License:
+Licensed under MIT

@@ -27,7 +27,7 @@
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
@@ -47,23 +47,28 @@
 					<input type="hidden" id="downloadTypeId" name="downloadType" />
 					<input type="hidden" id="totalRecords" name="totalRecords" />
 					<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+					<input type="hidden" name="CSRFToken" value="${tokenval}">
 				</form:form>
 				<form:form action="getSubMerchants" name="paginationForm" method="post">
 					<input type="hidden" id="pageNumberId" name="pageNumber" />
 					<input type="hidden" id="totalRecordsId" name="totalRecords" />
+				    <input type="hidden" name="CSRFToken" value="${tokenval}">
 				</form:form>
 				<form:form action="editSubMerchant" name="editSubMercahntForm" method="post">
 					<input type="hidden" id="merchantEditId" name="merchantEditId" />
+				    <input type="hidden" name="CSRFToken" value="${tokenval}">
 				</form:form>
 				
 				<form:form action="merchant-view" name="viewMercahntForm" method="post">
 					<input type="hidden" id="merchantViewId" name="merchantViewId" />
 					<input type="hidden" id="merchantType" name="merchantType" />
+				    <input type="hidden" name="CSRFToken" value="${tokenval}">
 				</form:form>
 				
 				<form:form action="deleteMerchant" name="deleteMercahntForm" method="post">
 					<input type="hidden" id="getMerchantsId" name="getMerchantsId" />
 					<input type="hidden" id="merchantsType" name="merchantsType" />
+					<input type="hidden" name="CSRFToken" value="${tokenval}">
 				</form:form>
 				<div class="col-xs-12 content-wrapper">
 					<!-- Breadcrumb start -->
@@ -112,6 +117,7 @@
 								<!-- Page Form Start -->
 								<form:form action="sub-merchant-search" commandName="merchant"
 									name="merchant">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -132,16 +138,24 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.firstname" /></label>
-													<form:input cssClass="form-control" path="firstName"
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="admin.pm.Name.message" /></label>
+													<form:input cssClass="form-control" path="programManagerName"
 														id="firstName" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
+													<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="admin.iso.label.message" /></label>
+													<form:input cssClass="form-control" path="isoName"
+														id="isoName" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
 												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.lastname" /></label>
-													<form:input cssClass="form-control" path="lastName"
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="admin.cardprogramname" /></label>
+													<form:input cssClass="form-control" path="cardProgramName"
 														id="lastName" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
@@ -151,13 +165,6 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.E-mailID" /></label>
 													<form:input cssClass="form-control" path="emailId"
 														id="emailId" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.phone" /></label>
-													<form:input cssClass="form-control" path="phone" id="phone" onkeypress="return numbersonly(this,event)" maxlength="10" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div>
@@ -194,14 +201,6 @@
 														<%-- <form:option value="5"><spring:message code="manage.option.sub-merchant.self-registered" /></form:option> --%>
 
 													</form:select>
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.merchantcode" /></label>
-													<form:input cssClass="form-control" path="merchantCode"
-														id="merchantCode" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div>
@@ -259,10 +258,10 @@
 								<th style="width: 102px;"><spring:message code="manage.label.sub-merchant.submerchantcode" /></th>
 								<th style="width: 151px;"><spring:message code="merchant.label.merchantname" /></th>
 								<th style="width: 151px;"><spring:message code="currency-search-page.label.currencycode"/></th>
-								<th style="width: 110px;"><spring:message code="manage.label.sub-merchant.firstname" /></th>
-								<th style="width: 92px;"><spring:message code="manage.label.sub-merchant.lastname" /></th>
+								<th style="width: 92px;"><spring:message code="merchant.label.entitytype" /></th>
+								<th style="width: 92px;"><spring:message code="merchant.label.entityname" /></th>
 								<th style="width: 93px;"><spring:message code="manage.label.sub-merchant.E-mailID" /></th>
-								<th style="width: 72px;"><spring:message code="manage.label.sub-merchant.phone" /></th>
+								<th style="width: 72px;"><spring:message code="admin.cardprogramname" /></th>
 								<th style="width: 103px;"><spring:message code="manage.label.sub-merchant.city" /></th>
 								<th style="width: 54px;"><spring:message code="manage.label.sub-merchant.country" /></th>
 								<th style="width: 93px;"><spring:message code="manage.label.sub-merchant.status" /></th>
@@ -276,10 +275,10 @@
 											<td><div class="feeDescDiv tbl-text-align-right">${merchantData.merchantCode }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.businessName }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.localCurrency }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.firstName }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.lastName }</div></td>
+											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityType }</div></td>
+											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityName }</div></td>
 											<td><div class="feeDescDiv">${merchantData.emailId }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.phone }</div></td>
+											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.cardProgramName }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.city }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.country }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.status }</div></td>
@@ -429,6 +428,7 @@
 		<form:form action="subMerchantActivationSuspention" name="merchantActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="subMerchantId" /> <input
 				type="hidden" id="suspendActiveStatus" name="subMerchantStatus" /> 
+			<input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -449,10 +449,9 @@
 	
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/validation.js"></script>
-	<script src="../js/sorting.js"></script>
+	
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script type="text/javascript" src="../js/merchant.js"></script>
 	<script type="text/javascript" src="../js/chatak-ajax.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -474,6 +473,21 @@
 			$('#subMerchantPopupDiv').popup("show");
 		}
 		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 		/* $(".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content").hide();
 		$(".account-details-content").show();
 		$(".merchant-arrow").show();

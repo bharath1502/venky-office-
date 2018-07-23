@@ -1,11 +1,14 @@
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,26 +17,35 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import com.chatak.pg.acq.dao.TransactionDao;
+import com.chatak.pg.acq.dao.model.PGAccountTransactions;
 import com.chatak.pg.acq.dao.model.PGTransaction;
+import com.chatak.pg.acq.dao.model.QCardProgram;
 import com.chatak.pg.acq.dao.model.QPGAccount;
 import com.chatak.pg.acq.dao.model.QPGAccountTransactions;
 import com.chatak.pg.acq.dao.model.QPGBankCurrencyMapping;
 import com.chatak.pg.acq.dao.model.QPGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
+import com.chatak.pg.acq.dao.model.QPGMerchantCardProgramMap;
 import com.chatak.pg.acq.dao.model.QPGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.QPGTransaction;
+import com.chatak.pg.acq.dao.repository.AccountTransactionsRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
+import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.EntryModePortalDisplayEnum;
 import com.chatak.pg.enums.OriginalChannelEnum;
+import com.chatak.pg.model.TransactionRequest;
+import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.DateUtils;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -54,6 +66,9 @@ public class TransactionDaoImpl implements TransactionDao {
 
   @PersistenceContext
   private EntityManager entityManager;
+  
+  @Autowired
+  private AccountTransactionsRepository accountTransactionsRepository;
 
   /**
    * Method to search transaction record on reference transaction number
@@ -347,7 +362,7 @@ public class TransactionDaoImpl implements TransactionDao {
       return QPGTransaction.pGTransaction.createdDate.gt(fromDate);
     } else if ((fromDate == null && toDate != null)) {
       return QPGTransaction.pGTransaction.createdDate.lt(toDate);
-    } else if ((fromDate == null && toDate == null))
+    } else if ((fromDate == null))
       return null;
     return QPGTransaction.pGTransaction.createdDate.between(fromDate, toDate);
   }
@@ -738,4 +753,226 @@ public class TransactionDaoImpl implements TransactionDao {
     return (!StringUtil.isNullAndEmpty(settlementStatus))
         ? QPGTransaction.pGTransaction.merchantSettlementStatus.eq(settlementStatus) : null;
   }
+  
+	@Override
+	public List<Long> fetchCardProgramDetailsByMerchantCode(TransactionRequest transactionData) {
+		JPAQuery query = new JPAQuery(entityManager);
+		CardProgramRequest cardProgramRequest = null;
+		List<CardProgramRequest> CardProgramRequestList = new ArrayList<>();
+		List<Tuple> tupleList = query.distinct()
+				.from(QPGMerchant.pGMerchant, QPGMerchantCardProgramMap.pGMerchantCardProgramMap,
+						QCardProgram.cardProgram)
+				.where(isMerchantCodeEq(transactionData.getMerchantCode())
+						.and(QPGMerchant.pGMerchant.id
+								.eq(QPGMerchantCardProgramMap.pGMerchantCardProgramMap.merchantId))
+						.and(QPGMerchantCardProgramMap.pGMerchantCardProgramMap.cardProgramId
+								.eq(QCardProgram.cardProgram.cardProgramId)))
+				.list(QCardProgram.cardProgram.iin, QCardProgram.cardProgram.iinExt,
+						QCardProgram.cardProgram.partnerIINCode);
+		if (!CollectionUtils.isEmpty(tupleList)) {
+			for (Tuple tuple : tupleList) {
+			  cardProgramRequest = new CardProgramRequest();
+			  cardProgramRequest.setIin(tuple.get(QCardProgram.cardProgram.iin));
+		        cardProgramRequest.setIinExt(((tuple.get(QCardProgram.cardProgram.iinExt) != null)
+		                ?  (tuple.get(QCardProgram.cardProgram.iinExt)) : null));
+		        cardProgramRequest.setPartnerIINCode(((tuple.get(QCardProgram.cardProgram.partnerIINCode) != null)
+		                ? (Long.valueOf(tuple.get(QCardProgram.cardProgram.partnerIINCode))) : 0));
+		        CardProgramRequestList.add(cardProgramRequest);
+			}
+		}
+		
+		List<Long> cardNumberList = new ArrayList<>();
+			for (CardProgramRequest card : CardProgramRequestList) {
+				String cardNumber = cardInfo(card);
+				cardNumberList.add(Long.valueOf(cardNumber));
+			}
+		
+		return cardNumberList;
+	}
+
+	/**
+	 * @param card
+	 * @return
+	 */
+	private String cardInfo(CardProgramRequest card) {
+		return ((card.getIin() != 0) ? card.getIin().toString() : "")
+				+ ((card.getPartnerIINCode() != 0) ? card.getPartnerIINCode().toString() : "")
+				+ ((card.getIinExt() != null) ? card.getIinExt() : "");
+	}
+
+	private BooleanExpression isMerchantCodeEq(String merchantCode) {
+		return (!StringUtil.isNullAndEmpty(merchantCode)) ? QPGMerchant.pGMerchant.merchantCode.eq(merchantCode) : null;
+	}
+
+	/**
+	 * @param transaction
+	 * @return
+	 */
+	@Override
+	public List<SettlementEntity> getPgTransactions(String merchantId, String terminalId,
+		      String issuerTxnRefNum, String transactionId) {
+	  log.info("TransactionDaoImpl | getPgTransactions :: Entry");
+	  
+		List<SettlementEntity> list = new ArrayList<>();
+		JPAQuery query = new JPAQuery(entityManager);
+		List<Tuple> tuples = query.from(QPGTransaction.pGTransaction,QPGAccountTransactions.pGAccountTransactions)
+				.where(isTerminalIdEq(terminalId), isTransactionIdEq(transactionId),
+						isIssuanceIdEq(issuerTxnRefNum), isMerchantIdEq(merchantId),
+						(QPGAccountTransactions.pGAccountTransactions.pgTransactionId.eq(QPGTransaction.pGTransaction.transactionId)))
+				.list(QPGTransaction.pGTransaction.transactionId, QPGTransaction.pGTransaction.txnTotalAmount,
+						QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.issuerTxnRefNum,
+						QPGTransaction.pGTransaction.createdDate, QPGTransaction.pGTransaction.updatedDate,
+						QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.batchId,
+						QPGTransaction.pGTransaction.deviceLocalTxnTime, QPGTransaction.pGTransaction.isoId,
+						QPGTransaction.pGTransaction.pmId, QPGTransaction.pGTransaction.batchDate,
+						QPGAccountTransactions.pGAccountTransactions.entityId,
+						QPGAccountTransactions.pGAccountTransactions.entityType,
+						QPGAccountTransactions.pGAccountTransactions.credit, QPGTransaction.pGTransaction.settlementBatchStatus);
+
+		log.info("TransactionDaoImpl | getPgTransactions :: List: " + tuples.size());
+		
+		if (!CollectionUtils.isEmpty(tuples)) {
+		  SettlementEntity  settlementEntity = new SettlementEntity();
+		  
+			for (Tuple tuple : tuples) {
+				
+			  log.info("TransactionDaoImpl | getPgTransactions :: Reading first row: " + tuple.get((QPGTransaction.pGTransaction.transactionId))
+			      + ", Entity: " + tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType));
+			  
+				settlementEntity.setPgTxnId(tuple.get((QPGTransaction.pGTransaction.transactionId)));
+				settlementEntity.setAcquirerAmount(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount)!=null ? 
+				    tuple.get(QPGTransaction.pGTransaction.txnTotalAmount).toString() : "0");
+				settlementEntity.setTerminalId(tuple.get(QPGTransaction.pGTransaction.terminalId));
+				settlementEntity.setIssTxnId(tuple.get(QPGTransaction.pGTransaction.issuerTxnRefNum));
+				settlementEntity.setCreatedDate(tuple.get(QPGTransaction.pGTransaction.createdDate));
+				settlementEntity.setUpdatedDate(tuple.get(QPGTransaction.pGTransaction.updatedDate));
+				settlementEntity.setMerchantId(tuple.get(QPGTransaction.pGTransaction.merchantId));
+				settlementEntity.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
+				settlementEntity.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+				settlementEntity.setAcqPmId(tuple.get(QPGTransaction.pGTransaction.pmId).toString());
+				settlementEntity.setBatchDate(tuple.get(QPGTransaction.pGTransaction.batchDate));
+				settlementEntity.setSettlementBatchStatus(tuple.get(QPGTransaction.pGTransaction.settlementBatchStatus));
+				
+				if(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
+				    && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.ISO_USER_TYPE)){
+					settlementEntity.setIsoAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.credit)));
+					settlementEntity.setIsoId(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityId));
+				}
+				
+				if(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
+				    && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.PM_USER_TYPE)){
+					settlementEntity.setPmAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.credit)));
+				}
+				
+				if(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
+				    && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(PGConstants.MERCHANT)){
+					settlementEntity.setMerchantAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.credit)));
+				}
+								  
+			}
+			list.add(settlementEntity);
+		}
+		log.info("TransactionDaoImpl | getPgTransactions :: Returning records: " + list.size());
+		log.info("TransactionDaoImpl | getPgTransactions :: Exit");
+		return list;
+	}
+
+	private BooleanExpression isTerminalIdEq(String terminalId) {
+
+		return (terminalId != null && !"".equals(terminalId)) ? QPGTransaction.pGTransaction.terminalId.eq(terminalId)
+				: null;
+	}
+
+	private BooleanExpression isTransactionIdEq(String transactionId) {
+
+		return (transactionId != null && !"".equals(transactionId))
+				? QPGTransaction.pGTransaction.transactionId.eq(transactionId) : null;
+	}
+
+	private BooleanExpression isIssuanceIdEq(String issuerTxnRefNum) {
+
+		return (issuerTxnRefNum != null && !"".equals(issuerTxnRefNum))
+				? QPGTransaction.pGTransaction.issuerTxnRefNum.eq(issuerTxnRefNum) : null;
+	}
+
+	private BooleanExpression isMerchantIdEq(String merchantId) {
+
+		return (merchantId != null && !"".equals(merchantId)) ? QPGTransaction.pGTransaction.merchantId.eq(merchantId)
+				: null;
+	}
+	 
+	@Override
+	public List<PGTransaction> getTransactionsByBatchId(String batchId) {
+		return transactionRepository.findByBatchId(batchId);
+	}
+	
+	public List<PGTransaction> getPGTransactionListNotInAcquiring(String batchId, List<String> pgTxnIds) {
+		List<PGTransaction> pgTransactionList = new ArrayList<>();
+		StringBuilder sb = new StringBuilder();
+		sb.append(
+				" select TRANSACTION_ID, MERCHANT_ID, TERMINAL_ID, TXN_AMOUNT, ISSUER_TXN_REF_NUM,  CREATED_DATE, BATCH_ID from PG_TRANSACTION ");
+		sb.append(" where BATCH_ID=:batchId ");
+		sb.append(" and TRANSACTION_ID not in (:pg_Txnid) ");
+		Query pgTransactionReportParam = entityManager.createNativeQuery(sb.toString());
+		pgTransactionReportParam.setParameter("batchId", batchId);
+		pgTransactionReportParam.setParameter("pg_Txnid", pgTxnIds);
+		List<Object> listOfReport = pgTransactionReportParam.getResultList();
+
+		if (StringUtil.isListNotNullNEmpty(listOfReport)) {
+			Iterator it = listOfReport.iterator();
+			while (it.hasNext()) {
+				Object[] obj = (Object[]) it.next();
+				setPGTransactionData(pgTransactionList, obj);
+			}
+		}
+		return pgTransactionList;
+	}
+	
+	private void setPGTransactionData(List<PGTransaction> pgTransactionList, Object[] obj) {
+		PGTransaction pgTransaction = new PGTransaction();
+		pgTransaction.setTransactionId(StringUtil.isNull(obj[Integer.parseInt("0")]) ? null
+				: (((BigInteger) obj[Integer.parseInt("0")]).toString()));
+		pgTransaction.setMerchantId((StringUtil.isNull(obj[Integer.parseInt("1")]) ? null
+				: ((String) obj[Integer.parseInt("1")])));
+		pgTransaction.setTerminalId((StringUtil.isNull(obj[Integer.parseInt("2")]) ? null
+				: (((Integer) obj[Integer.parseInt("2")]).toString())));
+		pgTransaction.setTxnAmount((StringUtil.isNull(obj[Integer.parseInt("3")]) ? null
+				: (Long.valueOf(((BigInteger) obj[Integer.parseInt("3")]).toString()))));
+		pgTransaction.setIssuerTxnRefNum((StringUtil.isNull(obj[Integer.parseInt("4")]) ? null
+				: (((BigInteger) obj[Integer.parseInt("4")]).toString())));
+		pgTransaction.setCreatedDate((StringUtil.isNull(obj[Integer.parseInt("5")]) ? null
+				: (Timestamp)obj[Integer.parseInt("5")]));
+		pgTransaction.setBatchId((StringUtil.isNull(obj[Integer.parseInt("6")]) ? null
+				: ((String) obj[Integer.parseInt("6")])));
+		pgTransactionList.add(pgTransaction);
+	}
+	
+	public List<PGAccountTransactions> getPGAccTransactionsByTxnId(String pgTxnId) {
+		 return accountTransactionsRepository.findByPgTransactionId(pgTxnId);
+	}
+	
+	public void saveorUpdate(List<String> pgTxnIdsList) {
+		LogHelper.logEntry(log, LoggerMessage.getCallerName());
+		StringBuilder sb = new StringBuilder();
+		sb.append(" update PG_TRANSACTION set SETTLEMENT_BATCH_STATUS = :status ");
+		sb.append(" where TRANSACTION_ID  in (:pg_Txnid) ");
+		Query qry = entityManager.createNativeQuery(sb.toString());
+		qry.setParameter("pg_Txnid", pgTxnIdsList);
+		qry.setParameter("status", Constants.EXECUTED_STATUS);
+		qry.executeUpdate();
+		LogHelper.logExit(log, LoggerMessage.getCallerName() + " Updated Successfully");
+	}
+	
+	public synchronized String generateTransactionRefNumber() throws DataAccessException {
+		LogHelper.logEntry(log, LoggerMessage.getCallerName());
+		String transRefNumber = null;
+		List list = entityManager.createNativeQuery("select `udf_txn_ref_num`();").getResultList();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			transRefNumber = list.get(0).toString();
+		}
+		LogHelper.logInfo(log, LoggerMessage.getCallerName(), " : " + "Generated trans ref number is" + transRefNumber);
+		LogHelper.logExit(log, LoggerMessage.getCallerName());
+		return transRefNumber;
+	}
+	
 }

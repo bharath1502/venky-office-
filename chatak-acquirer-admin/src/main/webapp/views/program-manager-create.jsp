@@ -6,7 +6,8 @@
 <%@page import="java.util.Calendar"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -23,7 +24,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -40,8 +41,8 @@
 						<span class="breadcrumb-text"><spring:message
 								code="manage.label.manage" /></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
-							class="breadcrumb-text"><a href="showProgramManager"><spring:message
-									code="admin.pm.message" /> </a></span> <span
+							class="breadcrumb-text"><spring:message
+									code="admin.pm.message" /></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
 							class="breadcrumb-text"><spring:message
 								code="common.label.create" /></span>
@@ -79,35 +80,54 @@
 									onsubmit="buttonDisabled()" enctype="multipart/form-data">
 									<input type="hidden" id="programManagerBankId"
 										name="programManagerBankId" />
+								    <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<input type="hidden" id="checkDefaultPMValue"
 										name="checkDefaultPMValue" value="false">
+										<input type="hidden" id="standardTimeOffset"
+										name="standardTimeOffset">
+										<form:hidden id="deviceTimeZoneOffset" path="deviceTimeZoneOffset" />
+								        <form:hidden id="deviceTimeZoneRegion" path="deviceTimeZoneRegion" />
 									<div
 										class="col-md-100 col-sm-12 padding100px border-style-section">
 										<div class="field-element-row">
 											<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="admin.PM.OnBoarding.message" /><span class="required-field">*</span></label>
-														<form:select path="programManagerType" cssClass="form-control" id="programManagerType" onchange="fetchPmDetailsByPmType(this.value)" onblur="validateProgramManagerId()">
-															<option><spring:message code="commission-program-create.label.select" /></option>
-													        <option value="OnBoardFromIssuance"><spring:message code="admin.PM.OnBoarding.issuance.message"/></option>
-													        <option value="CreateIndependent"><spring:message code="admin.PM.OnBoarding.create.independent.message"/></option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="programManagerTypeError" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3 issuanceProgramManager">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="admin.pm.Name.message" /><span class="required-field">*</span></label>
-														<form:select path="" id="programManagerId" cssClass="form-control" onchange="fetchPmDetailsByPmId(this.value);fetchPmCardProgramByPmId(this.value)" onblur="validateProgramManagerId()">
-															<form:option value=""><spring:message code="commission-program-create.label.select" /></form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="programManagerIdEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
+												<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+														code="admin.PM.OnBoarding.message" /><span
+													class="required-field">*</span></label>
+												<form:select path="programManagerType"
+													cssClass="form-control" id="programManagerType"
+													onchange="fetchPmDetailsByPmType(this.value)"
+													onblur="validateProgramManagerId('programManagerType','programManagerTypeError')">
+													<option value=""><spring:message
+															code="commission-program-create.label.select" /></option>
+													<option value="<%=Constants.ONBOARDED%>"><spring:message
+															code="admin.PM.OnBoarding.issuance.message" /></option>
+													<option value="<%=Constants.CREATE_INDEPENDENT%>"><spring:message
+															code="admin.PM.OnBoarding.create.independent.message" /></option>
+												</form:select>
+												<div class="discriptionErrorMsg" data-toggle="tooltip"
+													data-placement="top" title="">
+													<span id="programManagerTypeError" class="red-error">&nbsp;</span>
+												</div>
+											</fieldset>
+											<fieldset class="col-sm-3 issuanceProgramManager">
+												<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+														code="admin.pm.Name.message" /><span
+													class="required-field">*</span></label>
+												<form:select path="programManagerId" id="programManagerId"
+													cssClass="form-control"
+													onchange="fetchPmDetailsByPmId(this.value);fetchPmCardProgramByPmId(this.value)"
+													onblur="validateProgramManagerId('programManagerId','programManagerIdEr')">
+													<form:option value="">
+														<spring:message
+															code="commission-program-create.label.select" />
+													</form:option>
+												</form:select>
+												<div class="discriptionErrorMsg" data-toggle="tooltip"
+													data-placement="top" title="">
+													<span id="programManagerIdEr" class="red-error">&nbsp;</span>
+												</div>
+											</fieldset>
 										</div>
 									</div>
 									<div
@@ -120,12 +140,12 @@
 															code="admin.pm.Name.message" /><span
 														class="required-field">*</span></label>
 													<form:input path="programManagerName" cssClass="form-control"
-														id="programMangerName" maxlength="50"
-														onblur="clientValidation('programMangerId','company_name','pgmmgrcompanynameerrormsg')"
-														onclick="clearErrorMsg('pgmmgrAquirerPMerrormsg');" />
+														id="programMangerName"
+														onblur="clientValidation('programMangerName', 'program_manager_name','pgmmgrNameErrormsg')"
+														onclick="clearErrorMsg('pgmmgrcompanynameerrormsg');" />
 
 													<div class="discriptionErrorMsg">
-														<span id="pgmmgrcompanynameerrormsg" class="red-error">&nbsp;</span>
+														<span id="pgmmgrNameErrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -171,6 +191,7 @@
 														class="required-field">*</span></label>
 													<form:input path="contactPhone" maxlength="10"
 														cssClass="form-control" id="contactPhone"
+														onkeypress="return numbersonly(this,event)"
 														onblur="clientValidation('contactPhone','partner_phone','pgmmgrcontactphoneerrormsg')"
 														onclick="clearErrorMsg('contactphoneerrormsg');" />
 													<div class="discriptionErrorMsg">
@@ -204,7 +225,7 @@
 													<label><spring:message code="reports.label.balancereports.currency"/><span class="required-field">*</span></label>
 													 <form:select path="acquirerCurrencyName" id="acquirerCurrencyName"
 														cssClass="form-control" 
-														onblur = "clientValidation('acquirerCurrencyName','orderType','currencyNameErrormsg')"
+														onblur = "clientValidation('acquirerCurrencyName','orderType','acquirerCurrencyNameErrormsg')"
 														onchange="fetchBankDetailsByCurrency(this.value)">
 													 </form:select>
 													<div class="discriptionErrorMsg">
@@ -222,12 +243,87 @@
 														<span id="currencyNameErrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.country" /><span
+														class="required-field">*</span></label>
+													<form:select cssClass="form-control" path="country"
+														id="country" onblur="clientValidation('country','country','countryNameErrormsg')"
+														onchange="fetchPmState(this.value, 'state');fetchTimeZone(this.value)">
+														<form:option value="">..:<spring:message
+																code="reports.option.select" />:..</form:option>
+														<c:forEach items="${countryList}" var="country">
+															<form:option value="${country.label}">${country.value}</form:option>
+														</c:forEach>
+													</form:select>
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span id="countryNameErrormsg" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="common.label.state" /><span class="required-field">*</span></label>
+													<form:select cssClass="form-control" path="state"
+														id="state" onblur="clientValidation('state','state','stateNameErrormsg')">
+														<form:option value="">..:<spring:message
+																code="reports.option.select" />:..</form:option>
+														<c:forEach items="${stateList}" var="item">
+															<form:option value="${item.label}">${item.label}</form:option>
+														</c:forEach>
+													</form:select>
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span id="stateNameErrormsg" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												 <fieldset class="col-md-3 col-sm-6">
+													<label><spring:message
+															code="prepaid-admin-program-manager-pm-timezone" /><span
+														class="required-field">*</span></label>
+													<form:select path="pmTimeZone" id="timezone"
+														cssClass="form-control"
+														onblur="clientValidation('timezone','state','timezone_ErrorDiv')">
+														<form:option value="">
+															<spring:message code="reports.option.select" />
+														</form:option>
+													</form:select>
+													<div class="discriptionErrorMsg">
+														<span id="timezone_ErrorDiv" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-md-3 col-sm-6">
+													<label><spring:message
+															code="prepaid-admin-program-manager-batch-prefix" /><span
+														class="required-field">*</span></label>
+													<form:input path="batchPrefix" cssClass="form-control"
+														id="batchPrefix"
+														onblur="clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')"
+														onclick="clearErrorMsg('pgmmgrbatchPrefixerrormsg');" />
+
+													<div class="discriptionErrorMsg">
+														<span id="pgmmgrbatchPrefixerrormsg" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-md-3 col-sm-6">
+													<label><spring:message
+															code="prepaid-admin-program-manager-scheduler-run-time" /><span
+														class="required-field">*</span></label>
+													<input type="time" name="schedulerRunTime"  class="form-control"
+														id="schedulerRunTime" step='1' min="00:00:00" max="24:00:00"
+														onblur="clientValidation('schedulerRunTime','txn_date','pgmmgrschedulerRunTimeerrormsg')"
+														onclick="clearErrorMsg('pgmmgrschedulerRunTimeerrormsg');" />
+
+													<div class="discriptionErrorMsg">
+														<span id="pgmmgrschedulerRunTimeerrormsg" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
 												<fieldset class="col-md-3 col-sm-6 acquirerBankNames">
 													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
 													 <select id="acquirerBankName" name="acquirerBankName"
-														class="form-control" 
-														onblur="clientValidation('acquirerBankName','bank_name_dropdown','acquirerBankNameerrormsg')"
-														onclick="clearErrorMsg('pgmmgrbankiderrormsg');banksForEFTORCheck();" multiple="multiple">
+														class="form-control" onchange="fetchAcquirerCardProgramDetailsByBankId(this.value)"
+														onblur="validateBank('acquirerBankName','acquirerBankNameerrormsg')"
+														onclick="clearErrorMsg('acquirerBankNameerrormsg');" multiple="multiple">
 													 </select>
 													<div class="discriptionErrorMsg">
 														<span id="acquirerBankNameerrormsg" class="red-error">&nbsp;</span>
@@ -237,22 +333,36 @@
 													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
 													 <select id="bankName" name="bankNames"
 														class="form-control" 
-														onblur="clientValidation('bankName','bank_name_dropdown','pgmmgrbankiderrormsg')"
-														onclick="clearErrorMsg('pgmmgrbankiderrormsg');banksForEFTORCheck();" multiple="multiple">
+														onblur="validateBank('bankName','pgmmgrbankiderrormsg')"
+														onclick="clearErrorMsg('pgmmgrbankiderrormsg');" multiple="multiple">
 													 </select>
 													<div class="discriptionErrorMsg">
 														<span id="pgmmgrbankiderrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
+												<fieldset class="col-md-3 col-sm-6 acquirerCardProgram">
 													<label><spring:message code="admin.bank.label.card.program"/><span class="required-field">*</span></label>
-													 <select id="cardprogramId" name=""
+													 <select id="acquirerCardprogramId" name="acquirerCardProgramIds"
 														class="form-control" 
-														onblur="clientValidation('cardprogramId','bank_name_dropdown','pgmmgrCardProgramerrormsg')"
+														onblur="validateCardProgram('acquirerCardprogramId','pgmmgrCardProgramerrormsg')"
+															onclick="clearErrorMsg('pgmmgrCardProgramerrormsg');"
 														 multiple="multiple">
 													 </select>
 													<div class="discriptionErrorMsg">
 														<span id="pgmmgrCardProgramerrormsg" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												
+												<fieldset class="col-md-3 col-sm-6 issuanceCardProgram">
+													<label><spring:message code="admin.bank.label.card.program"/><span class="required-field">*</span></label>
+													 <select id="cardprogramId" name="cardProgramIds"
+														class="form-control" 
+														onblur="validateCardProgram('cardprogramId','OnboardCardProgramerrormsg')"
+														onclick="clearErrorMsg('OnboardCardProgramerrormsg');"
+														 multiple="multiple">
+													 </select>
+													<div class="discriptionErrorMsg">
+														<span id="OnboardCardProgramerrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -312,6 +422,7 @@
 		<h2><spring:message code="label.program.manager.logo"/></h2>
 		<form:form action="updateProgramManagerLogo" id="popupForm"
 			modelAttribute="programManagerRequest" method="post">
+		 <input type="hidden" name="CSRFToken" value="${tokenval}">
 			<c:choose>
 			 <c:when test="">
 			   <img id="logoDisp"  src="" width="50%" height="50%" name="programManagerLogo"/>
@@ -328,11 +439,11 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	<script src="../js/sorting.js"></script>
+	
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/bank.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/messages.js"></script>
 	<script src="../js/program-manager.js"></script>
@@ -409,6 +520,7 @@
 			$(".issuancePMlogo").hide();
 			$(".acquirerCurrencyNames").hide();
 			$(".acquirerBankNames").hide();
+			$(".acquirerCardProgram").hide();
 			 });
 		
 		function closePopup(){
@@ -417,8 +529,7 @@
 		function openPopup(){
 			$('#LogoDiv').popup("show");
 		}
-		$("#contactPhone").mask("999-999-9999");
-
+		document.getElementById("schedulerRunTime").value = "00:00:00";
 		function changeProgramManager() {
 			if ($('#checkDefaultProgramManager').prop('checked') == true) {
 				$('#checkDefaultPMValue').val(true);
@@ -427,6 +538,22 @@
 				setDiv('sucessDiv', '');
 			}
 		}
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

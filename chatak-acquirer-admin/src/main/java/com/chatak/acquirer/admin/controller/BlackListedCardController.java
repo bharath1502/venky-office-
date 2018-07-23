@@ -1,6 +1,7 @@
 package com.chatak.acquirer.admin.controller;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -439,7 +440,7 @@ public class BlackListedCardController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_CREATE_BLACK_LISTED_CARD_PAGE);
     modelAndView.addObject(Constants.ERROR, null);
-    Long cardNum = Long.parseLong(request.getParameter("cardId"));
+    BigInteger cardNum = new BigInteger(request.getParameter("cardId"));
     CardNumberResponse cardNumberResponse = null;
     try {
       cardNumberResponse = blackListedCardService.validateCardNumber(cardNum);

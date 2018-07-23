@@ -79,12 +79,10 @@ public class BatchScheduleReportController implements URLMappingConstants {
 	List<Option> subMerchantData, Option option, Long userid) {
 	MerchantData merchantData = batchSchedularReportService.getMerchantCodeAndCompanyName(userid);
     List<PGMerchant> subMerchantList = batchSchedularReportService.findById(merchantData.getId());
-    if (merchantData != null) {
       option.setValue(merchantData.getMerchantCode());
       option.setLabel(merchantData.getMerchantCode() + " - " + merchantData.getBusinessName());
       merchantList.add(option);
       modelAndView.addObject("merchantList", merchantList);
-    }
     for (PGMerchant subMerchant : subMerchantList) {
       option = new Option();
       option.setValue(subMerchant.getMerchantCode());
@@ -170,10 +168,10 @@ public class BatchScheduleReportController implements URLMappingConstants {
       }
       setExportDetailsDataForDownloadBatchReport(list, exportDetails);   
       ExportUtil.exportData(exportDetails, response, messageSource);
-    } catch (Exception e) {
+    } catch (Exception exp) {
       modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR :: BatchScheduleReportController :: downloadBatchReport method", e);
+      logger.error("ERROR :: BatchScheduleReportController :: downloadBatchReport method", exp);
     }
     logger.info("Exiting :: BatchScheduleReportController :: downloadBatchReport method");
     return null;

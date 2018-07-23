@@ -5,6 +5,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -30,7 +31,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -41,18 +42,20 @@
 			<!--Article Block Start-->
 			<article>
 				<form:form name="inActiveRoleForm" action="inActivePage" method="post">
+				<input type="hidden" name="CSRFToken" value="${tokenval}">
 				</form:form>
 				<div class="col-xs-12 content-wrapper">
 					<!-- Breadcrumb start -->
 					<div class="breadCrumb">
 						<span class="breadcrumb-text"><spring:message code="setup.label.setup"/></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
-							class="breadcrumb-text"><a href="#"><spring:message code="roles.label.role"/></a></span> <span
+							class="breadcrumb-text"><spring:message code="roles.label.role"/></span> <span
 							class="glyphicon glyphicon-play icon-font-size"></span> <span
 							class="breadcrumb-text"><spring:message code="common.label.edit"/></span>
 					</div>
 					<form:form action="getRoleCategory" name="roleTypeForm" method="post">
 				      <input type="hidden" id="rolesType" name="rolesType" />
+				      <input type="hidden" name="CSRFToken" value="${tokenval}">
 				      <!-- <input type="hidden" id="rolesName" name="roleName" />
 				      <input type="hidden" id="roleDiscription" name="description" /> -->
 			        </form:form>
@@ -81,6 +84,7 @@
 								<!-- Page Form Start -->
 								<form:form action="processChatakAdminEdit"  modelAttribute="userRolesDTO" method="post" onsubmit="buttonDisabled()" >
 								<input type="hidden" id="permissions" name="permissions">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								  <form:hidden path="userRoleId"/>
 									<div class="col-sm-12">
 										<div class="row">
@@ -179,7 +183,7 @@
 																									<c:if test="${featureSub.getName() eq 'CA Public Keys'}"><spring:message code="header.label.capublickeys"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Fee Programs'}"><spring:message code="fee-program-search.label.feeprogram"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Program Manager'}"><spring:message code="admin.pm.message"/></c:if>
-																									<c:if test="${featureSub.getName() eq 'Partner'}"><spring:message code="admin.partner.message"/></c:if>
+																									<c:if test="${featureSub.getName() eq 'ISO'}"><spring:message code="admin.partner.message"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Merchant'}"><spring:message code="reports.label.overviewandbalancesheet.merchant"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'SubMerchant'}"><spring:message code="reports.label.overviewandbalancesheet.submerchant"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Bank'}"><spring:message code="bank.label.bank"/></c:if>

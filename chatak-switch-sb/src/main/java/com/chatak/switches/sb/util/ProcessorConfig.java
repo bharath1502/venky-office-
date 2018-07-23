@@ -42,16 +42,16 @@ public final class ProcessorConfig {
 
   public static final String MID = "MID_";
 
-  protected static Map<String, String> processorConfig = new HashMap<String, String>();
+  protected static Map<String, String> processorConfiguration = new HashMap<String, String>();
   
   public static final String FEE_SERVICE = "FEE_SERVICE_";
 
 
-  public static void setProcessorConfig(List<PGParams> pgParams) {
+  public static void setProcessorConfiguration(List<PGParams> pgParams) {
     for(PGParams pgParam : pgParams) {
       if(MAG_TEK_KEY.equals(pgParam.getParamName())) {
         try {
-          processorConfig.put(pgParam.getParamName(),
+          processorConfiguration.put(pgParam.getParamName(),
                               EncryptionUtil.decrypt(pgParam.getParamValue(), Properties.getProperty("chatak.pay.salt.key")));
         }
         catch(Exception e) {
@@ -59,14 +59,14 @@ public final class ProcessorConfig {
         }
       }
       else {
-        processorConfig.put(pgParam.getParamName(), pgParam.getParamValue());
+        processorConfiguration.put(pgParam.getParamName(), pgParam.getParamValue());
       }
     }
 
   }
 
   public static String get(String key) {
-    return processorConfig.get(key);
+    return processorConfiguration.get(key);
   }
   
   private ProcessorConfig() {

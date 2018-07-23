@@ -30,7 +30,7 @@ public class Request implements Serializable {
 
   private String originChannel;
 
-  private String merchantId;
+  private String merchantCode;
 
   private String terminalId;
 
@@ -77,18 +77,18 @@ public class Request implements Serializable {
   }
 
   /**
-   * @return the merchantId
+   * @return the merchantCode
    */
-  public String getMerchantId() {
-    return merchantId;
+  public String getMerchantCode() {
+    return merchantCode;
   }
 
   /**
-   * @param merchantId
-   *          the merchantId to set
+   * @param merchantCode
+   *          the merchantCode to set
    */
-  public void setMerchantId(String merchantId) {
-    this.merchantId = merchantId;
+  public void setMerchantCode(String merchantCode) {
+    this.merchantCode = merchantCode;
   }
 
   /**

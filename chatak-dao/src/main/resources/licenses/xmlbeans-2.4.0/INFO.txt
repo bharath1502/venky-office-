@@ -1,0 +1,7 @@
+Project homepage: http://xmlbeans.apache.org
+
+
+Sources: https://mvnrepository.com/artifact/org.apache.xmlbeans/xmlbeans/2.4.0
+
+License:
+Licensed under Apache License 2.0

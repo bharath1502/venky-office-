@@ -25,29 +25,48 @@ public class BankResponse extends Response {
   private String bankName;
 
   private List<BankRequest> bankRequests;
+  
+  private Long bankid;
+  
 
-  public Long getId() {
-    return id;
-  }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+	/**
+	 * @return the bankid
+	 */
+	public Long getBankid() {
+		return bankid;
+	}
 
-  public String getBankName() {
-    return bankName;
-  }
+	/**
+	 * @param bankid
+	 *            the bankid to set
+	 */
+	public void setBankid(Long bankid) {
+		this.bankid = bankid;
+	}
 
-  public void setBankName(String bankName) {
-    this.bankName = bankName;
-  }
+	public Long getId() {
+		return id;
+	}
 
-  public List<BankRequest> getBankRequests() {
-    return bankRequests;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public void setBankRequests(List<BankRequest> bankRequests) {
-    this.bankRequests = bankRequests;
-  }
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public List<BankRequest> getBankRequests() {
+		return bankRequests;
+	}
+
+	public void setBankRequests(List<BankRequest> bankRequests) {
+		this.bankRequests = bankRequests;
+	}
 
 }

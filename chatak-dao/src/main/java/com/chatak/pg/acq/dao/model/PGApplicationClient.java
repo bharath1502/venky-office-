@@ -92,6 +92,9 @@ public class PGApplicationClient implements Serializable {
   @Column(name = "CREATED_DATE")
   private Timestamp createdDate;
 
+  @Column(name = "REFRESH_TOKEN")
+  private String refreshToken;
+
   /**
    * @return the id
    */
@@ -412,6 +415,14 @@ public class PGApplicationClient implements Serializable {
    */
   public void setUpdatedDate(Timestamp updatedDate) {
     this.updatedDate = updatedDate;
+  }
+
+  public String getRefreshToken() {
+    return refreshToken;
+  }
+
+  public void setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
   }
 
 }

@@ -683,22 +683,6 @@ public class PartnerServiceImpl implements PartnerService {
   }
 
   @Override
-  public List<Option> getActivePartners() {
-    List<PartnerRequest> partnerRequests = partnerDao.findAllPartners();
-    List<Option> options = new ArrayList<>();
-    if (null != partnerRequests) {
-      for (PartnerRequest partnerRequest : partnerRequests) {
-        Option option = new Option();
-        option.setLabel(partnerRequest.getPartnerId().toString());
-        option.setValue(partnerRequest.getPartnerName());
-        options.add(option);
-      }
-    }
-    Collections.sort(options, StringUtil.ALPHABETICAL_ORDER);
-    return options;
-  }
-
-  @Override
   public Response getPartnersByProgramManagerId(String programManagerId) {
     Response response = new Response();
     List<Partner> partners = null;

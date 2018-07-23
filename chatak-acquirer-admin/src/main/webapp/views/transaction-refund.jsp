@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html>
 <head>
 <meta charset="utf-8">
@@ -29,7 +30,7 @@
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js'></script>
 	<script src="../js/common-lib.js"></script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -73,6 +74,7 @@
 								<form:form action="process-transaction-refund" commandName="virtualTeminalRefund" id="txnForm">
 								<input type="hidden" id="timeZoneOffset" name="timeZoneOffset"/>
 								<input type="hidden" id="timeZoneRegion" name="timeZoneRegion"/>
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12" id="hideAllFields">
 										<div class="row">
 											<div class="field-element-row">

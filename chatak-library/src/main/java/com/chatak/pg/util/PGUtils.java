@@ -3,6 +3,7 @@ package com.chatak.pg.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -20,6 +21,8 @@ import org.apache.log4j.Logger;
 public class PGUtils {
   
   private static Logger logger = Logger.getLogger(PGUtils.class);
+  
+  private static final BigDecimal x100 = new BigDecimal(100);
 
   /**
    * Generate 4 digit pin
@@ -419,10 +422,8 @@ public class PGUtils {
         }
       }
       finally {
-        if(is != null) {
           is.close();
         }
-      }
     }
     catch(SQLException e) {
       logger.error("ERROR:: PGUtils:: toByteArray method", e);
@@ -495,7 +496,7 @@ public class PGUtils {
       return true;
     Calendar cal = Calendar.getInstance();
     int curDay = (cal.get(Calendar.DAY_OF_WEEK)) - 1;
-    if(dow.indexOf(("" + curDay)) != -1) {
+    if(dow.indexOf(("" + Integer.toString(curDay))) != -1) {
       return true;
     }
     return false;
@@ -594,43 +595,32 @@ public class PGUtils {
     return sb.toString();
   }
 
-  public static String getCCType(String ccNumber) {
+  public static String getCCType() {
     if(Constants.FLAG_TRUE.equals(Properties.getProperty("chatak-pay.skip.card.type.check", "false"))) {
-      return "IP"; // Return type for chatak  //ReBrand
-    }
-    String visaRegex = "^4[0-9]{12}(?:[0-9]{3})?$";
-    String masterRegex = "^5[1-5][0-9]{14}$";
-    String amexRegex = "^3[47][0-9]{13}$";
-    String dinersClubrRegex = "^3(?:0[0-5]|[68][0-9])[0-9]{11}$";
-    String discoverRegex = "^6(?:011|5[0-9]{2})[0-9]{12}$";
-    String jcbRegex = "^(?:2131|1800|35\\d{3})\\d{11}$";
-    try {
-      ccNumber = ccNumber.replaceAll("\\D", "");
-      if(ccNumber.matches(visaRegex)) {
-        return "VI";
-      }
-      else if(ccNumber.matches(masterRegex)) {
-        return "MC";
-      }
-      else if(ccNumber.matches(amexRegex)) {
-        return "AX";
-      }
-      else if(ccNumber.matches(dinersClubrRegex)) {
-        return "DC";
-      }
-      else if(ccNumber.matches(discoverRegex)) {
-        return "DI";
-      }
-      else if(ccNumber.matches(jcbRegex)) {
-        return "JC";
-      }
-      else {
-        return "BLANK";
-      }
-    }
-    catch(Exception e) {
-      logger.error("ERROR:: PGUtils:: getCCType method", e);
+      return "IP"; // Return type for Chatak
     }
     return "BLANK";
+  }
+  
+  /**
+   * Utility method to calculate amount by given percentage
+   * @param amount as double value
+   * @param percent as double value 
+   * @return calculated amount based on % and amount
+   * <p>
+     * <b>Note:</b>
+     * <li> The calculated amount will be multiplied of 100
+     * 
+   */
+  public static Long calculateAmountByPercentage(Double amount, double percent){
+    if(amount == null){
+      return null;
+    }else{
+      double entityFeeShare = (amount * (percent / Integer.parseInt("100")));
+      BigDecimal usd = BigDecimal.valueOf(entityFeeShare);
+      BigDecimal rounded = usd.setScale(2, BigDecimal.ROUND_HALF_UP);
+      BigDecimal bigDecimalInCents = rounded.multiply(x100);
+      return bigDecimalInCents.longValueExact();
+    }
   }
 }

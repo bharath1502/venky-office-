@@ -6,6 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -24,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -100,12 +101,15 @@
 								<form action="showContractUpdatePage" name="editRecurringContractForm" method="post">
 									<input type="hidden" id="contractInfoId" name="contractInfoId">
 									<input type="hidden" id="customerInfoId" name="customerInfoId">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 								
 								<form action="deleteRecurringContract" name="deleteRecurringContractForm" method="post">
 									<input type="hidden" id="getContractInfoId" name="getContractInfoId">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 								<form:form action="recurring-search">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Contract Information Content Start -->
@@ -193,6 +197,7 @@
 					<div id="my_popup2" class="locatioin-list-popup">
 						<form:form action="showContractAddOrUpdatePage"
 							commandName="recurringContractInfoDTO" method="post">
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 							<span class="glyphicon glyphicon-remove" onclick="closePopup2()"></span>
 							<fieldset class="col-sm-12 padding0">
 								<!-- <fieldset class="col-sm-3"> 

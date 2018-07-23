@@ -5,6 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -22,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->	
     <div id="wrapper">
 		<!--Container block Start -->
@@ -97,9 +98,11 @@
 						
 						<form action="recurring-payment-previous" name="recurringPaymentForm" method="post">
 							<input type="hidden" id="getRecurringPaymentInfoId" name="getRecurringPaymentInfoId" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 						<!-- Page Menu End -->
 						<form:form action="createRecurringContractInfo" commandName="recurringContractInfoDTO" name="recurringContractInfoDTO" method="post" >
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="recurringpaymentInfoId"/>
 									<div class="col-sm-12 paddingT20">
 									<!-- Contract Information Content Start -->

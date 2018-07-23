@@ -2,7 +2,6 @@ package com.chatak.merchant.service;
 
 import com.chatak.merchant.exception.ChatakMerchantException;
 import com.chatak.merchant.model.MerchantSearchResponse;
-import com.chatak.pg.bean.Response;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.AddMerchantResponse;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
@@ -53,7 +52,5 @@ public interface MerchantService {
 	 * @throws ChatakMerchantException
 	 */
 	public Merchant getMerchant(Merchant merchant) throws ChatakMerchantException;
-	
-    public Response findPartnerByMerchantCode(String merchantId);
 	
 }

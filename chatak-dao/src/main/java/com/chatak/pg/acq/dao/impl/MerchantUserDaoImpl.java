@@ -2,6 +2,7 @@ package com.chatak.pg.acq.dao.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -14,17 +15,23 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import com.chatak.pg.acq.dao.MerchantUserDao;
+import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.model.QPGMerchantUsers;
 import com.chatak.pg.acq.dao.model.QPGUserRoles;
+import com.chatak.pg.acq.dao.repository.ApplicationClientRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.acq.dao.repository.MerchantUserRepository;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.GenericUserDTO;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.OrderSpecifier;
@@ -35,9 +42,12 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
 	
 	@Autowired
 	MerchantUserRepository merchantUserRepository;
+	
 	@Autowired
 	MerchantRepository merchantRepository;
-	
+
+	@Autowired
+	ApplicationClientRepository applicationClientRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -95,7 +105,7 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
 		  logger.error("Error ::MerchantUserDaoImpl :: getMerchant", e);
 		}
 		logger.info("Exiting ::MerchantUserDaoImpl :: getMerchant");
-		return null;
+		return Collections.emptyList();
 	}
 	
 	private BooleanExpression isMerchantUserEq(Long pgMerchantId) { 
@@ -140,7 +150,7 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
    */
   @Override
   public List<PGMerchantUsers> createOrUpdateUsers(List<PGMerchantUsers> merchantUsersList) throws DataAccessException {
-    return null;
+    return Collections.emptyList();
   }
 
   /**
@@ -384,4 +394,23 @@ public List<AdminUserDTO> searchMerchantUserList() {
 private OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
   return QPGMerchantUsers.pGMerchantUsers.createdDate.desc();
 }
+
+  public PGApplicationClient getApplicationClientAuth(String appAuthUser) {
+    return applicationClientRepository.findByAppAuthUser(appAuthUser).get(0);
+  }
+
+  @Override
+  public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient) {
+    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+
+    if(!StringUtil.isNull(applicationClient)){
+        applicationClient.setActiveFrom(DateUtil.getCurrentTimestamp());
+        applicationClient.setActiveTill(DateUtil.getCurrentTimestamp());
+        applicationClientRepository.save(applicationClient);
+        LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Updated Application Client");
+    }
+
+    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+  }
+  
 }

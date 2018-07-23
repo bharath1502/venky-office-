@@ -4,6 +4,7 @@
 <%@page  import="java.util.Calendar"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -22,7 +23,7 @@
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
 <div id="wrapper">
 		<!--Container block Start -->
@@ -63,7 +64,7 @@
 							<div class="col-sm-12">
 								<!--Success and Failure Message Start-->
 								<div class="col-xs-12">
-									<div class="descriptionMsg" data-toggle="tooltip" data-placement="top" title="">
+									<div class="descriptionMsg" class="red-error" style="color: red;" id="descriptionMsg" data-toggle="tooltip" data-placement="top" title="">
 										<span class="red-error">${error}</span> <span
 											class="green-error">${sucess}</span>
 									</div>
@@ -71,6 +72,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="updateBlackListedCard" commandName="blackListedCard" name="blackListedCard">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Account Details Content Start -->
@@ -94,7 +96,7 @@
 													<fieldset class="col-sm-7 pull-right">
 														<input type="submit"
 															class="form-control button pull-right acc-next"
-															value='<spring:message code="common.label.update"/>' onclick="return validateCreateBlackListedCard()"> <input
+															value='<spring:message code="common.label.update"/>' onclick="return validateCardNumber()"> <input
 															type="button"
 															class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.cancel"/>' onclick="goToBlackListedCardSearch()">

@@ -130,7 +130,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_REFUND_PAGE)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.SHOW_CHATAK_MERCHANT_TRANSACTION_REFUND));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testShowTransactionRefund method" + e);
 
@@ -142,7 +142,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_REFUND_PAGE)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(Constants.REDIRECT_PG + URLMappingConstants.CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testShowTransactionRefundElse method" + e);
 
@@ -156,7 +156,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_REFUND_PAGE)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.SHOW_CHATAK_MERCHANT_TRANSACTION_REFUND));
 		} catch (Exception e) {
 			logger.error(
 					"Error:: MerchantTransactionsControllerTest:: testShowTransactionRefundChatakPayException method"
@@ -174,7 +174,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_REFUND_PAGE)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.SHOW_CHATAK_MERCHANT_TRANSACTION_REFUND));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testShowTransactionRefundException method" + e);
 
@@ -216,7 +216,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PROCESS)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testFetchTransactionForVoid method" + e);
 
@@ -228,7 +228,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PROCESS)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(Constants.REDIRECT_PG + URLMappingConstants.CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testFetchTransactionForVoidElse method" + e);
 
@@ -242,7 +242,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PROCESS)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PAGE));
 		} catch (Exception e) {
 			logger.error(
 					"Error:: MerchantTransactionsControllerTest:: testFetchTransactionForVoidChatakPayException method"
@@ -260,7 +260,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PROCESS)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PAGE));
 		} catch (Exception e) {
 			logger.error(
 					"Error:: MerchantTransactionsControllerTest:: testFetchTransactionForVoidException method" + e);
@@ -305,7 +305,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_VOID)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessVoid method" + e);
 
@@ -325,7 +325,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_VOID)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessVoidElseIf method" + e);
 
@@ -337,7 +337,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_VOID)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(Constants.REDIRECT_PG + URLMappingConstants.CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessVoidElse method" + e);
 
@@ -351,7 +351,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_VOID)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessVoidChatakPayException method" + e);
 
@@ -367,7 +367,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_VOID)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TRANSACTION_VOID_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessVoidException method" + e);
 
@@ -411,7 +411,7 @@ public class MerchantTransactionsControllerTest {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_REFUND)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").sessionAttr("chatakAcqAdmin", "chatakAcqAdmin")
 					.header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.SHOW_CHATAK_MERCHANT_TRANSACTION_REFUND));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessRefund method" + e);
 
@@ -431,7 +431,7 @@ public class MerchantTransactionsControllerTest {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_REFUND)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").sessionAttr("chatakAcqAdmin", "chatakAcqAdmin")
 					.header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.SHOW_CHATAK_MERCHANT_TRANSACTION_REFUND));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessRefundElseIf method" + e);
 
@@ -444,7 +444,7 @@ public class MerchantTransactionsControllerTest {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_REFUND)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").sessionAttr("chatakAcqAdmin", "chatakAcqAdmin")
 					.header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(Constants.REDIRECT_PG + URLMappingConstants.CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessRefundElse method" + e);
 
@@ -459,7 +459,7 @@ public class MerchantTransactionsControllerTest {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_REFUND)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").sessionAttr("chatakAcqAdmin", "chatakAcqAdmin")
 					.header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.SHOW_CHATAK_MERCHANT_TRANSACTION_REFUND));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessRefundChatakPayException method" + e);
 
@@ -475,7 +475,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.PROCESS_CHATAK_MERCHANT_TRANSACTION_REFUND)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").header(Constants.REFERER, Constants.REFERER))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.SHOW_CHATAK_MERCHANT_TRANSACTION_REFUND));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testProcessRefundException method" + e);
 
@@ -522,8 +522,7 @@ public class MerchantTransactionsControllerTest {
 		List<PGMerchant> subMerchantList = new ArrayList<>();
 		List<String> merchantCodeList = new ArrayList<>();
 		PGMerchant merchant = new PGMerchant();
-		String string = new String();
-		merchantCodeList.add(string);
+		merchantCodeList.add("");
 		subMerchantList.add(merchant);
 		GetTransactionsListResponse manualTransactionsReportList = new GetTransactionsListResponse();
 		manualTransactionsReportList.setTotalResultCount(Integer.parseInt("3543"));
@@ -534,7 +533,7 @@ public class MerchantTransactionsControllerTest {
 		try {
 			mockMvc.perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_MANUAL_TRANSACTIONS)
 					.sessionAttr(Constants.EXISTING_FEATURES, "abcd").sessionAttr("loginUserMerchantId", Long.parseLong("21432")))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_MANUAL_TRANSACTIONS));
 		} catch (Exception e) {
 			logger.error("Error:: MerchantTransactionsControllerTest:: testShowManualTransactions method" + e);
 
@@ -572,8 +571,7 @@ public class MerchantTransactionsControllerTest {
 		List<PGMerchant> subMerchantList = new ArrayList<>();
 		List<String> merchantCodeList = new ArrayList<>();
 		PGMerchant merchant = new PGMerchant();
-		String string = new String();
-		merchantCodeList.add(string);
+		merchantCodeList.add("");
 		subMerchantList.add(merchant);
 		GetTransactionsListResponse manualTransactionsReportList = new GetTransactionsListResponse();
 		manualTransactionsReportList.setTotalResultCount(Integer.parseInt("435"));
@@ -597,8 +595,7 @@ public class MerchantTransactionsControllerTest {
 		List<PGMerchant> subMerchantList = new ArrayList<>();
 		List<String> merchantCodeList = new ArrayList<>();
 		PGMerchant merchant = new PGMerchant();
-		String string = new String();
-		merchantCodeList.add(string);
+		merchantCodeList.add("");
 		subMerchantList.add(merchant);
 		Mockito.when(merchantProfileDao.getMerchantById(Matchers.anyLong())).thenReturn(parentMerchant);
 		Mockito.when(merchantDao.findById(Matchers.anyLong())).thenReturn(subMerchantList);

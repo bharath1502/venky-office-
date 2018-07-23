@@ -2,6 +2,7 @@ package com.chatak.acquirer.admin.service.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import com.chatak.acquirer.admin.model.FeatureResponse;
 import com.chatak.acquirer.admin.service.RoleService;
 import com.chatak.acquirer.admin.util.CommonUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
+import com.chatak.pg.acq.dao.EntityFeatureDao;
 import com.chatak.pg.acq.dao.RoleDao;
 import com.chatak.pg.acq.dao.RolesFeatureMappingDao;
 import com.chatak.pg.acq.dao.UserRoleFeatureMapDao;
@@ -38,6 +40,8 @@ import com.chatak.pg.model.RolesFeatureMappingDTO;
 import com.chatak.pg.model.UserRoleDTO;
 import com.chatak.pg.model.UserRolesDTO;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 
@@ -57,6 +61,9 @@ public class RoleServiceImpl implements RoleService {
 
   @Autowired
   UserRoleFeatureMapDao userRoleFeatureMapDao;
+  
+  @Autowired
+  EntityFeatureDao entityFeatureDao;
 
   @Override
   public AddRoleResponse addRole(HttpServletRequest request) throws ChatakAdminException {
@@ -185,7 +192,7 @@ public class RoleServiceImpl implements RoleService {
   @Override
   public List<PGRolesFeatureMapping> getAdminFeatureForEntityType(
       PGRolesFeatureMapping adminFeatureRequest) throws ChatakAdminException {
-    return null;
+    return Collections.emptyList();
   }
 
   //Role permission creation
@@ -430,4 +437,23 @@ public class RoleServiceImpl implements RoleService {
 
 
   }
+
+	@Override
+	public List<Long> getFeaturesByEntity(String entity) throws ChatakAdminException {
+		return entityFeatureDao.getFeaturesByEntity(entity);
+	}
+
+	@Override
+	public FeatureResponse getFeatureDataByIds(List<Long> featureIds) {
+		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		FeatureResponse response = new FeatureResponse();
+		List<FeatureDTO> featureDTOs = new ArrayList<>();
+		List<PGFeature> pgFeature = roleDao.getFeatureDataByIds(featureIds);
+		if (StringUtil.isListNotNullNEmpty(pgFeature)) {
+			featureDTOs = CommonUtil.copyListBeanProperty(pgFeature, FeatureDTO.class);
+		}
+		response.setFeatureDTO(featureDTOs);
+		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		return response;
+	}
 }

@@ -1,0 +1,7 @@
+Project homepage: 	http://ws.apache.org/axis
+
+Sources: https://mvnrepository.com/artifact/axis/axis/1.4
+
+License:
+Licensed under Apache 2.0
+

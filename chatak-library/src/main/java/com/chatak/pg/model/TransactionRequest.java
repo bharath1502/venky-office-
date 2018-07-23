@@ -33,6 +33,16 @@ public class TransactionRequest extends Request implements Serializable{
   private String timeZoneOffset;
   
   private String timeZoneRegion;
+  
+  private String merchantCode;
+
+  public String getMerchantCode() {
+    return merchantCode;
+  }
+
+  public void setMerchantCode(String merchantCode) {
+    this.merchantCode = merchantCode;
+  }
 
   /**
    * @return the registerNumber

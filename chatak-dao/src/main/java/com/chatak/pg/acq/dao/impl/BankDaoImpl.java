@@ -6,6 +6,7 @@ package com.chatak.pg.acq.dao.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,9 +17,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.chatak.pg.acq.dao.BankDao;
+import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGBank;
 import com.chatak.pg.acq.dao.model.PGBankCurrencyMapping;
@@ -29,6 +32,7 @@ import com.chatak.pg.acq.dao.model.QPGBankCurrencyMapping;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.BankCurrencyConfigRepository;
 import com.chatak.pg.acq.dao.repository.BankCurrencyRepository;
+import com.chatak.pg.acq.dao.repository.BankProgramManagerRepository;
 import com.chatak.pg.acq.dao.repository.BankRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.constants.ActionErrorCode;
@@ -40,6 +44,8 @@ import com.chatak.pg.user.bean.GetBankListResopnse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -62,7 +68,10 @@ public class BankDaoImpl implements BankDao {
 
 	@Autowired
 	private BankRepository bankRepository;
-
+	
+	@Autowired
+	private BankProgramManagerRepository bankProgramManagerRepository;
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 	
@@ -100,6 +109,7 @@ public class BankDaoImpl implements BankDao {
 			return bankResponse;
 		}
 		PGBank bank = new PGBank();
+		bank.setIssuanceBankId(bankRequest.getIssuanceBankId());
 		bank.setBankName(bankRequest.getBankName());
 		bank.setBankShortName(bankRequest.getBankShortName());
 		bank.setAcqirerId(bankRequest.getAcquirerId());
@@ -115,7 +125,17 @@ public class BankDaoImpl implements BankDao {
 		bank.setCurrencyId(bankRequest.getCurrencyId());
 		bank.setUpdatedBy(bankRequest.getCreatedBy());
 		bank.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-		
+		bank.setBankCode(bankRequest.getBankCode());
+	    bank.setSettlRoutingNumber(bankRequest.getSettlRoutingNumber());
+	    bank.setExtension(bankRequest.getExtension());
+	    bank.setSettlAccountNumber(bankRequest.getSettlAccountNumber());
+	    bank.setContactPersonCell(bankRequest.getContactPersonCell());
+	    bank.setContactPersonEmail(bankRequest.getContactPersonEmail());
+	    bank.setContactPersonFax(bankRequest.getContactPersonFax());
+	    bank.setContactPersonName(bankRequest.getContactPersonName());
+	    bank.setContactPersonPhone(bankRequest.getContactPersonPhone());
+		bank.setSettlAccountNumber(bankRequest.getSettlAccountNumber());
+		bank.setSettlRoutingNumber(bankRequest.getSettlRoutingNumber());
 		// Check if there is a revenue account with the bank's currency.		
 				// If yes, associate it, else create a new revenue account with the currency code.		
 				PGAccount account = accountRepository.findByEntityTypeAndCurrencyAndStatus(PGConstants.DEFAULT_ENTITY_TYPE, bankRequest.getCurrencyCodeAlpha(), PGConstants.S_STATUS_ACTIVE);		
@@ -144,6 +164,7 @@ public class BankDaoImpl implements BankDao {
 				}
 
 				bank = bankRepository.save(bank);
+				bankResponse.setBankid(bank.getId());
 			    logger.info("BankDaoImpl | createBank | Bank details inserted successfully");
 
 			    //Save currency mapping	if PGBankCurrencyMapping not exist
@@ -217,6 +238,15 @@ public class BankDaoImpl implements BankDao {
 		pgBank.setUpdatedBy(bankRequest.getUpdatedBy());
 		pgBank.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
 		pgBank.setStatus(bankRequest.getStatus());
+		pgBank.setBankCode(bankRequest.getBankCode());
+		pgBank.setSettlRoutingNumber(bankRequest.getSettlRoutingNumber());
+		pgBank.setExtension(bankRequest.getExtension());
+		pgBank.setSettlAccountNumber(bankRequest.getSettlAccountNumber());
+		pgBank.setContactPersonCell(bankRequest.getContactPersonCell());
+		pgBank.setContactPersonEmail(bankRequest.getContactPersonEmail());
+		pgBank.setContactPersonFax(bankRequest.getContactPersonFax());
+		pgBank.setContactPersonName(bankRequest.getContactPersonName());
+		pgBank.setContactPersonPhone(bankRequest.getContactPersonPhone());
 		bankRepository.save(pgBank);
 		logger.info("BankDaoImpl | updateBank | Bank details updated successfully");
 		bankResponse.setErrorCode(ActionErrorCode.ERROR_CODE_B4);
@@ -270,23 +300,23 @@ public class BankDaoImpl implements BankDao {
 			List<Tuple> tupleList = query
 					.from(QPGBank.pGBank)
 					.where(isBankNameLike(bankRequest.getBankName()),
-							isBankShortNameLike(bankRequest.getBankShortName()),
-							isAcquirerIdLike(bankRequest.getAcquirerId()),
+							isBankCodeLike(bankRequest.getBankCode()),
+							isEmailAddressLike(bankRequest.getContactPersonEmail()),
 							isStatusEq(bankRequest.getStatus()),isBankStatusNotEq())
 					.offset(offset)
 					.limit(limit)
 					.orderBy(orderByCreatedDateDesc())
 					.list(QPGBank.pGBank.bankName,
-							QPGBank.pGBank.bankShortName,
-							QPGBank.pGBank.acqirerId, QPGBank.pGBank.status,QPGBank.pGBank.currencyId);
+							QPGBank.pGBank.bankCode,
+							QPGBank.pGBank.contactPersonEmail, QPGBank.pGBank.status,QPGBank.pGBank.currencyId);
 			if (!CollectionUtils.isEmpty(tupleList)) {
 				pgBankList = new ArrayList<PGBank>();
 				PGBank pgBank = null;
 				for (Tuple tuple : tupleList) {
 					pgBank = new PGBank();
 					pgBank.setBankName(tuple.get(QPGBank.pGBank.bankName));
-					pgBank.setBankShortName(tuple.get(QPGBank.pGBank.bankShortName));
-					pgBank.setAcqirerId(tuple.get(QPGBank.pGBank.acqirerId));
+					pgBank.setBankCode(tuple.get(QPGBank.pGBank.bankCode));
+					pgBank.setContactPersonEmail(tuple.get(QPGBank.pGBank.contactPersonEmail));
 					pgBank.setStatus(tuple.get(QPGBank.pGBank.status));
 					pgBank.setCurrencyId(tuple.get(QPGBank.pGBank.currencyId));
 
@@ -326,7 +356,13 @@ public class BankDaoImpl implements BankDao {
 
 		if (null != pgBank) {
 			
-			List<PGMerchant> pgMerchant = merchantRepository.findByBankId(pgBank.getId());
+			Set<BankProgramManagerMap> set = bankProgramManagerRepository.findByBankId(pgBank.getId());
+	        if (!set.isEmpty()) {
+	          LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Select bank linked to " + set.size() + " Entitie(s)");
+	          bankDeleteResponse.setErrorCode(ActionErrorCode.ERROR_CODE_01);
+	          return bankDeleteResponse;
+	        }
+	        List<PGMerchant> pgMerchant = merchantRepository.findByBankId(pgBank.getId());
 			if (StringUtil.isListNotNullNEmpty(pgMerchant)) {
 				
 				bankDeleteResponse.setErrorCode(ActionErrorCode.ERROR_CODE_BANK_LINKED);
@@ -340,7 +376,7 @@ public class BankDaoImpl implements BankDao {
 				bankRepository.save(pgBank);
 				
 				bankDeleteResponse.setErrorCode(ActionErrorCode.ERROR_CODE_B2);
-				bankDeleteResponse.setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_B2));
+				bankDeleteResponse.setErrorMessage(messageSource.getMessage(ActionErrorCode.ERROR_CODE_B2, null, LocaleContextHolder.getLocale()));
 			}
 			
 		}
@@ -355,17 +391,17 @@ public class BankDaoImpl implements BankDao {
 				: null;
 	}
 
-	private BooleanExpression isBankShortNameLike(String bankShortName) {
-		return (bankShortName != null && !"".equals(bankShortName)) ? QPGBank.pGBank.bankShortName
+	private BooleanExpression isBankCodeLike(String bankCode) {
+		return (bankCode != null && !"".equals(bankCode)) ? QPGBank.pGBank.bankCode
 				.toUpperCase().like(
-						"%" + bankShortName.toUpperCase().replace("*", "")
+						"%" + bankCode.toUpperCase().replace("*", "")
 								+ "%") : null;
 	}
 
-	private BooleanExpression isAcquirerIdLike(String acquirerId) {
-		return (acquirerId != null && !"".equals(acquirerId)) ? QPGBank.pGBank.acqirerId
+	private BooleanExpression isEmailAddressLike(String emailAddress) {
+		return (emailAddress != null && !"".equals(emailAddress)) ? QPGBank.pGBank.contactPersonEmail
 				.toUpperCase().like(
-						"%" + acquirerId.toUpperCase().replace("*", "") + "%")
+						"%" + emailAddress.toUpperCase().replace("*", "") + "%")
 				: null;
 	}
 
@@ -386,8 +422,8 @@ public class BankDaoImpl implements BankDao {
 		List<Long> list = query
 				.from(QPGBank.pGBank)
 				.where(isBankNameLike(bankRequest.getBankName()),
-						isBankShortNameLike(bankRequest.getBankShortName()),
-						isAcquirerIdLike(bankRequest.getAcquirerId()),
+						isBankCodeLike(bankRequest.getBankCode()),
+						isEmailAddressLike(bankRequest.getContactPersonEmail()),
 						isStatusEq(bankRequest.getStatus()),isBankStatusNotEq())
 				.list(QPGBank.pGBank.id);
 
@@ -472,4 +508,16 @@ public class BankDaoImpl implements BankDao {
 	public PGBank createOrUpdateBank(PGBank pgBank) throws DataAccessException {
 	    return bankRepository.save(pgBank);
 	}
+	
+	@Override
+	@Transactional
+    public BankProgramManagerMap createOrUpdateBankProgramManagerMapping(BankProgramManagerMap bankProgramManagerMap)
+            throws DataAccessException {
+        return bankProgramManagerRepository.save(bankProgramManagerMap);
+    }
+	
+  @Override
+  public List<PGBank> findByIssuanceBankId(Long issuanceBankId) {
+    return bankRepository.findByIssuanceBankId(issuanceBankId);
+  }
 }

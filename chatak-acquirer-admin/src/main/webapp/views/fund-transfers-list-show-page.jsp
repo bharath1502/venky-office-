@@ -6,6 +6,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ page import="com.chatak.pg.constants.PGConstants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -24,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -64,10 +65,12 @@
 									<input type="hidden" id="downloadTypeId" name="downloadType" /> 
 									<input type="hidden" id="transferModeId" name="transferMode" /> 
 									<input type="hidden" id="statusId" name="status" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="eft-batch-export" name="downloadBatchReport" method="post">
 									<input type="hidden" id="transfersIds" name="transfersIds" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="getFundTransferPagination" name="paginationForm" method="post">
@@ -75,11 +78,13 @@
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
 									<input type="hidden" id="statusPagination" name="status" /> 
 									<input type="hidden" id="transferModePagination" name="transferMode" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="process-bulk-fund-transfer-action" method="post" name="bulkSettlement">
 									<input type="hidden" name="requestObject" id="requestObjectId" />
 									<input type="hidden" name="action" id="actionId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<!--Success and Failure Message End-->
@@ -89,6 +94,7 @@
 					<form:form action="process-transfer-action" commandName="fundTransferActionModel" name="fundTransferActionModel" method="post">
 						<form:hidden path="pgTransfersId" id="pgTransfersId" />
 						<form:hidden path="action" id="action" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<!-- Content Block End -->
 					<%-- <form action="getTransactionsOnStatus" name="paginationForm"
@@ -380,9 +386,7 @@
 <script src="../js/utils.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script src="../js/transfers.js"></script>
@@ -584,6 +588,22 @@
 			document.forms["downloadBatchReport"].submit();
 
 		});
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

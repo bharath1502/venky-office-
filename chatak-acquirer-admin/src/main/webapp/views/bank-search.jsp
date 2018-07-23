@@ -20,7 +20,7 @@
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">>
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -67,18 +67,22 @@
 								<!--Success and Failure Message End-->
 								<form:form action="bank-view" name="viewBankForm" method="post">
 									<input type="hidden" id="bankViewName" name="bankViewName" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="bank-edit" name="editBankForm" method="post">
 									<input type="hidden" id="editBankName" name="editBankName" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="bank-delete" name="deleteBankForm" method="post">
 									<input type="hidden" id="deleteBankName" name="deleteBankName" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="getBanks" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="get-bank-report" name="downloadReport" method="post">
@@ -86,10 +90,12 @@
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<!-- Page Form Start -->
 								<form:form action="bank-search" commandName="bank" name="bank" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -102,17 +108,15 @@
 									                   </div>
 												</fieldset>
 												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="bank.label.bankshortname"/></label>
-													<form:input cssClass="form-control" path="bankShortName"
-														id="bankShortName" />
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.bankcode"/></label>
+													<form:input cssClass="form-control" path="bankCode" id="bankCode" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 										                   <span class="red-error">&nbsp;</span> 
 									                   </div>
 												</fieldset>
 												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="bank.label.acquirerid"/></label>
-													<form:input cssClass="form-control" path="acquirerId"
-														id="acquirerId" />
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.emailaddress"/></label>
+													<form:input cssClass="form-control" path="contactPersonEmail" id="bankEmailId" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 										                   <span class="red-error">&nbsp;</span> 
 									                   </div>
@@ -183,9 +187,9 @@
 							<thead>
 								<tr>
 									<th style="width: 150px;"><spring:message code="bank.label.bankname"/></th>
-									<th style="width: 150px;"><spring:message code="bank.label.bankshortname"/></th>
+									<th style="width: 150px;"><spring:message code="common.label.bankcode"/></th>
 									<th style="width: 150px;"><spring:message code="currency-search-page.label.currencycode"/></th>
-									<th style="width: 150px;"><spring:message code="bank.label.acquirerid"/></th>
+									<th style="width: 150px;"><spring:message code="common.label.emailaddress"/></th>
 									<th style="width: 100px;"><spring:message code="common.label.status"/></th>
 									<th style="width: 100px;"
 										class="sorter-false tablesorter-header tablesorter-headerUnSorted"><spring:message code="common.label.action"/></th>
@@ -197,9 +201,9 @@
 										<c:forEach items="${banks}" var="bank">
 											<tr>
 												<td class="tbl-text-align-left"><div class="feeDescDiv">${bank.bankName}</div></td>
-												<td class="tbl-text-align-left">${bank.bankShortName}</td>
+												<td class="tbl-text-align-left">${bank.bankCode}</td>
 												<td class="tbl-text-align-right">${bank.currencyCodeAlpha}</td>
-												<td class="tbl-text-align-right">${bank.acquirerId}</td>
+												<td class="tbl-text-align-right">${bank.contactPersonEmail}</td>
 									 			<td class="tbl-text-align-left">${bank.status}</td>
 												<td style="white-space: nowrap;">
 												<c:if test="${bank.status == 'Active' || bank.status == 'Suspended'}">
@@ -332,6 +336,7 @@
 		<form:form action="bankActivationSuspention" name="merchantActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="bankName" /> <input
 				type="hidden" id="suspendActiveStatus" name="bankStatus" /> 
+				<input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -356,10 +361,9 @@
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	<script src="../js/sorting.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/messages.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/bank.js"></script>
@@ -391,7 +395,21 @@
 		function openPopup() {
 			$('#bankPopupDiv').popup("show");
 		}
-		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

@@ -18,8 +18,11 @@ import org.jpos.iso.ISOPackager;
 import org.jpos.util.LogEvent;
 
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.switches.jpos.util.JPOSUtil;
 import com.chatak.switches.sb.exception.ChatakSwitchException;
+import com.chatak.switches.services.TransactionService;
 
 /**
  * << Add Comments Here >>
@@ -31,7 +34,9 @@ import com.chatak.switches.sb.exception.ChatakSwitchException;
 public class ChatakSwitchChannel extends BaseChannel {
 
   protected Logger logger = LogManager.getLogger(this.getClass());
-  
+
+  private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ChatakSwitchChannel.class);
+
   private String switchName;
 
   /**
@@ -54,11 +59,13 @@ public class ChatakSwitchChannel extends BaseChannel {
    */
   @Override
   public void send(ISOMsg isoMsg) throws IOException, ISOException {
+	LogHelper.logEntry(log, LoggerMessage.getCallerName());
     try {
       if(!isConnected()) {
+    	LogHelper.logInfo(log, LoggerMessage.getCallerName(), switchName + " Connection is not available");
         throw new ISOException(switchName + " Connection is not available");
       }
-      logger.info(">> Sending ISO Packet to Switch - "+switchName+"\n");
+      LogHelper.logInfo(log, LoggerMessage.getCallerName(), ">> Sending ISO Packet to Switch - "+switchName+"\n");
       String field22 = isoMsg.getString(Constants.TWENTYTWO);
       if(field22.length() > Constants.THREE) {
         isoMsg.set(Constants.TWENTYTWO, field22.substring(0, Constants.THREE));
@@ -101,7 +108,7 @@ public class ChatakSwitchChannel extends BaseChannel {
    */
   @Override
   public ISOMsg receive() throws IOException, ISOException {
-
+	LogHelper.logEntry(log, LoggerMessage.getCallerName());
     byte[] incomingBytes = new byte[Constants.NUMBER];
 
     LogEvent evt = new LogEvent(this, switchName + "<< receive");
@@ -111,6 +118,7 @@ public class ChatakSwitchChannel extends BaseChannel {
 
     try {
       if(!isConnected()) {
+    	LogHelper.logInfo(log, LoggerMessage.getCallerName(), switchName + " Connection is not available");
         throw new ISOException(switchName + " Connection is not available");
       }
 
@@ -139,38 +147,40 @@ public class ChatakSwitchChannel extends BaseChannel {
     }
     catch(EOFException e) {
       closeSocket();
-      logger.info("Peer Disconnected while Receiving Transaction");
+      LogHelper.logError(log, LoggerMessage.getCallerName(), e, "Peer Disconnected while Receiving Transaction");
       throw e;
     }
     catch(SocketException e) {
       closeSocket();
       if(usable) {
-        logger.info("Peer Disconnected while Receiving Transaction due to "+e.getMessage());
+    	LogHelper.logError(log, LoggerMessage.getCallerName(), e, "Peer Disconnected while Receiving Transaction" + e.getMessage());
       }
       throw e;
     }
     catch(InterruptedIOException e) {
       closeSocket();
-      logger.info("Timeout while Receiving Transaction due to "+e.getMessage());
+      LogHelper.logError(log, LoggerMessage.getCallerName(), e, "Timeout while Receiving Transaction due to " + e.getMessage());
       throw e;
     }
     catch(IOException e) {
       closeSocket();
       if(usable) {
-        logger.info("Input/Output while Receiving Transaction due to "+e.getMessage());
+    	LogHelper.logError(log, LoggerMessage.getCallerName(), e, "Input/Output while Receiving Transaction due to " + e.getMessage());
       }
       throw e;
     }
     catch(Exception e) {
+      LogHelper.logError(log, LoggerMessage.getCallerName(), e, "System Malfunction" + e.getMessage());
       evt.addMessage(isoMsg);
       evt.addMessage(e);
       throw new ISOException("System Malfunction", e);
     }
     finally {
-      logger.info("Completed the Receive Transaction");
+    	LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Completed the Receive Transaction");
     }
     logger.info("<< Receiving ISO Packet from Switch - "+switchName+"\n");
     JPOSUtil.logISOData(isoMsg, logger);
+    LogHelper.logExit(log, LoggerMessage.getCallerName());
     return isoMsg;
   }
 

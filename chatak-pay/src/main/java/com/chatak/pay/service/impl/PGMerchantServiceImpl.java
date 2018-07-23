@@ -1,5 +1,6 @@
 package com.chatak.pay.service.impl;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -35,12 +37,15 @@ import com.chatak.pg.acq.dao.MerchantProfileDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.TerminalDao;
+import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGTerminal;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.exception.HttpClientException;
+import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.model.CurrencyDTO;
 import com.chatak.pg.user.bean.AddMerchantBankRequest;
 import com.chatak.pg.user.bean.AddMerchantBankResponse;
@@ -54,7 +59,10 @@ import com.chatak.pg.user.bean.GetMerchantListRequest;
 import com.chatak.pg.user.bean.GetMerchantListResponse;
 import com.chatak.pg.user.bean.UpdateMerchantRequest;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
+import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
@@ -66,9 +74,11 @@ import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
  * @version 1.0
  */
 @Service
-public class PGMerchantServiceImpl implements PGMerchantService {
 
+public class PGMerchantServiceImpl implements PGMerchantService {
   private static Logger log = Logger.getLogger(PGMerchantServiceImpl.class);
+  
+  private static ObjectMapper mapper=new ObjectMapper();	
 
   @Autowired
   private MessageSource messageSource;
@@ -326,7 +336,15 @@ public class PGMerchantServiceImpl implements PGMerchantService {
           loginResponse.setErrorCode(ChatakPayErrorCode.GEN_001.name());
           loginResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(),
               null, LocaleContextHolder.getLocale()));
+          LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Setting login  response after validating currency");
+
+          //Check for New User. Means is user login with Temp Password?
+          if (merchantUsers.getEmailVerified().equals(Constants.ZERO)) {
+            LogHelper.logInfo(log, LoggerMessage.getCallerName(), "User logged in with Temp Password -->> New User");
+            loginResponse.setErrorCode(ChatakPayErrorCode.GEN_003.name());
+          }
         } else {
+          log.info(ChatakPayErrorCode.GEN_002.name());
           loginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
           loginResponse.setErrorMessage(messageSource.getMessage("chatak.admin.login.error.message",
               null, LocaleContextHolder.getLocale()));
@@ -346,13 +364,16 @@ public class PGMerchantServiceImpl implements PGMerchantService {
           + e.getMessage(), e);
     }
 
+    LogHelper.logInfo(log, LoggerMessage.getCallerName(), loginResponse.getErrorCode() + loginResponse.getErrorMessage());
     log.info("RestService | PGMerchantServiceImpl | authenticateMerchantUser | Exiting");
     return loginResponse;
   }
 
   private void validatePGCurrencyConfig(LoginRequest loginRequest, LoginResponse loginResponse,
-		PGMerchantUsers merchantUsers, PGMerchant pgMerchant, PGCurrencyConfig pgCurrencyConfig) {
+		PGMerchantUsers merchantUsers, PGMerchant pgMerchant, PGCurrencyConfig pgCurrencyConfig) throws HttpClientException, IOException {
+    LogHelper.logEntry(log, LoggerMessage.getCallerName());
 	if (pgCurrencyConfig != null) {
+	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Found Valid Currency");
 	    CurrencyDTO currencyDTO = new CurrencyDTO();
 	    currencyDTO.setCurrencyCodeAlpha(pgCurrencyConfig.getCurrencyCodeAlpha());
 	    currencyDTO.setCurrencyCodeNumeric(pgCurrencyConfig.getCurrencyCodeNumeric());
@@ -363,23 +384,29 @@ public class PGMerchantServiceImpl implements PGMerchantService {
 	    currencyDTO.setCurrencyThousandsUnit(pgCurrencyConfig.getCurrencyThousandsUnit());
 	    loginResponse.setCurrencyDTO(currencyDTO);
 	  }
-
+	  LogHelper.logInfo(log, LoggerMessage.getCallerName(), "set currency DTO");
 	  // If TMS is enabled
 	  if (Constants.FLAG_TRUE.equals(Properties.getProperty("chatak-tms.enabled", "false"))) {
+	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "fetching tms details");
 	    // Fetch from TSM any app update available for the device serial number and merchant ID.
 	    TSMRequest request = new TSMRequest();
 	    request.setMerchantCode(pgMerchant.getMerchantCode());
 	    request.setDeviceSerial(loginRequest.getDeviceSerial());
 	    request.setCurrentAppVersion(loginRequest.getCurrentAppVersion());
 
-	    TSMResponse tsmResponse = (TSMResponse) JsonUtil.sendToTSM(TSMResponse.class, request,
-	        Properties.getProperty("chatak-tsm.service.fetch.merchant"));
+	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Before hitting tms");
+	    String output = (String) JsonUtil.sendToTSM(String.class, request,
+		        Properties.getProperty("chatak-tsm.service.fetch.merchant"));
+	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "TMS Response " + output);
+	    TSMResponse tsmResponse=mapper.readValue(output, TSMResponse.class);
 	    loginResponse.setTerminalData(tsmResponse);
 	  } else {
+	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Chatak TMS Disabled");
 	    PGTerminal pgTerminal = terminalDao
 	        .getTerminalonMerchantCode(Long.valueOf(merchantUsers.getPgMerchantId()));
 	    loginResponse.setTerminalID(String.valueOf(pgTerminal.getTerminalId()));
 	  }
+	  LogHelper.logExit(log, LoggerMessage.getCallerName());
   }
 
   public MerchantListResponse getMerchantNamesAndMerchantCode() {
@@ -541,4 +568,23 @@ public class PGMerchantServiceImpl implements PGMerchantService {
     }
   }
 
+  public ApplicationClientDTO getApplicationClientAuth(String appAuthUser) {
+    try {
+      LogHelper.logEntry(log, LoggerMessage.getCallerName());
+      PGApplicationClient applicationClient = merchantUserDao.getApplicationClientAuth(appAuthUser);
+      if (applicationClient != null) {
+        ApplicationClientDTO applicationClientDTO =
+            CommonUtil.copyBeanProperties(applicationClient, ApplicationClientDTO.class);
+        LogHelper.logExit(log, LoggerMessage.getCallerName());
+        return applicationClientDTO;
+      }
+    } catch (Exception e) {
+      log.error("ERROR: AdminUserHandlerImpl:: getApplicationClientAuth method", e);
+    }
+    return null;
+  }
+
+  public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient) {
+    merchantUserDao.saveOrUpdateApplicationClient(applicationClient);
+  }
 }

@@ -99,6 +99,7 @@ public class RoleValidateController implements URLMappingConstants {
     logger.info("Entering:: RoleController:: changeRoleStatus method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_ACCESS_ROLE_SEARCH);
     try {
+      roleController.getRoleListForRoles(session, model);
       UserRoleDTO userRoleDTO = new UserRoleDTO();
       model.put("userRoleDTO", userRoleDTO);
       userRoleDTO.setRoleId(roleActivateId);
@@ -143,29 +144,31 @@ public class RoleValidateController implements URLMappingConstants {
       return modelAndView;
     }
     try {
-      List<RoleLevel> roleLevelList = Arrays.asList(RoleLevel.values());
-      List<RoleLevel> roleLevelsForAllRoles = new ArrayList<>();
-      roleLevelsForAllRoles =
-          roleController.getRoleListForRoles(roleLevelList, session, roleLevelsForAllRoles);
-      if (StringUtil.isListNotNullNEmpty(roleLevelsForAllRoles)) {
-        model.put("roleLevelList", roleLevelsForAllRoles);
-      }
+    	roleController.getRoleListForRoles(session, model);
       userRoleRequest.setRoleType(rolesType);
       model.put("userRoleDTO", userRoleRequest);
       FeatureDTO featureDTO = new FeatureDTO();
       FeatureResponse roleFeatureResponse = null;
-      if (rolesType.equalsIgnoreCase(RoleLevel.CP_SUPER_ADMIN.value())) {
+      if (rolesType.equalsIgnoreCase(RoleLevel.CP_SUPER_ADMIN.getValue())) {
         featureDTO.setRoleType("ADMIN");
         roleFeatureResponse = roleService.getAdminFeatureForEntityType(featureDTO);
-      } else if (rolesType.equalsIgnoreCase(RoleLevel.CP_MERCHANT.value())) {
+      } else if (rolesType.equalsIgnoreCase(RoleLevel.CP_MERCHANT.getValue())) {
         featureDTO.setRoleType("MERCHANT");
         roleFeatureResponse = roleService.getAdminFeatureForEntityType(featureDTO);
-      } else if (rolesType.equalsIgnoreCase(RoleLevel.CP_RESELLER.value())) {
+      } else if (rolesType.equalsIgnoreCase(RoleLevel.CP_RESELLER.getValue())) {
         featureDTO.setRoleType("RESELLER");
         roleFeatureResponse = roleService.getAdminFeatureForEntityType(featureDTO);
-      } else if (rolesType.equalsIgnoreCase(RoleLevel.CP_TMS.value())) {
+      } else if (rolesType.equalsIgnoreCase(RoleLevel.CP_TMS.getValue())) {
         featureDTO.setRoleType("TMS");
         roleFeatureResponse = roleService.getAdminFeatureForEntityType(featureDTO);
+      } else if (rolesType.equalsIgnoreCase(RoleLevel.CP_PM.getValue())) {
+    	  featureDTO.setRoleType(RoleLevel.CP_PM.getValue());
+          List<Long> featureIds = roleService.getFeaturesByEntity(RoleLevel.CP_PM.getValue());
+          roleFeatureResponse = roleService.getFeatureDataByIds(featureIds);
+      } else if (rolesType.equalsIgnoreCase(RoleLevel.CP_ISO.getValue())) {
+    	  featureDTO.setRoleType(RoleLevel.CP_ISO.getValue());
+            List<Long> featureIds = roleService.getFeaturesByEntity(RoleLevel.CP_ISO.getValue());
+            roleFeatureResponse = roleService.getFeatureDataByIds(featureIds);
       }
       List<FeatureDTO> featureList=null; 
       if(roleFeatureResponse!=null){
@@ -180,7 +183,7 @@ public class RoleValidateController implements URLMappingConstants {
       while (st.hasMoreElements()) {
         featureIdList.add(Long.valueOf(st.nextElement().toString()));
       }
-      List<FeatureDTO> featureList2 = roleController.getAssignedFeatureList(featureList, session);
+      List<FeatureDTO> featureList2 = roleController.getAssignedFeatureList(featureList, session, featureDTO.getRoleType());
       modelAndView.addObject("featureList", featureList2);
     } catch (Exception e) {
       logger.info("ERROR:: RoleController:: roleNameByType method", e);

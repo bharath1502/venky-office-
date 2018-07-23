@@ -1,16 +1,23 @@
 package com.chatak.acquirer.admin.util;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.session.SessionInformation;
 
+import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 
@@ -22,11 +29,13 @@ public class DateUtils {
 
 	private static Logger logger = Logger.getLogger(DateUtils.class);
 
-	private static final SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
-
 	private static final int DECEMBER = Constants.TWELVE;
 
 	private static final int TWO_DIGITS = Constants.TWO;
+	
+	public static final String YYYY_MM_DD_24HH ="yyyy-MM-dd HH:mm:ss";
+	  
+	public static final String TIMEZONE_CONVERSION_ERROR="Error in parsing the time zone";
 
 	public static Timestamp getDailyFrequency(Date today) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -137,6 +146,7 @@ public class DateUtils {
 	public static String getCurrentDateInMMddyyyy() {
 		String currentDate = "";
 		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
 		currentDate = mmddyyyyformatter.format(cal.getTime());
 		return currentDate;
 	}
@@ -166,6 +176,7 @@ public class DateUtils {
 	public static String getDateOfDaysBeforeCurrentDateInMMddyyyy(int days) {
 		String currentDate = "";
 		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
 		if(days > 0) {
 			cal.add(Calendar.DATE, days * -1);
 			currentDate = mmddyyyyformatter.format(cal.getTime());
@@ -183,6 +194,7 @@ public class DateUtils {
 	 * @return Timestamp
 	 */
 	public static Timestamp getTimestamp(String date) {
+		SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
 		try {
 			return (new Timestamp(mmddyyyyformatter.parse(date).getTime()));
 		}
@@ -296,13 +308,7 @@ public class DateUtils {
 		boolean validFlag = false;
 		Timestamp timestamp = getSqlDateFromDateStr(endDate);
 		Timestamp timestampval = getSqlDateFromDateStr(startDate);
-		if(endingYear == 0) {
-			validFlag = false;
-		}
-		else if(timestamp != null && timestamp.before(currentDate)) {
-			validFlag = false;
-		}
-		else if(timestampval != null && !timestampval.before(getSqlDateFromDateStr(formatTranDate(endDate)))) {
+		if((endingYear == 0) || (timestamp != null && timestamp.before(currentDate)) || (timestampval != null && !timestampval.before(getSqlDateFromDateStr(formatTranDate(endDate))))) {
 			validFlag = false;
 		}
 		return validFlag;
@@ -480,6 +486,7 @@ public class DateUtils {
 	 * @return
 	 */
 	public static String timestampToString(Timestamp timestamp) {
+		SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
 		if(timestamp == null) {
 			return "";
 		}
@@ -510,5 +517,94 @@ public class DateUtils {
 		formattedTime.append(formatter.format(c.get(Calendar.MINUTE)));
 		return formattedTime.toString();
 	}
+	
+	public static String convertServerTimeToDeviceLocalTime(Timestamp serverTime, String deviceOffSet) {
+	    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+	    String format =YYYY_MM_DD_24HH;
+	    Date date=null;
+	    String convertedTime=null;
+	    try {
+	      SimpleDateFormat estFormatter = new SimpleDateFormat(format);
+	      date = estFormatter.parse(serverTime.toString());
+	      SimpleDateFormat utcFormatter = new SimpleDateFormat(format);
+	      utcFormatter.setTimeZone(TimeZone.getTimeZone(deviceOffSet));
+	      convertedTime = utcFormatter.format(date);
+	      LogHelper.logInfo(logger, LoggerMessage.getCallerName(), convertedTime);
+	      LogHelper.logInfo(logger, LoggerMessage.getCallerName(), new java.sql.Timestamp(date.getTime()).toString());
+	    } catch (ParseException e) {
+	      LogHelper.logError(logger, LoggerMessage.getCallerName(), TIMEZONE_CONVERSION_ERROR);
+	    }catch(Exception e){
+	      LogHelper.logError(logger, LoggerMessage.getCallerName(), TIMEZONE_CONVERSION_ERROR);
+	    }
+	    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	    return convertedTime;
+	  }
 
+	public static String getFormatLastLoginTime(LoginDetails loginDetails) throws ParseException {
+	    Timestamp serverTime = new Timestamp(System.currentTimeMillis()); 
+	     String offset=loginDetails.getCurrentLoginTime();
+	     String browserTime = convertServerTimeToDeviceLocalTime(serverTime, offset);
+	     DateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	     DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	     Date date = inputFormat.parse(browserTime);
+	     String outputText = outputFormat.format(date);
+	     Map<String, String> map = new HashMap<String,String>();
+	     map.put("GMT+0530", "IST");
+	     map.put("GMT-0500", "COT");
+	     map.put("GMT+0200", "ZA");
+	     map.put("GMT-0400", "AST");
+	     map.put("GMT+09:30", "ACT");
+	     map.put("GMT+1000", "AET");
+	     map.put("GMT-0300", "AGT");
+	     map.put("GMT+0200", "ART");
+	     map.put("GMT-0800", "AST");
+	     map.put("GMT-0300", "BRT");
+	     map.put("GMT+0600", "BST");
+	     map.put("GMT+0200", "CAT");
+	     map.put("GMT-0330", "CNT"); 
+	     map.put("GMT+0800", "CTT"); 
+	     map.put("GMT+0300", "EAT");
+	     map.put("GMT+0100", "ECT");
+	     map.put("GMT-0400", "IET"); 
+	     map.put("GMT+0900", "JST"); 
+	     map.put("GMT+1300", "MIT"); 
+	     map.put("GMT+0400", "NET"); 
+	     map.put("GMT+1200", "NST");
+	     map.put("GMT+0500", "PLT");
+	     map.put("GMT-0700", "PNT"); 
+	     map.put("GMT-0400", "PRT"); 
+	     map.put("GMT-0800", "PST");
+	     map.put("GMT+1100", "SST");
+	     map.put("GMT+0700", "VST"); 
+	     String zonename="";
+	     for (Map.Entry<String,String> entry : map.entrySet()){
+	          if(offset.equals(entry.getKey())){
+	             zonename=entry.getValue();
+	       }
+	         }
+	     String systemTime =outputText+" "+zonename;
+	    return systemTime;
+	  }
+	
+	public static String convertSchedulerTimeToSystemTime(String schedulerDate, String serverOffSet) {
+	    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+	    String format = "HH:mm:ss";
+	    Date date=null;
+	    String convertedTime=null;
+	    try {
+	      SimpleDateFormat estFormatter = new SimpleDateFormat(format);
+	      date = estFormatter.parse(schedulerDate);
+	      SimpleDateFormat utcFormatter = new SimpleDateFormat(format);
+	      utcFormatter.setTimeZone(TimeZone.getTimeZone(serverOffSet));
+	      convertedTime = utcFormatter.format(date);
+	      LogHelper.logInfo(logger, LoggerMessage.getCallerName(), convertedTime);
+	      LogHelper.logInfo(logger, LoggerMessage.getCallerName(), new java.sql.Timestamp(date.getTime()).toString());
+	    } catch (ParseException e) {
+	      LogHelper.logError(logger, LoggerMessage.getCallerName(), TIMEZONE_CONVERSION_ERROR);
+	    }catch(Exception e){
+	      LogHelper.logError(logger, LoggerMessage.getCallerName(), TIMEZONE_CONVERSION_ERROR);
+	    }
+	    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	    return convertedTime;
+	  }
 }

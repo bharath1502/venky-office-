@@ -32,7 +32,8 @@ public final class CommonUtil {
   public static String generateRandomNumber(int length) {
     StringBuilder sb = new StringBuilder();
     Random random = new Random();
-    for(int n = 0; n < length; n++) {
+    int n;
+    for(n = 0; n < length; n++) {
       int j = random.nextInt() % Integer.parseInt("10");
       // If First digit is "0", skip that and get next random
       if(n == 0 && j == 0) {
@@ -55,7 +56,7 @@ public final class CommonUtil {
     Random randomObj = new Random();
     for(int j = 0; j < length; j++) {
       int randomInt = randomObj.nextInt(Integer.parseInt("72"));
-      finalRandString += randomInt;
+      finalRandString += Integer.toString(randomInt);
       if(finalRandString.length() >= length) {
         finalRandString = finalRandString.substring(0, length);
         break;
@@ -371,4 +372,24 @@ public final class CommonUtil {
     }
     return terminalId;
   }
+  
+  public static Long getIIN(String cardNumber){
+    if(StringUtils.isValidString(cardNumber))
+      return Long.parseLong(cardNumber.substring(0, Integer.parseInt("5")));
+    return 0l;
+  }
+  
+  public static String getPartnerIINExt(String cardNumber) {
+    if(StringUtils.isValidString(cardNumber)) {
+      return cardNumber.substring(Integer.parseInt("5"), Integer.parseInt("8"));
+    }
+    return "";
+  }
+  
+  public static String getIINExt(String cardNumber){
+    if(StringUtils.isValidString(cardNumber))
+      return cardNumber.substring(Integer.parseInt("8"), Integer.parseInt("11"));
+    return "";
+  }
+  
 }

@@ -46,15 +46,9 @@ public interface MerchantRepository extends JpaRepository<PGMerchant, Long>, Que
   @Query("select t.agentId from PGMerchant t where t.merchantCode=:merchantCode")
   public String getAgentId(@Param("merchantCode") String merchantCode);
   
-  @Query("select t.issuancePartnerId from PGMerchant t where t.merchantCode=:merchantCode")
-  public String getPartnerId(@Param("merchantCode") String merchantCode);
-  
   @Query("select t.appMode from PGMerchant t where t.merchantCode=:merchantCode")
   public String getApplicationMode(@Param("merchantCode") String merchantCode);
   
-  @Query("select t.issuancePartnerId from PGMerchant t where t.id=:merchantId")
-  public String isPartnerLinkedToMerchant(@Param("merchantId") Long merchantId);
-
   @Query("select new Map(t.merchantCode, t.businessName) from PGMerchant t")
   public List<Map<String,String>> getMerchantNameByMerchantCode();
   

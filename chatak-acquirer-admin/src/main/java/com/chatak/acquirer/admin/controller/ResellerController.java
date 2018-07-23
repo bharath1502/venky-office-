@@ -197,8 +197,7 @@ public class ResellerController implements URLMappingConstants {
       session.setAttribute(Constants.COUNTRY_LIST, countryList);
       ResellerSearchResponse resellerResponseList = resellerService.searchReseller(resellerData);
       modelAndView.addObject("resellerValues", resellerResponseList.getReseller());
-      if (resellerResponseList != null
-          && !CollectionUtils.isEmpty(resellerResponseList.getReseller())) {
+      if (!CollectionUtils.isEmpty(resellerResponseList.getReseller())) {
         modelAndView.addObject(Constants.PAGE_SIZE, resellerData.getPageSize());
         modelAndView = PaginationUtil.getPagenationModel(modelAndView,
             resellerResponseList.getTotalNoOfRows());

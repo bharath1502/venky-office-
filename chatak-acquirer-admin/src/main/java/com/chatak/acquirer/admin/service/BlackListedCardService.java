@@ -1,5 +1,7 @@
 package com.chatak.acquirer.admin.service;
 
+import java.math.BigInteger;
+
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.pg.bean.CardNumberResponse;
 import com.chatak.pg.bean.Response;
@@ -21,6 +23,6 @@ public interface BlackListedCardService {
 	
 	public BlackListedCardResponse changeBlackListedCardStatus(BlackListedCardRequest blackListedCardRequest, String cardStatus);
 	
-	public CardNumberResponse validateCardNumber(Long cardNum);
+	public CardNumberResponse validateCardNumber(BigInteger cardNum);
 
 }

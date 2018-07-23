@@ -36,19 +36,21 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
       javax.servlet.http.HttpServletResponse response, java.lang.Object object)
           throws java.lang.Exception {
     boolean isDone = false;
-
-    if (request.getMethod().equalsIgnoreCase("POST")) {
-      // This is a POST request - need to check the CSRF token
-      String sessionToken = CSRFTokenManager.getTokenForSession(request.getSession());
-      String requestToken = CSRFTokenManager.getTokenFromRequest(request);
-      if (!sessionToken.equals(requestToken)) {
-        response.sendRedirect(request.getContextPath() + Constants.ADMIN_URL_SPERATOR
-            + URLMappingConstants.INVALID_REQUEST_PAGE);
-        return false;
+    if (!request.getMethod().equalsIgnoreCase("POST")) {
+        // Not a POST - allow the request           
+        // Valid request        
+      } else {
+        try {
+          // This is a POST request - need to check the CSRF token            
+          CSRFTokenManager.validateCSRFToken(request);
+        } catch (com.chatak.pg.exception.PrepaidException e) {
+          logger.error("ERROR:: WalletInterceptor :: preHandle method", e);
+          response.sendRedirect(request.getContextPath() + "/"
+              + URLMappingConstants.INVALID_REQUEST_PAGE);
+          return false;
+        }
       }
-    }
-
-    if (request != null) {
+    
       isDone = isValidRequest(request.getRequestURI());
       if (isDone) {
         // DO nothing
@@ -62,8 +64,6 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
               request.getContextPath() + Constants.ADMIN_URL_SPERATOR  + Constants.CHATAK_INVALID_SESSION);
         }
       }
-    }
-
     return isDone;
   }
 

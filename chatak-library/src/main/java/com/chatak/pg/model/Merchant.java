@@ -4,6 +4,7 @@
 package com.chatak.pg.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * << Add Comments Here >>
@@ -85,6 +86,16 @@ public class Merchant extends MerchantRequest {
   private String programManagerName;
 
   private String parentMerchantName;
+  
+  private List<String> cardProgramIds;
+  
+  private List<Long> entitiesId;
+  
+  private Long entityId;
+  
+  private Long cardProgramId;
+  
+  private Map<Long, Long> cardProgramAndEntityId;
 
   public Long getAccountId() {
     return accountId;
@@ -155,7 +166,17 @@ public class Merchant extends MerchantRequest {
   private String partnerId;
   
   private String partnerName;
-
+  
+  private String associatedTo;
+  
+  private String process;
+  
+  private String entityType;
+  
+  private String cardProgramName;
+  
+  private String isoName;
+  
   public String getBankCurrencyCode() {
     return bankCurrencyCode;
   }
@@ -683,4 +704,98 @@ public class Merchant extends MerchantRequest {
   public void setParentMerchantName(String parentMerchantName) {
     this.parentMerchantName = parentMerchantName;
   }
+
+  public String getAssociatedTo() {
+    return associatedTo;
+  }
+
+  public void setAssociatedTo(String associatedTo) {
+    this.associatedTo = associatedTo;
+  }
+
+  public List<Long> getEntitiesId() {
+    return entitiesId;
+  }
+
+  public void setEntitiesId(List<Long> entitiesId) {
+    this.entitiesId = entitiesId;
+  }
+
+  public Long getEntityId() {
+    return entityId;
+  }
+
+  public void setEntityId(Long entityId) {
+    this.entityId = entityId;
+  }
+
+  public Long getCardProgramId() {
+    return cardProgramId;
+  }
+
+  public void setCardProgramId(Long cardProgramId) {
+    this.cardProgramId = cardProgramId;
+  }
+
+  public String getProcess() {
+    return process;
+  }
+
+  public void setProcess(String process) {
+    this.process = process;
+  }
+
+  public String getEntityType() {
+    return entityType;
+  }
+
+  public void setEntityType(String entityType) {
+    this.entityType = entityType;
+  }
+
+  public String getCardProgramName() {
+    return cardProgramName;
+  }
+
+  public void setCardProgramName(String cardProgramName) {
+    this.cardProgramName = cardProgramName;
+  }
+
+  public String getIsoName() {
+    return isoName;
+  }
+
+  public void setIsoName(String isoName) {
+    this.isoName = isoName;
+  }
+
+  /**
+   * @return the cardProgramIds
+   */
+  public List<String> getCardProgramIds() {
+    return cardProgramIds;
+  }
+
+  /**
+   * @param cardProgramIds the cardProgramIds to set
+   */
+  public void setCardProgramIds(List<String> cardProgramIds) {
+    this.cardProgramIds = cardProgramIds;
+  }
+
+  /**
+   * @return the cardProgramAndEntityId
+   */
+  public Map<Long, Long> getCardProgramAndEntityId() {
+    return cardProgramAndEntityId;
+  }
+
+  /**
+   * @param cardProgramAndEntityId the cardProgramAndEntityId to set
+   */
+  public void setCardProgramAndEntityId(Map<Long, Long> cardProgramAndEntityId) {
+    this.cardProgramAndEntityId = cardProgramAndEntityId;
+  }
+
+
 }

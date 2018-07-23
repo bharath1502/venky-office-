@@ -8,7 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.MessageSource;
 
 import com.chatak.pay.exception.ChatakPayException;
-import com.sun.jersey.api.client.ClientHandlerException;
+import com.chatak.pg.exception.HttpClientException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonUtilTest {
@@ -19,6 +19,8 @@ public class JsonUtilTest {
 	@Mock
 	private static MessageSource messageSource;
 
+	private static final String URL="https://www.google.com/";
+	
 	@Test(expected = ChatakPayException.class)
 	public void testConvertObjectToJSON() throws ChatakPayException {
 		Object object = new Object();
@@ -31,41 +33,22 @@ public class JsonUtilTest {
 		jsonUtil.convertJSONToObject("abc", c);
 	}
 
-	@Test(expected = ChatakPayException.class)
-	public void testPostRequest() throws ChatakPayException {
+	@Test
+	public void testPostRequest() throws ChatakPayException, HttpClientException {
 		Object request = new Object();
-		Class<?> responseClass = null;
-		jsonUtil.postRequest(responseClass, request, "243");
-	}
-
-	@Test(expected = ClientHandlerException.class)
-	public void testPostRequestString() throws ChatakPayException {
-		jsonUtil.postRequest("243");
-	}
-
-	@Test(expected = ClientHandlerException.class)
-	public void testPostRequestLogin() throws ChatakPayException {
-		jsonUtil.postRequestLogin("243");
+		jsonUtil.postRequest(String.class, request, URL);
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testSendToIssuance() throws ChatakPayException {
+	public void testSendToIssuanceObject() throws ChatakPayException, HttpClientException {
 		Object request = new Object();
-		jsonUtil.sendToIssuance(request, "243");
+		jsonUtil.sendToIssuance(String.class, request, URL);
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void testSendToIssuanceObject() throws ChatakPayException {
+	@Test
+	public void testSendToTSM() throws ChatakPayException, HttpClientException {
 		Object request = new Object();
-		Class<?> responseClass = null;
-		jsonUtil.sendToIssuance(responseClass, request, "243");
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void testSendToTSM() throws ChatakPayException {
-		Object request = new Object();
-		Class<?> responseClass = null;
-		jsonUtil.sendToTSM(responseClass, request, "243");
+		jsonUtil.sendToTSM(String.class, request, URL);
 	}
 
 }

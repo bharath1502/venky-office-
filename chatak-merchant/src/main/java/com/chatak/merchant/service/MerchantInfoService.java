@@ -113,11 +113,7 @@ public interface MerchantInfoService {
 
   public List<String> getExistingAgentList(String partnerId);
 
-  public List<String> getlinkedPartners();
-
   public List<String> getlinkedAgents(String parentMerchantId);
-
-  public String getPartnerLinkedToMerchant(Long parentMerchantId);
 
   public List<Option> getFeeProgramNamesForEdit(String feeProgram);
 

@@ -30,13 +30,9 @@ import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.SubMerchantDao;
 import com.chatak.pg.acq.dao.SwitchDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
-import com.chatak.pg.acq.dao.model.PGLegalEntity;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantBank;
-import com.chatak.pg.acq.dao.model.Partner;
-import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
-import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ProcessorType;
@@ -45,12 +41,9 @@ import com.chatak.pg.user.bean.AddMerchantRequest;
 import com.chatak.pg.user.bean.AddMerchantResponse;
 import com.chatak.pg.user.bean.GetMerchantListRequest;
 import com.chatak.pg.user.bean.GetMerchantListResponse;
-import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.user.bean.UpdateMerchantRequest;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
-import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
@@ -147,12 +140,6 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     addMerchantRequest.setAutoPaymentMethod(merchant.getAutoPaymentMethod());
     addMerchantRequest.setBusinessType(merchant.getBusinessType());
     addMerchantRequest.setLookinFor(merchant.getLookingFor());
-    addMerchantRequest.setPartnerId(merchant.getPartnerId());
-    addMerchantRequest.setAgentAccountNumber(merchant.getAgentAccountNumber());
-    addMerchantRequest.setAgentClientId(merchant.getAgentClientId());
-    addMerchantRequest.setAgentANI(merchant.getAgentANI());
-    addMerchantRequest.setAgentId(merchant.getAgentId());
-
     //NEW ADDED FIELDS
     addMerchantRequest.setVirtualTerminal(merchant.getVirtualTerminal());
     addMerchantRequest.setPosTerminal(merchant.getPosTerminal());
@@ -216,40 +203,9 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     addMerchantRequest.setBankId(pgMerchant.getBankId());
 
     AddMerchantResponse addMerchantResponse = merchantUpdateDao.addMerchant(addMerchantRequest);
-    if (addMerchantResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_00)) {
-
-      PGLegalEntity pgLegalEntity = new PGLegalEntity();
-      pgLegalEntity.setAddress1(merchant.getLegalAddress1());
-      pgLegalEntity.setAddress2(merchant.getLegalAddress2());
-      pgLegalEntity.setCity(merchant.getLegalCity());
-      pgLegalEntity.setCountry(merchant.getLegalCountry());
-      pgLegalEntity.setCountryOfCitizenship(merchant.getLegalCountryResidence());
-      pgLegalEntity.setCreatedDate(DateUtil.getCurrentTimestamp());
-      pgLegalEntity.setDateOfBirth(merchant.getLegalDOB());
-      pgLegalEntity.setFirstName(merchant.getLegalFirstName());
-      pgLegalEntity.setHomePhone(merchant.getLegalHomePhone());
-      pgLegalEntity.setLastName(merchant.getLegalLastName());
-      pgLegalEntity.setLegalEntityName(merchant.getLegalName());
-      pgLegalEntity.setLegalEntityType(merchant.getLegalType());
-      pgLegalEntity.setAnnualCardSale(null != merchant.getLegalAnnualCard()
-          ? CommonUtil.getLongAmount(Double.valueOf(merchant.getLegalAnnualCard())) : null);
-      pgLegalEntity.setCountryOfResidence(merchant.getLegalCountryResidence());
-      pgLegalEntity.setMerchantId(Long.valueOf(addMerchantResponse.getMerchantCode()));
-      pgLegalEntity.setMobilePhone(merchant.getLegalMobilePhone());
-      pgLegalEntity.setPassportNumber(merchant.getLegalPassport());
-      pgLegalEntity.setPin(merchant.getLegalPin());
-      pgLegalEntity.setSsn(merchant.getLegalSSN());
-      pgLegalEntity.setState(merchant.getLegalState());
-      pgLegalEntity.setTaxId(merchant.getLegalTaxId());
-      pgLegalEntity.setUpdatedDate(pgLegalEntity.getCreatedDate());
-
-      legalEntityDao.addLegalEntity(pgLegalEntity);
-      if (addMerchantResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_00)
-          && (0 == merchant.getStatus())) {
-        merchantGetStatus(merchant, password);
-      }
+    if (addMerchantResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_00) && (0 == merchant.getStatus())) {
+    	 merchantGetStatus(merchant, password);
     }
-
     logger.info("Exiting:: MerchantServiceImpl:: addMerchant method");
     return addMerchantResponse;
   }
@@ -382,15 +338,11 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
   public Merchant getMerchant(Merchant merchant) throws ChatakMerchantException {
 
     PGMerchant pgMerchant = merchantProfileDao.getMerchantById(merchant.getId());
-      Partner partner = partnerDao.findByPartnerId(Long.valueOf(pgMerchant.getPartnerId()));
-      ProgramManagerRequest programManager = programManagerDao
-              .findProgramManagerById(partner.getProgramManagerId());
+    PGAccount pgAccount= null;
     if (!StringUtil.isNull(pgMerchant)) {
-      merchant.setPartnerId(partner.getPartnerName());
-      merchant.setProgramManagerName(programManager.getProgramManagerName());
+    	 pgAccount = merchantProfileDao.getPgAccount(pgMerchant.getMerchantCode());
     }
-    PGAccount pgAccount = merchantProfileDao.getPgAccount(pgMerchant.getMerchantCode());
-
+    
     if (pgAccount != null) {
       return getMerchantExistingValues(merchant, pgMerchant, pgAccount);
     }
@@ -419,8 +371,8 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     merchant.setOwnership(pgMerchant.getOwnership());
     merchant.setLocalCurrency(pgMerchant.getLocalCurrency());
     merchant.setCurrencyId(pgMerchant.getLocalCurrency());
-
-    merchant.setAutoSettlement(pgMerchant.getMerchantConfig().getAutoSettlement() == 0 ? 0 : 1);
+    merchant.setBusinessType(pgMerchant.getBusinessType());
+    merchant.setLookingFor(pgMerchant.getLookingFor());
 
     merchant.setPhone(pgMerchant.getPhone());
     merchant.setPin(pgMerchant.getPin());
@@ -442,9 +394,6 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     merchant.setTipAmount(pgMerchant.getMerchantConfig().getTipAmount() == 1 ? true : false);
     merchant.setUserName(pgMerchant.getUserName());
     merchant.setMerchantCode(pgMerchant.getMerchantCode());
-    merchant.setAgentId(pgMerchant.getAgentId());
-    merchant.setIssuancePartnerId(pgMerchant.getIssuancePartnerId());
-    merchant.setProgramManagerId(pgMerchant.getProgramManagerId());
 
     //NEW ADDED
     merchant.setVirtualTerminal(null != pgMerchant.getMerchantConfig().getVirtualTerminal()
@@ -458,16 +407,10 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     merchant.setCancelUrl(pgMerchant.getMerchantConfig().getCancelUrl());
     //END
 
-    merchant.setAgentAccountNumber(pgMerchant.getAgentAccountNumber());
-    merchant.setAgentClientId(pgMerchant.getAgentClientId());
-    merchant.setAgentANI(pgMerchant.getAgentANI());
-    merchant.setAgentId(pgMerchant.getAgentId());
-
     if (ProcessorType.LITLE.name()
         .equalsIgnoreCase(pgMerchant.getMerchantConfig().getProcessor())) {
       merchant.setLitleMID(pgMerchant.getLitleMID());
     }
-
     merchant.setAutoPaymentMethod(pgAccount.getAutoPaymentMethod());
     if (null != pgAccount.getAutoTransferDay()) {
       getMerchantAutoTransferDay(merchant, pgAccount);
@@ -494,45 +437,8 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     merchant.setBankRoutingNumber(merchantBank.getRoutingNumber());
     merchant.setBankState(merchantBank.getState());
     merchant.setBankCurrencyCode(merchantBank.getCurrencyCode());
-
-    PGLegalEntity pgLegalEntity =
-        legalEntityDao.getLegalEntityByMerchantId(pgMerchant.getMerchantCode());
-
-    if (null != pgLegalEntity) {
-      getMerchantLegalEntity(merchant, pgLegalEntity);
-    }
     logger.info("Exiting:: MerchantServiceImpl:: getMerchant method");
     return merchant;
-  }
-
-  private void getMerchantLegalEntity(Merchant merchant, PGLegalEntity pgLegalEntity) {
-    merchant.setLegalAddress1(pgLegalEntity.getAddress1());
-    merchant.setLegalAddress2(pgLegalEntity.getAddress2());
-    merchant.setLegalAnnualCard(null != pgLegalEntity.getAnnualCardSale()
-        ? (CommonUtil.getDoubleAmount(pgLegalEntity.getAnnualCardSale()).toString()) : null);
-
-    String legalAnnualCard = merchant.getLegalAnnualCard();
-    if (legalAnnualCard.indexOf('.') == (legalAnnualCard.length() - Constants.TWO)) {
-      merchant.setLegalAnnualCard(legalAnnualCard + 0);
-    }
-
-    merchant.setLegalCitizen(pgLegalEntity.getCountryOfCitizenship());
-    merchant.setLegalCity(pgLegalEntity.getCity());
-    merchant.setLegalCountry(pgLegalEntity.getCountry());
-    merchant.setLegalCountryResidence(pgLegalEntity.getCountryOfResidence());
-    merchant.setLegalDOB(pgLegalEntity.getDateOfBirth());
-    merchant.setLegalFirstName(pgLegalEntity.getFirstName());
-    merchant.setLegalHomePhone(pgLegalEntity.getHomePhone());
-    merchant.setLegalLastName(pgLegalEntity.getLastName());
-    merchant.setLegalMobilePhone(pgLegalEntity.getMobilePhone());
-    merchant.setLegalName(pgLegalEntity.getLegalEntityName());
-    merchant.setLegalType(pgLegalEntity.getLegalEntityType());
-    merchant.setLegalPassport(pgLegalEntity.getPassportNumber());
-    merchant.setLegalPin(pgLegalEntity.getPin());
-    merchant.setLegalState(pgLegalEntity.getState());
-    merchant.setLegalSSN(pgLegalEntity.getSsn());
-    merchant.setLegalTaxId(pgLegalEntity.getTaxId());
-    merchant.setLegalType(pgLegalEntity.getLegalEntityType());
   }
 
   private void getMerchantAutoTransferDay(Merchant merchant, PGAccount pgAccount) {
@@ -631,11 +537,6 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     updateMerchantRequest.setCategory(merchant.getCategory());
     updateMerchantRequest.setMerchantCallBackURL(merchant.getMerchantCallBackURL());
 
-    updateMerchantRequest.setAgentAccountNumber(merchant.getAgentAccountNumber());
-    updateMerchantRequest.setAgentClientId(merchant.getAgentClientId());
-    updateMerchantRequest.setAgentANI(merchant.getAgentANI());
-    updateMerchantRequest.setAgentId(merchant.getAgentId());
-
     updateMerchantRequest.setBankAccountType(merchant.getBankAccountType());
     updateMerchantRequest.setBankAccountNumber(merchant.getBankAccountNumber());
     updateMerchantRequest.setBankRoutingNumber(merchant.getBankRoutingNumber());
@@ -649,60 +550,11 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     updateMerchantRequest.setBankCountry(merchant.getBankCountry());
     updateMerchantRequest.setBankPin(merchant.getBankPin());
     updateMerchantRequest.setLocalCurrency(merchant.getCurrencyId());
-
+    updateMerchantRequest.setMerchantType(merchant.getMerchantType());
     //it's a SubMerchant, So taking BankId of ParentMerchant
     String parentMID = merchantDao.getParentMerchantCode(merchant.getMerchantCode());
     PGMerchant pgMerchant = merchantUpdateDao.getMerchantByCode(parentMID);
     updateMerchantRequest.setBankId(pgMerchant.getBankId());
-
-    UpdateMerchantResponse updateMerchantResponse =
-        merchantUpdateDao.updateMerchant(updateMerchantRequest);
-    if (updateMerchantResponse.isUpdated()) {
-
-      PGLegalEntity pgLegalEntity = new PGLegalEntity();
-      pgLegalEntity.setAddress1(merchant.getLegalAddress1());
-      pgLegalEntity.setAddress2(merchant.getLegalAddress2());
-      pgLegalEntity.setCity(merchant.getLegalCity());
-      pgLegalEntity.setCountry(merchant.getLegalCountry());
-      pgLegalEntity.setCountryOfCitizenship(merchant.getLegalCitizen());
-      pgLegalEntity.setDateOfBirth(merchant.getLegalDOB());
-      pgLegalEntity.setFirstName(merchant.getLegalFirstName());
-      pgLegalEntity.setHomePhone(merchant.getLegalHomePhone());
-      pgLegalEntity.setLastName(merchant.getLegalLastName());
-      pgLegalEntity.setLegalEntityName(merchant.getLegalName());
-      pgLegalEntity.setLegalEntityType(merchant.getLegalType());
-      pgLegalEntity.setAnnualCardSale(
-          CommonUtil.getLongAmount(Double.valueOf(merchant.getLegalAnnualCard())));
-      pgLegalEntity.setCountryOfResidence(merchant.getLegalCountryResidence());
-      pgLegalEntity.setMerchantId(Long.valueOf(updateMerchantRequest.getMerchantCode()));
-      pgLegalEntity.setMobilePhone(merchant.getLegalMobilePhone());
-      pgLegalEntity.setPassportNumber(merchant.getLegalPassport());
-      pgLegalEntity.setPin(merchant.getLegalPin());
-      pgLegalEntity.setSsn(merchant.getLegalSSN());
-      pgLegalEntity.setState(merchant.getLegalState());
-      pgLegalEntity.setTaxId(merchant.getLegalTaxId());
-
-      legalEntityDao.updateLegalEntity(pgLegalEntity);
-    }
-
-    return updateMerchantResponse;
-
+    return merchantUpdateDao.updateMerchant(updateMerchantRequest);
   }
-  
-  @Override
-  public Response findPartnerByMerchantCode(String merchantId) {
-    PGMerchant merchant = merchantDao.findBymerchantConfig(merchantId);
-    Response response = new Response();
-    if (!StringUtil.isNullAndEmpty(merchant.getPartnerId())) {
-      Partner partner = partnerDao.findByPartnerId(Long.valueOf(merchant.getPartnerId()));
-      ProgramManagerRequest programManager =
-          programManagerDao.findProgramManagerById(partner.getProgramManagerId());
-      response.setPartnerId(partner.getPartnerId());
-      response.setProgramManagerName(programManager.getProgramManagerName());
-      response.setPartnerName(partner.getPartnerName());
-      response.setErrorMessage("SUCCESS");
-    }
-    return response;
-  }
-
 }

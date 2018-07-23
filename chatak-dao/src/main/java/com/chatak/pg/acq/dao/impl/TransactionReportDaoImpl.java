@@ -589,7 +589,7 @@ private void statusMsgValidation(List<ReportsDTO> reportList, ReportsDTO transac
       return QPGAccountFeeLog.pGAccountFeeLog.feeTxnDate.gt(fromDate);
     } else if ((fromDate == null && toDate != null)) {
       return QPGAccountFeeLog.pGAccountFeeLog.feeTxnDate.lt(toDate);
-    } else if ((fromDate == null && toDate == null))
+    } else if ((fromDate == null))
       return null;
     return QPGAccountFeeLog.pGAccountFeeLog.feeTxnDate.between(fromDate, toDate);
   }

@@ -3,6 +3,7 @@ package com.chatak.pg.acq.dao.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,14 +33,23 @@ public class PGMerchant implements Serializable {
   @Column(name = "ID")
   private Long id;
 
+  
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "MERCHANT_ID", referencedColumnName = "ID")
+  private Set<PGMerchantEntityMap> pgMerchantEntityMaps;
+  
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "MERCHANT_ID", referencedColumnName = "ID")
+  private Set<PGMerchantCardProgramMap> pgMerchantCardProgramMaps;
+  
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "MER_CONFIG_ID")
   PGMerchantConfig merchantConfig;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "PG_MERCHANT_ID")
-  List<PGMerchantUsers> pgMerchantUsers;
-
+  private List<PGMerchantUsers> pgMerchantUsers;
+  
   @Column(name = "MERCHANT_CODE")
   private String merchantCode;
 
@@ -148,12 +158,6 @@ public class PGMerchant implements Serializable {
   @Column(name = "AGENT_ID")
   private String agentId;
 
-  @Column(name = "ISSUANCE_PARTNER_ID")
-  private String issuancePartnerId;
-
-  @Column(name = "PROGRAM_MANAGER_ID")
-  private String programManagerId;
-
   @Column(name = "MERCHANT_CATEGORY")
   private String merchantCategory;
 
@@ -190,9 +194,6 @@ public class PGMerchant implements Serializable {
   @Column(name = "REASON")
   private String reason;
   
-  @Column(name = "PARTNER_ID")
-  private String partnerId;
-
   public Long getId() {
     return id;
   }
@@ -493,9 +494,7 @@ public class PGMerchant implements Serializable {
     return agentId;
   }
   
-  public String getIssuancePartnerId() {
-    return issuancePartnerId;
-  }
+
   
   public void setLitleMID(String litleMID) {
     this.litleMID = litleMID;
@@ -505,20 +504,9 @@ public class PGMerchant implements Serializable {
     this.agentId = agentId;
   }
 
-  public String getProgramManagerId() {
-    return programManagerId;
-  }
-  
+
   public String getLookingFor() {
     return lookingFor;
-  }
-
-  public void setIssuancePartnerId(String issuancePartnerId) {
-    this.issuancePartnerId = issuancePartnerId;
-  }
-
-  public void setProgramManagerId(String programManagerId) {
-    this.programManagerId = programManagerId;
   }
 
   public String getMerchantCategory() {
@@ -617,12 +605,19 @@ public class PGMerchant implements Serializable {
     this.reason = reason;
   }
 
-  public String getPartnerId() {
-    return partnerId;
+  public Set<PGMerchantEntityMap> getPgMerchantEntityMaps() {
+		return pgMerchantEntityMaps;
   }
 
-  public void setPartnerId(String partnerId) {
-    this.partnerId = partnerId;
+  public void setPgMerchantEntityMaps(Set<PGMerchantEntityMap> pgMerchantEntityMaps) {
+		this.pgMerchantEntityMaps = pgMerchantEntityMaps;
   }
 
+  public Set<PGMerchantCardProgramMap> getPgMerchantCardProgramMaps() {
+		return pgMerchantCardProgramMaps;
+  }
+
+  public void setPgMerchantCardProgramMaps(Set<PGMerchantCardProgramMap> pgMerchantCardProgramMaps) {
+		this.pgMerchantCardProgramMaps = pgMerchantCardProgramMaps;
+  }
 }

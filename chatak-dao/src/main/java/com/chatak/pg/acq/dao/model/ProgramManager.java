@@ -25,6 +25,9 @@ public class ProgramManager implements Serializable {
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "ID")
   private Long id;
+  
+  @Column(name = "ISSUANCE_PM_ID")
+  private Long issuancepmid;
 
   @Column(name = "COMPANY_NAME")
   private String companyName;
@@ -74,27 +77,46 @@ public class ProgramManager implements Serializable {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "PROGRAM_MANAGER_ID", referencedColumnName = "ID")
   private Set<BankProgramManagerMap> bankProgramManagerMaps;
-
+  
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JoinColumn(name = "PROGRAM_MANAGER_ID", referencedColumnName = "ID")
-  private Set<ProgramManagerAccount> programManagerAccounts;
+  @JoinColumn(name = "PM_ID", referencedColumnName = "ID")
+  private Set<PmCardProgamMapping> cardProgamMapping;
 
   @Column(name = "ACCOUNT_CURRENCY")
   private String accountCurrency;
 
+	@Column(name = "PM_STATE")
+	private String state;
+	
+	@Column(name = "PM_COUNTRY")
+	private String country;
+	
+	@Column(name = "PM_TIMEZONE")
+	private String pmTimeZone;
+	
+	@Column(name = "PM_SYSTEM_CONVERTED_TIME")
+	private String pmSystemConvertedTime;
+	
+	@Column(name = "BATCH_PREFIX")
+	private String batchPrefix;
+	
+	@Column(name = "SHEDULER_RUN_TIME")
+	private String schedulerRunTime;
+  
 
-  /**
-   * @return the extension
-   */
-  public String getExtension() {
-    return extension;
+	/**
+	 * @return the extension
+	 */
+	public String getExtension() {
+		return extension;
   }
 
-  /**
-   * @param extension the extension to set
-   */
-  public void setExtension(String extension) {
-    this.extension = extension;
+	/**
+	 * @param extension
+	 *            the extension to set
+	 */
+	public void setExtension(String extension) {
+		this.extension = extension;
   }
 
   public Long getId() {
@@ -119,14 +141,6 @@ public class ProgramManager implements Serializable {
 
   public void setBankProgramManagerMaps(Set<BankProgramManagerMap> bankProgramManagerMaps) {
     this.bankProgramManagerMaps = bankProgramManagerMaps;
-  }
-
-  public Set<ProgramManagerAccount> getProgramManagerAccounts() {
-    return programManagerAccounts;
-  }
-
-  public void setProgramManagerAccounts(Set<ProgramManagerAccount> programManagerAccounts) {
-    this.programManagerAccounts = programManagerAccounts;
   }
 
   public Boolean getDefaultProgramManager() {
@@ -240,4 +254,119 @@ public class ProgramManager implements Serializable {
   public void setCreatedBy(String createdBy) {
     this.createdBy = createdBy;
   }
+
+	/**
+	 * @return the cardProgamMapping
+	 */
+	public Set<PmCardProgamMapping> getCardProgamMapping() {
+		return cardProgamMapping;
+  }
+
+	/**
+	 * @param cardProgamMapping
+	 *            the cardProgamMapping to set
+	 */
+	public void setCardProgamMapping(Set<PmCardProgamMapping> cardProgamMapping) {
+		this.cardProgamMapping = cardProgamMapping;
+   }
+	
+	/**
+	 * @return the issuancepmid
+	 */
+	public Long getIssuancepmid() {
+		return issuancepmid;
+	}
+
+	/**
+	 * @param issuancepmid
+	 *            the issuancepmid to set
+	 */
+	public void setIssuancepmid(Long issuancepmid) {
+		this.issuancepmid = issuancepmid;
+	}
+
+	/**
+	 * @return the state
+	 */
+	public String getState() {
+		return state;
+	}
+
+	/**
+	 * @param state the state to set
+	 */
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	/**
+	 * @return the country
+	 */
+	public String getCountry() {
+		return country;
+	}
+
+	/**
+	 * @param country the country to set
+	 */
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	/**
+	 * @return the pmTimeZone
+	 */
+	public String getPmTimeZone() {
+		return pmTimeZone;
+	}
+
+	/**
+	 * @param pmTimeZone the pmTimeZone to set
+	 */
+	public void setPmTimeZone(String pmTimeZone) {
+		this.pmTimeZone = pmTimeZone;
+	}
+
+	/**
+	 * @return the pmSystemConvertedTime
+	 */
+	public String getPmSystemConvertedTime() {
+		return pmSystemConvertedTime;
+	}
+
+	/**
+	 * @param pmSystemConvertedTime the pmSystemConvertedTime to set
+	 */
+	public void setPmSystemConvertedTime(String pmSystemConvertedTime) {
+		this.pmSystemConvertedTime = pmSystemConvertedTime;
+	}
+
+	/**
+	 * @return the batchPrefix
+	 */
+	public String getBatchPrefix() {
+		return batchPrefix;
+	}
+
+	/**
+	 * @param batchPrefix the batchPrefix to set
+	 */
+	public void setBatchPrefix(String batchPrefix) {
+		this.batchPrefix = batchPrefix;
+	}
+
+	/**
+	 * @return the schedulerRunTime
+	 */
+	public String getSchedulerRunTime() {
+		return schedulerRunTime;
+	}
+
+	/**
+	 * @param schedulerRunTime the schedulerRunTime to set
+	 */
+	public void setSchedulerRunTime(String schedulerRunTime) {
+		this.schedulerRunTime = schedulerRunTime;
+	}
+	
 }

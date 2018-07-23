@@ -63,13 +63,13 @@ public class AssetManagementDaoImplTest {
 
 		List<Object> tuplelist = new ArrayList<>();
 		Object objects[] = new Object[Integer.parseInt("7")];
-		objects[0] = new String("name");
-		objects[1] = new String("name");
-		objects[Integer.parseInt("2")] = new String("name");
-		objects[Integer.parseInt("3")] = new String("name");
-		objects[Integer.parseInt("4")] = new String("phone");
-		objects[Integer.parseInt("5")] = new String("userName");
-		objects[Integer.parseInt("6")] = new Integer(Integer.parseInt("10"));
+		objects[0] = "name";
+		objects[1] = "name";
+		objects[Integer.parseInt("2")] = "name";
+		objects[Integer.parseInt("3")] = "name";
+		objects[Integer.parseInt("4")] = "phone";
+		objects[Integer.parseInt("5")] = "userName";
+		objects[Integer.parseInt("6")] = Integer.valueOf("10");
 
 		tuplelist.add(objects);
 

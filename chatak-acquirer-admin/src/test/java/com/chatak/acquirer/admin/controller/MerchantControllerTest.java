@@ -48,6 +48,7 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.model.MerchantCurrencyMapping;
 import com.chatak.pg.user.bean.AddMerchantResponse;
+import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
 import com.chatak.pg.util.Constants;
 
@@ -96,6 +97,9 @@ public class MerchantControllerTest {
 
   @Mock
   private MerchantService merchantService;
+  
+  @Mock
+  MerchantResponse selectedCurrencyList;
 
   @Mock
   private BankService bankService;
@@ -211,7 +215,7 @@ public class MerchantControllerTest {
               .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).sessionAttr("loginUserId", 1l)
               .param("legalAnnualCard", "$1111").param("currencyCode", "USD")
               .sessionAttr(Constants.LOGIN_USER_TYPE, "superAdmin"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_MERCHANT));
+          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CREATE_MERCHANT_PAGE));
     } catch (Exception e) {
       logger.error("Error :: MerchantControllerTest :: testCreateMerchantSuccess", e);
     }
@@ -352,7 +356,7 @@ public class MerchantControllerTest {
       Mockito.when(merchantUpdateService.getAgentNames(Matchers.anyString()))
           .thenReturn(responseval);
       Mockito.when(merchantUpdateService.getCurrencies()).thenReturn(optionList);
-      Mockito.when(merchantUpdateService.findByMerchantId(Matchers.anyLong())).thenReturn(merchant);
+      Mockito.when(merchantUpdateService.findByMerchantId(Matchers.anyLong())).thenReturn(selectedCurrencyList);
       Mockito.when(merchantUpdateService.getStatesByCountry(Matchers.anyString()))
           .thenReturn(responseval);
       mockMvc
@@ -554,7 +558,7 @@ public class MerchantControllerTest {
               .param("merchantType", "subMerchant").param("legalAnnualCard", "1111")
               .param("currencyId", "currencyId").param("currencyCode", "USD")
               .sessionAttr(Constants.STATUS, 1).param("getMerchantId", "1"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_MERCHANT_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_MERCHANT));
     } catch (Exception e) {
       logger.error("Error :: MerchantControllerTest :: testUpdateMerchantElse", e);
     }

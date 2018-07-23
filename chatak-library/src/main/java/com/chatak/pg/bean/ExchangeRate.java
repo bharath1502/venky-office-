@@ -12,7 +12,7 @@ public class ExchangeRate extends SearchRequest{
   
   private String destCurrency;
   
-  private Double exchangeRate;
+  private Double exchRate;
   
   private Long souCurDecPos;
   
@@ -46,12 +46,12 @@ public class ExchangeRate extends SearchRequest{
     this.destCurrency = destCurrency;
   }
 
-  public Double getExchangeRate() {
-    return exchangeRate;
+  public Double getExchRate() {
+    return exchRate;
   }
 
-  public void setExchangeRate(Double exchangeRate) {
-    this.exchangeRate = exchangeRate;
+  public void setExchRate(Double exchRate) {
+    this.exchRate = exchRate;
   }
 
   public Long getSouCurDecPos() {

@@ -48,6 +48,16 @@ public class LoginResponse extends Response {
   private String userName;
 
   private String merchantCode;
+  
+  private String lastLonginTime;
+
+  public String getLastLonginTime() {
+    return lastLonginTime;
+  }
+
+  public void setLastLonginTime(String lastLonginTime) {
+    this.lastLonginTime = lastLonginTime;
+  }
 
   /**
    * @return the serviceProviderId

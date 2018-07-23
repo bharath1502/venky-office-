@@ -1,0 +1,7 @@
+Project homepage: http://commons.apache.org/validator/
+
+
+Sources: https://mvnrepository.com/artifact/commons-validator/commons-validator/1.4.0
+
+License:
+Licensed under Apache License 2.0

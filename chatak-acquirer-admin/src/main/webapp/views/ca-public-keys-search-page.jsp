@@ -22,7 +22,7 @@
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -71,12 +71,14 @@
 									method="post">
 									<input type="hidden" id="getCAPublicKeysId"
 										name="getCAPublicKeysId" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="ca-public-key-view" name="viewCAPublicKeysForm"
 									method="post">
 									<input type="hidden" id="getViewCAPublicKeysId"
 										name="getCAPublicKeysId" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<%-- <form action="bank-view" name="viewBankForm" method="post">
@@ -87,6 +89,7 @@
 									method="get">
 									<input type="hidden" id="caPublicKeysDTO"
 										name="caPublicKeysDTO" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 
@@ -94,15 +97,18 @@
 									method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 										type="hidden" id="totalRecordsId" name="totalRecords" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="deleteCAPublicKey" name="deleteCAPublicKey" method="post">
 									<input type="hidden" id="getCAPublicKeyID" name="getCAPublicKeyID" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<!-- Page Form Start -->
 								<form:form action="caPublicKeysSearch"
 									commandName="caPublicKeysDTO" name="caPublicKeysDTO">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -373,6 +379,7 @@
 		<form:form action="caPublicKeyActivationSuspention" name="caPublicKeyActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="caPublicKeyId" /> <input
 				type="hidden" id="suspendActiveStatus" name="caPublicKeyStatus" /> 
+				<input type="hidden" name="CSRFToken" value="${tokenval}">
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -398,9 +405,7 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/messages.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
@@ -422,7 +427,21 @@
 	function openPopup() {
 		$('#caPublicKeyPopupDiv').popup("show");
 	}
-	
+	$(document).ready(function() {
+		/* Table Sorter includes Start*/
+		$(function() {
+			
+				  // call the tablesorter plugin
+				  $('#serviceResults').sortable({
+					
+					 divBeforeTable: '#divbeforeid',
+					divAfterTable: '#divafterid',
+					initialSort: false,
+					locale: 'th',
+					//negativeSort: [1, 2]
+				});
+		});
+		});
 	</script>
 
 </body>

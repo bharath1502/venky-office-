@@ -1,0 +1,7 @@
+Project homepage: http://www.jcp.org/en/jsr/detail?id=168
+
+
+Sources: https://mvnrepository.com/artifact/javax.portlet/portlet-api/1.0
+
+License:
+Licensed under Apache License 2.0

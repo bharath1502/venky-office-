@@ -1,0 +1,7 @@
+Project homepage: http://jakarta.apache.org/taglibs/
+
+
+Sources: http://mvnrepository.com/artifact/apache-taglibs/standard/1.1.2
+
+License:
+Licensed under Apache License 2.0

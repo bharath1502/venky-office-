@@ -5,26 +5,36 @@ package com.chatak.pg.acq.dao.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
+import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantBank;
+import com.chatak.pg.acq.dao.model.PGMerchantCardProgramMap;
 import com.chatak.pg.acq.dao.model.PGMerchantConfig;
+import com.chatak.pg.acq.dao.model.PGMerchantEntityMap;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGTerminal;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
+import com.chatak.pg.acq.dao.repository.ApplicationClientRepository;
+import com.chatak.pg.acq.dao.repository.MerchantCardProgramMapRepository;
 import com.chatak.pg.acq.dao.repository.MerchantConfigRepositrory;
+import com.chatak.pg.acq.dao.repository.MerchantEntityMapRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.acq.dao.repository.MerchantUserRepository;
 import com.chatak.pg.acq.dao.repository.TerminalRepository;
@@ -38,6 +48,7 @@ import com.chatak.pg.user.bean.UpdateMerchantResponse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
@@ -70,9 +81,18 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 
   @Autowired
   private MerchantConfigRepositrory merchantConfigRepositrory;
+  
+  @Autowired
+  private MerchantEntityMapRepository merchantEntityMapRepository;
 
   @PersistenceContext
   private EntityManager entityManager;
+  
+  @Autowired
+  private MerchantCardProgramMapRepository merchantCardProgramMapRepository;
+
+  @Autowired
+  ApplicationClientRepository applicationClientRepository;
 
   @Override
   public AddMerchantResponse addMerchant(AddMerchantRequest addMerchantRequest) {
@@ -139,13 +159,43 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       pgMerchantUser.setAddress(addMerchantRequest.getAddress1());
       pgMerchantUsers.add(pgMerchantUser);
       merchant.setPgMerchantUsers(pgMerchantUsers);
+      if(addMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT){
+      //Merchant to Entity Mapping
+      Set<PGMerchantEntityMap> pgMerchantEntityMaps = new HashSet<>();
+		for(Long id : addMerchantRequest.getEntitiesId()){
+			PGMerchantEntityMap merchantEntityMap = new PGMerchantEntityMap();
+			merchantEntityMap.setEntityId(id);
+			merchantEntityMap.setEntitytype(addMerchantRequest.getAssociatedTo());
+			pgMerchantEntityMaps.add(merchantEntityMap);
+		}
+		merchant.setPgMerchantEntityMaps(pgMerchantEntityMaps);
+		//Merchant to CardProgram Mapping
+		Set<PGMerchantCardProgramMap> pgMerchantCardProgramMaps = new HashSet<>();
+		for(Map.Entry<Long, Long> id : addMerchantRequest.getCardProgramAndEntityId().entrySet()){
+			PGMerchantCardProgramMap merchantCardProgramMap = new PGMerchantCardProgramMap();
+			merchantCardProgramMap.setCardProgramId(id.getKey());
+			merchantCardProgramMap.setEntityId(id.getValue());
+			merchantCardProgramMap.setEntitytype(addMerchantRequest.getAssociatedTo());
+			pgMerchantCardProgramMaps.add(merchantCardProgramMap);
+		}
+		merchant.setPgMerchantCardProgramMaps(pgMerchantCardProgramMaps);
+      }
       merchant = merchantRepository.save(merchant);
 
-      merchantRepository.findByUserName(addMerchantRequest.getUserName());
+      //Inserting into PgApplicationClient table for OAuth Token Related changes
+      if (merchant != null) {
+        PGApplicationClient applicationClient = com.chatak.pg.dao.util.StringUtil.getApplicationClientDTO();
+        applicationClient.setAppClientId(addMerchantRequest.getUserName());
+        applicationClient.setAppAuthUser(addMerchantRequest.getUserName());
+        applicationClientRepository.save(applicationClient);
+      }
 
-      Long accNum = generateAccountNum();
+      merchantRepository.findByUserName(addMerchantRequest.getUserName());
       PGAccount pgAccount = new PGAccount();
       pgAccount.setAccountDesc(PGConstants.ACC_DESC);
+   // Generating Merchant AccountNumber
+      String accountNumber = Properties.getProperty("merchant.account.number.series");
+      Long accNum = getMerchantAccountNumberSeries(accountNumber);
       pgAccount.setAccountNum(accNum);
       pgAccount.setAutoPaymentLimit(addMerchantRequest.getAutoTransferLimit());
 
@@ -299,8 +349,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       merchant.setBusinessType(addMerchantRequest.getBusinessType());
       merchant.setLookingFor(addMerchantRequest.getLookinFor());
       merchant.setAgentId(addMerchantRequest.getAgentId());
-      merchant.setIssuancePartnerId(addMerchantRequest.getIssuancePartnerId());
-      merchant.setProgramManagerId(addMerchantRequest.getProgramManagerId());
       merchant.setMerchantCategory(addMerchantRequest.getMerchantCategory());
       merchant.setAllowAdvancedFraudFilter(null != addMerchantRequest.getAllowAdvancedFraudFilter()
           && addMerchantRequest.getAllowAdvancedFraudFilter() ? 1 : 0);
@@ -314,7 +362,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       merchant.setAgentANI(addMerchantRequest.getAgentANI());
       merchant.setAgentClientId(addMerchantRequest.getAgentClientId());
       merchant.setAgentId(addMerchantRequest.getAgentId());
-      merchant.setPartnerId(addMerchantRequest.getPartnerId());
   }
 
   @Override
@@ -342,7 +389,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
     }
     PGAccount pgAccount = accountRepository.findByEntityIdAndCategory(merchantDb.getMerchantCode(),
         PGConstants.PRIMARY_ACCOUNT);
-    if (null != merchantDb && null != pgAccount) {
+    if (null != pgAccount) {
       setPGMerchantAndPGAccount(updateMerchantRequest, updateMerchantResponse, merchantDb, pgAccount);
     } else {
       updateMerchantResponse.setUpdated(false);
@@ -398,8 +445,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       merchantDb.setBusinessType(updateMerchantRequest.getBusinessType());
       merchantDb.setLookingFor(updateMerchantRequest.getLookingFor());
       merchantDb.setAgentId(updateMerchantRequest.getAgentId());
-      merchantDb.setIssuancePartnerId(updateMerchantRequest.getIssuancePartnerId());
-      merchantDb.setProgramManagerId(updateMerchantRequest.getProgramManagerId());
       merchantDb
           .setAllowAdvancedFraudFilter(null != updateMerchantRequest.getAllowAdvancedFraudFilter()
               && updateMerchantRequest.getAllowAdvancedFraudFilter() ? 1 : 0);
@@ -417,8 +462,8 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       merchantConfig.setFeeProgram(updateMerchantRequest.getFeeProgram());
       merchantConfig.setId(merchantDb.getMerchantConfig().getId());
       merchantConfig.setProcessor(updateMerchantRequest.getProcessor());
-      merchantConfig.setRefunds(updateMerchantRequest.getRefunds() ? 1 : 0);
-      merchantConfig.setShippingAmount(updateMerchantRequest.getShippingAmount() ? 1 : 0);
+      merchantConfig.setRefunds(updateRefundRequest(updateMerchantRequest));
+      merchantConfig.setShippingAmount(updateShippingAmountRequest(updateMerchantRequest));
       merchantConfig.setTaxAmount(updateMerchantRequest.getTaxAmount() ? 1 : 0);
       merchantConfig.setTipAmount(updateMerchantRequest.getTipAmount() ? 1 : 0);
       merchantConfig.setUpdatedDate(DateUtil.getCurrentTimestamp());
@@ -466,15 +511,60 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       pgMerchantBank.setState(updateMerchantRequest.getBankState());
       pgMerchantBank.setCountry(updateMerchantRequest.getBankCountry());
       pgMerchantBank.setPin(updateMerchantRequest.getBankPin());
+      
+		if (updateMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT
+				&& updateMerchantRequest.getProcess().equals(PGConstants.UPDATE)) {
+			processUpdateMerchant(updateMerchantRequest, merchantDb);
+		}
+		merchantRepository.save(merchantDb);
+		accountRepository.save(pgAccount);
+		validateStatus(updateMerchantResponse, merchantDb);
+		updateMerchantResponse.setUpdated(true);
+		updateMerchantResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
+		updateMerchantResponse.setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
+	}
 
-      merchantRepository.save(merchantDb);
-      accountRepository.save(pgAccount);
-      validateStatus(updateMerchantResponse, merchantDb);
-      updateMerchantResponse.setUpdated(true);
-      updateMerchantResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
-      updateMerchantResponse
-          .setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
-  }
+	/**
+	 * @param updateMerchantRequest
+	 * @return
+	 */
+	private int updateShippingAmountRequest(UpdateMerchantRequest updateMerchantRequest) {
+		return updateMerchantRequest.getShippingAmount() ? 1 : 0;
+	}
+
+	/**
+	 * @param updateMerchantRequest
+	 * @return
+	 */
+	private int updateRefundRequest(UpdateMerchantRequest updateMerchantRequest) {
+		return updateMerchantRequest.getRefunds() ? 1 : 0;
+	}
+
+	private void processUpdateMerchant(UpdateMerchantRequest updateMerchantRequest, PGMerchant merchantDb) {
+		// Delete existing references
+		merchantEntityMapRepository.deleteMerchantEntityMapByMerchantId(updateMerchantRequest.getId());
+		merchantCardProgramMapRepository.deleteMerchantCpMapByMerchantId(updateMerchantRequest.getId());
+		// UpdateMerchant to Entity Mapping
+		Set<PGMerchantEntityMap> pgMerchantEntityMaps = new HashSet<>();
+		for (Long id : updateMerchantRequest.getEntitiesId()) {
+			PGMerchantEntityMap merchantEntityMap = new PGMerchantEntityMap();
+			merchantEntityMap.setEntityId(id);
+			merchantEntityMap.setEntitytype(updateMerchantRequest.getAssociatedTo());
+			pgMerchantEntityMaps.add(merchantEntityMap);
+		}
+		merchantDb.setPgMerchantEntityMaps(pgMerchantEntityMaps);
+		// UpdateMerchant to CardProgram Mapping
+		Set<PGMerchantCardProgramMap> pgMerchantCardProgramMaps = new HashSet<>();
+		
+		for (Map.Entry<Long, Long> id : updateMerchantRequest.getCardProgramAndEntityId().entrySet()) {
+			PGMerchantCardProgramMap merchantCardProgramMap = new PGMerchantCardProgramMap();
+			merchantCardProgramMap.setCardProgramId(id.getKey());
+			merchantCardProgramMap.setEntityId(id.getValue());
+			merchantCardProgramMap.setEntitytype(updateMerchantRequest.getAssociatedTo());
+			pgMerchantCardProgramMaps.add(merchantCardProgramMap);
+		}
+		merchantDb.setPgMerchantCardProgramMaps(pgMerchantCardProgramMaps);
+	}
 
   private void validateStatus(UpdateMerchantResponse updateMerchantResponse, PGMerchant merchantDb) {
 	if (null != merchantDb.getStatus() && merchantDb.getStatus().equals(Integer.parseInt("3"))) {
@@ -514,7 +604,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
         for (PGMerchant subMerchant : subMerchantLists) {
           PGAccount pgSubMerchantAccount = accountRepository.findByEntityIdAndCategory(
               subMerchant.getMerchantCode(), PGConstants.PRIMARY_ACCOUNT);
-          if (null != subMerchant && null != pgSubMerchantAccount) {
+          if (null != pgSubMerchantAccount) {
             validatePGMerchant(updateMerchantRequest, merchantDb, subMerchant, pgSubMerchantAccount);
           }
         }
@@ -596,8 +686,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
   public PGMerchant createOrUpdateMerchant(PGMerchant pgMerchant) {
     PGAccount pgAccount = accountRepository.findByEntityIdAndCategory(pgMerchant.getMerchantCode(),
         PGConstants.PRIMARY_ACCOUNT);
-    pgAccount.setStatus(StringUtils.getStringStatusLiteral((pgMerchant.getStatus() == null ? pgMerchant.getStatus()
-        : pgMerchant.getStatus()).toString()));
+    pgAccount.setStatus(StringUtils.getStringStatusLiteral(pgMerchant.getStatus().toString()));
     accountRepository.save(pgAccount);
     return merchantRepository.save(pgMerchant);
   }
@@ -730,4 +819,27 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
   protected BooleanExpression isMerchantNotEq() {
     return (QPGMerchant.pGMerchant.merchantType.ne("TEST"));
   }
+  
+	@Override
+	public Long getMerchantAccountNumberSeries(String accountNumber) throws DataAccessException {
+		Long serialNumber = Long.valueOf(accountNumber);
+		Query qry = entityManager
+				.createNativeQuery("SELECT IFNULL( MAX( ACCOUNT_NUM ), :accountNumber ) + 1 FROM PG_ACCOUNT");
+		qry.setParameter("accountNumber", accountNumber);
+		List<Double> list = qry.getResultList();
+		if (StringUtils.isListNotNullNEmpty(list)) {
+			serialNumber = list.get(0).longValue();
+		}
+		return serialNumber;
+	}
+
+	/**
+	 * @param entityId
+	 * @param entityType
+	 * @return
+	 */
+	@Override
+	public List<PGMerchantEntityMap> findByEntityIdAndEntitytype(Long entityId, String entityType) {
+		return merchantEntityMapRepository.findByEntityIdAndEntitytype(entityId, entityType);
+	}
 }

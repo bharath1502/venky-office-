@@ -350,7 +350,8 @@ public class AdminUserDaoImpl implements AdminUserDao {
                         isUserStatusNotEq(),
                         isEmailIdEq(userTo.getEmail()),
                         QPGAdminUser.pGAdminUser.userRoleId
-                                .eq(QPGUserRoles.pGUserRoles.roleId))
+                                .eq(QPGUserRoles.pGUserRoles.roleId),
+                                isEntityIdEq(userTo.getEntityId()))
                 .offset(offset)
                 .limit(limit)
                 .orderBy(orderByCreatedDateDesc())
@@ -402,7 +403,8 @@ public class AdminUserDaoImpl implements AdminUserDao {
                         isEmailIdEq(userTO.getEmail()),
                         isUserTypeEq(userTO.getUserType()),
                         QPGAdminUser.pGAdminUser.userRoleId
-                                .eq(QPGUserRoles.pGUserRoles.roleId))
+                                .eq(QPGUserRoles.pGUserRoles.roleId),
+                                isEntityIdEq(userTO.getEntityId()))
                 .orderBy(orderByCreatedDateDesc()).list(QPGAdminUser.pGAdminUser);
 
         return (adminuserList != null && !adminuserList.isEmpty() ? adminuserList
@@ -441,6 +443,12 @@ public class AdminUserDaoImpl implements AdminUserDao {
         }
         return userAdminListData;
         
+    }
+    
+    private BooleanExpression isEntityIdEq(Long entityId) {
+
+        return (entityId != null) ? QPGAdminUser.pGAdminUser.entityId
+                .eq(entityId) : null;
     }
 
 }

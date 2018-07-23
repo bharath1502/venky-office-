@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
+import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.user.bean.BankResponse;
 import com.chatak.pg.user.bean.CardProgramRequest;
@@ -57,14 +58,33 @@ public interface ProgramManagerService {
 
   public List<Option> getActiveProgramManagers();
   
-  /**
-	 * @param programManagerRequest
-	 * @return
-	 * @throws PrepaidException
-	 */
-	public ProgramManagerResponse getAllIssuanceProgramManagers(ProgramManagerRequest programManagerRequest)throws ChatakAdminException;
-	
-	public ProgramManagerResponse getIssuanceProgramManagerById(ProgramManagerRequest programManagerRequest)throws ChatakAdminException;
-	
-	public CardProgramResponse searchCardProgramByProgramManager(PartnerGroupPartnerMapRequest partnerGroupPartnerMapRequest)throws ChatakAdminException;
+  public ProgramManagerResponse getAllIssuanceProgramManagers(ProgramManagerRequest programManagerRequest)
+		throws ChatakAdminException;
+
+  public ProgramManagerResponse getIssuanceProgramManagerById(ProgramManagerRequest programManagerRequest)
+		throws ChatakAdminException;
+
+  public CardProgramResponse searchCardProgramByProgramManager(
+		PartnerGroupPartnerMapRequest partnerGroupPartnerMapRequest) throws ChatakAdminException;
+
+  public CardProgramResponse getCardProgramsDetailsByIds(CardProgramRequest cardProgramRequest)
+		throws ChatakAdminException;
+
+  public List<CardProgramRequest> findCardProgramByPmId(Long programManagerId) throws ChatakAdminException;
+  
+  public Response findProgramManagerNameByAccountCurrency(String currencyId) throws ChatakAdminException;
+  
+  public Response findProgramManagerNameByCurrencyAndId(Long id,String currencyId);
+  
+  public Response findByProgramManagerIdAndAccountCurrency(Long pmId,String currencyId) throws ChatakAdminException;
+  
+  public CardProgramResponse findPMCardprogramByMerchantId(Long merchantId);
+  
+  public ProgramManagerAccount getPMAccountByPMIdAndAccountType(Long programManagerId, String accountType);
+  
+  public Response updateProgramManagerAccount(ProgramManagerAccount programManagerAccount);
+
+  public ProgramManagerRequest findbyProgramManagerId(Long id);
+  
+  
 }

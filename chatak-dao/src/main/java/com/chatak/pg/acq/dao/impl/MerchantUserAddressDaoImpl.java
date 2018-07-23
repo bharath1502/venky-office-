@@ -87,7 +87,7 @@ public class MerchantUserAddressDaoImpl implements MerchantUserAddressDao {
         merchantRepository.findByMerchantCode(updateMerchantRequest.getMerchantCode());
     PGAccount pgAccount = accountRepository.findByEntityIdAndCategory(merchantDb.getMerchantCode(),
         PGConstants.PRIMARY_ACCOUNT);
-    if (merchantDb != null && null != pgAccount) {
+    if (null != pgAccount) {
       merchantDb.getPgMerchantUsers().get(0).setEmail(updateMerchantRequest.getEmailId());
       merchantDb.getPgMerchantUsers().get(0).setUserName(updateMerchantRequest.getUserName());
 

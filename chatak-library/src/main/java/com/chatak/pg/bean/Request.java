@@ -21,7 +21,7 @@ public class Request implements Serializable {
 
   private String sysTraceNum;
 
-  private String merchantId;
+  private String merchantCode;
 
   private String terminalId;
 
@@ -51,7 +51,7 @@ public class Request implements Serializable {
 
   private ISOMsg isoMsg;
 
-  private String txnRefNumber;
+  private String txnRefNumber; // Reference number for an original transaction such as for a refund or void.
 
   private String cvv;
 
@@ -121,7 +121,17 @@ public class Request implements Serializable {
   private String timeZoneOffset;
   
   private String timeZoneRegion;
-
+  
+  private String batchId;
+  
+  private Long merchantId;
+  
+  private Long isoId;
+  
+  private Long pmId;
+  
+  private String transactionId;
+  
   public String getCurrencyCode() {
     return currencyCode;
   }
@@ -154,12 +164,12 @@ public class Request implements Serializable {
     this.pin = pin;
   }
 
-  public String getMerchantId() {
-    return merchantId;
+  public String getMerchantCode() {
+    return merchantCode;
   }
 
-  public void setMerchantId(String merchantId) {
-    this.merchantId = merchantId;
+  public void setMerchantCode(String merchantCode) {
+    this.merchantCode = merchantCode;
   }
 
   public String getTerminalId() {
@@ -553,5 +563,69 @@ public class Request implements Serializable {
   public void setTimeZoneRegion(String timeZoneRegion) {
     this.timeZoneRegion = timeZoneRegion;
   }
-  
+
+  public String getBatchId() {
+    return batchId;
+  }
+
+  public void setBatchId(String batchId) {
+    this.batchId = batchId;
+  }
+
+  /**
+   * @return the merchantId
+   */
+  public Long getMerchantId() {
+    return merchantId;
+  }
+
+  /**
+   * @param merchantId the merchantId to set
+   */
+  public void setMerchantId(Long merchantId) {
+    this.merchantId = merchantId;
+  }
+
+  /**
+   * @return the isoId
+   */
+  public Long getIsoId() {
+    return isoId;
+  }
+
+  /**
+   * @param isoId the isoId to set
+   */
+  public void setIsoId(Long isoId) {
+    this.isoId = isoId;
+  }
+
+  /**
+   * @return the pmId
+   */
+  public Long getPmId() {
+    return pmId;
+  }
+
+  /**
+   * @param pmId the pmId to set
+   */
+  public void setPmId(Long pmId) {
+    this.pmId = pmId;
+  }
+
+  /**
+   * @return the transactionId
+   */
+  public String getTransactionId() {
+    return transactionId;
+  }
+
+  /**
+   * @param transactionId the transactionId to set
+   */
+  public void setTransactionId(String transactionId) {
+    this.transactionId = transactionId;
+  }
+
 }

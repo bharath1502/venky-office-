@@ -6,36 +6,6 @@
 <section class="field-element-row atm-transaction-content"
 	style="display: none;">
 	<fieldset class="col-sm-12">
-		<fieldset class="col-sm-12">
-			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.autosettlementoptions" /><span
-				class="required-field">*</span></label><br> <input type="radio"
-				id="allowAutoSettlement" name="autoSettlement" value="1"
-				onclick="validateRadio()">
-			<spring:message code="manage.option.radio.sub-merchant.yes" />
-			<input type="radio" id="noAutoSettlement" name="autoSettlement"
-				value="0" onclick="validateRadio()">
-			<spring:message code="manage.option.radio.sub-merchant.no" />
-			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-				<span id="noAutoSettlementEr" class="red-error">&nbsp;</span>
-			</div>
-		</fieldset>
-		<fieldset class="col-sm-3">
-			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.feeprogram" /><span
-				class="required-field">*</span></label>
-			<form:select cssClass="form-control" path="feeProgram"
-				id="feeProgram" onblur="validatefeeProgram()">
-				<form:option value="">..:<spring:message
-						code="manage.option.sub-merchant.select" />:..</form:option>
-				<c:forEach items="${feeprogramnames}" var="feename">
-					<form:option value="${feename.label}">${feename.label}</form:option>
-				</c:forEach>
-			</form:select>
-			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-				<span id="feeProgramEr" class="red-error">&nbsp;</span>
-			</div>
-		</fieldset>
 		<fieldset class="col-sm-3">
 			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 					code="manage.label.sub-merchant.processor" /><span
@@ -284,81 +254,6 @@
 		</fieldset>
 
 
-	<!-- Add Issuance Agent Configuration START -->
-													
-			<fieldset class="col-sm-12" id="issuanceAgentSettings">
-				<fieldset class="col-sm-12 padding0 border-style-section">
-					<fieldset class="col-sm-12">
-						<div class="container-heading-separator">
-							<span><spring:message code="merchant.label.issuer.agent.configuration"/></span>
-						</div>
-						<div class="row">
-							<div class="field-element-row">
-								<fieldset class="col-sm-3">
-									<label data-toggle="tooltip" data-placement="top" title="">
-										<spring:message code="common.label.agentName"/>
-										<span class="required-field">*</span>
-									</label>
-									<form:select cssClass="form-control" path="agentId"
-										id="agentId" onblur="this.value=this.value.trim();return validateAgentName()"
-										onchange="fetchAgentData(this.value)">
-										<form:option value=""><spring:message code="reports.option.select"/></form:option>
-										<c:forEach items="${agentnamesList}" var="agentnames">
-											<form:option value="${agentnames.label}">${agentnames.value}</form:option>
-										</c:forEach>
-									</form:select>
-									<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-										<span id="agentIdErr" class="red-error">&nbsp;</span>
-									</div>
-								</fieldset>
-								<fieldset class="col-sm-4">
-									<label>
-									<spring:message code="merchant.label.issuer.agent.accnumber"/><span class="required-field">*</span></label>
-									<form:input cssClass="form-control"
-												path="agentAccountNumber" id="agentAccountNumber" readonly="true"/>
-									<div class="discriptionErrorMsg">
-												<span id="agentAccountNumberErrorDiv"
-													class="red-error">&nbsp;</span>
-									</div>
-									
-								</fieldset>
-								<fieldset class="col-sm-4">
-									<label>
-									<spring:message code="merchant.label.issuer.agent.clientid"/><span class="required-field">*</span></label>
-									<form:input cssClass="form-control"
-												path="agentClientId" id="agentClientId" readonly="true"/>
-									<div class="discriptionErrorMsg">
-												<span id="agentClientIdErrorDiv"
-													class="red-error">&nbsp;</span>
-									</div>
-									
-								</fieldset>
-								<fieldset class="col-sm-4">
-									<label>
-									<spring:message code="merchant.label.issuer.agent.ani"/><span class="required-field">*</span></label>
-									<form:input cssClass="form-control"
-												path="agentANI" id="agentANI" readonly="true"/>
-									<div class="discriptionErrorMsg">
-												<span id="agentANIErrorDiv"
-													class="red-error">&nbsp;</span>
-									</div>
-									
-								</fieldset>
-
-
-								
-							</div>
-						</div>
-					</fieldset>
-				</fieldset>
-			</fieldset>
-													
-					<!-- Add Issuance Agent Configuration END-->
-
-
-
-
-
 		<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS START-->
 
 
@@ -460,77 +355,11 @@
 								</fieldset>
 							</fieldset>
 							&nbsp;
-
-
-
 						</div>
 					</div>
 				</fieldset>
 			</fieldset>
 		</fieldset>
-
-
-		<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS END-->
-
-
-
-
-
-
-
-		<%-- 
-													<fieldset class="col-sm-12">
-														<label data-toggle="tooltip" data-placement="top" title="">Virtual Terminal Options<span
-															class="required-field">*</span></label><br>
-														<form:checkbox path="refunds" id="refunds" value="0"
-															onclick="validateCheckBox()" />
-														Refunds
-														<form:checkbox path="tipAmount" id="tipAmount" value="0"
-															onclick="validateCheckBox()" />
-														Tip Amount
-														<form:checkbox path="taxAmount" id="taxAmount" value="0"
-															onclick="validateCheckBox()" />
-														Tax Amount
-														<form:checkbox path="shippingAmount" id="shippingAmount"
-															value="0" onclick="validateCheckBox()" />
-														Shipping Amount
-														<form:checkbox path="allowRepeatSale" id="allowRepeatSale"
-															value="0" onclick="validateCheckBox()" />
-														Allow Repeat Sale
-														<form:checkbox path="showRecurringBilling"
-															id="showRecurringBilling" value="0"
-															onclick="validateCheckBox()" />
-														Show Recurring Billing
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="refundsEr" class="red-error">&nbsp;</span>
-														</div>
-														<br>
-													</fieldset>
-													 --%>
-
-
-
-
-
-
-
-
-
-
-		<%-- <fieldset class="col-sm-3" id="agentDetails">
-			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.agentdetails" /></label>
-			<form:select cssClass="form-control" path="agentId" id="agentId">
-				<form:option value="">..:<spring:message
-						code="manage.option.sub-merchant.select" />:..</form:option>
-				<c:forEach items="${agents}" var="agent">
-																<form:option value="${agent.value}">${agent.label}</form:option>
-															</c:forEach>
-			</form:select>
-			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-				<span id="agentIdErrorDiv" class="red-error">&nbsp;</span>
-			</div>
-		</fieldset> --%>
 	</fieldset>
 	<!--Panel Action Button Start -->
 	<div class="col-sm-12 button-content merchantDiv1">
@@ -548,7 +377,6 @@
 	<div class="col-sm-12 button-content subMerchantDiv1"
 		style="display: none;">
 		<fieldset class="col-sm-7 pull-right">
-			<!-- <input type="button" class="form-control button pull-right atm-next" value="Continue" onclick="validateRadio();"> -->
 			<input type="button"
 				class="form-control button pull-right marginL10 atm-prev"
 				value="<spring:message code="manage.buttton.sub-merchant.previous" />">

@@ -5,6 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -21,7 +22,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -92,6 +93,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="fraud-review" commandName="merchantAccountSearchDto" name="merchantAccountSearchDto">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -111,9 +113,7 @@
 													<label data-toggle="tooltip" data-placement="top" title="">Payment Type</label>
 													<form:select cssClass="form-control" path="accountStatus" id="accountStatus">
 														<form:option value="">..:Select:..</form:option>
-														<form:option value="Visa">Visa</form:option>
-														<form:option value="MasterCard">MasterCard</form:option>
-														<form:option value="AMEX">AMEX</form:option>
+														<option value="IC">Chatak Prepaid Card</option>
 													</form:select>
 												</fieldset>
 												
@@ -328,7 +328,7 @@
 			<input type="hidden" id="csAccountId" name="accountId" />
 			<input type="hidden" id="csAccountStatus" name="accountStatus" />
 			<input type="hidden" id="csMerchantType" name="merchantType" />
-			
+			<input type="hidden" name="CSRFToken" value="${tokenval}">
 			<label data-toggle="tooltip" data-placement="top" title=""><span class="required-field">*</span> Reason </label>
 			<textarea id="reason" name="reason" maxlength="500" onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
 			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -348,9 +348,8 @@
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script> <script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
+
 	<script src="../js/common-lib.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
@@ -372,6 +371,22 @@
 			$("#navListId4").addClass("active-background");
 			
 		});
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

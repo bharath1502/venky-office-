@@ -193,20 +193,7 @@ public class UserReportsController implements URLMappingConstants {
     List<ReportsDTO> executedTransactionsReportList =
         (List<ReportsDTO>) session.getAttribute("executedTransactionsReportList");
     try {
-      if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-
-        ReportsFileExportsUtil.downloadReportsPdf(executedTransactionsReportList, response,
-            messageSource.getMessage("chatak.header.all.executed.trans.reports.messages", null,
-                LocaleContextHolder.getLocale()),
-            messageSource);
-
-      } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-
-        ReportsFileExportsUtil.downloadReportsXl(executedTransactionsReportList, response,
-            messageSource.getMessage("chatak.header.all.executed.trans.reports.messages", null,
-                LocaleContextHolder.getLocale()),
-            messageSource);
-      }
+        ReportsFileExportsUtil.setExportDetailsDataForDownloadRoleReports(executedTransactionsReportList,messageSource,downloadType,response);
       modelAndView.addObject("transactionDiv", Boolean.TRUE);
       modelAndView.addObject(executedTransactionsReportList);
     } catch (Exception e) {

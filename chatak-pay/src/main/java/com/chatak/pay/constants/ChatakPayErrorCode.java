@@ -63,10 +63,13 @@ public enum ChatakPayErrorCode {
   TXN_0112("Invalid Card Token Details"),
   TXN_0113("Transaction is in processing state"),
   TXN_0114("Invalid merchantId/terminalId"),
+  TXN_0115("Card not accepted"),
+  TXN_0116("Fee program is not created"),
 	
   GEN_001("Success"),
-  GEN_002("Error");
-	
+  GEN_002("Error"),
+  GEN_003("New User");
+
   private final String value;
 
   ChatakPayErrorCode(String v) {

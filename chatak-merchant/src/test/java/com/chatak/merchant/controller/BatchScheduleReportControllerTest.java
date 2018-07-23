@@ -176,7 +176,7 @@ public class BatchScheduleReportControllerTest {
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_GET_BATCH_REPORT)
 					.sessionAttr(Constants.EXISTING_FEATURES, "1234").sessionAttr("loginUserMerchantId", Long.parseLong("1256")))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_SHOW_BATCH_REPORT));
 		} catch (NumberFormatException e) {
 			logger.error("ERROR:: BatchScheduleReportControllerTest::testGetBatchReportExisting ", e);
 
@@ -330,8 +330,8 @@ public class BatchScheduleReportControllerTest {
 	public void testShowDailyFundingReportExistingFeature() {
 		try {
 			mockMvc.perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_SHOW_DAILY_FUNDING_REPORT)
-					.sessionAttr(Constants.EXISTING_FEATURES, "1234"))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.sessionAttr(Constants.EXISTING_FEATURES, EXISTING_FEATURE))
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_SHOW_DAILY_FUNDING_REPORT));
 		} catch (Exception e) {
 			logger.error("ERROR:: BatchScheduleReportControllerTest::testShowDailyFundingReportExistingFeature ", e);
 
@@ -382,8 +382,8 @@ public class BatchScheduleReportControllerTest {
 				Matchers.any(GetDailyFundingReportRequest.class), Matchers.anyString())).thenReturn(getReportResponse);
 		try {
 			mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_GET_DAILY_FUNDING_REPORT)
-					.sessionAttr(Constants.EXISTING_FEATURES, "121"))
-					.andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+					.sessionAttr(Constants.EXISTING_FEATURES, EXISTING_FEATURE))
+					.andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_SHOW_DAILY_FUNDING_REPORT));
 		} catch (Exception e) {
 			logger.error("ERROR:: BatchScheduleReportControllerTest::testGetDailyFundingReportExistingFeature ", e);
 

@@ -2,9 +2,9 @@
 <body>
 Dear <b>$firstName</b>, <br/><br/>
 
-Your Prepaid agent user account Email ID has been changed to <b>$newEmailId</b> from <b>$previousEmailId</b><br/>
+Your Prepaid agent user account Email Id has been changed to <b>$newEmailId</b> from <b>$previousEmailId</b><br/>
 
-From here on you will be receiving Email notifications related to your account on your new Email ID <b>$newEmailId</b><br/>
+From here on you will be receiving Email notifications related to your account on your new Email Id <b>$newEmailId</b><br/>
 <br/>
 <br/>
 Thanks,<br/>

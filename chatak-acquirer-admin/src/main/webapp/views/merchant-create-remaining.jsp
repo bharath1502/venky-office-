@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -18,36 +19,10 @@
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 <section class="field-element-row account-details-content"
 												style="display: none;">
 												<fieldset class="col-sm-12">
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="admin.pm.Name.message" /><span class="required-field">*</span></label>
-														<form:select path="programManagerId" cssClass="form-control" onchange="fetchPartnerNameByPm(this.value, 'partnerId')" onblur="validateProgramManagerId()">
-															<form:option value=""><spring:message code="commission-program-create.label.select" /></form:option>
-															<c:if test="${not empty programManagersList}">
-																<c:forEach items="${programManagersList}" var="programManager">
-				   													<form:option value="${programManager.label}">${programManager.value}</form:option>
-																</c:forEach>
-															</c:if>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="programManagerIdEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label><spring:message code="admin.PartnerName.message"/><span class="required-field">*</span></label>
-														<form:select path="partnerId" cssClass="form-control"
-														onblur="validatePartnerId()">
-															<form:option value=""><spring:message code="commission-program-create.label.select" /></form:option>
-														</form:select>
-														<div class="discriptionErrorMsg">
-															<span id="partnerIdEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.companyname"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="businessName"
@@ -225,6 +200,16 @@
 															<span id="businessTypeEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
+													<fieldset class="col-sm-3">
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.username"/><span class="required-field">*</span></label>
+														<form:input cssClass="form-control" path="userName"
+															id="userName" maxlength="50"
+															onblur="this.value=this.value.trim();vlalidateUserName()" />
+														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+															<span id="userNameEr" class="red-error">&nbsp;</span> <span
+																id="userNamegreenEr" class="green-error">&nbsp;</span>
+														</div>
+													</fieldset>
 												</fieldset>
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
@@ -232,12 +217,12 @@
 														<input type="button"
 															value='<spring:message code="common.label.continue"/>' class="form-control button pull-right acc-next">  
 														<input type="button"class="form-control button pull-right marginL10"
-															value='<spring:message code="common.label.cancel"/>' onclick="openCancelConfirmationPopup()">
+															value='<spring:message code="common.label.cancel"/>' onclick="openCreateCancelConfirmationPopup()">
 														<input type="button" class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.reset"/>' onclick="resetBasicInfo()">
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->
 											</section>
-	
+	<script src="../js/common-lib.js"></script>
 </body>

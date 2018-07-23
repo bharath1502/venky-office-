@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
-
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 
 <html lang="en">
 <head>
@@ -23,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -51,10 +51,12 @@
 
 					<form:form action="show-dynamic-MDR-edit" name="editMDR" method="post">
 						<input type="hidden" id="getMDRId" name="getMDRId" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="dynamic-MDR-Pagination" name="paginationForm" method="post">
 						<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 						<input type="hidden" id="totalRecordsId" name="totalRecords" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					
 					<form:form action="download-dynamic-mdr-report" name="downloadReport" method="post">
@@ -62,6 +64,7 @@
 						<input type="hidden" id="downloadTypeId" name="downloadType" />
 						<input type="hidden" id="totalRecords" name="totalRecords" />
 						<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+					    <input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					
 					<%-- <form action="show-view-MDR-Dynamic-Bin" name="viewResellerForm" method="post">
@@ -95,6 +98,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="process-dynamic-mdr-search" modelAttribute="dynamicMDRDTO" method="post">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -355,9 +359,7 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js"></script>
@@ -377,6 +379,22 @@
 		function bindReqType() {
 			$('#paginationRequestType').val($('#requestType').val());
 		}
+		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

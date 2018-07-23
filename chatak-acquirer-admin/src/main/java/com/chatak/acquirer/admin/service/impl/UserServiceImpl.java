@@ -16,6 +16,7 @@ import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.UserData;
 import com.chatak.acquirer.admin.service.UserService;
 import com.chatak.acquirer.admin.util.PasswordHandler;
+import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.mailsender.exception.PrepaidNotificationException;
 import com.chatak.mailsender.service.MailServiceManagement;
 import com.chatak.pg.acq.dao.AdminUserDao;
@@ -25,6 +26,7 @@ import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.UserActivityLogDao;
 import com.chatak.pg.acq.dao.model.PGAdminUser;
+import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.bean.Response;
@@ -104,6 +106,7 @@ public class UserServiceImpl implements UserService, PGConstants {
           adminUser.setPreviousPasswords(EncryptionUtil.encodePassword(password));
           adminUser.setCreatedDate(DateUtil.getCurrentTimestamp());
           adminUser.setCreatedBy(userData.getCreatedBy().toString());
+          adminUser.setEntityId(userData.getEntityId());
           adminUserDao.createOrUpdateUser(adminUser);
           Map<String, String> map = new HashMap<>();
           map.put("firstName", adminUser.getFirstName());
@@ -155,6 +158,14 @@ public class UserServiceImpl implements UserService, PGConstants {
       merchantUser.setPhone(userData.getPhone());
       merchantUser.setAddress(userData.getAddress());
       PGMerchantUsers pgMerchantUsers = merchantUserDao.createOrUpdateUser(merchantUser);
+
+      //Inserting into PgApplicationClient table for OAuth Token Related changes
+      PGApplicationClient applicationClient =
+          com.chatak.pg.dao.util.StringUtil.getApplicationClientDTO();
+      applicationClient.setAppClientId(merchantUser.getUserName());
+      applicationClient.setAppAuthUser(merchantUser.getUserName());
+      merchantUserDao.saveOrUpdateApplicationClient(applicationClient);
+
       if (null != pgMerchantUsers) {
         Map<String, String> map = new HashMap<>();
         map.put("firstName", pgMerchantUsers.getFirstName());
@@ -240,10 +251,13 @@ public class UserServiceImpl implements UserService, PGConstants {
           updateMerchantUser(userData, pgMerchantUsers, pgMerchant);
         
         } else {
-          PGAdminUser adminUserListByEmail = adminUserDao
-              .findByUserNameAndUserType(userData.getUserName(), Constants.ADMIN_USER_TYPE);
-        
-          updateAdminUser(userData, adminUserListByEmail);
+          List<PGAdminUser> adminUser = adminUserDao.findByUserName(userData.getUserName());
+          
+			if (StringUtil.isListNotNullNEmpty(adminUser)) {
+				getPgAdmin(userData, adminUser);
+			} else {
+		        throw new ChatakAdminException("userData empty");
+		      }
         
         }
       } else {
@@ -254,6 +268,20 @@ public class UserServiceImpl implements UserService, PGConstants {
       throw new ChatakAdminException(e.getMessage());
     }
   }
+
+	/**
+	 * @param userData
+	 * @param adminUser
+	 * @throws ChatakAdminException
+	 */
+	private void getPgAdmin(UserData userData, List<PGAdminUser> adminUser) throws ChatakAdminException {
+		PGAdminUser pGAdminUser = adminUser.get(0);
+		if (pGAdminUser.getUserType().equalsIgnoreCase(Constants.ADMIN_USER_TYPE)
+				|| pGAdminUser.getUserType().equalsIgnoreCase(Constants.ISO_USER_TYPE)
+				|| pGAdminUser.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+			updateAdminUser(userData, pGAdminUser);
+		}
+	}
 
   private void updateMerchantUser(UserData userData, PGMerchantUsers pgMerchantUsers,
       PGMerchant pgMerchant) throws ChatakAdminException {
@@ -509,6 +537,7 @@ public class UserServiceImpl implements UserService, PGConstants {
         userData.setUserType(adminUser.getUserType());
         userData.setAddress(adminUser.getAddress1());
         userData.setStatus(adminUser.getStatus());
+        userData.setEntityId(adminUser.getEntityId());
       }
     }
     return userData;
@@ -547,11 +576,9 @@ public class UserServiceImpl implements UserService, PGConstants {
             && pgMerchant.getEmailId().equalsIgnoreCase(merchantUser.getEmail())) {
           throw new ChatakAdminException();
         }
-        if (null != merchantUser) {
           merchantUser.setStatus(PGConstants.STATUS_DELETED);
           PGMerchantUsers user = merchantUserDao.createOrUpdateUser(merchantUser);
           userData = getMerchantUserResponse(userData, user);
-        }
       } else {
         PGAdminUser adminUser = adminUserDao.findByAdminUserId(userId);
         if (null != adminUser) {

@@ -178,13 +178,9 @@ function doAjaxFetchTransactionForCapture() {
 function doAdd() {
 
 	var subTot = get('subTotalDiv').value ? get('subTotalDiv').value : 0;
-	var tipAmt = get('tipAmountDiv').value ? get('tipAmountDiv').value : 0;
-	var taxAmt = get('taxAmtDiv').value ? get('taxAmtDiv').value : 0;
-	var shipAmp = get('shippingAmtDiv').value ? get('shippingAmtDiv').value : 0;
-
-	var total = parseFloat(subTot) + parseFloat(tipAmt) + parseFloat(taxAmt)
-			+ parseFloat(shipAmp);
-
+	
+	var total = parseFloat(subTot);
+	
 	get('totalAmtDiv').value = parseFloat(total).toFixed(2);
 
 }

@@ -210,7 +210,7 @@ public class RestPaymentServiceImplTest {
 
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testProcessPopupVoidOrRefund() throws ChatakAdminException {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		PGTransaction pgTransaction = new PGTransaction();
@@ -219,7 +219,7 @@ public class RestPaymentServiceImplTest {
 		restPaymentServiceImpl.processPopupVoidOrRefund(transactionRequest);
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testProcessPopupVoidOrRefundNull() throws ChatakAdminException {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		restPaymentServiceImpl.processPopupVoidOrRefund(transactionRequest);

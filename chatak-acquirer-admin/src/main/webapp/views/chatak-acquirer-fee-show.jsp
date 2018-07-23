@@ -6,6 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -22,15 +23,13 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/feeprogram.js"></script>
 	<script src="../js/validation.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -49,6 +48,7 @@
 				<form:form action="showChatakAquirerFeeEdit"
 					name="showChatakAquirerFeeEdit">
 					<input type="hidden" id="getAquirerId" name="getAquirerId" />
+					<input type="hidden" name="CSRFToken" value="${tokenval}">
 				</form:form>
 				<div class="col-xs-12 content-wrapper">
 					<!-- Breadcrumb start -->
@@ -135,5 +135,23 @@
 			</footer>
 		</div>
 	</div>
+	<script>
+
+	$(document).ready(function() {
+				/* Table Sorter includes Start*/
+				$(function() {
+					
+						  // call the tablesorter plugin
+						  $('#serviceResults').sortable({
+							
+							 divBeforeTable: '#divbeforeid',
+							divAfterTable: '#divafterid',
+							initialSort: false,
+							locale: 'th',
+							//negativeSort: [1, 2]
+						});
+				});
+				});
+	</script>
 </body>
 </html>

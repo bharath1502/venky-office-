@@ -12,7 +12,6 @@ function openCancelConfirmationPopup() {
 	if ((isEmpty(get('currencyName').value.trim()))
 			&& (isEmpty(get('currencyCodeNumeric').value.trim()))
 			&& (isEmpty(get('currencyCodeAlpha').value.trim()))
-			&& (isEmpty(get('currencyExponent').value.trim()))
 			&& (isEmpty(get('currencySeparatorPosition').value.trim()))
 			&& (isEmpty(get('currencyThousandsUnit').value.trim()))
 			&& (isEmpty(get('currencyMinorUnit').value.trim()))) {
@@ -131,23 +130,6 @@ function validateCurrencySymbol() {
 
 }
 
-function validateCurrencyExport() {
-	var currencyexponent = get('currencyExponent').value.trim();
-	var spaceRegx = /[0-4]|\./;
-	if (isEmpty(currencyexponent)) {
-		setError(get('currencyExponent'),	webMessages.validationthisfieldismandatory);
-		return false;
-	} 
-	else if (!spaceRegx.test(currencyexponent)) {
-		setError(get('currencyExponent'),	webMessages.providebetweenzerotofour);
-		return false;
-	}
-	else {
-		setError(get('currencyExponent'), '');
-		return true;
-	}
-}
-
 function validateCurrencySeparatorPosition() {
 
 	var currencySeparatorPosition = get('currencySeparatorPosition').value.trim();
@@ -216,7 +198,7 @@ function validatecurrencyMinorSeparatorUnit() {
 function validateCreateCurrency() {
 	if (!validteCurrencyName() | !validateCurrencyCodeNumeric()
 			| !validateCurrencyCodeAlpha()
-			| !validateCurrencyExport() | !validateCurrencySeparatorPosition()
+			| !validateCurrencySeparatorPosition()
 			| !validatecurrencyMinorSeparatorUnit()
 			| !validatecurrencyThousSeparatorUnit()) {
 		return false;

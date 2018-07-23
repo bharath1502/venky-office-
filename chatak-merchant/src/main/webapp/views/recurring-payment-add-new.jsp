@@ -6,6 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -24,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -98,6 +99,7 @@
 								<!--Success and Failure Message End-->
 								<div id="my_popup" class="locatioin-list-popup">
 								<form:form action="addNewPaymentInfo" commandName="recurringPaymentInfoDTO" method="post" name="recurringPayment" id="recurringPayment">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<form:hidden path="expDt" id ="expDt"/>
 									<form:hidden path="recurringCustomerInfoId"/>
 									<!-- Payment Information Pop Up Box Information Start -->
@@ -110,9 +112,7 @@
 													cssClass="form-control"
 													onblur="return clientValidation('cardType', 'cardType','cardType_ErrorDiv');">
 													<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
-													<form:option value="Visa">Visa</form:option>
-													<form:option value="MC">MC</form:option>
-													<form:option value="JCB">JCB</form:option>
+													<option value="IC">Chatak Prepaid Card</option>
 												</form:select>
 												<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 													<span id="cardType_ErrorDiv" class="red-error">&nbsp;</span>
@@ -213,15 +213,18 @@
 								<div>
 								<form name="contractSubmt" action="showContractAddPage" method="post">
 									<input type="hidden" name="recurringCustInfoId" value="${ recurringPaymentInfoDTO.recurringCustomerInfoId}">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								 </form>
 								 
 								 <form action="deleteRecurringPayment" name="deleteRecurringPaymentForm" method="post">
 								 	<input type="hidden" name="getPaymentInfoId" id="getPaymentInfoId" />
+								 	<input type="hidden" name="CSRFToken" value="${tokenval}">
 								 </form>
 								 
 								 <form action="showRecurringPaymentInfoEditPage" name="editRecurringPaymentForm" method="post">
 								 	<input type="hidden" id="getRecurringPaymentInfoId" name="getRecurringPaymentInfoId">
 								 	<input type="hidden" id="getRecurringCutomerInfoId" name="getRecurringCutomerInfoId">
+								 	<input type="hidden" name="CSRFToken" value="${tokenval}">
 								 </form>
 								<form:form name="contract" >
 									<div class="col-sm-12 paddingT20">

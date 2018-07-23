@@ -256,12 +256,12 @@ public interface FeatureConstants {
 
     public static final String ADMIN_SERVICE_PM_EDIT_FEATURE_ID  = Properties.getProperty("admin.services.pm.edit.feature.id");
     
-    //Partner
-    public static final String ADMIN_SERVICE_PARTNER_FEATURE_ID = Properties.getProperty("admin.services.partner.feature.id");
+    //ISO
+    public static final String ADMIN_SERVICE_PARTNER_FEATURE_ID = Properties.getProperty("admin.services.iso.feature.id");
 
-    public static final String ADMIN_SERVICE_PARTNER_CREATE_FEATURE_ID = Properties.getProperty("admin.services.partner.create.feature.id");
+    public static final String ADMIN_SERVICE_PARTNER_CREATE_FEATURE_ID = Properties.getProperty("admin.services.iso.create.feature.id");
 
-    public static final String ADMIN_SERVICE_PARTNER_EDIT_FEATURE_ID  = Properties.getProperty("admin.services.partner.edit.feature.id");
+    public static final String ADMIN_SERVICE_PARTNER_EDIT_FEATURE_ID  = Properties.getProperty("admin.services.iso.edit.feature.id");
     
     //Reports
     public static final String ADMIN_SERVICE_REPORTS_OVERVIEW_BALANCE_FEATURE_ID = Properties.getProperty("admin.services.overviewBalanceSheet.feature.id");
@@ -278,4 +278,12 @@ public interface FeatureConstants {
     
     public static final String ADMIN_SERVICE_REPORTS_BATCH_REPORT_FEATURE_ID = Properties.getProperty("admin.services.batchReport.feature.id");
     
+    public static final String ADMIN_SERVICE_FEE_REPORT_FEATURE_ID = Properties.getProperty("admin.services.fee.report.feature.id");
+    
+    public static final String ADMIN_SERVICE_ISO_REVENUE_REPORT_FEATURE_ID = Properties.getProperty("admin.services.iso.report.feature.id");
+    
+    public static final String ADMIN_SERVICE_MERCHANT_REVENUE_REPORT_FEATURE_ID = Properties.getProperty("admin.services.merchantRevenue.report.feature.id");
+
+    public static final String ADMIN_SERVICE_PM_REVENUE_REPORT_FEATURE_ID = Properties.getProperty("admin.services.pmRevenue.report.feature.id");
+
 }

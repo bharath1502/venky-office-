@@ -1,5 +1,7 @@
 package com.chatak.acquirer.admin.util;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.junit.Test;
@@ -9,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
-import com.sun.jersey.api.client.ClientHandlerException;
+import com.chatak.pg.exception.HttpClientException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonUtilTest {
@@ -38,50 +40,29 @@ public class JsonUtilTest {
 	public void testPostRequest() {
 		Object request = new Object();
 		try {
-			jsonUtil.postRequest(request, "serviceEndPoint");
+			jsonUtil.postRequest(request,String.class, "serviceEndPoint");
 		} catch (Exception e) {
 			logger.error("JsonUtilTest | testPostRequest | Exception ", e);
 
 		}
 	}
 
-	@Test(expected = ClientHandlerException.class)
-	public void testPostRequestString() {
-		jsonUtil.postRequest("serviceEndPoint");
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void testSendToIssuance() throws ChatakAdminException {
-		Object request = new Object();
-		jsonUtil.sendToIssuance(request, "serviceEndPoint", "m");
-	}
-
 	@Test
 	public void testPostDCCRequest() {
 		Object request = new Object();
 		try {
-			jsonUtil.postDCCRequest(request, "serviceEndPoint");
+			jsonUtil.postDCCRequest(request, "serviceEndPoint",String.class);
 		} catch (Exception e) {
 			logger.error("JsonUtilTest | testPostDCCRequest | Exception ", e);
 
 		}
 	}
 
-	@Test(expected = ClientHandlerException.class)
-	public void testPostDCCRequestString() {
-		jsonUtil.postDCCRequest("5435");
-	}
-
-	@Test(expected = ClientHandlerException.class)
-	public void testGetRequest() {
-		jsonUtil.getRequest("111");
-	}
-
 	@Test
 	public void testPostIssuanceRequest() {
 		Object request = new Object();
 		try {
-			jsonUtil.postIssuanceRequest(request, "435435");
+			jsonUtil.postIssuanceRequest(request, "435435",String.class);
 		} catch (Exception e) {
 			logger.error("JsonUtilTest | testPostIssuanceRequest | Exception ", e);
 

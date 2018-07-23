@@ -32,7 +32,7 @@ public final class PasswordHandler {
 
   private Pattern pattern;
   
-  private static final String PSWD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@,£^*?€\"!$]).{8,16})";
+  private static final String PSWD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@,^*?\"!$]).{8,16})";
 
   private Matcher matcher;
 
@@ -84,7 +84,8 @@ public final class PasswordHandler {
   public static String generateRandomNumber(int length) {
 	  Random random = new Random();
 	  StringBuilder sb = new StringBuilder();
-    for(int n = 0; n < length; n++) {
+	  int n;
+    for(n = 0; n < length; n++) {
       int j = random.nextInt() % Constants.TEN;
       // If First digit is "0", skip that and get next random
       if(n == 0 && j == 0) {

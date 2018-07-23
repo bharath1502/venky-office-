@@ -101,5 +101,4 @@ public class CurrencyDaoImpl implements CurrencyDao {
 		List<PGCurrencyCode> pgCurrencyCode = currencyCodeRepository.findAll();
 		return pgCurrencyCode;
 	}
-
 }

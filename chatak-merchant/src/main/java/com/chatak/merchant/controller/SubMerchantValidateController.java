@@ -1,6 +1,8 @@
 package com.chatak.merchant.controller;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.merchant.constants.URLMappingConstants;
+import com.chatak.merchant.controller.model.ExportDetails;
 import com.chatak.merchant.controller.model.LoginDetails;
 import com.chatak.merchant.controller.model.Option;
 import com.chatak.merchant.exception.ChatakMerchantException;
@@ -28,12 +31,13 @@ import com.chatak.merchant.model.MerchantData;
 import com.chatak.merchant.model.MerchantSearchResponse;
 import com.chatak.merchant.service.MerchantInfoService;
 import com.chatak.merchant.service.MerchantService;
+import com.chatak.merchant.util.ExportUtil;
 import com.chatak.merchant.util.JsonUtil;
-import com.chatak.merchant.util.MerchantFileExportUtil;
 import com.chatak.merchant.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.AgentDTOResponse;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.AddMerchantResponse;
@@ -468,13 +472,16 @@ public class SubMerchantValidateController implements URLMappingConstants {
       }
       searchResponse = merchantInfoService.searchSubMerchantList(merchantRequest);
       List<MerchantData> list = searchResponse.getMerchants();
-
+      ExportDetails exportDetails = new ExportDetails();
       if (StringUtil.isListNotNullNEmpty(list)) {
         if(Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)){
-          MerchantFileExportUtil.downloadMerchantPdf(list, response, messageSource);
+        	exportDetails.setExportType(ExportType.PDF);
         } else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
-          MerchantFileExportUtil.downloadMerchantXl(list, response, messageSource);
+        	exportDetails.setExportType(ExportType.XLS);
+			exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
         }
+        setExportDetailsDataForDownloadRoleReport(list, exportDetails);	
+	 	ExportUtil.exportData(exportDetails, response, messageSource);
       }
       merchantRequest.setPageSize(pageSize);
       logger.info("Download request end for merchant Id ::" + merchantId);
@@ -486,4 +493,56 @@ public class SubMerchantValidateController implements URLMappingConstants {
     logger.info("Exiting:: SubMerchantValidateController:: downloadMerchantReport method");
     return null;
   }
+  private void setExportDetailsDataForDownloadRoleReport(List<MerchantData> list,
+	      ExportDetails exportDetails) {
+	    exportDetails.setReportName("Merchant_");
+	    exportDetails.setHeaderMessageProperty("chatak.header.sub.merchant.messages");
+
+	    exportDetails.setHeaderList(getRoleHeaderList());
+	    exportDetails.setFileData(getRoleFileData(list));
+	  }
+  private List<String> getRoleHeaderList() {
+	    String[] headerArr = {
+	        messageSource.getMessage("merchantFileExportUtil.merchant.code", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("search-sub-merchant.label.merchantcompanyname", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("search-sub-merchant.label.currencycode", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("merchantFileExportUtil.first.name", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("merchantFileExportUtil.last.name", null,
+	            LocaleContextHolder.getLocale()),
+	        messageSource.getMessage("merchantFileExportUtil.email", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("merchantFileExportUtil.phone", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("merchantFileExportUtil.city", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("merchantFileExportUtil.country", null,
+		        LocaleContextHolder.getLocale()),
+		    messageSource.getMessage("merchantFileExportUtil.status", null,
+		        LocaleContextHolder.getLocale())};
+	    return new ArrayList<String>(Arrays.asList(headerArr));
+	  }
+  private static List<Object[]> getRoleFileData(List<MerchantData> list) {
+	    List<Object[]> fileData = new ArrayList<Object[]>();
+
+	    for (MerchantData merchantData : list) {
+	    	Object[] rowData = new Object[Integer.parseInt("10")];
+			  rowData[0] = merchantData.getMerchantCode();
+			  rowData[1] = merchantData.getBusinessName();
+			  rowData[Integer.parseInt("2")]= merchantData.getLocalCurrency();
+			  rowData[Integer.parseInt("3")]= merchantData.getFirstName();
+			  rowData[Integer.parseInt("4")]= merchantData.getLastName();
+			  rowData[Integer.parseInt("5")]= merchantData.getEmailId();
+			  rowData[Integer.parseInt("6")]= merchantData.getPhone().toString();
+			  rowData[Integer.parseInt("7")]= merchantData.getCity();
+			  rowData[Integer.parseInt("8")]= merchantData.getCountry();
+			  rowData[Integer.parseInt("9")]= merchantData.getStatus();
+	      fileData.add(rowData);
+	    }
+
+	    return fileData;
+	  }
 }

@@ -27,7 +27,7 @@ public class Response implements Serializable {
 
   private Integer totalNoOfRows;
 
-  private List responseList;
+  private transient List responseList;
 
   private String upStreamTxnRefNum;
 
@@ -54,6 +54,16 @@ public class Response implements Serializable {
   private String partnerName;
 
   private Long partnerId;
+
+  String entityType;
+  
+  private String issuancePartner;
+  
+  private String issuanceTxnTime;
+  
+  private String deviceTimeZoneOffset;
+  
+  private String deviceTimeZoneRegion;
 
   public List<AgentDTO> getAgentDTOlist() {
     return agentDTOlist;
@@ -322,6 +332,64 @@ public class Response implements Serializable {
 
   public void setPartnerId(Long partnerId) {
     this.partnerId = partnerId;
+  }
+
+  /**
+   * @return the entityType
+   */
+  public String getEntityType() {
+    return entityType;
+  }
+
+  /**
+   * @param entityType the entityType to set
+   */
+  public void setEntityType(String entityType) {
+    this.entityType = entityType;
+  }
+
+  /**
+   * @return the issuancePartner
+   */
+  public String getIssuancePartner() {
+    return issuancePartner;
+  }
+
+  /**
+   * @param issuancePartner the issuancePartner to set
+   */
+  public void setIssuancePartner(String issuancePartner) {
+    this.issuancePartner = issuancePartner;
+  }
+
+  /**
+   * @return the issuanceTxnTime
+   */
+  public String getIssuanceTxnTime() {
+    return issuanceTxnTime;
+  }
+
+  /**
+   * @param issuanceTxnTime the issuanceTxnTime to set
+   */
+  public void setIssuanceTxnTime(String issuanceTxnTime) {
+    this.issuanceTxnTime = issuanceTxnTime;
+  }
+
+  public String getDeviceTimeZoneOffset() {
+    return deviceTimeZoneOffset;
+  }
+
+  public void setDeviceTimeZoneOffset(String deviceTimeZoneOffset) {
+    this.deviceTimeZoneOffset = deviceTimeZoneOffset;
+  }
+
+  public String getDeviceTimeZoneRegion() {
+    return deviceTimeZoneRegion;
+  }
+
+  public void setDeviceTimeZoneRegion(String deviceTimeZoneRegion) {
+    this.deviceTimeZoneRegion = deviceTimeZoneRegion;
   }
 
 }

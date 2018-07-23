@@ -7,7 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@page import="java.util.Calendar"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -20,7 +20,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -30,7 +30,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -40,7 +40,7 @@
 				<!--Header Logo Start -->
 				<div class="col-sm-4"></div>
 				<div class="col-sm-6">
-					<img src="../images/logo.jpg" height="63px" alt="Logo" />
+					<img src="../images/Chatak-logo.jpg" height="63px" alt="Logo" />
 				</div>
 				<!--Header Logo End -->
 			</header>
@@ -49,7 +49,7 @@
 			<article>
 				<div class="col-xs-3"></div>
 				<div class="col-xs-6 content-wrapper login-page-content">
-					<h3>Reset Password</h3>
+					<h3><spring:message code="merchant.password.resetpassword"/></h3>
 					<div class="row">
 						<div class="col-sm-12">
 							<!--Success and Failure Message Start-->
@@ -63,6 +63,7 @@
 							<!-- Page Form Start -->
 							<form:form action="merchant-password-reset"
 								commandName="resetPasswordData" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12 login-elements-holder">
 
 									<fieldset class="col-sm-12">
@@ -117,7 +118,7 @@
 			<footer class="footer1 col-sm-offset-1 col-sm-8 no-padding">
 			<div class="col-sm-3 pull-right footer-logo no-padding" >
 			 <b class="footer-logo"><spring:message code="footer.poweredby"/> </b> <img		
-		         	src="../images/logo_f.png" class="footer-logo-size" alt="Logo" />		
+		         	src="../images/Chatak-lofo-f.png" class="footer-logo-size" alt="Logo" />		
 	            </div>		
 			    <div class="col-sm-6 pull-right no-padding"><p class="footer-txt">		
 			         <spring:message code="footer.copyright1" /><%=year%> <spring:message code="footer.copyright2" />		

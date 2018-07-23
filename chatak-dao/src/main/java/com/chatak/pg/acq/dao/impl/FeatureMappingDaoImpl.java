@@ -1,5 +1,6 @@
 package com.chatak.pg.acq.dao.impl;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -41,7 +42,7 @@ public class FeatureMappingDaoImpl implements FeatureMappingDao
 	@Override
 	public List<FeatureData> getFeatureData(Long roleId)
 	{
-		return null;
+		return Collections.emptyList();
 	}
 
 	

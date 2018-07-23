@@ -3,9 +3,8 @@
  */
 package com.chatak.pg.user.bean;
 
+import java.io.Serializable;
 import java.util.List;
-
-import com.chatak.pg.bean.Response;
 
 /**
  * @Author: Girmiti Software
@@ -15,11 +14,9 @@ import com.chatak.pg.bean.Response;
  * @Comments: 
  *
  */
-public class CardProgramRequest {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class CardProgramRequest extends Response implements Serializable {
+	
+	private static final long serialVersionUID = -2808023815822615671L;
 
 	private Long cardProgramId;
 	
@@ -33,10 +30,6 @@ public class CardProgramRequest {
 	
 	private Long bankId;
 
-	private Long bin;
-
-	private String binExt;
-
 	private String cardDesign;
 
 	private Long pinLength;
@@ -44,8 +37,6 @@ public class CardProgramRequest {
 	private String pinGenAlgorithm;
 
 	private String pinVerifiAlgorithm;
-
-/*	private Long cardInactivityPeriod;*/
 
 	private Long pinRetryAttempts;
 
@@ -88,6 +79,63 @@ public class CardProgramRequest {
 	private String accountProgramName;
 	
 	private Long customerGroup;
+	
+	private List<Long> cardProgramIds;
+	
+	private String createdDate;
+	
+	private String updatedDate;
+	
+	private Long issuanceCardProgramId;
+	
+	private String currencyAlpaNumeric;
+	
+	private String issuanceCardProgramName;
+	
+	private String createdBy;
+	
+	private Long iin;
+	
+	private String iinExt;
+	
+	private String programManagerName;
+	
+	private String currency;
+	
+	private Long partnerIINCode;	
+		
+	private String isoName;
+	
+	private Long programManagerId;
+	
+	private String partnerCode;
+	
+	public Long getPartnerIINCode() {
+		return partnerIINCode;
+	}
+
+	public void setPartnerIINCode(Long partnerIINCode) {
+		this.partnerIINCode = partnerIINCode;
+	}
+
+	private Long isoId;
+	
+	private String entityName;
+	
+	/**
+	 * @return the programManagerId
+	 */
+	public Long getProgramManagerId() {
+		return programManagerId;
+	}
+
+	/**
+	 * @param programManagerId the programManagerId to set
+	 */
+	public void setProgramManagerId(Long programManagerId) {
+		this.programManagerId = programManagerId;
+	}
+
 	/**
 	 * @return the accountProgramId
 	 */
@@ -109,10 +157,6 @@ public class CardProgramRequest {
 	public void setPartnerIdIn(List<Long> partnerIdIn) {
 		this.partnerIdIn = partnerIdIn;
 	}
-
-	/*private String cardInactivityPeriodDuration;*/
-
-	
 
 	public Long getCardProgramId() {
 		return cardProgramId;
@@ -168,22 +212,6 @@ public class CardProgramRequest {
 		this.bankId = bankId;
 	}
 
-	public Long getBin() {
-		return bin;
-	}
-
-	public void setBin(Long bin) {
-		this.bin = bin;
-	}
-
-	public String getBinExt() {
-		return binExt;
-	}
-
-	public void setBinExt(String binExt) {
-		this.binExt = binExt;
-	}
-
 	public String getCardDesign() {
 		return cardDesign;
 	}
@@ -215,14 +243,6 @@ public class CardProgramRequest {
 	public void setPinVerifiAlgorithm(String pinVerifiAlgorithm) {
 		this.pinVerifiAlgorithm = pinVerifiAlgorithm;
 	}
-
-	/*public Long getCardInactivityPeriod() {
-		return cardInactivityPeriod;
-	}
-
-	public void setCardInactivityPeriod(Long cardInactivityPeriod) {
-		this.cardInactivityPeriod = cardInactivityPeriod;
-	}*/
 
 	public Long getPinRetryAttempts() {
 		return pinRetryAttempts;
@@ -326,14 +346,6 @@ public class CardProgramRequest {
 		this.statusList = statusList;
 	}
 
-	/*public String getCardInactivityPeriodDuration() {
-		return cardInactivityPeriodDuration;
-	}
-
-	public void setCardInactivityPeriodDuration(String cardInactivityPeriodDuration) {
-		this.cardInactivityPeriodDuration = cardInactivityPeriodDuration;
-	}*/
-
 	public String getApplicationId() {
 		return applicationId;
 	}
@@ -341,7 +353,6 @@ public class CardProgramRequest {
 	public void setApplicationId(String applicationId) {
 		this.applicationId = applicationId;
 	}
-
 
 	public List<String> getCardTypeList() {
 		return cardTypeList;
@@ -390,4 +401,178 @@ public class CardProgramRequest {
 	public void setCustomerGroup(Long customerGroup) {
 		this.customerGroup = customerGroup;
 	}
+
+	public List<Long> getCardProgramIds() {
+		return cardProgramIds;
+	}
+
+	public void setCardProgramIds(List<Long> cardProgramIds) {
+		this.cardProgramIds = cardProgramIds;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getUpdatedDate() {
+		return updatedDate;
+	}
+
+	public void setUpdatedDate(String updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+	/**
+	 * @return the issuanceCardProgramId
+	 */
+	public Long getIssuanceCardProgramId() {
+		return issuanceCardProgramId;
+	}
+
+	/**
+	 * @param issuanceCardProgramId the issuanceCardProgramId to set
+	 */
+	public void setIssuanceCardProgramId(Long issuanceCardProgramId) {
+		this.issuanceCardProgramId = issuanceCardProgramId;
+	}
+
+	/**
+	 * @return the currencyAlpaNumeric
+	 */
+	public String getCurrencyAlpaNumeric() {
+		return currencyAlpaNumeric;
+	}
+
+	/**
+	 * @param currencyAlpaNumeric the currencyAlpaNumeric to set
+	 */
+	public void setCurrencyAlpaNumeric(String currencyAlpaNumeric) {
+		this.currencyAlpaNumeric = currencyAlpaNumeric;
+	}
+
+	/**
+	 * @return the issuanceCardProgramName
+	 */
+	public String getIssuanceCardProgramName() {
+		return issuanceCardProgramName;
+	}
+
+	/**
+	 * @param issuanceCardProgramName the issuanceCardProgramName to set
+	 */
+	public void setIssuanceCardProgramName(String issuanceCardProgramName) {
+		this.issuanceCardProgramName = issuanceCardProgramName;
+	}
+
+	/**
+	 * @return the createdBy
+	 */
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	/**
+	 * @param createdBy the createdBy to set
+	 */
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	
+	/**
+	 * @return the iin
+	 */
+	public Long getIin() {
+		return iin;
+	}
+
+	/**
+	 * @param iin the iin to set
+	 */
+	public void setIin(Long iin) {
+		this.iin = iin;
+	}
+
+	/**
+	 * @return the iinExt
+	 */
+	public String getIinExt() {
+		return iinExt;
+	}
+
+	/**
+	 * @param iinExt the iinExt to set
+	 */
+	public void setIinExt(String iinExt) {
+		this.iinExt = iinExt;
+	}
+
+	/**
+	 * @return the programManagerName
+	 */
+	public String getProgramManagerName() {
+		return programManagerName;
+	}
+
+	/**
+	 * @param programManagerName the programManagerName to set
+	 */
+	public void setProgramManagerName(String programManagerName) {
+		this.programManagerName = programManagerName;
+	}
+
+	/**
+	 * @return the currency
+	 */
+	public String getCurrency() {
+		return currency;
+	}
+
+	/**
+	 * @param currency the currency to set
+	 */
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getIsoName() {
+		return isoName;
+	}
+
+	public void setIsoName(String isoName) {
+		this.isoName = isoName;
+	}
+	/**
+	 * @return
+	 */
+	public String getPartnerCode() {
+		return partnerCode;
+	}
+
+	/**
+	 * @param partnerCode the partnerCode to set
+	 */
+	public void setPartnerCode(String partnerCode) {
+		this.partnerCode = partnerCode;
+	}
+
+	public Long getIsoId() {
+		return isoId;
+	}
+
+	public void setIsoId(Long isoId) {
+		this.isoId = isoId;
+	}
+
+	public String getEntityName() {
+		return entityName;
+	}
+
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
+	}
 }
+

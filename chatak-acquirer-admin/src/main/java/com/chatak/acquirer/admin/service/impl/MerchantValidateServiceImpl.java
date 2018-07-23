@@ -3,11 +3,11 @@ package com.chatak.acquirer.admin.service.impl;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,6 @@ import com.chatak.acquirer.admin.model.UserData;
 import com.chatak.acquirer.admin.service.MerchantValidateService;
 import com.chatak.acquirer.admin.util.DateUtils;
 import com.chatak.acquirer.admin.util.JsonUtil;
-import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.mailsender.exception.PrepaidNotificationException;
 import com.chatak.mailsender.service.MailServiceManagement;
 import com.chatak.pg.acq.dao.AdminUserDao;
@@ -42,26 +41,23 @@ import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantBank;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGSwitch;
-import com.chatak.pg.acq.dao.model.Partner;
-import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ProcessorType;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.AgentDTOResponse;
 import com.chatak.pg.model.CIEntityDetailsResponse;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.model.ValidateAgentDataRequest;
 import com.chatak.pg.model.VirtualAccGetAgentsRequest;
 import com.chatak.pg.user.bean.FeeProgramNameListDTO;
-import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
-import com.sun.jersey.api.client.ClientResponse;
 
 @Service
 public class MerchantValidateServiceImpl implements MerchantValidateService, PGConstants {
@@ -120,20 +116,15 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
     agentDataRequest.setAgentClientId(agentClientId);
     agentDataRequest.setCurrencyCodeNumeric(currencyCodeNumeric);
     agentDataRequest.setAgentAni(agentANI);
-    ClientResponse clientResponse = null;
     try {
-      clientResponse = JsonUtil.postIssuanceRequest(agentDataRequest,
-          "/agentManagementService/agentService/searchAgentByAgentAccountNumber");
-
-      String output = clientResponse.getEntity(String.class);
+      String output = JsonUtil.postIssuanceRequest(agentDataRequest,
+              "/agentManagementService/agentService/searchAgentByAgentAccountNumber",String.class);
       Response response = mapper.readValue(output, Response.class);
-
       if (response.getErrorCode().equals("CEC_0001")) { //These Error Code and Error Messages will come from issuence Side
         return "true";
       } else {
         return response.getErrorMessage();
       }
-
     } catch (Exception exp) {
       logger.error("Error :: MerchantValidateServiceImpl :: validateAgentDetails", exp);
     }
@@ -177,11 +168,8 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
     ValidateAgentDataRequest agentData = new ValidateAgentDataRequest();
     agentData.setAgentId(agentId);
     try {
-      ClientResponse clientResponse = JsonUtil.postIssuanceRequest(agentData,
-          "/agentManagementService/agentService/searchAgentByAgentId");
-
-      String output = clientResponse.getEntity(String.class);
-
+      String output = JsonUtil.postIssuanceRequest(agentData,
+              "/agentManagementService/agentService/searchAgentByAgentId",String.class);
       return mapper.readValue(output, AgentDTOResponse.class);
     } catch (Exception exp) {
       logger.error("Error :: MerchantValidateServiceImpl :: getAgentDataById", exp);
@@ -195,26 +183,16 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
     VirtualAccGetAgentsRequest request = new VirtualAccGetAgentsRequest();
     CIEntityDetailsResponse ciEntityDetailsResponse = null;
     /* Start posting fee to issuance */
-    ClientResponse response = JsonUtil.sendToIssuance(request,
-        Properties.getProperty("chatak-issuance.virtual.get.partnerDetails"), mode);
-    /* End posting fee to issuance */
-    if (null != response && response.getStatus() != HttpStatus.SC_OK) {
-      return ciEntityDetailsResponse;
-    } else if (null != response) {
-      String output = response.getEntity(String.class);
-      ciEntityDetailsResponse = mapper.readValue(output, CIEntityDetailsResponse.class);
-    }
+	try {
+		String output = JsonUtil.sendToIssuance(request,
+			        Properties.getProperty("chatak-issuance.virtual.get.partnerDetails"), mode,String.class);
+	      ciEntityDetailsResponse = mapper.readValue(output, CIEntityDetailsResponse.class);
+
+	} catch (HttpClientException e) {
+		logger.error("ERROR :: RestPaymentServiceImpl :: doSale method", e);
+        throw new ChatakAdminException(e.getMessage());
+	}
     return ciEntityDetailsResponse;
-  }
-
-  @Override
-  public String getPartnerLinkedToMerchant(Long parentMerchantId) {
-    return merchantDao.getPartnerLinkedToMerchant(parentMerchantId);
-  }
-
-  @Override
-  public List<String> getlinkedPartners() {
-    return merchantDao.getExistingPartnerList();
   }
 
   @Override
@@ -230,7 +208,7 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
     if (feeProgramNameListDTO.getFeeProgramDTOs() != null) {
       return getFeePrograms(feeProgramNameListDTO);
     }
-    return null;
+    return Collections.emptyList();
   }
 
   private List<Option> getFeePrograms(FeeProgramNameListDTO feeProgramNameListDTO) {
@@ -254,7 +232,7 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
     if (feeProgramNameListDTO.getFeeProgramDTOs() != null) {
       return getFeePrograms(feeProgramNameListDTO);
     }
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -417,7 +395,7 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
           CommonUtil.isListNotNullAndEmpty(processorList) ? processorList.size() : 0);
       return getProcessorsList(processorList, processorNames);
     }
-    return null;
+    return Collections.emptyList();
   }
 
   private List<Option> getProcessorsList(List<PGSwitch> processorList,
@@ -449,7 +427,7 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
     logger.info("Entering:: MerchantServiceImpl:: getMerchant method");
     PGMerchant pgMerchant = validateMerchantType(merchant);
     PGAccount pgAccount = merchantProfileDao.getPgAccount(pgMerchant.getMerchantCode());
-    if (pgMerchant != null && pgAccount != null) {
+    if (pgAccount != null) {
       merchant.setAddress1(pgMerchant.getAddress1());
       merchant.setAddress2(pgMerchant.getAddress2());
       merchant.setCountry(pgMerchant.getCountry());
@@ -468,7 +446,6 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
       merchant.setFederalTaxId(pgMerchant.getFederalTaxId());
       merchant.setNoOfEmployee(pgMerchant.getNoOfEmployee());
       merchant.setOwnership(pgMerchant.getOwnership());
-      merchant.setIssuancePartnerId(pgMerchant.getIssuancePartnerId());
       merchant.setAgentId(pgMerchant.getAgentId());
       merchant.setDccEnable(pgMerchant.getDccEnable());
       if (ProcessorType.LITLE.name()
@@ -499,11 +476,9 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
       merchant.setPayPageConfig((null != pgMerchant.getMerchantConfig().getPayPageConfig()
           && pgMerchant.getMerchantConfig().getPayPageConfig() == 1) ? true : false);
       merchant.setMerchantCategory(pgMerchant.getMerchantCategory());
-      merchant.setAutoSettlement(pgMerchant.getMerchantConfig().getAutoSettlement());
       merchant.setPayOutAt(pgMerchant.getMerchantConfig().getPayOutAt());
       //END
       merchant.setBankId(pgMerchant.getBankId());
-      merchant.setPartnerId(pgMerchant.getPartnerId());
       merchant.setResellerId(pgMerchant.getResellerId());
       merchant.setAutoPaymentMethod(pgAccount.getAutoPaymentMethod());
       merchant.setBusinessType(pgMerchant.getBusinessType());
@@ -534,11 +509,6 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
       merchant.setBankRoutingNumber(merchantBank.getRoutingNumber());
       merchant.setBankState(merchantBank.getState());
 
-      PGLegalEntity pgLegalEntity =
-          legalEntityDao.getLegalEntityByMerchantId(pgMerchant.getMerchantCode());
-      
-      merchant = getMerchantLegalData(merchant, pgLegalEntity);
-      
       logger.info("Exiting:: MerchantServiceImpl:: getMerchant method");
       return merchant;
     }
@@ -547,23 +517,7 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
   }
 
   private PGMerchant validateMerchantType(Merchant merchant) {
-    PGMerchant pgMerchant = merchantProfileDao.getMerchantById(merchant.getId());
-    if(pgMerchant.getMerchantType().equalsIgnoreCase(PGConstants.MERCHANT)){
-    	ProgramManager programManager = partnerDao.findProgramManagerByPartnerId(pgMerchant.getPartnerId());
-        if(!StringUtil.isNull(programManager)){
-        	merchant.setProgramManagerId(programManager.getProgramManagerName());
-        }
-    }
-    else if(pgMerchant.getMerchantType().equalsIgnoreCase(PGConstants.SUB_MERCHANT)){
-    	Partner partner = partnerDao.findByPartnerId(Long.valueOf(pgMerchant.getPartnerId()));
-		ProgramManagerRequest programManager = programManagerDao
-				.findProgramManagerById(partner.getProgramManagerId());
-        if(!StringUtil.isNull(pgMerchant)){
-        	merchant.setPartnerName(partner.getPartnerName());
-        	merchant.setProgramManagerName(programManager.getProgramManagerName());
-        }
-    }
-    return pgMerchant;
+    return merchantProfileDao.getMerchantById(merchant.getId());
   }
 
   private Merchant getMerchantOtherDetails(Merchant merchant, PGMerchant pgMerchant) {
@@ -601,36 +555,6 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
     }
     if (null != pgAccount.getAutoPaymentLimit()) {
       merchant.setAutoTransferLimit(new BigDecimal(pgAccount.getAutoPaymentLimit().toString()));
-    }
-    return merchant;
-  }
-
-  private Merchant getMerchantLegalData(Merchant merchant, PGLegalEntity pgLegalEntity) {
-    if (null != pgLegalEntity) {
-      merchant.setLegalAddress1(pgLegalEntity.getAddress1());
-      merchant.setLegalAddress2(pgLegalEntity.getAddress2());
-      merchant.setLegalAnnualCard(null != pgLegalEntity.getAnnualCardSale()
-          ? (CommonUtil.getDoubleAmount(pgLegalEntity.getAnnualCardSale()).toString()) : null);
-      String legalAnnualCard = merchant.getLegalAnnualCard();
-      if (legalAnnualCard.indexOf('.') == (legalAnnualCard.length() - Constants.TWO)) {
-        merchant.setLegalAnnualCard(legalAnnualCard + 0);
-      }
-      merchant.setLegalCity(pgLegalEntity.getCity());
-      merchant.setLegalCountry(pgLegalEntity.getCountry());
-      merchant.setLegalCitizen(pgLegalEntity.getCountryOfCitizenship());
-      merchant.setLegalCountryResidence(pgLegalEntity.getCountryOfResidence());
-      merchant.setLegalDOB(pgLegalEntity.getDateOfBirth());
-      merchant.setLegalHomePhone(pgLegalEntity.getHomePhone());
-      merchant.setLegalLastName(pgLegalEntity.getLastName());
-      merchant.setLegalFirstName(pgLegalEntity.getFirstName());
-      merchant.setLegalMobilePhone(pgLegalEntity.getMobilePhone());
-      merchant.setLegalName(pgLegalEntity.getLegalEntityName());
-      merchant.setLegalTaxId(pgLegalEntity.getTaxId());
-      merchant.setLegalPassport(pgLegalEntity.getPassportNumber());
-      merchant.setLegalPin(pgLegalEntity.getPin());
-      merchant.setLegalType(pgLegalEntity.getLegalEntityType());
-      merchant.setLegalState(pgLegalEntity.getState());
-      merchant.setLegalSSN(pgLegalEntity.getSsn());
     }
     return merchant;
   }

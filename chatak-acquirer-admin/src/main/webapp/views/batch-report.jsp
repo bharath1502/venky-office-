@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ page import="com.chatak.pg.constants.PGConstants"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -30,7 +31,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
@@ -72,17 +73,20 @@
 									<input type="hidden" name="downloadReportObject" id="downloadReportId" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 							        <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+							        <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="getBatchTransactions" name="paginationForm" method="post" id="paginationForm">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
 									<input type="hidden" id="selectedTxnsReqObj" name="requestObject" />
 									<input type="hidden" id="removedTxns" name="removedTxns" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="getBatchReport" commandName="batchReport"
 									name="batchReport">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -329,9 +333,7 @@
 	<script src="../js/transactions.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
@@ -504,7 +506,21 @@
 			
 			$('#removedTxns').val(removedTxn);
 		}
-		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 	
 </body>

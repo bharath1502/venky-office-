@@ -3,31 +3,54 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import com.chatak.pg.acq.dao.SettlementReportDao;
+import com.chatak.pg.acq.dao.model.PGSettlementReport;
+import com.chatak.pg.acq.dao.model.QIso;
 import com.chatak.pg.acq.dao.model.QPGAccount;
+import com.chatak.pg.acq.dao.model.QPGAccountTransactions;
 import com.chatak.pg.acq.dao.model.QPGBankCurrencyMapping;
 import com.chatak.pg.acq.dao.model.QPGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
+import com.chatak.pg.acq.dao.model.QPGMerchantBank;
 import com.chatak.pg.acq.dao.model.QPGTransaction;
+import com.chatak.pg.acq.dao.model.QProgramManager;
+import com.chatak.pg.acq.dao.repository.SettlementRepository;
+import com.chatak.pg.bean.settlement.SettlementEntity;
+import com.chatak.pg.bean.settlement.SettlementMerchantDetails;
+import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.EntryModePortalDisplayEnum;
+import com.chatak.pg.model.FeeReportDto;
+import com.chatak.pg.model.FeeReportRequest;
+import com.chatak.pg.model.FeeReportResponse;
+import com.chatak.pg.model.TransactionRequest;
+import com.chatak.pg.model.TransactionResponse;
 import com.chatak.pg.user.bean.GetBatchReportRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -48,7 +71,10 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
 
   @PersistenceContext
   private EntityManager entityManager;
-
+  
+  @Autowired
+  private SettlementRepository settlementRepository;
+  
   @Override
   public List<Transaction> getSettlementReportTransactions(
       GetTransactionsListRequest getTransactionsListRequest) {
@@ -435,4 +461,131 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
     transactionResp.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
     transactionResp.setLocalCurrency(tuple.get(QPGMerchant.pGMerchant.localCurrency));
   }
+
+/**
+ * @param pgSettlementReport
+ * @return
+ */
+@Override
+public PGSettlementReport save(PGSettlementReport pgSettlementReport) {
+	return settlementRepository.save(pgSettlementReport);
 }
+
+/**
+ * @param pgTxnIds
+ * @return
+ */
+	@Override
+	public List<SettlementEntity> getAllMatchedTxnsByPgTxns(FeeReportRequest transactionRequest) {
+		LogHelper.logEntry(log, LoggerMessage.getCallerName());
+		List<SettlementEntity> settlementEntityList = new ArrayList<>();
+		String pgTxnIds = transactionRequest.getPgTxnIds().replaceAll("\\[", "").replaceAll("\\]","");
+		String[] txnIdsArr = pgTxnIds.split(",");
+		LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Pg Txn ids " + transactionRequest.getPgTxnIds());
+		try {
+			StringBuilder matchedBuilder = new StringBuilder();
+			matchedBuilder.append("SELECT pgTxn.MERCHANT_ID,pgTxn.TERMINAL_ID,pgAccTxn.PG_TRANSACTION_ID,");
+			matchedTxnsQuery(matchedBuilder);
+			matchedBuilder.append(
+					" pgAccTxn.DEVICE_LOCAL_TXN_TIME, pgAccTxn.TRANSACTION_TYPE, pm.PROGRAM_MANAGER_NAME, iso.ISO_NAME, iso.BANK_ACC_NUM, iso.ROUTING_NUMBER");
+			Query qry = entityManager.createNativeQuery(matchedBuilder.toString());
+			qry.setParameter("pgTxnIds", Arrays.asList(txnIdsArr));
+			qry.setParameter("merchantCode", AccountTransactionCode.CC_AMOUNT_CREDIT);
+			qry.setParameter("pmCode", AccountTransactionCode.CC_PM_FEE_CREDIT);
+			qry.setParameter("isoCode", AccountTransactionCode.CC_ISO_FEE_CREDIT);
+			List<Object> objectList = qry.getResultList();
+			LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Retrieved txns size" + objectList.size());
+			if (StringUtil.isListNotNullNEmpty(objectList)) {
+				iterateFeeReportDetails(settlementEntityList, objectList);
+			}
+		} catch (Exception e) {
+			LogHelper.logError(log, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+		}
+		LogHelper.logInfo(log, LoggerMessage.getCallerName(), "settlementEntityList size: " + settlementEntityList.size());
+		LogHelper.logExit(log, LoggerMessage.getCallerName());
+		return settlementEntityList;
+	}
+
+	private void matchedTxnsQuery(StringBuilder matchedBuilder) {
+		matchedBuilder.append(" pgAccTxn.TRANSACTION_TIME,pgAccTxn.DEVICE_LOCAL_TXN_TIME,pgAccTxn.TRANSACTION_TYPE,");
+		matchedBuilder.append(" pm.PROGRAM_MANAGER_NAME,iso.ISO_NAME, iso.BANK_ACC_NUM, iso.ROUTING_NUMBER, ");
+		matchedBuilder.append(
+				" SUM(CASE WHEN pgAccTxn.TRANSACTION_CODE= :merchantCode THEN pgAccTxn.CREDIT END) AS 'MerchantAmt',");
+		matchedBuilder
+				.append(" SUM( CASE WHEN pgAccTxn.TRANSACTION_CODE= :pmCode THEN pgAccTxn.CREDIT END) AS 'PmAmt',");
+		matchedBuilder
+				.append(" SUM( CASE WHEN pgAccTxn.TRANSACTION_CODE= :isoCode THEN pgAccTxn.CREDIT END) AS 'IsoAmt'");
+		matchedBuilder.append(" FROM PG_TRANSACTION pgTxn");
+		matchedBuilder.append(" LEFT JOIN PG_ACCOUNT_TRANSACTIONS pgAccTxn");
+		matchedBuilder.append(" ON pgTxn.TRANSACTION_ID=pgAccTxn.PG_TRANSACTION_ID");
+		matchedBuilder.append(" LEFT JOIN PG_PROGRAM_MANAGER pm ON pm.ID=pgTxn.PM_ID");
+		matchedBuilder.append(" LEFT JOIN PG_ISO iso ON iso.id = pgTxn.ISO_ID ");
+		matchedBuilder.append(" WHERE pgTxn.TRANSACTION_ID    IN(:pgTxnIds)");
+		matchedBuilder.append(
+				" AND pgAccTxn.TRANSACTION_CODE IN('CC_AMOUNT_CREDIT','CC_PM_FEE_CREDIT','CC_ISO_FEE_CREDIT')");
+		matchedBuilder.append(
+				" GROUP BY pgTxn.MERCHANT_ID, pgTxn.TERMINAL_ID, pgAccTxn.PG_TRANSACTION_ID, pgAccTxn.TRANSACTION_TIME,");
+	}
+
+	private void iterateFeeReportDetails(List<SettlementEntity> settlementEntityList, List<Object> objectList) {
+		Iterator<Object> itr = objectList.iterator();
+		while (itr.hasNext()) {
+			Object[] objs = (Object[]) itr.next();
+			setTxnsDetails(settlementEntityList, objs);
+		}
+	}
+
+private void setTxnsDetails(List<SettlementEntity> settlementEntityList, Object[] objs) {
+	SettlementEntity feeReportDto = new SettlementEntity();
+	feeReportDto.setMerchantId(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
+	feeReportDto.setTerminalId(StringUtil.isNull(objs[1]) ? null : String.valueOf((Integer) objs[1]));
+	feeReportDto.setPgTxnId(StringUtil.isNull(objs[Integer.parseInt("2")]) ? null : ((String) objs[Integer.parseInt("2")]));
+	feeReportDto.setTxnDate(StringUtil.isNull(objs[Integer.parseInt("3")]) ? null : ((Timestamp) objs[Integer.parseInt("3")]));
+	feeReportDto.setDeviceLocalTxnTime(StringUtil.isNull(objs[Integer.parseInt("4")]) ? null : DateUtil.toDateStringFormat( ((Timestamp) objs[Integer.parseInt("4")]),Constants.DATE_TIME_FORMAT));
+	feeReportDto.setTxnType(StringUtil.isNull(objs[Integer.parseInt("5")]) ? null : ((String) objs[Integer.parseInt("5")]));
+	feeReportDto.setProgramManagerName(StringUtil.isNull(objs[Integer.parseInt("6")]) ? null : ((String) objs[Integer.parseInt("6")]));
+	feeReportDto.setIsoName(StringUtil.isNull(objs[Integer.parseInt("7")]) ? null : ((String) objs[Integer.parseInt("7")]));
+	feeReportDto.setBankAccountNumber(StringUtil.isNull(objs[Integer.parseInt("8")]) ? null : ((String) objs[Integer.parseInt("8")]));
+	feeReportDto.setBankRoutingNumber(StringUtil.isNull(objs[Integer.parseInt("9")]) ? null : ((String) objs[Integer.parseInt("9")]));
+	feeReportDto.setPmAmount(StringUtil.isNull(objs[Integer.parseInt("11")]) ? null : ((BigDecimal) objs[Integer.parseInt("11")]).longValue());
+	feeReportDto.setIsoAmount(StringUtil.isNull(objs[Integer.parseInt("12")]) ? 0 : ((BigDecimal) objs[Integer.parseInt("12")]).longValue());
+	Long totalAmount = StringUtil.isNull(objs[Integer.parseInt("10")]) ? 0 : ((BigDecimal) objs[Integer.parseInt("10")]).longValue();
+	Long merchantAmount = totalAmount - (feeReportDto.getPmAmount()+feeReportDto.getIsoAmount());
+	feeReportDto.setMerchantAmount(merchantAmount);
+	settlementEntityList.add(feeReportDto);
+}
+
+/**
+ * @param merchantCode
+ * @return
+ */
+	@Override
+	public List<SettlementMerchantDetails> fetchMerchantDetailsByMerchantCode(String merchantCode) {
+		log.info("SettlementReportDaoImpl | fetchMerchantDetails | Entering");
+		List<SettlementMerchantDetails> list = new ArrayList<>();
+		try {
+			JPAQuery query = new JPAQuery(entityManager);
+			List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant, QPGMerchantBank.pGMerchantBank)
+					.where(QPGMerchant.pGMerchant.merchantCode.eq(merchantCode)
+							.and(QPGMerchant.pGMerchant.merchantCode.eq(QPGMerchantBank.pGMerchantBank.merchantId)))
+					.list(QPGMerchant.pGMerchant.businessName, QPGMerchantBank.pGMerchantBank.bankName,
+							QPGMerchantBank.pGMerchantBank.bankAccNum, QPGMerchantBank.pGMerchantBank.routingNumber,
+							QPGMerchant.pGMerchant.localCurrency, QPGMerchant.pGMerchant.merchantCode);
+			if (!CollectionUtils.isEmpty(tupleList)) {
+				SettlementMerchantDetails merchantDetails = new SettlementMerchantDetails();
+				for (Tuple tuple : tupleList) {
+					merchantDetails.setBusinessName(tuple.get((QPGMerchant.pGMerchant.businessName)));
+					merchantDetails.setBankNmae(tuple.get((QPGMerchantBank.pGMerchantBank.bankName)));
+					merchantDetails.setBankAccountNumber(tuple.get((QPGMerchantBank.pGMerchantBank.bankAccNum)));
+					merchantDetails.setBankRoutingNumber(tuple.get((QPGMerchantBank.pGMerchantBank.routingNumber)));
+					merchantDetails.setLocalCurrency(tuple.get((QPGMerchant.pGMerchant.localCurrency)));
+					merchantDetails.setMerchantCode(tuple.get((QPGMerchant.pGMerchant.merchantCode)));
+					list.add(merchantDetails);
+				}
+			}
+		} catch (Exception e) {
+			log.error("SettlementReportDaoImpl | fetchMerchantDetails | Exception " + e);
+		}
+		return list;
+	}
+ }

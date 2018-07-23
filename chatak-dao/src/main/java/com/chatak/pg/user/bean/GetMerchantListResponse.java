@@ -3,6 +3,7 @@ package com.chatak.pg.user.bean;
 import java.util.List;
 
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.model.MerchantRequest;
 
 public class GetMerchantListResponse extends Response {
 
@@ -13,8 +14,25 @@ public class GetMerchantListResponse extends Response {
 
   private List<PGMerchant> merchants;
   private List<PGMerchant> subMerchants;
-
+  private List<MerchantRequest> merchantRequestList;
   private Integer noOfRecords;
+  private List<MerchantRequest>merchantRequests;
+
+
+  /**
+   * @return the merchantRequestList
+   */
+  public List<MerchantRequest> getMerchantRequestList() {
+	return merchantRequestList;
+  }
+
+  /**
+   * @param merchantRequestList
+   *            the merchantRequestList to set
+   */
+  public void setMerchantRequestList(List<MerchantRequest> merchantRequestList) {
+	  this.merchantRequestList = merchantRequestList;
+  }
 
   /**
    * @return the merchants
@@ -60,4 +78,11 @@ public class GetMerchantListResponse extends Response {
     this.subMerchants = subMerchants;
   }
 
+ public List<MerchantRequest> getMerchantRequests() {
+	return merchantRequests;
+ }
+
+ public void setMerchantRequests(List<MerchantRequest> merchantRequests) {
+	this.merchantRequests = merchantRequests;
+ }
 }

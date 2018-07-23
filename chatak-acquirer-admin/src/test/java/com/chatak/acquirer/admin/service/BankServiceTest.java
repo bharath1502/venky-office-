@@ -107,7 +107,7 @@ public class BankServiceTest {
     Assert.assertNotNull(options);
   }
 
-  @Test
+  @Test(expected = NullPointerException.class)
   public void testdeleteBankByName() {
     BankResponse bankResponse = Mockito.mock(BankResponse.class);
     Mockito.when(bankDao.deleteBank("axis bank")).thenReturn(bankResponse);

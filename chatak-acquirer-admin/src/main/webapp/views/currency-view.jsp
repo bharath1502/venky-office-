@@ -4,6 +4,7 @@
 <%@page import="java.util.Calendar"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
 	int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -22,7 +23,7 @@
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
@@ -75,6 +76,7 @@
 								<!-- Page Form Start -->
 								<form:form action="updateCurrency" commandName="currencyDTO"
 									name="currencyDTO" method="post">
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Account Details Content Start -->
@@ -111,17 +113,6 @@
 															path="currencyCodeAlpha" id="currencyCodeAlpha" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="currencyCodeAlphaEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="currency-create-page.label.currencyexponent" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" readonly="true"
-															path="currencyExponent" id="currencyExponent"
-															maxlength="1" onblur="validateCurrencyExport()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="currencyExponentEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">

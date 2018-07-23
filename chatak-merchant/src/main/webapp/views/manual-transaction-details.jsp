@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -12,13 +13,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -50,6 +51,7 @@
 						<form action="manual-transaction-details-pagination" name="paginationForm" method="post">
 							<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 							<input type="hidden" id="totalRecordsId" name="totalRecords" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 
 						<form action="manual-transaction-details-report" name="downloadDashboardReport" method="post">
@@ -57,6 +59,7 @@
 							<input type="hidden"id="downloadManualTxnTypeId" name="downloadType" /> 
 							<input type="hidden" id="requestManualTxnFromId" name="totalRecords" />
 							<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 						<!-- Search Table Block Start -->
 						<div class="search-results-table">
@@ -289,13 +292,26 @@
 	<script src="../js/common-lib.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script> <script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	
 	<script type="text/javascript">
+	$(document).ready(function() {
+		/* Table Sorter includes Start*/
+		$(function() {
+			
+				  // call the tablesorter plugin
+				  $('#serviceResults').sortable({
+					
+					 divBeforeTable: '#divbeforeid',
+					divAfterTable: '#divafterid',
+					initialSort: false,
+					locale: 'th',
+					//negativeSort: [1, 2]
+				});
+		});
+		});
 	$(document).ready(function() {
 		
 		$('.txn-action').on('click', function() {

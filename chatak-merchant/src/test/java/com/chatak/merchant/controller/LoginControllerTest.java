@@ -53,7 +53,7 @@ import com.chatak.pg.util.Properties;
 @RunWith(MockitoJUnitRunner.class)
 public class LoginControllerTest {
 
-  private static Logger logger = Logger.getLogger(VirtualTerminalControllerTest.class);
+  private static Logger logger = Logger.getLogger(LoginControllerTest.class);
 
   @InjectMocks
   LoginController loginController = new LoginController();
@@ -168,7 +168,7 @@ public class LoginControllerTest {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_AUTHENTICATE)
               .sessionAttr("loginUserMerchantId", Long.parseLong("1234")))
-          .andExpect(view().name(URLMappingConstants.NEW_USER_PSWD_MANAGEMENT));
+          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_LOGIN));
     } catch (Exception e) {
       logger.error("ERROR :: LoginControllerTest :: testaAthenticateUser:", e);
     }
@@ -233,7 +233,7 @@ public class LoginControllerTest {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_AUTHENTICATE)
               .sessionAttr("loginUserMerchantId", Long.parseLong("1234")))
-          .andExpect(view().name(URLMappingConstants.NEW_USER_PSWD_MANAGEMENT));
+          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_LOGIN));
     } catch (Exception e) {
       logger.error("ERROR :: LoginControllerTest :: testaAthenticateUserUserTypeNull:", e);
     }
@@ -261,7 +261,7 @@ public class LoginControllerTest {
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_AUTHENTICATE)
               .param("acqU", "userName").param("acqP", "userName")
               .sessionAttr("loginUserMerchantId", Long.parseLong("1234")))
-          .andExpect(view().name(URLMappingConstants.CHATAK_INVALID_SESSION));
+          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_LOGIN));
     } catch (Exception e) {
       logger.error("ERROR :: LoginControllerTest :: testaAthenticatesetLoginSuccessResponse:", e);
     }
@@ -359,7 +359,7 @@ public class LoginControllerTest {
               .header("user-agent", "123").param("acqU", "userName").param("acqP", "userName")
               .param("merchantCode", "12").param("status", "true")
               .sessionAttr("loginUserMerchantId", Long.parseLong("1234")))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_LOGIN));
     } catch (Exception e) {
       logger.error("ERROR :: LoginControllerTest :: testaAthenticatesetLoginStatus:", e);
     }

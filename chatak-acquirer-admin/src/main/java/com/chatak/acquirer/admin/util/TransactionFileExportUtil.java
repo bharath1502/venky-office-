@@ -22,6 +22,8 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 public class TransactionFileExportUtil {
 
@@ -32,7 +34,11 @@ public class TransactionFileExportUtil {
   private static Logger logger = Logger.getLogger(TransactionFileExportUtil.class);
 
   private static Object getRefTxnId(Long txnRefId) {
-    return (txnRefId != null) ? (0L == txnRefId ? "N/A" : txnRefId) : "";
+    return (txnRefId != null) ? validateTxnRefId(txnRefId) : "";
+  }
+
+  private static Object validateTxnRefId(Long txnRefId) {
+    return 0L == txnRefId ? "N/A" : txnRefId;
   }
 
   private static String getTransactionDetails(String transaction) {
@@ -150,44 +156,7 @@ public class TransactionFileExportUtil {
       WritableCellFormat cellFormatRight = new WritableCellFormat(writableFont);
       cellFormatRight.setAlignment(Alignment.RIGHT);
 
-      if (transactionList != null) {
-        int j = Constants.SIX;
-        for (Transaction transaction : transactionList) {
-          if (!"".equals(transaction.getTimeZoneOffset()) && null != transaction.getTimeZoneOffset()) {
-            transaction.setTimeZoneOffset("("+transaction.getTimeZoneOffset()+")");
-          }
-          int i = 0;
-          s.addCell(
-              new Label(i++, j, "" + (getTransactionDetails(transaction.getTransactionDate()))));
-          s.addCell(
-              new Label(i++, j, "" + (getTransactionDetails(transaction.getDeviceLocalTxnTime()
-                  + getTransactionDetails(transaction.getTimeZoneOffset())))));
-          s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getTransactionId())),
-              cellFormatRight));
-          s.addCell(new Label(i++, j,
-              "" + (getTransactionDetails(transaction.getMerchantBusinessName()))));
-          s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getMerchant_code())),
-              cellFormatRight));
-          s.addCell(new Label(i++, j, "" + getTerminalDetails(transaction), cellFormatRight));
-          s.addCell(new Label(i++, j, "" + getAccountNumber(transaction), cellFormatRight));
-          s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getTxnDescription()))));
-          s.addCell(new Label(i++, j, "" + getRefTxnId(transaction.getRef_transaction_id()),
-              cellFormatRight));
-          s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getBatchId()))));
-          s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getMaskCardNumber())),
-              cellFormatRight));
-          s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getLocalCurrency())),
-              cellFormatRight));
-          s.addCell(StringUtil.getAmountInFloat(i++, j, (transaction.getTxn_amount() !=null) ? transaction.getTxn_amount(): 0d));
-          s.addCell(StringUtil.getAmountInFloat(i++, j, (transaction.getFee_amount() !=null) ? transaction.getFee_amount(): 0d));
-          s.addCell(StringUtil.getAmountInFloat(i++, j, (transaction.getTxn_total_amount() !=null) ? transaction.getTxn_total_amount(): 0d));
-           s.addCell(new Label(i++, j,
-              "" + (getTransactionDetails(transaction.getTransaction_type()).toUpperCase())));
-          s.addCell(new Label(i++, j, "" + getTransactionDetails(transaction.getMerchantSettlementStatus())));
-          s.addCell(new Label(i, j, "" + getTransactionDetails(transaction.getUserName())));
-          j = j + 1;
-        }
-      }
+      getTransactionList(transactionList, s, cellFormatRight);
       w.write();
       w.close();
       response.getOutputStream().flush();
@@ -196,6 +165,61 @@ public class TransactionFileExportUtil {
       logger.error("ERROR :: TransactionFileExportUtil ::downloadTransactionXl ", e);
     }
   }
+
+/**
+ * @param transactionList
+ * @param s
+ * @param cellFormatRight
+ * @throws WriteException
+ * @throws RowsExceededException
+ */
+	private static void getTransactionList(List<Transaction> transactionList, WritableSheet s,
+			WritableCellFormat cellFormatRight) throws WriteException, RowsExceededException {
+		if (transactionList != null) {
+			int j = Constants.SIX;
+			for (Transaction transaction : transactionList) {
+				validateTimeZone(transaction);
+				int i = 0;
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getTransactionDate()))));
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getDeviceLocalTxnTime()
+						+ getTransactionDetails(transaction.getTimeZoneOffset())))));
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getTransactionId())),
+						cellFormatRight));
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getMerchantBusinessName()))));
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getMerchant_code())),
+						cellFormatRight));
+				s.addCell(new Label(i++, j, "" + getTerminalDetails(transaction), cellFormatRight));
+				s.addCell(new Label(i++, j, "" + getAccountNumber(transaction), cellFormatRight));
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getTxnDescription()))));
+				s.addCell(new Label(i++, j, "" + getRefTxnId(transaction.getRef_transaction_id()), cellFormatRight));
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getBatchId()))));
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getMaskCardNumber())),
+						cellFormatRight));
+				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getLocalCurrency())),
+						cellFormatRight));
+				s.addCell(StringUtil.getAmountInFloat(i++, j,
+						(transaction.getTxn_amount() != null) ? transaction.getTxn_amount() : 0d));
+				s.addCell(StringUtil.getAmountInFloat(i++, j,
+						(transaction.getFee_amount() != null) ? transaction.getFee_amount() : 0d));
+				s.addCell(StringUtil.getAmountInFloat(i++, j,
+						(transaction.getTxn_total_amount() != null) ? transaction.getTxn_total_amount() : 0d));
+				s.addCell(new Label(i++, j,
+						"" + (getTransactionDetails(transaction.getTransaction_type()).toUpperCase())));
+				s.addCell(new Label(i++, j, "" + getTransactionDetails(transaction.getMerchantSettlementStatus())));
+				s.addCell(new Label(i, j, "" + getTransactionDetails(transaction.getUserName())));
+				j = j + 1;
+			}
+		}
+	}
+
+	/**
+	 * @param transaction
+	 */
+	private static void validateTimeZone(Transaction transaction) {
+		if (!"".equals(transaction.getTimeZoneOffset()) && null != transaction.getTimeZoneOffset()) {
+			transaction.setTimeZoneOffset("(" + transaction.getTimeZoneOffset() + ")");
+		}
+	}
 
   private static Object getAccountNumber(Transaction transaction) {
     return (transaction.getAccountNumber() != null)

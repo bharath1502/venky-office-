@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -77,7 +78,7 @@
 	}
 </script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -142,12 +143,13 @@
 									commandName="virtualTeminalSale" id="txnForm">
 									<input type="hidden" id="timeZoneOffset" name="timeZoneOffset"/>
 									<input type="hidden" id="timeZoneRegion" name="timeZoneRegion"/>
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12" id="hideAllFields">
 										<div class="row">
 											<div class="field-element-row">
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.merchantcode"/><span class="required-field">*</span></label>
-													<form:input path="merchantId" cssClass="form-control"
+													<form:input path="merchantCode" cssClass="form-control"
 														id="merchantIdDiv" maxlength="15" onblur="this.value=this.value.trim();validMerchantCode('merchantIdDiv','merchantIdErrorDiv');fetchMerchantCurrency()" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error" id="merchantIdErrorDiv">&nbsp;</span>

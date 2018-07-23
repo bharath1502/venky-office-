@@ -3,14 +3,12 @@ package com.chatak.acquirer.admin.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
-
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.exception.ChatakPayException;
 import com.chatak.acquirer.admin.service.RestPaymentService;
@@ -32,6 +30,7 @@ import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.OriginalChannelEnum;
 import com.chatak.pg.enums.TransactionType;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.CardData;
 import com.chatak.pg.model.GetMerchantDetailsResponse;
 import com.chatak.pg.model.GetTransactionResponse;
@@ -49,9 +48,8 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.PGUtils;
+import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.RandomGenerator;
-import com.sun.jersey.api.client.ClientResponse;
-
 /**
  * << Add Comments Here >>
  * 
@@ -119,7 +117,7 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       card.setExpDate(terminalSaleDTO.getExpDate());
       card.setCardNumber(terminalSaleDTO.getCardNum());
       card.setCvv(terminalSaleDTO.getCvv());
-      card.setCardType(PGUtils.getCCType(terminalSaleDTO.getCardNum()));// Setting
+      card.setCardType(PGUtils.getCCType());// Setting
                                                                         // card
                                                                         // type
       transactionRequest.setCardData(card);
@@ -156,24 +154,18 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       transactionRequest.setEntryMode(EntryModeEnum.MANUAL);
       transactionRequest.setTimeZoneOffset(terminalSaleDTO.getTimeZoneOffset());
       transactionRequest.setTimeZoneRegion(terminalSaleDTO.getTimeZoneRegion());
-      ClientResponse response = JsonUtil.postRequest(transactionRequest, Constants.TRANSACTION_PROCESS);
-      logger.info(
-          "ClientResponse :: RestPaymentServiceImpl :: doSale method :: response: " + response);
-      if (response.getStatus() != HttpStatus.SC_OK) {
-        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
-      } else {
-        String output = response.getEntity(String.class);
+        String output =JsonUtil.postRequest(transactionRequest,String.class,Constants.TRANSACTION_PROCESS);
         TransactionResponse transactionResponse =
             mapper.readValue(output, TransactionResponse.class);
         logger.info("Exiting :: RestPaymentServiceImpl :: doSale method");
         return transactionResponse;
-      }
-
-    } catch (Exception exp) {
+    } catch (HttpClientException exp) {
+        logger.error("ERROR :: RestPaymentServiceImpl :: doSale method", exp);
+        throw new ChatakPayException(Properties.getProperty("prepaid.agentadmin.general.error.message"));
+      }catch (Exception exp) {
       logger.error("ERROR :: RestPaymentServiceImpl :: doSale method", exp);
       throw new ChatakPayException(exp.getMessage());
     }
-
   }
 
   /**
@@ -192,23 +184,17 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       transactionRequest.setOriginChannel(OriginalChannelEnum.ADMIN_WEB.value());
       transactionRequest.setTimeZoneOffset(voidDTO.getTimeZoneOffset());
       transactionRequest.setTimeZoneRegion(voidDTO.getTimeZoneRegion());
-      ClientResponse response = JsonUtil.postRequest(transactionRequest, Constants.TRANSACTION_PROCESS);
-
-      if (response.getStatus() == HttpStatus.SC_OK) {
-
-        String output = response.getEntity(String.class);
+        String output = JsonUtil.postRequest(transactionRequest,String.class,Constants.TRANSACTION_PROCESS);
         TransactionResponse voidResponse = mapper.readValue(output, TransactionResponse.class);
         logger.info("Exiting :: RestPaymentServiceImpl :: doVoid method");
         return voidResponse;
-      } else {
+    } catch (HttpClientException exp) {
+        logger.error("Error :: RestPaymentServiceImpl :: doVoid method", exp);
         throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
-      }
-
-    } catch (Exception exp) {
+      }catch (Exception exp) {
       logger.error("Error :: RestPaymentServiceImpl :: doVoid method", exp);
       throw new ChatakPayException(exp.getMessage());
     }
-
   }
 
   /**
@@ -239,7 +225,7 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       card.setExpDate(preAuthDTO.getExpDate());
       card.setCardNumber(preAuthDTO.getCardNum());
       card.setCvv(preAuthDTO.getCvv().toString());
-      card.setCardType(PGUtils.getCCType(preAuthDTO.getCardNum()));// Setting
+      card.setCardType(PGUtils.getCCType());// Setting
                                                                    // card type
       transactionRequest.setCardData(card);
       BillingData billingData = new BillingData();
@@ -262,23 +248,17 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       transactionRequest.setTransactionType(TransactionType.AUTH);
       transactionRequest.setOriginChannel(OriginalChannelEnum.ADMIN_WEB.value());
       transactionRequest.setEntryMode(EntryModeEnum.MANUAL);
-      ClientResponse response = JsonUtil.postRequest(transactionRequest, Constants.TRANSACTION_PROCESS);
-
-      if (response.getStatus() != HttpStatus.SC_OK) {
-        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
-      } else {
-
-        String output = response.getEntity(String.class);
+      String output=JsonUtil.postRequest(transactionRequest,String.class, Constants.TRANSACTION_PROCESS);
         TransactionResponse preAuthResponse = mapper.readValue(output, TransactionResponse.class);
         logger.info("Exiting :: RestPaymentServiceImpl :: doPreAuth method");
         return preAuthResponse;
-      }
-
-    } catch (Exception exp) {
+    }catch (HttpClientException exp) {
+        logger.error("Error :: RestPaymentServiceImpl :: doPreAuth method", exp);
+        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
+      } catch (Exception exp) {
       logger.error("Error :: RestPaymentServiceImpl :: doPreAuth method", exp);
       throw new ChatakPayException(exp.getMessage());
     }
-
   }
 
   /**
@@ -299,22 +279,17 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       transactionRequest.setTransactionType(TransactionType.CAPTURE);
       transactionRequest.setOriginChannel(OriginalChannelEnum.ADMIN_WEB.value());
       transactionRequest.setEntryMode(EntryModeEnum.MANUAL);
-      ClientResponse response = JsonUtil.postRequest(transactionRequest, Constants.TRANSACTION_PROCESS);
-
-      if (response.getStatus() != HttpStatus.SC_OK) {
-        logger.error("Error :: RestPaymentServiceImpl :: doPreAuthCapture method");
-        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
-      } else {
-        String output = response.getEntity(String.class);
+        String output = JsonUtil.postRequest(transactionRequest,String.class, Constants.TRANSACTION_PROCESS);
         TransactionResponse captureResponse = mapper.readValue(output, TransactionResponse.class);
         logger.info("Exiting :: RestPaymentServiceImpl :: doPreAuthCapture method");
         return captureResponse;
-      }
-    } catch (Exception exp) {
+    } catch (HttpClientException exp) {
+        logger.error("Error :: RestPaymentServiceImpl :: doPreAuthCapture method", exp);
+        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
+      }catch (Exception exp) {
       logger.error("Error :: RestPaymentServiceImpl :: doPreAuthCapture method", exp);
       throw new ChatakPayException(exp.getMessage());
     }
-
   }
 
   /**
@@ -338,22 +313,20 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       transactionRequest.setEntryMode(EntryModeEnum.MANUAL);
       transactionRequest.setTimeZoneOffset(refundDTO.getTimeZoneOffset());
       transactionRequest.setTimeZoneRegion(refundDTO.getTimeZoneRegion());
+      transactionRequest.setMerchantCode(refundDTO.getMerchantId());
       if (refundDTO.getTxnRefNum() != null) {
         transactionRequest.setTxnRefNumber(refundDTO.getTxnRefNum());
       } else {
         transactionRequest.setTxnRefNumber(refundDTO.getTxnRefNumber());
       }
-      ClientResponse response = JsonUtil.postRequest(transactionRequest, Constants.TRANSACTION_PROCESS);
-      if (response.getStatus() != HttpStatus.SC_OK) {
-        logger.error("Error :: RestPaymentServiceImpl :: doRefund method");
-        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
-      } else {
-        String output = response.getEntity(String.class);
+        String output = JsonUtil.postRequest(transactionRequest,String.class,Constants.TRANSACTION_PROCESS);
         TransactionResponse refundResponse = mapper.readValue(output, TransactionResponse.class);
         logger.info("Exiting :: RestPaymentServiceImpl :: doRefund method");
         return refundResponse;
-      }
-    } catch (Exception exp) {
+    } catch (HttpClientException exp) {
+        logger.error("Error :: RestPaymentServiceImpl :: doRefund method", exp);
+        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
+      }catch (Exception exp) {
       logger.error("Error :: RestPaymentServiceImpl :: doRefund method", exp);
       throw new ChatakPayException(exp.getMessage());
     }
@@ -373,19 +346,15 @@ public class RestPaymentServiceImpl implements RestPaymentService {
           CommonUtil.copyBeanProperties(adjustmentDTO, VirtualTerminalAdjustmentRequest.class);
       virtualTerminalAdjustmentRequest
           .setTxnAmount(CommonUtil.getLongAmount(adjustmentDTO.getTxnAmount()));
-
-      ClientResponse response = JsonUtil.postRequest(virtualTerminalAdjustmentRequest,
-          "/transactionService/transaction/adjustment");
-
-      if (response.getStatus() != HttpStatus.SC_OK) {
-        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
-      } else {
-        String output = response.getEntity(String.class);
+      String output=JsonUtil.postRequest(virtualTerminalAdjustmentRequest,String.class,
+              "/transactionService/transaction/adjustment");
         logger.info("Exiting :: RestPaymentServiceImpl :: doAdjust");
         return mapper.readValue(output, VirtualTerminalAdjustmentResponse.class);
-      }
-
-    } catch (Exception e) {
+    }
+    catch (HttpClientException e) {
+        logger.error("Error :: RestPaymentServiceImpl :: doAdjust", e);
+        throw new ChatakPayException(Constants.UNABLE_TO_PROCESS_REQUEST);
+      }catch (Exception e) {
       logger.error("Error :: RestPaymentServiceImpl :: doAdjust", e);
       throw new ChatakPayException(e.getMessage());
     }
@@ -446,8 +415,6 @@ public class RestPaymentServiceImpl implements RestPaymentService {
     try {
 
       // for completed txns check
-      if (true) {// if txn is not completed then fetch
-
         if ("sale".equalsIgnoreCase(txnType)) {
           pgTransaction = transactionDao.getTransaction(merchantId, terminalId, refId);
         } else {
@@ -486,8 +453,6 @@ public class RestPaymentServiceImpl implements RestPaymentService {
           getTransactionResponse.setErrorCode(Constants.ERROR);
           getTransactionResponse.setErrorMessage(Constants.ERROR);
         }
-      }
-
     } catch (Exception e) {
       logger.error("Error :: RestPaymentServiceImpl :: getTransactionByRefId", e);
     }
@@ -562,23 +527,23 @@ public class RestPaymentServiceImpl implements RestPaymentService {
     TransactionResponse response = new TransactionResponse();
     PGTransaction pgTransaction =
         refundTransactionDao.getTransactionForVoidOrRefundByAccountTransactionId(
-            transactionRequest.getAccountTransactionId(), transactionRequest.getMerchantId());
+            transactionRequest.getAccountTransactionId(), transactionRequest.getMerchantId().toString());
     if (null != pgTransaction) {
       transactionRequest.setTxnRefNumber(pgTransaction.getTransactionId());
       transactionRequest.setOriginChannel(OriginalChannelEnum.ADMIN_WEB.value());
       transactionRequest.setCgRefNumber(pgTransaction.getIssuerTxnRefNum());
       transactionRequest.setTerminalId(pgTransaction.getTerminalId());
       transactionRequest.setEntryMode(EntryModeEnum.MANUAL);
-      ClientResponse clientResponse;
+      transactionRequest.setMerchantCode(pgTransaction.getMerchantId());
       try {
-        clientResponse = JsonUtil.postRequest(transactionRequest, Constants.TRANSACTION_PROCESS);
-        if (clientResponse.getStatus() != HttpStatus.SC_OK) {
-          throw new ChatakAdminException(ActionErrorCode.ERROR_CODE_Z5);
-        } else {
-          String output = clientResponse.getEntity(String.class);
+          String output = JsonUtil.postRequest(transactionRequest,String.class,Constants.TRANSACTION_PROCESS);
           response = mapper.readValue(output, TransactionResponse.class);
+      } 
+      catch (HttpClientException e) {
+          logger.error("Error :: RestPaymentServiceImpl :: doAdjust", e);
+          throw new ChatakAdminException(Constants.UNABLE_TO_PROCESS_REQUEST);
         }
-      } catch (Exception e) {
+      catch (Exception e) {
         response.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
         response.setErrorMessage(
             ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_Z5));

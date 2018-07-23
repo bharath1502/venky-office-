@@ -86,4 +86,6 @@ public class ISOConstants {
   
   public static final Integer TIMEZONE_REGION= 122;
   
+  public static final Integer ALTERNATE_TRACK_2_DATA = 56;
+  
 }

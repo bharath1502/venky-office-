@@ -114,7 +114,9 @@ public class VirtualTerminalController implements URLMappingConstants {
             paymentService.getMerchantIdAndTerminalId(merchantId.toString());
         if (merchantDetailsResponse.getErrorCode().equals(Constants.SUCCESS_CODE)) {
           terminalSaleDTO.setMerchantId(merchantDetailsResponse.getMerchantId());
+          terminalSaleDTO.setMerchantCode(merchantDetailsResponse.getMerchantId());
           terminalSaleDTO.setTerminalId(merchantDetailsResponse.getTerminalId());
+          terminalSaleDTO.setMerchantCode(merchantDetailsResponse.getMerchantId());
         } else {
           modelAndView.addObject(Constants.ERROR, merchantDetailsResponse.getErrorMessage());
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, terminalSaleDTO);
@@ -138,12 +140,12 @@ public class VirtualTerminalController implements URLMappingConstants {
           PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid);
           model.put("pgmerchantconfig", pgmerchantconfig);
         }
-      } catch (ChatakPayException e) {
-        logger.error("ERROR :: VirtualTerminalController :: processSale method:" + e);
-        modelAndView.addObject(Constants.ERROR, e.getMessage());
+      } catch (ChatakPayException ae) {
+        logger.error("ERROR :: VirtualTerminalController :: processSale method:" + ae);
+        modelAndView.addObject(Constants.ERROR, ae.getMessage());
         modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, terminalSaleDTO);
-      } catch (Exception e) {
-        logger.error("ERROR :: VirtualTerminalController :: processSale method:" + e);
+      } catch (Exception ep) {
+        logger.error("ERROR :: VirtualTerminalController :: processSale method:" + ep);
         modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
             null, LocaleContextHolder.getLocale()));
         modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, terminalSaleDTO);
@@ -617,15 +619,15 @@ public class VirtualTerminalController implements URLMappingConstants {
           modelAndView.addObject(Constants.ERROR, captureResponse.getErrorMessage());
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_PRE_AUTH_COMPLEATION, virtualTerminalCaptureDTO);
         }
-      } catch (ChatakPayException e) {
-        modelAndView.addObject(Constants.ERROR, e.getMessage());
+      } catch (ChatakPayException e1) {
+        modelAndView.addObject(Constants.ERROR, e1.getMessage());
         modelAndView.addObject(Constants.VIRTUAL_TEMINAL_PRE_AUTH_COMPLEATION, virtualTerminalCaptureDTO);
-        logger.error("ERROR :: VirtualTerminalController :: processPreAuthCompleation method:" + e);
-      } catch (Exception e) {
+        logger.error("ERROR :: VirtualTerminalController :: processPreAuthCompleation method:" + e1);
+      } catch (Exception e1) {
         modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
             null, LocaleContextHolder.getLocale()));
         modelAndView.addObject(Constants.VIRTUAL_TEMINAL_PRE_AUTH_COMPLEATION, virtualTerminalCaptureDTO);
-        logger.error("ERROR :: VirtualTerminalController :: processPreAuthCompleation method:" + e);
+        logger.error("ERROR :: VirtualTerminalController :: processPreAuthCompleation method:" + e1);
       }
 
       logger.info("Exiting :: VirtualTerminalController :: processPreAuthCompleation method");

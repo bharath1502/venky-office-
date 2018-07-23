@@ -102,18 +102,27 @@ public class PGAccountTransactions implements Serializable {
 
   @Column(name = "DEVICE_LOCAL_TXN_TIME")
   private String deviceLocalTxnTime;
+  
+  @Column(name = "ENTITY_TYPE")
+  private String entityType;
+  
+  @Column(name = "ENTITY_ID")
+  private Long entityId;
 
-  public String getTxnCurrencyCode() {
-	return txnCurrencyCode;
-}
+  @Column(name = "BATCH_ID")
+  private String batchId;
 
-public void setTxnCurrencyCode(String txnCurrencyCode) {
-	this.txnCurrencyCode = txnCurrencyCode;
-}
+	public String getTxnCurrencyCode() {
+		return txnCurrencyCode;
+	}
 
-public Long getId() {
-    return id;
-  }
+	public void setTxnCurrencyCode(String txnCurrencyCode) {
+		this.txnCurrencyCode = txnCurrencyCode;
+	}
+
+	public Long getId() {
+		return id;
+	}
 
   public void setId(Long id) {
     this.id = id;
@@ -255,42 +264,60 @@ public Long getId() {
     this.toAccountNumber = toAccountNumber;
   }
 
-/**
- * @return the refundableAmount
- */
-public Long getRefundableAmount() {
-	return refundableAmount;
-}
+	public Long getRefundableAmount() {
+		return refundableAmount;
+	}
 
-/**
- * @param refundableAmount the refundableAmount to set
- */
-public void setRefundableAmount(Long refundableAmount) {
-	this.refundableAmount = refundableAmount;
-}
+	public void setRefundableAmount(Long refundableAmount) {
+		this.refundableAmount = refundableAmount;
+	}
 
-public String getTimeZoneOffset() {
-  return timeZoneOffset;
-}
+	public String getTimeZoneOffset() {
+		return timeZoneOffset;
+	}
 
-public void setTimeZoneOffset(String timeZoneOffset) {
-  this.timeZoneOffset = timeZoneOffset;
-}
+	public void setTimeZoneOffset(String timeZoneOffset) {
+		this.timeZoneOffset = timeZoneOffset;
+	}
 
-public String getTimeZoneRegion() {
-  return timeZoneRegion;
-}
+	public String getTimeZoneRegion() {
+		return timeZoneRegion;
+	}
 
-public void setTimeZoneRegion(String timeZoneRegion) {
-  this.timeZoneRegion = timeZoneRegion;
-}
+	public void setTimeZoneRegion(String timeZoneRegion) {
+		this.timeZoneRegion = timeZoneRegion;
+	}
 
-public String getDeviceLocalTxnTime() {
-  return deviceLocalTxnTime;
-}
+	public String getDeviceLocalTxnTime() {
+		return deviceLocalTxnTime;
+	}
 
-public void setDeviceLocalTxnTime(String deviceLocalTxnTime) {
-  this.deviceLocalTxnTime = deviceLocalTxnTime;
-}
+	public void setDeviceLocalTxnTime(String deviceLocalTxnTime) {
+		this.deviceLocalTxnTime = deviceLocalTxnTime;
+	}
+
+	public Long getEntityId() {
+		return entityId;
+	}
+
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
+	}
+
+	public String getEntityType() {
+		return entityType;
+	}
+
+	public void setEntityType(String entityType) {
+		this.entityType = entityType;
+	}
+
+	public String getBatchId() {
+		return batchId;
+	}
+
+	public void setBatchId(String batchId) {
+		this.batchId = batchId;
+	}
 
 }

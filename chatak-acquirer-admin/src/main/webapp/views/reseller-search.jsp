@@ -5,6 +5,7 @@
 <%@page import="java.util.Calendar"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
+<%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <%
   int year = Calendar.getInstance().get(Calendar.YEAR);
 %>
@@ -24,7 +25,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -95,18 +96,22 @@
 								<form:form action="getResellers" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
+								    <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<form:form action="editReseller" name="editResellerForm" method="post">
 									<input type="hidden" id="getResellerId" name="getResellerId" />
+								    <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								
 								<form:form action="reseller-viewdata" name="viewResellerForm" method="post">
 									<input type="hidden" id="resellerViewresellerId" name="resellerViewresellerId" />
+								    <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="deleteReseller" name="deleteResellerForm" method="post">
 									<input type="hidden" id="getResellerId1" name="getResellerId" />
+								    <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="get-reseller-report" name="downloadReport" method="post">
@@ -114,11 +119,13 @@
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>								
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 							<form:form action="searchReseller" commandName="resellerData" name="resellerData">
+								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
 											<!-- Account Details Content Start -->
@@ -401,9 +408,8 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
+
 	<script src="../js/merchant.js"></script>
 	<script src="../js/reseller.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -414,6 +420,21 @@
 			
 		});
 		
+		$(document).ready(function() {
+			/* Table Sorter includes Start*/
+			$(function() {
+				
+					  // call the tablesorter plugin
+					  $('#serviceResults').sortable({
+						
+						 divBeforeTable: '#divbeforeid',
+						divAfterTable: '#divafterid',
+						initialSort: false,
+						locale: 'th',
+						//negativeSort: [1, 2]
+					});
+			});
+			});
 	</script>
 </body>
 </html>

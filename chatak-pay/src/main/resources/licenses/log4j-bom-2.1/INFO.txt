@@ -1,0 +1,7 @@
+Project homepage: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom
+
+
+Sources: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom/2.1
+
+License:
+Licensed under Apache License 2.0

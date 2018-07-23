@@ -5,6 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -22,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->	
     <div id="wrapper">
 		<!--Container block Start -->
@@ -96,9 +97,11 @@
 						</div>
 						<form action="recurring-customer-previous" name="editRecurringCreateForm" method="post">
 							<input type="hidden" id="getRecurringCustInfoId" name="getRecurringCustInfoId" />
+							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 						<!-- Page Menu End -->
 						<form:form action="createRecurringPaymentInfo" commandName="recurringPaymentInfoDTO" name="recurringPaymentInfoDTO" method="post">
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="expDt" id ="expDt"/>
 						<form:hidden path="recurringCustomerInfoId"/>
 									<div class="col-sm-12 paddingT20">
@@ -110,9 +113,7 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.creditCardType"/><span class="required-field">*</span></label>
 														<form:select id="cardType" path="creditCardType" cssClass="form-control" onblur="return clientValidation('cardType', 'cardType','cardType_ErrorDiv');">
 															<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
-															<form:option value="Visa">Visa</form:option>
-															<form:option value="MC">MC</form:option>
-															<form:option value="JCB">JCB</form:option>
+															<form:option value="IC">Chatak Prepaid Card</form:option>
 														</form:select>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="cardType_ErrorDiv" class="red-error">&nbsp;</span>

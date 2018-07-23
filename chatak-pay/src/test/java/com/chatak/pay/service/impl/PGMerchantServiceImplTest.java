@@ -251,8 +251,7 @@ public class PGMerchantServiceImplTest {
 		Map<String, String> map = new HashMap<>();
 		List<Merchant> merchants = new ArrayList<>();
 		Merchant merchant = new Merchant();
-		String string = new String();
-		map.get(string);
+		map.get("");
 		merchantList.add(map);
 		merchants.add(merchant);
 		Mockito.when(merchantUpdateDao.getMerchantList()).thenReturn(merchantList);

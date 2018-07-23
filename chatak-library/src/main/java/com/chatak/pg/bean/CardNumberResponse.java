@@ -1,12 +1,14 @@
 package com.chatak.pg.bean;
 
+import java.math.BigInteger;
+
 public class CardNumberResponse extends Response {
 
   private static final long serialVersionUID = 1L;
 
   private Long id;
 
-  private Long cardNumber;
+  private BigInteger cardNumber;
 
   /**
    * @return the id
@@ -26,7 +28,7 @@ public class CardNumberResponse extends Response {
   /**
    * @return the cardNumber
    */
-  public Long getCardNumber() {
+  public BigInteger getCardNumber() {
     return cardNumber;
   }
 
@@ -34,7 +36,7 @@ public class CardNumberResponse extends Response {
    * @param cardNumber
    *          the cardNumber to set
    */
-  public void setCardNumber(Long cardNumber) {
+  public void setCardNumber(BigInteger cardNumber) {
     this.cardNumber = cardNumber;
   }
 

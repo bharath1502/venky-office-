@@ -1,0 +1,7 @@
+Project homepage: http://commons.apache.org/discovery/
+
+
+Sources: https://mvnrepository.com/artifact/commons-discovery/commons-discovery/0.2
+
+License:
+Licensed under Apache License 2.0

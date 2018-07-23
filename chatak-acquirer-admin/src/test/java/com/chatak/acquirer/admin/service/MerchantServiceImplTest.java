@@ -412,18 +412,4 @@ public class MerchantServiceImplTest {
 	  Mockito.when(partnerDao.findProgramManagerByPartnerId(Matchers.anyString())).thenReturn(programManager);
 	  Assert.assertNotNull(merchantServiceImpl.findProgramManagerByPartnerId("12345"));
 	}
-	
-	@Test
-	public void testFindPartnerByMerchantCode() {
-	  PGMerchant merchant = new PGMerchant();
-	  merchant.setPartnerId("1515");
-	  Partner partner = new Partner();
-	  partner.setProgramManagerId(Long.parseLong("165456"));
-	  ProgramManagerRequest programManager = new ProgramManagerRequest();
-	  programManager.setProgramManagerName("programManagerName");
-	  Mockito.when(merchantDao.findBymerchantConfig(Matchers.anyString())).thenReturn(merchant);
-	  Mockito.when(partnerDao.findByPartnerId(Matchers.anyLong())).thenReturn(partner);
-	  Mockito.when(programManagerDao.findProgramManagerById(Matchers.anyLong())).thenReturn(programManager);
-	  Assert.assertNotNull(merchantServiceImpl.findPartnerByMerchantCode("1565"));
-	}
 }

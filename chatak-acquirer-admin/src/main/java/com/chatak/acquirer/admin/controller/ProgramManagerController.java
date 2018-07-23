@@ -28,23 +28,33 @@ import org.springframework.web.servlet.ModelAndView;
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.BankService;
+import com.chatak.acquirer.admin.service.CardProgramServices;
 import com.chatak.acquirer.admin.service.CurrencyConfigService;
+import com.chatak.acquirer.admin.service.IsoService;
 import com.chatak.acquirer.admin.service.PartnerService;
 import com.chatak.acquirer.admin.service.ProgramManagerService;
 import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
+import com.chatak.pg.bean.CountryRequest;
+import com.chatak.pg.bean.CountryResponse;
 import com.chatak.pg.bean.Request;
 import com.chatak.pg.bean.Response;
+import com.chatak.pg.bean.TimeZoneRequest;
+import com.chatak.pg.bean.TimeZoneResponse;
 import com.chatak.pg.enums.ExportType;
+import com.chatak.pg.exception.PrepaidException;
 import com.chatak.pg.user.bean.BankProgramManagerMapRequest;
-import com.chatak.pg.user.bean.BankResponse;
+import com.chatak.pg.user.bean.CardProgramMappingRequest;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
+import com.chatak.pg.user.bean.IsoRequest;
+import com.chatak.pg.user.bean.IsoResponse;
 import com.chatak.pg.user.bean.PartnerGroupPartnerMapRequest;
 import com.chatak.pg.user.bean.PartnerRequest;
 import com.chatak.pg.user.bean.PartnerResponse;
@@ -68,12 +78,18 @@ public class ProgramManagerController implements URLMappingConstants {
 
   @Autowired
   PartnerService partnerService;
+  
+  @Autowired
+  CardProgramServices cardProgramServices;
 
   @Autowired
   private BankService bankService;
 
   @Autowired
   private CurrencyConfigService currencyConfigService;
+  
+  @Autowired
+  IsoService isoService;
 
   /**
    * @param request
@@ -146,6 +162,10 @@ public class ProgramManagerController implements URLMappingConstants {
       List<Option> currencyCodeList = currencyConfigService.getCurrencyConfigCode();
       modelAndView.addObject("currencyList", currencyCodeList);
       session.setAttribute("currencyList", currencyCodeList);
+   // to get the list of program manager Countries
+      List<Option> countryList = bankService.getCountry();
+      modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, countryList);	
     } catch (Exception e) {
       logger.error("ERROR:: ProgramManagerController:: showCreateProgramManager method", e);
     }
@@ -168,8 +188,7 @@ public class ProgramManagerController implements URLMappingConstants {
       HttpServletResponse response, Map<String, Object> model, HttpSession session,
       @RequestParam("programManagerLogo") MultipartFile file,
       @FormParam("checkDefaultPMValue") final String checkDefaultPMValue,
-      ProgramManagerRequest programManagerRequest, BindingResult bindingResult)
-          throws CloneNotSupportedException {
+      ProgramManagerRequest programManagerRequest, BindingResult bindingResult){
     logger.info("Entering:: ProgramManagerController:: processCreateProgramManager method");
 
     ModelAndView modelAndView = new ModelAndView(PREPAID_ADMIN_SEARCH_PROGRAM_MANAGER_PAGE);
@@ -182,8 +201,8 @@ public class ProgramManagerController implements URLMappingConstants {
     }
     try {
       setEnumValuesForSearchPage(model);
-      logger.info("Entering:: getFileAndBankData method");
-      getFileAndBankData(programManagerRequest, file);
+      logger.info("Entering:: getLogo method");
+        getLogo(programManagerRequest, file);
       programManagerRequest.setCreatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
       setAuditData(programManagerRequest, session, "ProgramManager", "Create");
       
@@ -197,11 +216,6 @@ public class ProgramManagerController implements URLMappingConstants {
         modelAndView.addObject(Constants.SUCESS,
             messageSource.getMessage("prepaid.admin.addprogrammanager.success.message", null,
                 LocaleContextHolder.getLocale()));
-      } else if (programManagerCreateResponse != null && programManagerCreateResponse.getErrorCode()
-          .equals(Constants.PROGRAM_MANAGER_NAME_EXIST)) {
-        modelAndView = showCreateProgramManager(request, response, model, session);
-        model.put("programManagerRequest", programManagerRequest);
-        modelAndView.addObject(Constants.ERROR, programManagerCreateResponse.getErrorMessage());
       } else {
         modelAndView = showCreateProgramManager(request, response, model, session);
         modelAndView.addObject(Constants.ERROR,
@@ -219,7 +233,9 @@ public class ProgramManagerController implements URLMappingConstants {
       }
     } catch (ChatakAdminException e) {
       logger.error("ERROR:: ProgramManagerController:: processCreateProgramManager method2", e);
-      model.put(Constants.ERROR, e.getMessage());
+      modelAndView = showCreateProgramManager(request, response, model, session);
+      model.put("programManagerRequest", programManagerRequest);
+      modelAndView.addObject(Constants.ERROR, e.getErrorMessage());
     } catch (Exception e) {
       logger.error("ERROR:: ProgramManagerController:: processCreateProgramManager method3", e);
       model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
@@ -250,7 +266,11 @@ public class ProgramManagerController implements URLMappingConstants {
       return modelAndView;
     }
     try {
-      setEnumValuesForSearchPage(model);
+    	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+    	setEnumValuesForSearchPage(model);
+    	if(loginResponse.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+    		programManagerRequest.setId(loginResponse.getEntityId());
+		}
       model.put("programManagerRequest", programManagerRequest);
       programManagerRequest.setCreatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
       programManagerRequest.setPageIndex(Constants.ONE);
@@ -423,10 +443,9 @@ public class ProgramManagerController implements URLMappingConstants {
       List<ProgramManagerRequest> programManagerList =
           programManagerResponse.getProgramManagersList();
       defaultPMValue = programManagerList.get(0).getDefaultProgramManager();
-      model.put("selectedBankList", programManagerList.get(0).getBankProgramManagerMapRequests());
+      model.put("selectedBankList", programManagerResponse.getProgramManagersList().get(0).getBankRequest());
+      modelAndView.addObject("selectedCardProgramList", programManagerResponse.getProgramManagersList().get(0).getCardProgamMapping());
       model.put("programManagerRequest", programManagerList.get(0));
-      List<Option> bankOptions = bankService.getBankData();
-      modelAndView.addObject("bankList", bankOptions);
       byte[] image = programManagerList.get(0).getProgramManagerLogo();
       session.setAttribute("programManagerImage",
           programManagerList.get(0).getProgramManagerLogo());
@@ -434,11 +453,29 @@ public class ProgramManagerController implements URLMappingConstants {
       String type = "jpg";
       String traineeImage = StringUtil.encodeToString(image, type);
       model.put("image", traineeImage);
-
-      // to get the list of currency
+      model.put("schedulerRunTime", programManagerList.get(0).getSchedulerRunTime());
+      
+      // to get the list of currencycurrencyList
       List<Option> currencyCodeList = currencyConfigService.getCurrencyConfigCode();
       modelAndView.addObject("currencyList", currencyCodeList);
       session.setAttribute("currencyList", currencyCodeList);
+      
+      // to get the list of program manager Countries
+      List<Option> countryList = bankService.getCountry();
+      modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      
+      Response stateList = bankService.getStatesByCountry(programManagerList.get(0).getCountry());
+      modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
+      session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+      for(Option option : countryList){
+    	  if(programManagerList.get(0).getCountry().equals(option.getValue())){
+    		  TimeZoneResponse timeZon = bankService.searchAllTimeZone(Long.valueOf(option.getLabel()));
+    	      modelAndView.addObject("timeZoneList", timeZon.getListOfTimeZoneRequests());
+    	      session.setAttribute("timeZoneList", timeZon.getListOfTimeZoneRequests());
+          }
+      }
+      
     } catch (Exception e) {
       logger.error("ERROR:: ProgramManagerController:: showEditProgramManager method", e);
     }
@@ -473,8 +510,8 @@ public class ProgramManagerController implements URLMappingConstants {
 
     try {
       setEnumValuesForSearchPage(model);
-      logger.info("Entering:: getFileAndBankDataForUpdatePm method");
-      getFileAndBankDataForUpdatePm(programManagerRequest, file, session);
+      logger.info("Entering:: getLogo method");
+      getLogo(programManagerRequest, file, session);
       programManagerRequest.setUpdatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
       Response respon2 = programManagerService.updateProgramManager(programManagerRequest);
 
@@ -486,7 +523,7 @@ public class ProgramManagerController implements URLMappingConstants {
                 LocaleContextHolder.getLocale()));
         logger.info("Entering:: defaultPmMessage method");
       } else if (respon2 != null
-          && respon2.getErrorCode().equals(Constants.PROGRAM_MANAGER_NAME_EXIST)) {
+          && respon2.getErrorCode().equals(Constants.PROGRAM_MANAGER_ALREADY_EXISTS_WITH_NAME)) {
         modelAndView = showCreateProgramManager(request, response, model, session);
         modelAndView.addObject(Constants.ERROR, respon2.getErrorMessage());
       } else {
@@ -607,37 +644,23 @@ public class ProgramManagerController implements URLMappingConstants {
     return null;
   }
 
-  private void getFileAndBankData(ProgramManagerRequest programManagerRequest, MultipartFile file) {
-    logger.info("Entering:: ProgramManagerController:: getFileAndBankData method");
-    java.util.List<BankProgramManagerMapRequest> bankRequestList = new ArrayList<>();
+  private void getLogo(ProgramManagerRequest programManagerRequest, MultipartFile file) {
+    logger.info("Entering:: ProgramManagerController:: getLogo method");
     byte[] bytes = null;
     if (!file.isEmpty()) {
       try {
         bytes = file.getBytes();
       } catch (Exception e) {
-        logger.error("ERROR:: ProgramManagerController:: getFileAndBankData method", e);
-      }
-    }
-    String[] arrayList = programManagerRequest.getBankNames().split(",");
-    for (int i = 0; i < arrayList.length; i++) {
-      if (arrayList[i] != null) {
-        BankProgramManagerMapRequest bankProgramManagerMapRequest =
-            new BankProgramManagerMapRequest();
-        bankProgramManagerMapRequest.setBankId(Long.valueOf(arrayList[i]));
-        bankRequestList.add(bankProgramManagerMapRequest);
-        
-        programManagerRequest.setBankProgramManagerMapRequests(bankRequestList);
+        logger.error("ERROR:: ProgramManagerController:: getLogo method", e);
       }
     }
     programManagerRequest.setProgramManagerLogo(bytes);
-    logger.info("Exiting:: ProgramManagerController:: getFileAndBankData method");
+    logger.info("Exiting:: ProgramManagerController:: getLogo method");
   }
 
-  private void getFileAndBankDataForUpdatePm(ProgramManagerRequest programManagerRequest,
+  private void getLogo(ProgramManagerRequest programManagerRequest,
       MultipartFile file, HttpSession session) throws CloneNotSupportedException, IOException {
-    logger.info("Entering:: ProgramManagerController:: getFileAndBankDataForUpdatePm method");
-    java.util.List<BankProgramManagerMapRequest> bankRequestList = new ArrayList<>();
-
+    logger.info("Entering:: ProgramManagerController:: getLogo method");
     byte[] bytes = null;
     if (!file.isEmpty()) {
       bytes = file.getBytes();
@@ -648,17 +671,7 @@ public class ProgramManagerController implements URLMappingConstants {
 
     }
 
-    String[] arrayList2 = programManagerRequest.getBankNames().split(",");
-    for (int i = 0; i < arrayList2.length; i++) {
-      if (arrayList2[i] != null) {
-        BankProgramManagerMapRequest bankProgramManagerMapRequest =
-            new BankProgramManagerMapRequest();
-        bankProgramManagerMapRequest.setBankId(Long.valueOf(arrayList2[i]));
-        bankRequestList.add(bankProgramManagerMapRequest);
-        programManagerRequest.setBankProgramManagerMapRequests(bankRequestList);
-      }
-    }
-    logger.info("Exiting:: ProgramManagerController:: getFileAndBankDataForUpdatePm method");
+    logger.info("Exiting:: ProgramManagerController:: getLogo method");
   }
 
   private void getPmPaginationList(HttpSession session, ModelAndView modelAndView,
@@ -846,5 +859,79 @@ public class ProgramManagerController implements URLMappingConstants {
     logger.info("Exiting:: ProgramManagerController:: getBankDetailsByCurrency method");
     return null;
   }
+  
+  @RequestMapping(value = GET_CARD_PROGRAM_BY_BANK_ID, method = RequestMethod.GET)
+  public @ResponseBody String getAcquirerCardProgramDetailsByBankId(Map model, HttpServletRequest request,
+      HttpServletResponse response, HttpSession session) {
+    ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_CREATE_MERCHANT_PAGE);
+    modelAndView.addObject(Constants.ERROR, null);
+    logger.info("Entering :: ProgramManagerController :: getAcquirerCardProgramDetailsByBankId method");
+    Long bankId =Long.parseLong(request.getParameter("bankId"));
+    try {
+    	List<CardProgramRequest> cardProgramReqList	= cardProgramServices.getCardProgramByBankId(bankId);
+
+      if (cardProgramReqList != null) {
+        return JsonUtil.convertObjectToJSON(cardProgramReqList);
+      }
+    } catch (ChatakAdminException e) {
+      logger.error("ERROR:: ProgramManagerController:: getAcquirerCardProgramDetailsByBankId method", e);
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+    }
+    logger.info("Exiting:: ProgramManagerController:: getAcquirerCardProgramDetailsByBankId method");
+    return null;
+  }
+  
+  @RequestMapping(value = GET_PM_STATES_BY_COUNTRY_ID, method = RequestMethod.GET)
+  public @ResponseBody String getPmStatesById(Map model, HttpServletRequest request,
+      HttpServletResponse response, HttpSession session) {
+    ModelAndView modelAndView = new ModelAndView(BANK_CREATE);
+    modelAndView.addObject(Constants.ERROR, null);
+    logger.info("Entering :: BankController :: getStatesById method");
+    Long countryId = Long.valueOf(request.getParameter("countryid"));
+    try {
+      Response response2 = bankService.getPmCountryById(countryId);
+      if (response2 != null) {
+        return JsonUtil.convertObjectToJSON(response2);
+      }
+    } catch (ChatakAdminException e) {
+      logger.error("ERROR:: BankController:: getStatesById method", e);
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+    }
+    logger.info("Exiting:: BankController:: getStatesById method");
+    return null;
+  }
+  
+  
+  @RequestMapping(value = FETCH_COUNTRY_TIME_ZONE, method = RequestMethod.GET)
+	public @ResponseBody
+	String fetchTimeZone(HttpServletRequest request,
+			HttpServletResponse response, HttpSession session,
+			Map<String, Object> model) {
+
+	  logger.info("Entering :: ProgramManagerController :: fetchTimeZone method");
+
+		Long countryId = Long.parseLong(request.getParameter("countryId"));
+		if (countryId != null) {
+			TimeZoneRequest timeZoneRequest = new TimeZoneRequest();
+			timeZoneRequest.setCountryId(countryId);
+			try {
+				TimeZoneResponse timeZon = bankService.searchAllTimeZone(timeZoneRequest.getCountryId());
+				logger.info("Exiting :: BankController :: fetchTimeZone method ");
+				 if (timeZon != null) {
+				        return JsonUtil.convertObjectToJSON(timeZon.getListOfTimeZoneRequests());
+				      }
+			} catch (ChatakAdminException ex4) {
+				logger.info("Error :: BankController :: fetchTimeZone method "+ ex4);
+				model.put(Constants.ERROR, ex4.getMessage());
+			} catch (Exception ex1) {
+				logger.info("Error :: BankController :: fetchTimeZone method ");
+				model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.error.message", null, LocaleContextHolder.getLocale()));
+			}
+		}
+		logger.info("Exiting :: ProgramManagerController :: fetchTimeZone method");
+		return null;
+	}
 }
 

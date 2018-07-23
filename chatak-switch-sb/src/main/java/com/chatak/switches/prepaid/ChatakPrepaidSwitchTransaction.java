@@ -5,18 +5,20 @@ package com.chatak.switches.prepaid;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.ISOConstants;
 import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.switches.jpos.SwitchISOPackager;
 import com.chatak.switches.sb.SwitchTransaction;
 import com.chatak.switches.sb.channel.ChatakSwitchChannel;
 import com.chatak.switches.sb.exception.ChatakSwitchException;
 import com.chatak.switches.sb.util.ThreadPool;
+import com.chatak.switches.services.TransactionService;
 
 /**
  *
@@ -28,8 +30,8 @@ import com.chatak.switches.sb.util.ThreadPool;
  */
 public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
   
-  private Logger logger = LogManager.getLogger(this.getClass());
-  
+  private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TransactionService.class);
+
   private final static String SWITCH_NAME = "Chatak Prepaid";
   
   private String hostIp;
@@ -48,7 +50,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: auth method",e);
+      LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
       throw new ChatakSwitchException(ActionErrorCode.ERROR_CODE_91);
     }
     return isoMsgResponse;
@@ -61,7 +63,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: authAdviceRepeat method",e);
+      LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
       throw new ChatakSwitchException(ActionErrorCode.ERROR_CODE_91);
     }
     return isoMsgResponse;
@@ -74,7 +76,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: authAdvice method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
       throw new ChatakSwitchException(ActionErrorCode.ERROR_CODE_91);
     }
     return isoMsgResponse;
@@ -82,18 +84,20 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
 
   @Override
   public ISOMsg financial(ISOMsg isoMsg) throws ChatakSwitchException {
+    LogHelper.logEntry(log, LoggerMessage.getCallerName());
     ISOMsg isoMsgResponse = null;
     try {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(java.io.IOException e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: financial method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
       throw new ChatakSwitchException("Unable to connect to HOST - Processor");
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: financial method", e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
       throw new ChatakSwitchException(ActionErrorCode.ERROR_CODE_91);
     }
+    LogHelper.logExit(log, LoggerMessage.getCallerName());
     return isoMsgResponse;
   }
 
@@ -104,7 +108,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: financialAdvice method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
       throw new ChatakSwitchException(ActionErrorCode.ERROR_CODE_91);
     }
     return isoMsgResponse;
@@ -117,7 +121,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: financialAdviceRepeat method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
     }
     return isoMsgResponse;
   }
@@ -129,7 +133,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: reversal method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
     }
     return isoMsgResponse;
   }
@@ -141,7 +145,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: reversalAdvice method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
     }
     return isoMsgResponse;
   }
@@ -153,7 +157,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: reversalAdviceRepeat method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
     }
     return isoMsgResponse;
   }
@@ -165,7 +169,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: settlement method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
     }
     return isoMsgResponse;
   }
@@ -177,7 +181,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: network method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
     }
     return isoMsgResponse;
   }
@@ -189,7 +193,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
       isoMsgResponse = sendMsgToChatakSwitchChannel(isoMsg);
     }
     catch(Exception e) {
-      logger.error("ERROR:: ChatakPrepaidSwitchTransaction:: networkAdvice method",e);
+        LogHelper.logError(log, LoggerMessage.getCallerName(), e, e.getMessage());
     }
     return isoMsgResponse;
   }
@@ -212,10 +216,14 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
    * @throws IOException 
    */
   private ISOMsg sendMsgToChatakSwitchChannel(ISOMsg isoMsg) throws ISOException, ChatakSwitchException, IOException {
-    
+    LogHelper.logEntry(log, LoggerMessage.getCallerName());
 	ChatakSwitchChannel chatakSwitchChannel = new ChatakSwitchChannel(hostIp, port, SwitchISOPackager.getChatakGenericPackager(), SWITCH_NAME);
+	//Note : IP(port) should be on
     chatakSwitchChannel.connect();
+    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Able to connect to processor..");
+    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "PAN Number in ISO Packet : " + isoMsg.getValue(ISOConstants.PAN));
     chatakSwitchChannel.send(isoMsg);
+    LogHelper.logExit(log, LoggerMessage.getCallerName());
     return chatakSwitchChannel.receive();
   }
   

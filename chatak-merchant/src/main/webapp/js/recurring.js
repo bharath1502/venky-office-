@@ -77,34 +77,12 @@ function validateRecurringCustmerUpdate() {
 function validateRecurringPayment() {
 	var cardType = $('#cardType').val();
 	var keychar = $('#cardNumber').val();
-	/* alert(keychar); */
-	/* alert(cardType) */
 	if (cardType === "") {
 		alert(webMessages.pleaseselectcardtype);
 		return false;
 	}
-	if (cardType === "JCB") {
-		if ((!(keychar.charAt(0) == "3"))) {
-			alert(webMessages.jcbcardnumbershouldstartwith3);
-			return false;
-		}
-
-	} else if (cardType === "Visa") {
-		if ((!(keychar.charAt(0) == "4"))) {
-			alert(webMessages.visacardnumbershouldstartwith4);
-			return false;
-		}
-	} else if (cardType === "MC") {
-		if ((!(keychar.charAt(0) == "5"))) {
-			alert(webMessages.mcshouldstartwith5);
-			return false;
-		}
-
-	} else {
-		alert("failed");
-	}
 	var flag = true;
-	if (      !clientValidation('cardType', 'cardType', 'cardType_ErrorDiv')
+	if (!clientValidation('cardType', 'cardType', 'cardType_ErrorDiv')
 		   |	!clientValidation('cardNumber', 'card_Number','cardNumber_ErrorDiv')
 		   |!clientValidation('nameOnCard', 'card_Prog_Desc',
 					'nameOnCard_ErrorDiv') | !zipCodeNotEmpty('zipCode')

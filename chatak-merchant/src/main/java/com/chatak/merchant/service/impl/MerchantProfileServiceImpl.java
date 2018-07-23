@@ -80,8 +80,7 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
       merchantProfile.setNoOfEmployee(pgMerchant.getNoOfEmployee());
       merchantProfile.setOwnership(pgMerchant.getOwnership());
 
-      merchantProfile
-          .setAutoSettlement(pgMerchant.getMerchantConfig().getAutoSettlement() == 0 ? 0 : 1);
+      //merchantProfile.setAutoSettlement(pgMerchant.getMerchantConfig().getAutoSettlement() == 0 ? 0 : 1);
 
       merchantProfile.setPhone(pgMerchant.getPhone());
       merchantProfile.setPin(pgMerchant.getPin());

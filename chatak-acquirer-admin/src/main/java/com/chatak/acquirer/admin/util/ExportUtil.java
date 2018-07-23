@@ -1,16 +1,24 @@
 package com.chatak.acquirer.admin.util;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -18,19 +26,10 @@ import com.chatak.acquirer.admin.controller.model.ExportDetails;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.html.WebColors;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 
+import be.quodlibet.boxable.BaseTable;
+import be.quodlibet.boxable.datatable.DataTable;
+import be.quodlibet.boxable.utils.PDStreamUtils;
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableCellFormat;
@@ -44,25 +43,15 @@ public class ExportUtil {
   private static final String ATTACHMENT_FILE_NAME = "attachment;filename=";
 
   private static final String CONTENT_DESCRIPTION = "Content-Disposition";
-  private static final int WIDTH_ARRAY_INDEX = 3;
-  private static final int TABLE_TOTAL_WIDTH = 180;
   private static final int TABLE_ROW_NUM = 7;
-  private static final int FONT_SIZE_10 = 10;
-  private static final int CELL_SIZE_8 = 8;
-  private static final int CELL_SIZE_4 = 4;
-  private static final int HEADDER_BOTTOM_SIZE_10 = 10;
-  private static final int HEADDER_BOTTOM_SIZE_18 = 18;
-  private static final int DOC_MARGIN_LEFT = 50;
-  private static final int DOC_MARGIN_RIGHT = 50;
-  private static final int DOC_MARGIN_TOP = 70;
-  private static final int DOC_MARGIN_BOTTOM = 70;
+  private static final int CELL_COUNT = 2;
 
   private ExportUtil() {
 
   }
 
   public static void exportData(ExportDetails exportDetails, HttpServletResponse response,
-      MessageSource messageSource) throws IOException, WriteException, DocumentException {
+      MessageSource messageSource) throws IOException, WriteException {
 
     ExportType expTypeEnum = exportDetails.getExportType();
 
@@ -119,6 +108,15 @@ public class ExportUtil {
     s.addCell(new Label(0, Integer.parseInt("2"), messageSource.getMessage("userList-file-exportutil-reportdate", null,
         LocaleContextHolder.getLocale()) + headerDate));
 
+		Map<String, String> map = null;
+		if (exportDetails.getMap() != null) {
+			map = exportDetails.getMap();
+			int cellCount = CELL_COUNT;
+			for (Map.Entry  MapColummn : map.entrySet()) {
+				s.addCell(new Label(0, cellCount++, MapColummn.getKey() + "" + MapColummn.getValue()));
+			}
+		}
+	
     int rowNum = TABLE_ROW_NUM;
     if (exportDetails.getExcelStartRowNumber() != null) {
       rowNum = exportDetails.getExcelStartRowNumber();
@@ -138,7 +136,7 @@ public class ExportUtil {
 
       for (Object rowElement : rowData) {
         if (rowElement instanceof Double) {
-          s.addCell(StringUtil.getAmountInFloat(i++, j, processDoubleAmount(rowElement)));
+          s.addCell(StringUtil.getAmountInFloat(i++, rowNum, processDoubleAmount(rowElement)));
         } else if (rowElement instanceof String) {
           s.addCell(new Label(i++, rowNum, ((String)rowElement) + ""));
         } else if (rowElement instanceof Date) {
@@ -146,11 +144,13 @@ public class ExportUtil {
         } else if (rowElement instanceof Boolean) {
           s.addCell(new Label(i++, rowNum, ((Boolean)rowElement) + ""));
         } else if (rowElement instanceof Long) {
-          s.addCell(new jxl.write.Number(i++, j, ((Long)rowElement)));
+          s.addCell(new jxl.write.Number(i++, rowNum, ((Long)rowElement)));
         } else if (rowElement instanceof Integer) {
-          s.addCell(new jxl.write.Number(i++, j, ((Integer)rowElement)));
+          s.addCell(new jxl.write.Number(i++, rowNum, ((Integer)rowElement)));
+        } else if(rowElement == null){
+        	s.addCell(new Label(i++, rowNum, "" + ""));
         } else {
-          s.addCell(new jxl.write.Label(i++, j, ((String)rowElement)));
+          s.addCell(new jxl.write.Label(i++, rowNum, (String.valueOf(rowElement))));
         }
       }
       j = j + 1;
@@ -164,127 +164,86 @@ public class ExportUtil {
     return (!"".equals(rowElement)) ? Double.parseDouble(rowElement.toString()): 0d;
   }
 
-  private static void populatePDFData(ExportDetails exportDetails, HttpServletResponse response,
-      MessageSource messageSource) throws IOException, DocumentException {
+  public static void populatePDFData(ExportDetails exportDetails, HttpServletResponse response, MessageSource messageSource) throws IOException {
+  	    //Initialize Document
+  	    PDDocument doc = new PDDocument();
+  	    PDPage page = new PDPage();
 
-    String headerMsgProp = exportDetails.getHeaderMessageProperty();
-    List<String> headerList = exportDetails.getHeaderList();
-    List<Object[]> fileData = exportDetails.getFileData();
+  	    String headerMsgProp = exportDetails.getHeaderMessageProperty();
+  	    String reportName = messageSource.getMessage(headerMsgProp, null, LocaleContextHolder.getLocale());
+  	    //Create a landscape page
+  	    page.setMediaBox(new PDRectangle(PDRectangle.A4.getWidth(), PDRectangle.A4.getHeight()));
+  	    doc.addPage(page);
 
-    PdfPTable table = new PdfPTable(headerList.size());
-    int[] widthArr = new int[headerList.size()];
-    for (int i = 0, len = headerList.size(); i < len; i++) {
-      widthArr[i] = WIDTH_ARRAY_INDEX;
-    }
-    table.setWidths(widthArr);
-    table.setTotalWidth(TABLE_TOTAL_WIDTH);
+  	    Calendar calendar = Calendar.getInstance();
+  	    String reportDateText = messageSource.getMessage("userList-file-exportutil-reportdate", null, LocaleContextHolder.getLocale())
+  	       + DateUtil.toDateStringFormat(new Timestamp(calendar.getTimeInMillis()),
+  	        		Constants.EXPORT_HEADER_DATE_FORMAT);
 
-    // Add Report Date
-    Calendar calendar = Calendar.getInstance();
-    String phraseText = messageSource.getMessage("userList-file-exportutil-reportdate", null,
-        LocaleContextHolder.getLocale())
-        + DateUtil.toDateStringFormat(new Timestamp(calendar.getTimeInMillis()),
-            Constants.EXPORT_HEADER_DATE_FORMAT);
-    PdfPCell reportDateCell =
-        getPdfPCell(phraseText, getFont(FONT_SIZE_10, null), headerList.size(), Rectangle.NO_BORDER,
-            Element.ALIGN_RIGHT, null, null, CELL_SIZE_8, CELL_SIZE_8);
-    table.addCell(reportDateCell);
+  	    //Initialize table
+  	    float margin = Constants.INT_THIRTY;
+  	    float tableWidth = page.getMediaBox().getWidth() - (Constants.INT_TWO * margin);
+  	    float yStartNewPage = page.getMediaBox().getHeight() - (Constants.INT_TWO * margin);
+  	    float yStart = yStartNewPage;
+  	    float bottomMargin = Constants.TWENTY_FIVE;
+  	    float topMargin = Constants.INT_TEN;
+  	    FooterPageProvider pageProvider = new FooterPageProvider(doc,
+  	        new PDRectangle(PDRectangle.A4.getWidth(), PDRectangle.A4.getHeight()));
+  	    BaseTable dataTable = new BaseTable(yStart, yStartNewPage, topMargin, bottomMargin, tableWidth,
+  	        bottomMargin, doc, page, true, true, pageProvider);
+  	    
+  		PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+  		 PDStreamUtils.rect(contentStream, Constants.INT_THIRTY, Constants.INDEX_EIGHTEEN,
+  			        page.getMediaBox().getWidth() - Constants.INT_FIFTY, Constants.INDEX_ONE, Color.BLACK);
+  		 PDStreamUtils.write(contentStream, FooterPageProvider.FOOTER, PDType1Font.TIMES_ROMAN,  Constants.INDEX_TEN, Constants.INT_THIRTY, Constants.INDEX_TEN, Color.BLACK);
+  		 PDStreamUtils.write(contentStream, "1", PDType1Font.TIMES_ROMAN, Constants.INDEX_TEN,
+  				 page.getMediaBox().getWidth() - Constants.INT_THIRTY, Constants.INDEX_TEN, Color.BLACK);
+  		    
+  			dataTable.drawTitle(reportName, PDType1Font.TIMES_ROMAN, Constants.INDEX_FIFTEEN, tableWidth,
+  					Constants.TWENTY_FIVE, "center", 0, true);
 
-    // Add header data
-    Font tableHeaderFont = getFont(FONT_SIZE_10, "#FFFFFF");
-    for (String headerElement : headerList) {
-      PdfPCell tableHeaderCell = getPdfPCell(headerElement, tableHeaderFont, null, null,
-          Element.ALIGN_CENTER, BaseColor.GRAY, CELL_SIZE_4, null, null);
-      table.addCell(tableHeaderCell);
-    }
+  			PDStreamUtils.rect(contentStream, Constants.INT_THIRTY, Constants.SEVEN_HUNDRED_SIXTY_FIVE,
+  				page.getMediaBox().getWidth() - Constants.TWENTY_FIVE, 0, Color.BLACK);
 
-    // Add table data
-    for (Object[] rowData : fileData) {
-      int j = 1;
-      table.setHeaderRows(j);
+  			dataTable.drawTitle(reportDateText, PDType1Font.TIMES_ROMAN, Constants.INDEX_TEN, tableWidth, Constants.INDEX_TEN, "right",
+  				0, true);
 
-      for (Object rowElement : rowData) {
-        table.addCell((rowElement != null) ? rowElement + "" : "");
-      }
-    }
+  			contentStream.close();
 
-    Document document = new Document(PageSize.A3, DOC_MARGIN_LEFT, DOC_MARGIN_RIGHT, DOC_MARGIN_TOP,
-        DOC_MARGIN_BOTTOM);
+  	    //add the column Header list
+  	    List<List> data = new ArrayList<List>();
+  	    data.add(new ArrayList<String>(exportDetails.getHeaderList()));
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    PdfWriter writer = PdfWriter.getInstance(document, baos);
-    TableHeader event = new TableHeader();
-    writer.setPageEvent(event);
-    event.setFooter(messageSource.getMessage("chatak.footer.copyright.message", null,
-        LocaleContextHolder.getLocale()));
+  	    // Add table data    
+  	    for (Object[] rowData : exportDetails.getFileData()) {
+  	      List<String> dataList = new ArrayList<String>();
+  	      for (Object rowElement : rowData) {
+  	        dataList.add((rowElement != null) ? rowElement + "" : "");
+  	      }
+  	      data.add(dataList);
+  	    }
 
-    document.open();
-    Rectangle page = document.getPageSize();
-    PdfPTable header = new PdfPTable(1);
+  	    DataTable t = new DataTable(dataTable, page);
+  	    t.getHeaderCellTemplate().setFillColor(Color.LIGHT_GRAY);
+  	    t.getDataCellTemplateEven().setFontSize(Constants.EIGHT);
+  	    t.getDataCellTemplateOdd().setFontSize(Constants.EIGHT);
+  	    t.addListToTable(data, DataTable.HASHEADER);
 
-    PdfPCell pageHeadercell =
-        getPdfPCell(messageSource.getMessage(headerMsgProp, null, LocaleContextHolder.getLocale()),
-            getFont(HEADDER_BOTTOM_SIZE_18, null), headerList.size(), Rectangle.BOTTOM,
-            Element.ALIGN_CENTER, null, null, null, HEADDER_BOTTOM_SIZE_10);
-    header.addCell(pageHeadercell);
-    header.setTotalWidth(page.getWidth() - document.leftMargin() - document.rightMargin());
+  	    dataTable.draw();
+  	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  	    doc.save(baos);
+  	    doc.close();
 
-    header.writeSelectedRows(0, -1, document.leftMargin(),
-        page.getHeight() - document.topMargin() + header.getTotalHeight(),
-        writer.getDirectContent());
+  	    response.setHeader("Expires", "0");
+  	    response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+  	    response.setHeader("Pragma", "public");
+  	    response.setContentLength(baos.size());
 
-    document.add(table);
-    document.close();
-    response.setHeader("Expires", "0");
-    response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
-    response.setHeader("Pragma", "public");
-    response.setContentLength(baos.size());
-    ServletOutputStream os = response.getOutputStream();
-    baos.writeTo(os);
-    os.flush();
-    os.close();
-  }
-
-  private static Font getFont(int size, String rgbColor) {
-    Font font = new Font();
-    font.setSize(size);
-    font.setStyle(Font.BOLD);
-
-    if (rgbColor != null) {
-      BaseColor headerColor = WebColors.getRGBColor(rgbColor);
-      font.setColor(headerColor);
-    }
-    return font;
-  }
-
-  private static PdfPCell getPdfPCell(String phraseText, Font font, Integer colSpan, Integer border,
-      Integer horizontalAlignment, BaseColor backgroundColor, Integer padding, Integer paddingTop,
-      Integer paddingBottom) {
-    PdfPCell cell = new PdfPCell(new Phrase(phraseText, font));
-    if (colSpan != null) {
-      cell.setColspan(colSpan);
-    }
-    if (border != null) {
-      cell.setBorder(border);
-    }
-    if (horizontalAlignment != null) {
-      cell.setHorizontalAlignment(horizontalAlignment);
-    }
-    if (backgroundColor != null) {
-      cell.setBackgroundColor(backgroundColor);
-    }
-    if (padding != null) {
-      cell.setPadding(padding);
-    }
-    if (paddingTop != null) {
-      cell.setPaddingTop(paddingTop);
-    }
-    if (paddingBottom != null) {
-      cell.setPaddingBottom(paddingBottom);
-    }
-
-    return cell;
-  }
+  	    ServletOutputStream os = response.getOutputStream();
+  	    baos.writeTo(os);
+  	    os.flush();
+  	    os.close();
+  	  }
 
   private static void populateCSVData(ExportDetails exportDetails, HttpServletResponse response,
       MessageSource messageSource) throws IOException {

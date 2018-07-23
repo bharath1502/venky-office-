@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.dom4j.DocumentException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,7 +19,6 @@ import org.springframework.context.MessageSource;
 
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
 import com.chatak.pg.enums.ExportType;
-import com.itextpdf.text.DocumentException;
 
 import jxl.write.WriteException;
 
@@ -40,8 +40,7 @@ public class ExportUtilTest {
 		List<String> headerList = new ArrayList<>();
 		List<Object[]> fileData = new ArrayList<>();
 		Object[] objects = { 1, 1, 1 };
-		String s = new String();
-		headerList.add(s);
+		headerList.add("");
 		fileData.add(objects);
 		exportDetails.setHeaderList(headerList);
 		exportDetails.setFileData(fileData);
@@ -55,8 +54,7 @@ public class ExportUtilTest {
 		List<String> headerList = new ArrayList<>();
 		List<Object[]> fileData = new ArrayList<>();
 		Object[] objects = { 1, 1, 1 };
-		String s = new String();
-		headerList.add(s);
+		headerList.add("");
 		fileData.add(objects);
 		exportDetails.setHeaderList(headerList);
 		exportDetails.setFileData(fileData);
@@ -73,8 +71,7 @@ public class ExportUtilTest {
 		List<String> headerList = new ArrayList<>();
 		List<Object[]> fileData = new ArrayList<>();
 		Object[] objects = { 1, 1, 1 };
-		String s = new String();
-		headerList.add(s);
+		headerList.add("");
 		fileData.add(objects);
 		exportDetails.setHeaderList(headerList);
 		exportDetails.setFileData(fileData);

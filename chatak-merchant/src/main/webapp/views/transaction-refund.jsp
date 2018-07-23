@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html>
 <head>
 <meta charset="utf-8">
@@ -12,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><spring:message code="common.lable.title"/></title>
 <!-- Bootstrap -->
-<link rel="icon" href="../images/favicons.png" type="image/png">
+<link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -29,7 +30,7 @@
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js'></script>
 	<script src="../js/common-lib.js"></script>
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
@@ -76,6 +77,7 @@
 								<form:form action="process-transaction-refund" commandName="virtualTeminalRefund" id="txnForm">
 								<input type="hidden" id="timeZoneOffset" name="timeZoneOffset"/>
 								<input type="hidden" id="timeZoneRegion" name="timeZoneRegion"/>
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12" id="hideAllFields">
 										<div class="row">
 											<div class="field-element-row">

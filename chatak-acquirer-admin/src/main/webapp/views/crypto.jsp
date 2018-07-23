@@ -6,7 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ page trimDirectiveWhitespaces="true" %>
-
+<%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 
 <html lang="en">
 <head>
@@ -24,7 +24,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -50,6 +50,7 @@
 									</div>
 								</div>
 								<form:form action="cryptoDownload" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 ">
 										<div class="col-xs-3"></div>
 										<div class="col-sm-3">

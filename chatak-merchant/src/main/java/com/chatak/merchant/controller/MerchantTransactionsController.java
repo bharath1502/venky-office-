@@ -290,15 +290,16 @@ public class MerchantTransactionsController implements URLMappingConstants {
         modelAndView.setViewName(Constants.REDIRECT_PG + CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE);
         redirectAttributes.addAttribute(Constants.REDIRECTION_ERROR, Constants.ACCESS_DENIED);
       }
-    } catch (ChatakPayException e) {
-      modelAndView.addObject(Constants.ERROR, e.getMessage());
+
+    } catch (ChatakPayException exp) {
+      modelAndView.addObject(Constants.ERROR, exp.getMessage());
       modelAndView.addObject(Constants.VIRTUAL_TEMINAL_REFUND, virtualTerminalRefundDTO);
-      logger.error("ERROR :: VirtualTerminalController :: processRefund method:" + e);
-    } catch (Exception e) {
+      logger.error("ERROR :: VirtualTerminalController :: processRefund method:" + exp);
+    } catch (Exception ex) {
       modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       modelAndView.addObject(Constants.VIRTUAL_TEMINAL_REFUND, virtualTerminalRefundDTO);
-      logger.error("ERROR :: VirtualTerminalController :: processRefund method:" + e);
+      logger.error("ERROR :: VirtualTerminalController :: processRefund method:" + ex);
     }
     logger.info("Exiting :: VirtualTerminalController :: processRefund method");
     return modelAndView;

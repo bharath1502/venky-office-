@@ -21,8 +21,8 @@ public final class Properties extends PropertyPlaceholderConfigurer {
    */
   @Override
   public java.util.Properties mergeProperties() throws IOException {
-    propsExported = super.mergeProperties();
-    return propsExported;
+	  propsExported =  super.mergeProperties();
+	  return propsExported;
   }
 
   /**

@@ -60,9 +60,6 @@ public class ProgramManagerAccount implements Serializable {
   @Column(name = "SEND_FUNDS_MODE")
   private String sendFundsMode;
 
-  @Column(name = "SEND_FUNDS_BANK_ID")
-  private Long bankId;
-
   @Column(name = "AUTO_REPLENISH")
   private Boolean autoReplenish;
 
@@ -194,20 +191,6 @@ public class ProgramManagerAccount implements Serializable {
    */
   public void setSendFundsMode(String sendFundsMode) {
     this.sendFundsMode = sendFundsMode;
-  }
-
-  /**
-   * @return the bankId
-   */
-  public Long getBankId() {
-    return bankId;
-  }
-
-  /**
-   * @param bankId the bankId to set
-   */
-  public void setBankId(Long bankId) {
-    this.bankId = bankId;
   }
 
   public Boolean getAutoReplenish() {

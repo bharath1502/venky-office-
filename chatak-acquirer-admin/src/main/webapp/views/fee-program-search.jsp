@@ -23,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -92,22 +92,26 @@
 									method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 										type="hidden" id="totalRecordsId" name="totalRecords" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="editFeeProgram" name="editFeeProgramForm"
 									method="post">
 									<input type="hidden" id="getFeeProgramId"
 										name="getFeeProgramId" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="fee-program-view" name="viewFeeProgramForm"
 									method="post">
 									<input type="hidden" id="getViewFeeProgramId"
 										name="getFeeProgramId" />
+										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								
 								<form:form action="deleteFeeProgram" name="deleteFeeProgramForm" method="post">
 									<input type="hidden" id="getDeleteFeeId" name="getDeleteFeeId" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 
 								<form:form action="downloadFeeProgramreport" name="downloadReport" method="post">
@@ -115,10 +119,12 @@
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="feeProgramSearch" modelAttribute="feeProgramDTO" method="post">
+								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -444,7 +450,8 @@
 		<h2><spring:message code="prepaid-admin-programmanager-search-label.ChangeStatus"/></h2>
 		<form:form action="feeProgramActivationSuspention" name="feeProgramActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="feeProgramId" /> <input
-				type="hidden" id="suspendActiveStatus" name="feeProgramStatus" /> 
+				type="hidden" id="suspendActiveStatus" name="feeProgramStatus" />
+				<input type="hidden" name="CSRFToken" value="${tokenval}"> 
 				<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/> </label>
 			<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -468,9 +475,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/utils.js"></script>
-	<script src="../js/sorting.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
+	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/messages.js"></script>
@@ -531,6 +536,21 @@
 			return false;
 		});
 		/* Select li full area function End */		
+		$(document).ready(function() {
+							/* Table Sorter includes Start*/
+							$(function() {
+								
+									  // call the tablesorter plugin
+									  $('#serviceResults').sortable({
+										
+										 divBeforeTable: '#divbeforeid',
+										divAfterTable: '#divafterid',
+										initialSort: false,
+										locale: 'th',
+										//negativeSort: [1, 2]
+									});
+							});
+							});
 	</script>
 </body>
 </html>

@@ -15,10 +15,6 @@ function setError(ele, errorMsg) {
 	get((ele.id+'Er')).innerHTML = errorMsg;
 }
 
-function get(id) {
-	return document.getElementById(id);
-}
-
 function commissionNames($this) 
 
 {

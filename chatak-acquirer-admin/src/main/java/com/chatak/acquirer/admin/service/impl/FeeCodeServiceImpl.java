@@ -271,23 +271,6 @@ public class FeeCodeServiceImpl implements FeeCodeService {
   }
 
   @Override
-  public List<PGAcquirerFeeCode> getAcquirerFeeCodeTemplatesByPartnerId(Long partnerId)
-      throws ChatakAdminException {
-    List<PGAcquirerFeeCode> pgAcquirerFeeCodeList = new ArrayList<>();
-    PGAcquirerFeeCode pgAcquirerFeeCode = new PGAcquirerFeeCode();
-    pgAcquirerFeeCode.setPartnerId(partnerId);
-    pgAcquirerFeeCode.setAcquirerName(PGConstants.VISA);
-    pgAcquirerFeeCodeList.add(pgAcquirerFeeCode);
-    pgAcquirerFeeCode.setAcquirerName(PGConstants.MASTER);
-    pgAcquirerFeeCodeList.add(pgAcquirerFeeCode);
-    pgAcquirerFeeCode.setAcquirerName(PGConstants.AMEX);
-    pgAcquirerFeeCodeList.add(pgAcquirerFeeCode);
-    pgAcquirerFeeCode.setAcquirerName(PGConstants.DISCOVER);
-    pgAcquirerFeeCodeList.add(pgAcquirerFeeCode);
-    return pgAcquirerFeeCodeList;
-  }
-
-  @Override
   public void addAcquirerFeeCode(AcquirerFeeCodeDTO pgAcquirerFeeCode) throws ChatakAdminException {
     PGAcquirerFeeCode pgAcquirerFeeCode2 = new PGAcquirerFeeCode();
     pgAcquirerFeeCode2.setAcquirerName(pgAcquirerFeeCode.getAcquirerName());

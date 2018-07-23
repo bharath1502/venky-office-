@@ -130,19 +130,9 @@ public class MerchantValidateServiceImplTest {
 		merchantValidateServiceImpl.getAgentDataById(Long.parseLong("123"));
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testgetPartnerList() throws ChatakAdminException, IOException {
 		merchantValidateServiceImpl.getPartnerList("currencyCodeAlpha");
-	}
-
-	@Test
-	public void testgetPartnerLinkedToMerchant() throws ChatakAdminException, IOException {
-		merchantValidateServiceImpl.getPartnerLinkedToMerchant(Long.parseLong("5432"));
-	}
-
-	@Test
-	public void testgetlinkedPartners() throws ChatakAdminException, IOException {
-		merchantValidateServiceImpl.getlinkedPartners();
 	}
 
 	@Test
@@ -311,7 +301,6 @@ public class MerchantValidateServiceImplTest {
         config.setTipAmount(1);
         pgAccount.setPgMerchantBank(merchantBank);
         pgMerchant.setMerchantConfig(config);
-        pgMerchant.setPartnerId("4586456");
         pgMerchant.setMerchantType("SubMerchant");
         Partner partner = new Partner();
         partner.setPartnerName("partnerName");

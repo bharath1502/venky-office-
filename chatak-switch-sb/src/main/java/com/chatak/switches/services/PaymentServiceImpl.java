@@ -41,6 +41,8 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.MessageTypeCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ProcessorType;
+import com.chatak.pg.util.LogHelper;
+import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 import com.chatak.switches.prepaid.ChatakPrepaidSwitchTransaction;
 import com.chatak.switches.sb.SwitchTransaction;
@@ -179,14 +181,16 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
 
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
-      switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+      switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(), pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg = switchTransaction.financial(getISOMsg(purchaseRequest,
-          MessageTypeCode.ONLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, txnRefNum));
+          MessageTypeCode.ONLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, purchaseRequest.getTransactionId() != null ? 
+              purchaseRequest.getTransactionId() : txnRefNum));
 
       String switchResponseCode =
           switchISOMsg.getValue(Integer.parseInt("39")) != null ? (String) switchISOMsg.getValue(Integer.parseInt("39")) : null;
+      LogHelper.logInfo(log, LoggerMessage.getCallerName(), " Processor Tnx Response Code : " + switchResponseCode);
       String switchResponseMessage = ActionCode.getInstance().getMessage(switchResponseCode);
+      LogHelper.logInfo(log, LoggerMessage.getCallerName(), " Processor Tnx Response Message : " + switchResponseMessage);
       purchaseResponse.setTxnResponseTime(System.currentTimeMillis());
       purchaseResponse.setUpStreamMessage(switchResponseMessage);
 
@@ -200,6 +204,12 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
         if (switchISOMsg.getValue(Integer.parseInt("37")) != null)
           purchaseResponse.setUpStreamTxnRefNum(((String) switchISOMsg.getValue(Integer.parseInt("37"))).trim());
       }
+      
+      //Get txn time and issuance partner from processor
+      LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Issuance Txn Time: " + switchISOMsg.getValue(Integer.parseInt("123")));
+      LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Issuance Partner: " + switchISOMsg.getValue(Integer.parseInt("124")));
+      purchaseResponse.setIssuanceTxnTime((String)switchISOMsg.getValue(Integer.parseInt("123")));
+      purchaseResponse.setIssuancePartner((String)switchISOMsg.getValue(Integer.parseInt("124"))); 
       purchaseResponse.setErrorCode(switchResponseCode);
       purchaseResponse.setErrorMessage(switchResponseMessage);
 
@@ -246,7 +256,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       validateRequest(adjustmentRequest);
 
       PGTransaction saleTransaction =
-          transactionDao.getTransaction(adjustmentRequest.getMerchantId(),
+          transactionDao.getTransaction(adjustmentRequest.getMerchantCode(),
               adjustmentRequest.getTerminalId(), adjustmentRequest.getTxnRefNum());
       if (saleTransaction == null) {
         throw new ServiceException(ActionCode.ERROR_CODE_78);
@@ -488,6 +498,12 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
         if (switchISOMsg.getValue(Integer.parseInt("37")) != null)
           refundResponse.setUpStreamTxnRefNum(((String) switchISOMsg.getValue(Integer.parseInt("37"))).trim());
       }
+      
+    //Get txn time and issuance partner from processor
+      LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Issuance Txn Time: " + switchISOMsg.getValue(Integer.parseInt("123")));
+      LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Issuance Partner: " + switchISOMsg.getValue(Integer.parseInt("124")));
+      refundResponse.setIssuanceTxnTime((String)switchISOMsg.getValue(Integer.parseInt("123")));
+      refundResponse.setIssuancePartner((String)switchISOMsg.getValue(Integer.parseInt("124")));
       refundResponse.setErrorCode(switchResponseCode);
       refundResponse.setErrorMessage(switchResponseMessage);
     } catch (ISOException e) {
@@ -685,7 +701,7 @@ private void validateISOMsg(CashBackResponse cashBackResponse, ISOMsg isoMsg, Sw
       PGTransaction authTransaction = voidTransactionDao
           .findTransactionToCaptureByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(
               captureRequest.getAuthTxnRefNum(), captureRequest.getIssuerTxnRefNum(),
-              captureRequest.getMerchantId(), captureRequest.getTerminalId());
+              captureRequest.getMerchantCode(), captureRequest.getTerminalId());
       validatePGTransaction(captureRequest, authTransaction);
 
       // Create Transaction record
@@ -819,7 +835,7 @@ private void validateISOMsg(CashBackResponse cashBackResponse, ISOMsg isoMsg, Sw
     } else {
       List<PGTransaction> authTransactionDuplicate =
           voidTransactionDao.findByMerchantIdAndTerminalIdAndRefTransactionIdAndStatus(
-              captureRequest.getMerchantId(), captureRequest.getTerminalId(),
+              captureRequest.getMerchantCode(), captureRequest.getTerminalId(),
               captureRequest.getAuthTxnRefNum(), 0);
       if (StringUtils.isListNotNullNEmpty(authTransactionDuplicate)) {
         throw new ServiceException(ActionCode.ERROR_CODE_94);

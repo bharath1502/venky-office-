@@ -81,10 +81,8 @@ public class VaultController extends BaseController implements URLMappingConstan
       getCardTokensResponse = vaultService.getCardTokens(getCardTokensRequest);
     } catch(Exception e) {
       logger.error("ERROR:: VaultController:: getTokens method", e);
-      if(null != getCardTokensResponse) {
         getCardTokensResponse.setErrorCode(e.getMessage());
         getCardTokensResponse.setErrorMessage(VaultErrorCodes.getInstance().getMessage(e.getMessage()));
-      }
     }
     logger.debug("Exiting :: VaultController:: getTokens method");
 

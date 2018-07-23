@@ -683,19 +683,6 @@ public class PartnerDaoImpl implements PartnerDao {
     }
     return list;
   }
-
-  @Override
-  public List<PartnerRequest> findAllPartners() {
-    List<PartnerRequest> list = new ArrayList<>();
-    try {
-      List<Partner> partnersList = partnerRepository.findByStatus(Constants.ACTIVE);
-      list = CommonUtil.copyListBeanProperty(partnersList, PartnerRequest.class);
-    } catch (Exception ex) {
-      logger.error("Error in retrieving the list of Partners", ex);
-    }
-
-    return list;
-  }
   
   @Override
   public ProgramManager findProgramManagerByPartnerId(String partnerId) {

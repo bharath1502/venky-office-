@@ -24,7 +24,7 @@ public class RandomGenerator {
     Random randomObj = new Random();
     for(int j = 0; j < Integer.parseInt("6"); j++) {
       int rand_int = randomObj.nextInt(Integer.parseInt("72"));
-      finalRandString += randomChar[rand_int];
+      finalRandString += Character.toString(randomChar[rand_int]);
     }
     return finalRandString;
   }
@@ -42,7 +42,7 @@ public class RandomGenerator {
     Random randomObj = new Random();
     for(int j = 0; j < length; j++) {
       int rand_int = randomObj.nextInt(Integer.parseInt("72"));
-      finalRandString += randomChar[rand_int];
+      finalRandString += Character.toString(randomChar[rand_int]);
       if(finalRandString.length() >= length) {
         finalRandString = finalRandString.substring(0, length);
         break;

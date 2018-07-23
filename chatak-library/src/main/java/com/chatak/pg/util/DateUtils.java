@@ -13,8 +13,6 @@ public class DateUtils {
   
   private static Logger logger = Logger.getLogger(DateUtils.class);
 
-  private static final SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
-
   private static final int DECEMBER = 12;
 
   private static final int TWO_DIGITS = 2;
@@ -100,6 +98,7 @@ public class DateUtils {
   public static String getDateOfDaysBeforeCurrentDateInMMddyyyy(int days) {
     String currentDate = "";
     Calendar cal = Calendar.getInstance();
+    SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
     if(days > 0) {
       cal.add(Calendar.DATE, days * -1);
       currentDate = mmddyyyyformatter.format(cal.getTime());
@@ -117,6 +116,7 @@ public class DateUtils {
    */
   public static String getCurrentDateInMMddyyyy() {
     String currentDate;
+    SimpleDateFormat mmddyyyyformatter = new SimpleDateFormat("MM/dd/yyyy");
     Calendar cal = Calendar.getInstance();
     currentDate = mmddyyyyformatter.format(cal.getTime());
     return currentDate;
@@ -203,13 +203,7 @@ public class DateUtils {
     else {
       // starting or ending year should not be 0
       int endingYear = StringUtils.convertToInt(endDate.substring(0, Integer.parseInt("4")));
-      if(endingYear == 0) {
-        return false;
-      }
-      else if(!getSqlDateFromDateStr(endDate).before(currentDate)) {
-        return false;
-      }
-      else if(!getSqlDateFromDateStr(startDate).before(getSqlDateFromDateStr(formatTranDate(endDate)))) {
+      if((endingYear == 0) || (!getSqlDateFromDateStr(endDate).before(currentDate)) || (!getSqlDateFromDateStr(startDate).before(getSqlDateFromDateStr(formatTranDate(endDate))))) {
         return false;
       }
     }

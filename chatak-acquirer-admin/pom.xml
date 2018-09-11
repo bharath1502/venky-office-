@@ -109,10 +109,10 @@
 			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/chatak-crypto-0.1.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.18</version>
-		</dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.12</version>
+        </dependency>
 		<dependency>
 			<groupId>com.chatak</groupId>
 			<artifactId>chatak-switch-sb</artifactId>
@@ -238,10 +238,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>2.7.6</version>
-		</dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.2.0</version>
+        </dependency>
 		
 	    <dependency>
 			<groupId>xerces</groupId>
@@ -250,16 +250,18 @@
 		</dependency>
 
 		<!-- Logging -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>apache-log4j-extras</artifactId>
-			<version>1.1</version>
-		</dependency>
+         <dependency>
+             <groupId>log4j</groupId>
+             <artifactId>log4j</artifactId>
+             <version>1.2.17</version>
+        </dependency>
+
+       <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>apache-log4j-extras</artifactId>
+            <version>1.2.17</version>
+       </dependency>
+       
 		<dependency>
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
@@ -326,7 +328,7 @@
    <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.18.2-GA</version>
+        <version>3.23.1-GA</version>
     </dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>

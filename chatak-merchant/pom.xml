@@ -235,10 +235,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>2.7.6</version>
-		</dependency>
+             <groupId>com.zaxxer</groupId>
+             <artifactId>HikariCP</artifactId>
+             <version>3.2.0</version>
+        </dependency>
 		
   		<dependency>
 			<groupId>xerces</groupId>
@@ -301,10 +301,10 @@
 			<version>${release-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.18</version>
-		</dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.12</version>
+        </dependency>
 		<dependency>
     <groupId>org.mockito</groupId>
 	    <artifactId>mockito-all</artifactId>

@@ -244,9 +244,9 @@
         </dependency>
 		
 	    <dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.11.0</version>
+		    <groupId>xerces</groupId>
+		    <artifactId>xercesImpl</artifactId>
+		    <version>2.12.0</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -263,14 +263,9 @@
        </dependency>
        
 		<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>2.7.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-validator</groupId>
-			<artifactId>commons-validator</artifactId>
-			<version>1.4.0</version>
+		    <groupId>xalan</groupId>
+		    <artifactId>xalan</artifactId>
+		    <version>2.7.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.chatak.pg</groupId>
@@ -341,15 +336,15 @@
 			<version>3.0</version>
 		</dependency>
 		<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.4</version>
-			</dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.6</version>
+		</dependency>
 			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>1.3.1</version>
-			</dependency>
+		    <groupId>commons-fileupload</groupId>
+		    <artifactId>commons-fileupload</artifactId>
+		    <version>1.3.3</version>
+		</dependency>
 		   <dependency>
 				<groupId>com.github.dhorions</groupId>
 				<artifactId>boxable</artifactId>

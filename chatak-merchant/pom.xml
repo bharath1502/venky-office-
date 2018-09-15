@@ -241,9 +241,9 @@
         </dependency>
 		
   		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.11.0</version>
+		    <groupId>xerces</groupId>
+		    <artifactId>xercesImpl</artifactId>
+		    <version>2.12.0</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -259,14 +259,9 @@
             <version>1.2.17</version>
        </dependency>
 		<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>2.7.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-validator</groupId>
-			<artifactId>commons-validator</artifactId>
-			<version>1.4.0</version>
+		    <groupId>xalan</groupId>
+		    <artifactId>xalan</artifactId>
+		    <version>2.7.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.chatak.pg</groupId>

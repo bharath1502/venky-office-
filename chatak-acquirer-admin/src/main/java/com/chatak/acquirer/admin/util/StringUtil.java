@@ -25,11 +25,6 @@ import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.Properties;
 
-import jxl.write.NumberFormats;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
-import jxl.write.WriteException;
-
 /**
  *
  * << Add Comments Here >>
@@ -399,17 +394,6 @@ public final class StringUtil {
       return null;
     }
     return value.toString();
-  }
-
-  public static WritableCellFormat getExportUtilCellFormat() throws WriteException {
-    WritableFont cellFont = new WritableFont(WritableFont.ARIAL, Constants.TEN);
-    cellFont.setBoldStyle(WritableFont.BOLD);
-    return new WritableCellFormat(cellFont);
-  }
-
-  public static jxl.write.Number getAmountInFloat(int i, int j, Double amount) {
-    WritableCellFormat floatFormat = new WritableCellFormat(NumberFormats.FLOAT);
-    return new jxl.write.Number(i, j, ((amount != null) ? amount : 0d), floatFormat);
   }
 
   /**

@@ -19,6 +19,15 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellUtil;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -30,18 +39,11 @@ import com.chatak.pg.util.DateUtil;
 import be.quodlibet.boxable.BaseTable;
 import be.quodlibet.boxable.datatable.DataTable;
 import be.quodlibet.boxable.utils.PDStreamUtils;
-import jxl.Workbook;
-import jxl.write.Label;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
 
 public class ExportUtil {
 
   private static final String ATTACHMENT_FILE_NAME = "attachment;filename=";
-
+  private static final String TIMES_NEW_ROMAN = "Times New Roman";
   private static final String CONTENT_DESCRIPTION = "Content-Disposition";
   private static final int TABLE_ROW_NUM = 7;
   private static final int CELL_COUNT = 2;
@@ -51,7 +53,7 @@ public class ExportUtil {
   }
 
   public static void exportData(ExportDetails exportDetails, HttpServletResponse response,
-      MessageSource messageSource) throws IOException, WriteException {
+      MessageSource messageSource) throws IOException {
 
     ExportType expTypeEnum = exportDetails.getExportType();
 
@@ -91,74 +93,81 @@ public class ExportUtil {
   }
 
   private static void populateXLSData(ExportDetails exportDetails, HttpServletResponse response,
-      MessageSource messageSource) throws IOException, WriteException {
+      MessageSource messageSource) throws IOException {		
 
-    String headerMsgProp = exportDetails.getHeaderMessageProperty();
-    WritableWorkbook w = Workbook.createWorkbook(response.getOutputStream());
-    WritableSheet s = w.createSheet(
-        messageSource.getMessage(headerMsgProp, null, LocaleContextHolder.getLocale()), 0);
-    WritableFont wfobj = new WritableFont(WritableFont.TIMES, Integer.parseInt("11"), WritableFont.BOLD);
-    WritableCellFormat cellFormat = new WritableCellFormat(wfobj);
-    Date date = new Date();
-    String headerDate = new SimpleDateFormat(Constants.EXPORT_HEADER_DATE_FORMAT).format(date);
-
-    s.addCell(new Label(0, 0,
-        messageSource.getMessage(headerMsgProp, null, LocaleContextHolder.getLocale()),
-        cellFormat));
-    s.addCell(new Label(0, Integer.parseInt("2"), messageSource.getMessage("userList-file-exportutil-reportdate", null,
-        LocaleContextHolder.getLocale()) + headerDate));
-
-		Map<String, String> map = null;
-		if (exportDetails.getMap() != null) {
-			map = exportDetails.getMap();
-			int cellCount = CELL_COUNT;
-			for (Map.Entry  MapColummn : map.entrySet()) {
-				s.addCell(new Label(0, cellCount++, MapColummn.getKey() + "" + MapColummn.getValue()));
+	    String headerMsgProp = exportDetails.getHeaderMessageProperty();
+	    HSSFWorkbook wb = new HSSFWorkbook();
+	    HSSFSheet sheet =wb.createSheet(
+		        messageSource.getMessage(headerMsgProp, null, LocaleContextHolder.getLocale()));
+	    Font font = wb.createFont();
+	    font.setFontHeightInPoints((short)11);
+	    font.setFontName(TIMES_NEW_ROMAN);
+	    font.setBold(true);
+	    CellStyle style = wb.createCellStyle();
+	    style.setFont(font);
+	    
+	    Date date = new Date();
+	    String headerDate = new SimpleDateFormat(Constants.EXPORT_HEADER_DATE_FORMAT).format(date);
+	    CellUtil.createCell(sheet.createRow(0), 0, messageSource.getMessage(headerMsgProp, null, LocaleContextHolder.getLocale()), style);
+	    CellUtil.createCell(sheet.createRow(2), 0, messageSource.getMessage("userList-file-exportutil-reportdate", null,
+		        LocaleContextHolder.getLocale()) + headerDate);
+	    
+			Map<String, String> map = null;
+			if (exportDetails.getMap() != null) {
+				map = exportDetails.getMap();
+				int cellCount = CELL_COUNT;
+				for (Map.Entry  MapColummn : map.entrySet()) {
+					sheet.createRow(cellCount++).createCell(0).setCellValue(MapColummn.getKey() + "" + MapColummn.getValue());
+				}
 			}
-		}
-	
-    int rowNum = TABLE_ROW_NUM;
-    if (exportDetails.getExcelStartRowNumber() != null) {
-      rowNum = exportDetails.getExcelStartRowNumber();
-    }
+		
+	    int rowNum = TABLE_ROW_NUM;
+	    if (exportDetails.getExcelStartRowNumber() != null) {
+	      rowNum = exportDetails.getExcelStartRowNumber();
+	    }
 
-    List<String> headerList = exportDetails.getHeaderList();
-    List<Object[]> fileData = exportDetails.getFileData();
+	    List<String> headerList = exportDetails.getHeaderList();
+	    List<Object[]> fileData = exportDetails.getFileData();
+	    Row headerRow = sheet.createRow(rowNum);
+	    for (int i = 0, len = headerList.size(); i < len; i++) {
+	      CellUtil.createCell(headerRow, i,headerList.get(i), style);
+	    }
+	   
+	    CellStyle floatStyle = wb.createCellStyle();
+		floatStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("0.00"));
+	    int j = Constants.SIX;
+	    for (Object[] rowData : fileData) {
+	      rowNum++;
+	      int i = 0;
+	      HSSFRow colRow = sheet.createRow(rowNum);
+	      for (Object rowElement : rowData) {
+	        if (rowElement instanceof Double) {
+	        	HSSFCell cell = colRow.createCell(i++);
+	        	cell.setCellValue(processDoubleAmount(rowElement));
+	        	cell.setCellStyle(floatStyle);
+	        } else if (rowElement instanceof String) {
+	        	colRow.createCell(i++).setCellValue((String)rowElement + "");
+	        } else if (rowElement instanceof Date) {
+	        	colRow.createCell(i++).setCellValue((Date)rowElement);
+	        } else if (rowElement instanceof Boolean) {
+	            colRow.createCell(i++).setCellValue((Boolean)rowElement + "");
+	        } else if (rowElement instanceof Long) {
+	        	colRow.createCell(i++).setCellValue((Long)rowElement);
+	        } else if (rowElement instanceof Integer) {
+	        	colRow.createCell(i++).setCellValue((Integer)rowElement);
+	        } else if(rowElement == null){
+	        	colRow.createCell(i++).setCellValue("" + "");
+	        } else {
+	        	colRow.createCell(i++).setCellValue(String.valueOf(rowElement));
+	          
+	        }
+	      }
+	      j = j + 1;
+	    }
 
-    for (int i = 0, len = headerList.size(); i < len; i++) {
-      s.addCell(new Label(i, rowNum, headerList.get(i), cellFormat));
-    }
-
-    int j = Constants.SIX;
-    for (Object[] rowData : fileData) {
-      rowNum++;
-      int i = 0;
-
-      for (Object rowElement : rowData) {
-        if (rowElement instanceof Double) {
-          s.addCell(StringUtil.getAmountInFloat(i++, rowNum, processDoubleAmount(rowElement)));
-        } else if (rowElement instanceof String) {
-          s.addCell(new Label(i++, rowNum, ((String)rowElement) + ""));
-        } else if (rowElement instanceof Date) {
-          s.addCell(new Label(i++, rowNum, ((Date)rowElement) + ""));
-        } else if (rowElement instanceof Boolean) {
-          s.addCell(new Label(i++, rowNum, ((Boolean)rowElement) + ""));
-        } else if (rowElement instanceof Long) {
-          s.addCell(new jxl.write.Number(i++, rowNum, ((Long)rowElement)));
-        } else if (rowElement instanceof Integer) {
-          s.addCell(new jxl.write.Number(i++, rowNum, ((Integer)rowElement)));
-        } else if(rowElement == null){
-        	s.addCell(new Label(i++, rowNum, "" + ""));
-        } else {
-          s.addCell(new jxl.write.Label(i++, rowNum, (String.valueOf(rowElement))));
-        }
-      }
-      j = j + 1;
-    }
-
-    w.write();
-    w.close();
-  }
+	    wb.write(response.getOutputStream());
+	    wb.close();
+	  }
 
   private static double processDoubleAmount(Object rowElement) {
     return (!"".equals(rowElement)) ? Double.parseDouble(rowElement.toString()): 0d;

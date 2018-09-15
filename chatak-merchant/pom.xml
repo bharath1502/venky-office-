@@ -241,9 +241,9 @@
         </dependency>
 		
   		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.11.0</version>
+		    <groupId>xerces</groupId>
+		    <artifactId>xercesImpl</artifactId>
+		    <version>2.12.0</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -259,9 +259,9 @@
             <version>1.2.17</version>
        </dependency>
 		<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>2.7.1</version>
+		    <groupId>xalan</groupId>
+		    <artifactId>xalan</artifactId>
+		    <version>2.7.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.chatak.pg</groupId>
@@ -285,11 +285,6 @@
 			<version>1.1.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>net.sourceforge.jexcelapi</groupId>
-			<artifactId>jxl</artifactId>
-			<version>2.6.12</version>
-		</dependency>
 		<dependency>
 			<groupId>com.chatak.prepaid</groupId>
 			<artifactId>acquirer-notifications</artifactId>
@@ -332,6 +327,11 @@
 		    <artifactId>spring-test</artifactId>
 		    <version>3.2.0.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>4.0.0</version>
+	   </dependency>
 	   <dependency>
 			<groupId>com.github.dhorions</groupId>
 			<artifactId>boxable</artifactId>

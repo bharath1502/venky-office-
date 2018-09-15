@@ -211,24 +211,24 @@ public class ExportUtil {
     for (Object[] rowData : fileData) {
       rowNum++;
       int i = 0;
-      HSSFRow colRow = sheet.createRow(rowNum);
+      HSSFRow dataRow = sheet.createRow(rowNum);
       for (Object rowElement : rowData) {
         if (rowElement instanceof Double) {
-        	HSSFCell cell = colRow.createCell(i++);
+        	HSSFCell cell = dataRow.createCell(i++);
         	cell.setCellValue(processDoubleAmount(rowElement));
         	cell.setCellStyle(floatStyle);
         } else if (rowElement instanceof String) {
-        	colRow.createCell(i++).setCellValue((String)rowElement + "");
+        	dataRow.createCell(i++).setCellValue((String)rowElement + "");
         } else if (rowElement instanceof Date) {
-        	colRow.createCell(i++).setCellValue((Date)rowElement);
+        	dataRow.createCell(i++).setCellValue((Date)rowElement);
         } else if (rowElement instanceof Boolean) {
-        	colRow.createCell(i++).setCellValue((Boolean)rowElement + "");
+        	dataRow.createCell(i++).setCellValue((Boolean)rowElement + "");
         } else if (rowElement instanceof Long) {
-        	colRow.createCell(i++).setCellValue((Long)rowElement);
+        	dataRow.createCell(i++).setCellValue((Long)rowElement);
         } else if (rowElement instanceof Integer) {
-        	colRow.createCell(i++).setCellValue((Integer)rowElement);
+        	dataRow.createCell(i++).setCellValue((Integer)rowElement);
         } else {
-          colRow.createCell(i++).setCellValue((String)rowElement);
+          dataRow.createCell(i++).setCellValue((String)rowElement);
         }
       }
       j = j + 1;
@@ -240,7 +240,7 @@ public class ExportUtil {
   }
 
   private static double processDoubleAmount(Object rowElement) {
-    return (!"".equals(rowElement)) ? Float.parseFloat(rowElement.toString()): 0d;
+    return (!"".equals(rowElement)) ? Double.parseDouble(rowElement.toString()): 0d;
   }
 
   private static void populateCSVData(ExportDetails exportDetails, HttpServletResponse response,

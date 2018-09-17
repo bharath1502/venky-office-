@@ -103,12 +103,6 @@
 			<version>${release-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.51</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.chatak</groupId>
 			<artifactId>chatak-product-license</artifactId>
 			<scope>system</scope>

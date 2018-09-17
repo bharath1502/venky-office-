@@ -198,7 +198,7 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.10</version>
+			<version>1.9.11</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -251,19 +251,19 @@
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-core</artifactId>
-			<version>3.4.3</version>
+			<version>3.7.4</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
-			<version>3.4.3</version>
+			<version>3.7.4</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
-			<version>3.4.3</version>
+			<version>3.7.4</version>
 		</dependency>
 
 		<dependency>
@@ -273,11 +273,11 @@
           </dependency>
 		
 		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.11.0</version>
+		    <groupId>xerces</groupId>
+		    <artifactId>xercesImpl</artifactId>
+		    <version>2.12.0</version>
 		</dependency>
-
+		
 		<!-- Logging -->
 		<!-- <dependency> <groupId>log4j</groupId> <artifactId>log4j</artifactId> 
 			<version>1.2.16</version> </dependency> <dependency> <groupId>log4j</groupId> 
@@ -294,14 +294,9 @@
 			<version>2.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>2.7.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-validator</groupId>
-			<artifactId>commons-validator</artifactId>
-			<version>1.4.0</version>
+		    <groupId>xalan</groupId>
+		    <artifactId>xalan</artifactId>
+		    <version>2.7.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.chatak.pg</groupId>
@@ -372,7 +367,7 @@
 	<dependency>
        <groupId>org.apache.httpcomponents</groupId>
        <artifactId>httpclient</artifactId>
-       <version>4.3.5</version>
+       <version>4.5.6</version>
    </dependency>
 	</dependencies>
 </project>

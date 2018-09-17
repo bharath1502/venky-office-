@@ -81,6 +81,11 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
+   <repository>
+		<id>oracle-repo</id>
+		<name>oracle repo</name>
+  		<url>http://download.oracle.com/maven</url>
+	</repository>
 
 		<repository>
 			<id>local-project-libraries</id>
@@ -316,9 +321,14 @@
 		<dependency>
 			<groupId>org.jpos</groupId>
 			<artifactId>jpos</artifactId>
-			<version>1.9.8</version>
+			<version>2.1.1</version>
 		</dependency>
-
+<!-- https://mvnrepository.com/artifact/com.sleepycat/je -->
+        <dependency>
+            <groupId>com.sleepycat</groupId>
+            <artifactId>je</artifactId>
+            <version>18.3.1</version>
+        </dependency>
 		<dependency>
 			<groupId>com.chatak.prepaid</groupId>
 			<artifactId>acquirer-notifications</artifactId>
@@ -364,4 +374,5 @@
        <version>4.5.6</version>
    </dependency>
 	</dependencies>
+	
 </project>

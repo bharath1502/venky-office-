@@ -11,7 +11,6 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.FormParam;
 
 import org.apache.log4j.Logger;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -155,7 +154,7 @@ public class FundTransferController implements URLMappingConstants {
   public ModelAndView processBulkFundTransferAction(HttpServletRequest request,
       HttpServletResponse response, HttpSession session,
       @FormParam("requestObject") String requestObject, @FormParam("action") String action,
-      Map model) throws ParseException {
+      Map model) {
     ModelAndView modelAndView = showFundTransferRequests(model, request, response);
     try {
       String jsonRequest = "{\"pgTransfersIds\":[" + requestObject + "]}";

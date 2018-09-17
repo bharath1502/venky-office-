@@ -893,8 +893,7 @@ public abstract class TransactionService extends AccountTransactionService {
   }
 
   protected ISOMsg getISOMsg(ISOMsg isoMsg) {
-    try {
-      isoMsg.set(ISOConstants.TRANSMISSION_DATE_TIME, (new SimpleDateFormat("MMddhhmmss").format(new Date())));
+    isoMsg.set(ISOConstants.TRANSMISSION_DATE_TIME, (new SimpleDateFormat("MMddhhmmss").format(new Date())));
       isoMsg.set(ISOConstants.LOCAL_TRANSACTION_TIME, DateUtils.getLocalTransactionTime());// TODO: local
       // time
       isoMsg.set(ISOConstants.LOCAL_TRANSACTION_DATE, DateUtils.getLocalTransactionDate());// TODO: local
@@ -910,9 +909,6 @@ public abstract class TransactionService extends AccountTransactionService {
       isoMsg.set(ISOConstants.RESERVED_NATIONAL_57, "220");// TODO: Auth life cycle
       isoMsg.set(ISOConstants.RESERVED_NATIONAL_58, "0000000002");
       isoMsg.set(ISOConstants.RESERVED_PRIVATE_63, "80L30MMT");
-    } catch (ISOException e) {
-      logger.error("ERROR:: TransactionService:: getISOMsg method", e);
-    }
 
     return isoMsg;
   }

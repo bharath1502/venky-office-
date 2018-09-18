@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.chatak.merchant.constants.FeatureConstants;
 import com.chatak.merchant.constants.URLMappingConstants;
 import com.chatak.merchant.controller.model.ExportDetails;
@@ -52,8 +53,6 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
-
-import jxl.write.WriteException;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Controller
@@ -519,7 +518,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 
   private void processDownloadReport(HttpServletResponse response, final String downloadType,
       final boolean downloadAllRecords, GetTransactionsListRequest transactionRequest,
-      TransactionListResponse transactionResponse, List<AccountTransactionDTO> processingTxnList) throws WriteException, IOException {
+      TransactionListResponse transactionResponse, List<AccountTransactionDTO> processingTxnList) throws  IOException {
     if (downloadAllRecords) {
       processingTxnList = fetchProcessingTxnList(transactionRequest, transactionResponse,
     processingTxnList);
@@ -621,7 +620,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 
   private void processDownloadReport(HttpServletResponse response, final String downloadType,
       final boolean downloadAllRecords, List<AccountTransactionDTO> executedTxnsList,
-      GetTransactionsListRequest transaction, TransactionListResponse transactionResponse) throws WriteException, IOException {
+      GetTransactionsListRequest transaction, TransactionListResponse transactionResponse) throws  IOException {
     if (downloadAllRecords) {
       executedTxnsList = fetchExecutedTxnList(executedTxnsList, transaction, transactionResponse);
     }

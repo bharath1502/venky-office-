@@ -7,6 +7,14 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellUtil;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -14,16 +22,6 @@ import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-
-import jxl.Workbook;
-import jxl.format.Alignment;
-import jxl.write.Label;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
 
 public class TransactionFileExportUtil {
 
@@ -62,103 +60,71 @@ public class TransactionFileExportUtil {
     response.setHeader("Content-Disposition", "attachment;filename=" + filename);
     try {
 
-      WritableFont cellFont = new WritableFont(WritableFont.ARIAL, Constants.TEN);
-      cellFont.setBoldStyle(WritableFont.BOLD);
-      WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
-
-      WritableWorkbook w = Workbook.createWorkbook(response.getOutputStream());
-      WritableSheet s = w.createSheet(messageSource.getMessage("reports.label.settlementReport",
-          null, LocaleContextHolder.getLocale()), 0);
-
-      s.addCell(new Label(0, 0, messageSource.getMessage("reports.label.settlementReport", null,
-          LocaleContextHolder.getLocale()), cellFormat));
+      HSSFWorkbook wb = new HSSFWorkbook();
+      HSSFSheet sheet = wb.createSheet(messageSource.getMessage("reports.label.settlementReport",
+              null, LocaleContextHolder.getLocale()));
+      Font hFont = wb.createFont();
+      hFont.setFontHeightInPoints((short)10);
+      hFont.setFontName("Arial");
+      hFont.setBold(true);
+      CellStyle headerStyle = wb.createCellStyle();
+      headerStyle.setFont(hFont);
       
-      s.addCell(new Label(0, Constants.TWO,
-          messageSource.getMessage("transaction-file-exportutil-reportdate", null,
-              LocaleContextHolder.getLocale()) + headerDate,
-          cellFormat));
+      CellUtil.createCell(sheet.createRow(0), 0,messageSource.getMessage("reports.label.settlementReport", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      
+      CellUtil.createCell(sheet.createRow(Constants.TWO),0, messageSource.getMessage("transaction-file-exportutil-reportdate", null,
+              LocaleContextHolder.getLocale()) + headerDate, headerStyle);
+      
       
       if (isValidRequestData(request)) {
-        s.addCell(new Label(0, Constants.THREE,
-            messageSource.getMessage("transaction-file-exportutil-txndate", null,
+        CellUtil.createCell(sheet.createRow(Constants.THREE),0, messageSource.getMessage("transaction-file-exportutil-txndate", null,
                 LocaleContextHolder.getLocale())
-            + (request.getFrom_date() + Constants.TO + request.getTo_date()), cellFormat));
+            + (request.getFrom_date() + Constants.TO + request.getTo_date()), headerStyle);
       }
       
-      s.addCell(new Label(0, Constants.FIVE,
-          messageSource.getMessage("reports.label.transactions.dateortime", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(1, Constants.FIVE,
-          messageSource.getMessage("admin.common-deviceLocalTxnTime", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.TWO, Constants.FIVE,
-          messageSource.getMessage("transaction-file-exportutil-transactionId", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.THREE, Constants.FIVE,
-          messageSource.getMessage("reports.label.balancereports.merchantorsubmerchantName", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.FOUR, Constants.FIVE,
-          messageSource.getMessage("reports.label.balancereports.merchantorsubmerchantcode", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.FIVE, Constants.FIVE,
-          messageSource.getMessage("transaction-file-exportutil-terminalid", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.SIX, Constants.FIVE,
-          messageSource.getMessage("reports.label.balancereports.accountnumber", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.SEVEN, Constants.FIVE,
-          messageSource.getMessage("reports.label.transactions.description", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.EIGHT, Constants.FIVE,
-          messageSource.getMessage("transaction-file-exportutil-procTxnId", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.NINE, Constants.FIVE, messageSource.getMessage(
-          "transaction-report-batchID", null, LocaleContextHolder.getLocale()), cellFormat));
-      s.addCell(new Label(Constants.TEN, Constants.FIVE,
-          messageSource.getMessage("reports.label.transactions.cardnumberField", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.ELEVEN, Constants.FIVE,
-          messageSource.getMessage("currency-search-page.label.currency", null,
-              LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.TWELVE, Constants.FIVE, messageSource
-          .getMessage("transactionFileExportUtil.admin.txn.amt", null, LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.THIRTEEN, Constants.FIVE, messageSource
-          .getMessage("transactions-search.label.merchantfee", null, LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.FOURTEEN, Constants.FIVE, messageSource
-          .getMessage("transaction-file-exportutil-totaltxnamt", null, LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.FIFTEEN, Constants.FIVE, messageSource
-          .getMessage("transaction-file-exportutil-txnType", null, LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.SIXTEEN, Constants.FIVE, messageSource
-          .getMessage("transaction-file-exportutil-status", null, LocaleContextHolder.getLocale()),
-          cellFormat));
-      s.addCell(new Label(Constants.SEVENTEEN, Constants.FIVE, messageSource.getMessage("login.label.username", null,
-          LocaleContextHolder.getLocale()), cellFormat));
-
-      WritableCellFormat writableCellFormat = new WritableCellFormat(cellFont);
-      writableCellFormat.setAlignment(Alignment.RIGHT);
-
-      WritableFont writableFont = new WritableFont(WritableFont.ARIAL, Constants.TEN);
-      WritableCellFormat cellFormatRight = new WritableCellFormat(writableFont);
-      cellFormatRight.setAlignment(Alignment.RIGHT);
-
-      getTransactionList(transactionList, s, cellFormatRight);
-      w.write();
-      w.close();
+      Row headerRow = sheet.createRow(Constants.FIVE);
+      CellUtil.createCell(headerRow, 0, messageSource.getMessage("reports.label.transactions.dateortime", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow, 1,messageSource.getMessage("admin.common-deviceLocalTxnTime", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow, Constants.TWO,messageSource.getMessage("transaction-file-exportutil-transactionId", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow, Constants.THREE,messageSource.getMessage("reports.label.balancereports.merchantorsubmerchantName", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.FOUR,messageSource.getMessage("reports.label.balancereports.merchantorsubmerchantcode", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.FIVE,messageSource.getMessage("transaction-file-exportutil-terminalid", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.SIX, messageSource.getMessage("reports.label.balancereports.accountnumber", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.SEVEN,messageSource.getMessage("reports.label.transactions.description", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.EIGHT,messageSource.getMessage("transaction-file-exportutil-procTxnId", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.NINE, messageSource.getMessage(
+              "transaction-report-batchID", null, LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.TEN, messageSource.getMessage("reports.label.transactions.cardnumberField", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.ELEVEN, messageSource.getMessage("currency-search-page.label.currency", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.TWELVE, messageSource
+              .getMessage("transactionFileExportUtil.admin.txn.amt", null, LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.THIRTEEN, messageSource
+              .getMessage("transactions-search.label.merchantfee", null, LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.FOURTEEN, messageSource
+              .getMessage("transaction-file-exportutil-totaltxnamt", null, LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.FIFTEEN, messageSource
+              .getMessage("transaction-file-exportutil-txnType", null, LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.SIXTEEN, messageSource
+              .getMessage("transaction-file-exportutil-status", null, LocaleContextHolder.getLocale()), headerStyle);
+      CellUtil.createCell(headerRow,Constants.SEVENTEEN, messageSource.getMessage("login.label.username", null,
+              LocaleContextHolder.getLocale()), headerStyle);
+      
+      getTransactionList(transactionList, sheet, wb);
+      
+      wb.write(response.getOutputStream());
+      wb.close();
       response.getOutputStream().flush();
       response.getOutputStream().close();
     } catch (Exception e) {
@@ -173,40 +139,44 @@ public class TransactionFileExportUtil {
  * @throws WriteException
  * @throws RowsExceededException
  */
-	private static void getTransactionList(List<Transaction> transactionList, WritableSheet s,
-			WritableCellFormat cellFormatRight) throws WriteException, RowsExceededException {
+	private static void getTransactionList(List<Transaction> transactionList, HSSFSheet sheet, HSSFWorkbook wb) {
+		Font dFont = wb.createFont();
+	    dFont.setBold(true);
+	    CellStyle dataStyleRight = wb.createCellStyle();
+	    dataStyleRight.setAlignment(HorizontalAlignment.RIGHT);
+	    dataStyleRight.setFont(dFont);
+		
+	    CellStyle floatStyle = wb.createCellStyle();
+		floatStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("0.00"));
+		
 		if (transactionList != null) {
 			int j = Constants.SIX;
+			Row dataRow = sheet.createRow(j);
 			for (Transaction transaction : transactionList) {
 				validateTimeZone(transaction);
 				int i = 0;
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getTransactionDate()))));
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getDeviceLocalTxnTime()
-						+ getTransactionDetails(transaction.getTimeZoneOffset())))));
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getTransactionId())),
-						cellFormatRight));
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getMerchantBusinessName()))));
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getMerchant_code())),
-						cellFormatRight));
-				s.addCell(new Label(i++, j, "" + getTerminalDetails(transaction), cellFormatRight));
-				s.addCell(new Label(i++, j, "" + getAccountNumber(transaction), cellFormatRight));
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getTxnDescription()))));
-				s.addCell(new Label(i++, j, "" + getRefTxnId(transaction.getRef_transaction_id()), cellFormatRight));
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getBatchId()))));
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getMaskCardNumber())),
-						cellFormatRight));
-				s.addCell(new Label(i++, j, "" + (getTransactionDetails(transaction.getLocalCurrency())),
-						cellFormatRight));
-				s.addCell(StringUtil.getAmountInFloat(i++, j,
-						(transaction.getTxn_amount() != null) ? transaction.getTxn_amount() : 0d));
-				s.addCell(StringUtil.getAmountInFloat(i++, j,
-						(transaction.getFee_amount() != null) ? transaction.getFee_amount() : 0d));
-				s.addCell(StringUtil.getAmountInFloat(i++, j,
-						(transaction.getTxn_total_amount() != null) ? transaction.getTxn_total_amount() : 0d));
-				s.addCell(new Label(i++, j,
-						"" + (getTransactionDetails(transaction.getTransaction_type()).toUpperCase())));
-				s.addCell(new Label(i++, j, "" + getTransactionDetails(transaction.getMerchantSettlementStatus())));
-				s.addCell(new Label(i, j, "" + getTransactionDetails(transaction.getUserName())));
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getTransactionDate())));
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getDeviceLocalTxnTime()
+						+ getTransactionDetails(transaction.getTimeZoneOffset()))));
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getTransactionId())),dataStyleRight);
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getMerchantBusinessName())));
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getMerchant_code())),dataStyleRight);
+				CellUtil.createCell(dataRow, i++, "" + (getTerminalDetails(transaction)),dataStyleRight);
+				CellUtil.createCell(dataRow, i++, "" + (getAccountNumber(transaction)),dataStyleRight);
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getTxnDescription())));
+				CellUtil.createCell(dataRow, i++, "" + (getRefTxnId(transaction.getRef_transaction_id())),dataStyleRight);
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getBatchId())));
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getMaskCardNumber())),dataStyleRight);
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getLocalCurrency())),dataStyleRight);
+				CellUtil.createCell(dataRow, i++, "" + (
+						(transaction.getTxn_amount() != null) ? transaction.getTxn_amount() : 0d),floatStyle);
+				CellUtil.createCell(dataRow, i++, "" + (
+						(transaction.getFee_amount() != null) ? transaction.getFee_amount() : 0d),floatStyle);
+				CellUtil.createCell(dataRow, i++, "" + (
+						(transaction.getTxn_total_amount() != null) ? transaction.getTxn_total_amount() : 0d),floatStyle);
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getTransaction_type()).toUpperCase()));
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getMerchantSettlementStatus())));
+				CellUtil.createCell(dataRow, i++, "" + (getTransactionDetails(transaction.getUserName())));
 				j = j + 1;
 			}
 		}

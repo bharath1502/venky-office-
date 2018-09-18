@@ -15,8 +15,6 @@ import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.ReportsDTO;
 import com.chatak.pg.util.Constants;
 
-import jxl.write.WriteException;
-
 public class ReportsFileExportsUtil {
 
   ReportsFileExportsUtil() {
@@ -26,7 +24,7 @@ public class ReportsFileExportsUtil {
   private static ExportDetails exportDetails = new ExportDetails();
 	
 	public static void exportDetailsDataForDownloadRoleReport( List<ReportsDTO> allTransDownloadList,
-		      MessageSource messageSource,final String downloadType,HttpServletResponse response) throws WriteException, IOException {
+		      MessageSource messageSource,final String downloadType,HttpServletResponse response) throws IOException {
 	      if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
 	    	  exportDetails.setExportType(ExportType.PDF);
 
@@ -69,7 +67,7 @@ public class ReportsFileExportsUtil {
 		  }
 	  
 	public static void setExportDetailsDataForPendingRoleReport(List<ReportsDTO> pendingTransDownloadList,
-		       MessageSource messageSource,final String downloadType,HttpServletResponse response) throws WriteException, IOException {
+		       MessageSource messageSource,final String downloadType,HttpServletResponse response) throws IOException {
 	      if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
 	    	  exportDetails.setExportType(ExportType.PDF);
 
@@ -112,7 +110,7 @@ public class ReportsFileExportsUtil {
 		  }
 	
 	public static void setExportDetailsDataForDownloadRoleReports(List<ReportsDTO> executedTransactionsReportList,
-		    MessageSource messageSource,final String downloadType,HttpServletResponse response) throws WriteException, IOException {
+		    MessageSource messageSource,final String downloadType,HttpServletResponse response) throws IOException {
 		 if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
 	    	  exportDetails.setExportType(ExportType.PDF);
 

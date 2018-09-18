@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.FormParam;
 
 import org.apache.log4j.Logger;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

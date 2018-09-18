@@ -84,7 +84,11 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
-
+    <repository>
+		<id>oracle-repo</id>
+		<name>oracle repo</name>
+  		<url>http://download.oracle.com/maven</url>
+	</repository>
 	</repositories>
 
 	<dependencies>
@@ -133,10 +137,15 @@
 		<dependency>
 			<groupId>org.jpos</groupId>
 			<artifactId>jpos</artifactId>
-			<version>1.9.8</version>
+			<version>2.1.1</version>
 		</dependency>
 		<!-- JPOS -->
-
+<!-- https://mvnrepository.com/artifact/com.sleepycat/je -->
+        <dependency>
+            <groupId>com.sleepycat</groupId>
+            <artifactId>je</artifactId>
+            <version>18.3.1</version>
+        </dependency>
 		<dependency>
 			<groupId>com.chatak.pg</groupId>
 			<artifactId>chatak-library</artifactId>

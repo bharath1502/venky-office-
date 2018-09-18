@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.FormParam;
 import org.apache.log4j.Logger;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -162,7 +161,7 @@ public class TransactionsEFTController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_ADMIN_BULK_EFT_ACTION, method = RequestMethod.POST)
   public ModelAndView processBulkLitleEFTAction(HttpServletRequest request,
       HttpServletResponse response, HttpSession session,
-      @FormParam("requestObject") String requestObject, Map model) throws ParseException {
+      @FormParam("requestObject") String requestObject, Map model) {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE);
     try {
       String jsonRequest = "{\"litleEFTDTOs\":[" + requestObject + "]}";

@@ -63,11 +63,13 @@
 									class="green-error">&nbsp;${sucess }</span>
 							</div>
 						</div>
+						<form action="showGlobalSysRevenueGeneratedReports" name="resubmitForm" method="get"></form>
 						<form action="downloadRevenueGeneratedList" name="downloadReport"
 									method="post">
 									<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" /> 
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" id="totalRecords" name="totalRecords" />
+									 <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<!-- <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" /> -->
 								</form>
@@ -139,6 +141,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.merchantcode"/></label>
 													<select name="" id="merchantCode"  onkeypress="return numbersonly(this,event)"
 														class="form-control">
+														<option value=""> ...:Select:...</option>
 														<%-- <option value=""><spring:message code="common.label.search"/></option> --%>
 														<c:forEach items="${merchantCodes}" var="merchants">
 														<option value="${merchants.value}">${merchants.label}</option>
@@ -148,14 +151,20 @@
 														<span class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-													
-												<div class="col-sm-10 form-action-buttons" style="width: 100%;">
+													<form action="getMerchantRevenueReportPagination" name="paginationForm" method="post">
+														<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
+															type="hidden" id="totalRecordsId" name="totalRecords" />
+															<input type="hidden" id="fromDate" name="fromDate" />
+															<input type="hidden" name="CSRFToken" value="${tokenval}">
+													</form>
+
+							                <div class="col-sm-10 form-action-buttons" style="width: 100%;">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<!-- <input type="button" class="form-control button pull-right"
 													value="Search">  -->
 													<a type="button" onclick="submitRevenueGeneratedRange()" class="form-control button pull-right"><spring:message code="reports.label.generate"/></a>
-													<a type="button" href="dash-board" class="form-control button pull-right"><spring:message code="common.label.back"/></a>
+													<a type="button" class="form-control button pull-right" onclick="resetAll()"><spring:message code="virtual-terminal-sale.label.resetbutton"/></a>
 											</div>
 										</div>
 											</div>
@@ -196,7 +205,19 @@
 
 						<div class="search-results-table" id="checkb"
 							style="display: none;padding-top:10px;">
-
+							<table class="table table-striped table-bordered table-condensed"
+								style="margin: 1px;">
+								<!-- Search Table Header Start -->
+								<tr>
+									<td colspan="10" class="search-table-header-column"><span
+										class="glyphicon glyphicon-search search-table-icon-text"></span>
+										<span><spring:message
+												code="search-sub-merchant.lable.search" /></span> <span
+										class="pull-right"><spring:message
+												code="search-sub-merchant.lable.totalcount" /> : <label
+											id="totalRecords">${totalRecords}</label></span></td>
+								</tr>
+							</table>
 							<table id="serviceResults"
 								class="table table-striped table-bordered table-responsive table-condensed tablesorter">
 								<thead>
@@ -264,20 +285,20 @@
 													<div class="btn-toolbar" role="toolbar">
 														<div class="btn-group custom-table-footer-button">
 															<a
-																href="javascript:downloadReport('${portalListPageNumber}', '<%=Constants.XLS_FILE_FORMAT%>')">
+																href="javascript:downloadReport('${portalListPageNumber}', '<%=Constants.XLS_FILE_FORMAT%>', ${totalRecords})">
 																<button type="button" class="btn btn-default">
 																	<img src="../images/excel.png">
 																</button>
 															</a> <a
-																href="javascript:downloadReport('${portalListPageNumber}', '<%=Constants.PDF_FILE_FORMAT%>')">
+																href="javascript:downloadReport('${portalListPageNumber}', '<%=Constants.PDF_FILE_FORMAT%>', ${totalRecords})">
 																<button type="button" class="btn btn-default">
 																	<img src="../images/PDF.png">
 																</button>
 															</a>
-															<!-- <a>
+															<a>
 															<input type="checkbox" class="autoCheck check" id="totalRecordsDownload">
-															Download All 
-														</a> -->
+															<spring:message code="common.label.downloadall"/> 
+														</a>
 														</div>
 													</div>
 												</div>

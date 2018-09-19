@@ -3,6 +3,7 @@
  */
 package com.chatak.switches.sb;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -58,8 +59,6 @@ import com.chatak.pg.enums.ProcessorType;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
@@ -235,7 +234,8 @@ private void pgTransactionValidation(PGSwitchTransaction pgSwitchTransaction, PG
 }
 
 private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTransaction pgTransaction) {
-      LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+      logger.info("Entering :: SwitchServiceBroker :: validatePGTransaction");
+
       if (pgTransaction != null) {
       pgTransaction.setStatus(PGConstants.STATUS_FAILED);
       pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
@@ -247,7 +247,8 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
       switchTransactionDao.createTransaction(pgSwitchTransaction);
       }
-      LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+
+      logger.info("Entering :: SwitchServiceBroker :: validatePGTransaction");
 }
 
   /**
@@ -340,8 +341,8 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
         descriptionTemplate =
             MessageFormat.format(descriptionTemplate, pgTransaction.getTransactionId());
         authTransaction.setTxnDescription(descriptionTemplate);
-        logAccountTransaction(pgTransaction,captureRequest);//Logging account transactions
-        logPgAccountFee(pgTransaction);
+        PGAccount pgAccount = logAccountTransaction(pgTransaction,captureRequest);//Logging account transactions
+        logPgAccountFee(pgTransaction, pgAccount);
         voidTransactionDao.createTransaction(authTransaction);
       } else {
         pgTransaction.setTxnDescription(captureResponse.getErrorMessage());
@@ -420,24 +421,31 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgTransaction.setPaymentMethod(PGConstants.PAYMENT_METHOD_DEBIT);
       pgTransaction.setUserName(purchaseRequest.getUserName());
       
-      logger.info("SwitchServiceBroker | purchaseTransaction | PmId: " + purchaseRequest.getPmId());
-      
       pgTransaction.setPmId(purchaseRequest.getPmId());
       pgTransaction.setIsoId(purchaseRequest.getIsoId());
-      voidTransactionDao.createTransaction(pgTransaction);
 
+      //Commenting since there is already another call at the bottom where the transaction is updated.
+      /*voidTransactionDao.createTransaction(pgTransaction);*/
+
+
+      // PERF >> Will use the primary auto increment key as the transaction id
       // Set the gateway transaction id
-      purchaseRequest.setTransactionId(pgTransaction.getTransactionId());
+      //purchaseRequest.setTransactionId(pgTransaction.getTransactionId());
       
       // Switch transaction log before Switch call
       pgSwitchTransaction = populateSwitchTransactionRequest(purchaseRequest);
 
       paymentService = binUpstreamRouter.getPaymentService();
       fetchCardNumberLength(purchaseRequest);
-      logger.info("Transaction Currency : " + purchaseRequest.getCurrencyCode());
       /********* Sending to upstream processor *********/
 
-      purchaseResponse = paymentService.purchaseTransaction(purchaseRequest);
+      //purchaseResponse = paymentService.purchaseTransaction(purchaseRequest);
+      String mock = Properties.getProperty("issuance.mock");
+      if ("true".equals(mock)) {
+        purchaseResponse = paymentService.purchaseTransactionMock();
+      } else {
+        purchaseResponse = paymentService.purchaseTransaction(purchaseRequest);
+      }
 
       logger.info("SwitchServiceBroker::SALE Transaction Response: "
           + purchaseResponse.getErrorCode() + "::" + purchaseResponse.getErrorMessage());
@@ -455,8 +463,10 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       //setting transaction based on processor response
       pgTransaction.setDeviceLocalTxnTime(purchaseResponse.getIssuanceTxnTime() == null
     		  ? pgTransaction.getDeviceLocalTxnTime() : purchaseResponse.getIssuanceTxnTime());
+      
+      // PERF >> Moving it down to after transaction insertion
       // Update account
-      statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
+      //statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
 
       String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() !=null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
       autoSettlement = (autoSettlement!=null && autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_YES
@@ -465,21 +475,37 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
         pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);
       }
-      pgTransaction.setBatchId(Constants.BATCH_STATUS_NEXT);
+      pgTransaction.setBatchId(Constants.BATCH_STATUS_NA);
       pgTransaction.setBatchDate(new Timestamp(System.currentTimeMillis()));
       pgTransaction.setAutoSettlementStatus(autoSettlement);
 
-      switchTransactionDao.createTransaction(pgSwitchTransaction);
+      // PERF >> Moving it down to after transaction insertion
+      //switchTransactionDao.createTransaction(pgSwitchTransaction);
       logger.info("transaction id is " + pgTransaction.getTransactionId());
 
       if(purchaseResponse.getErrorCode().equals(ActionCode.ERROR_CODE_UID)) {
     	  pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_REJECTED);  
       }
+      
       // Update transaction status and switch response
-      voidTransactionDao.createTransaction(pgTransaction);
+      PGTransaction insertedPgTransaction = voidTransactionDao.createTransaction(pgTransaction);
 
+      // PERF >> Changes related to transaction id
+      // Fetch inserted TXN ID
+      BigInteger transactionID = insertedPgTransaction.getId();
+      pgSwitchTransaction.setPgTransactionId(String.valueOf(transactionID));
+      
+      asyncService.saveSwitchTransaction(pgSwitchTransaction);
+//      switchTransactionDao.createTransaction(pgSwitchTransaction);
+      // Update account
+      pgTransaction.setTransactionId(String.valueOf(transactionID));
+      statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
+      
       // Set Response fields
-      purchaseResponse.setTxnRefNum(pgTransaction.getTransactionId());
+      //purchaseResponse.setTxnRefNum(pgTransaction.getTransactionId());
+      // PERF >> 
+      purchaseResponse.setTxnRefNum(String.valueOf(transactionID));
+      
       purchaseResponse.setTxnAmount(purchaseRequest.getTxnAmount());
       purchaseResponse.setFeeAmount(pgTransaction.getFeeAmount());
       purchaseResponse.setTotalAmount(pgTransaction.getTxnTotalAmount());
@@ -496,7 +522,8 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
         voidTransactionDao.createTransaction(pgTransaction);
 
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-        switchTransactionDao.createTransaction(pgSwitchTransaction);
+        //switchTransactionDao.createTransaction(pgSwitchTransaction);
+        asyncService.saveSwitchTransaction(pgSwitchTransaction);
       }
 
       purchaseResponse.setErrorCode(e.getMessage());
@@ -544,7 +571,8 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 
   private void statusValidation(PurchaseRequest purchaseRequest, PurchaseResponse purchaseResponse,
 		PGTransaction pgTransaction) throws Exception {
-    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), " With Status : " + pgTransaction.getStatus() + " and Error Code : " + purchaseResponse.getErrorCode());
+	  logger.info(" With Status : " + pgTransaction.getStatus() + " and Error Code : " + purchaseResponse.getErrorCode());
+
 	if (pgTransaction.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
 
         pgTransaction.setRefundStatus(0);
@@ -554,8 +582,8 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
           // Setting Initial Litle EFT status
           pgTransaction.setEftStatus(PGConstants.LITLE_PENDING);
         }
-        logAccountTransaction(pgTransaction,purchaseRequest);
-        logPgAccountFee(pgTransaction);// Logging transaction fee details
+        PGAccount pgAccount = logAccountTransaction(pgTransaction,purchaseRequest);
+        logPgAccountFee(pgTransaction, pgAccount);// Logging transaction fee details
         String descriptionTemplate =
             Properties.getProperty("chatak-pay.pending.description.template");
         descriptionTemplate =
@@ -572,7 +600,7 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
         pgTransaction.setTxnDescription(purchaseResponse.getErrorMessage());
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_DECLILNED);
       }
-	LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	logger.info("Exiting :: SwitchServiceBroker :: statusValidation");
   }
 
   /**
@@ -838,10 +866,10 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 	    .equals(PGConstants.PG_SETTLEMENT_PENDING))
 	    || (originalSaleTransaction.getMerchantSettlementStatus()
 	        .equals(PGConstants.PG_SETTLEMENT_PROCESSING))) {
-	  logAccountTransaction(pgTransaction,voidRequest);
+		PGAccount pgAccount = logAccountTransaction(pgTransaction, voidRequest);
 	  originalSaleTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_VOIDED);
 	  pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-	  logPgAccountFee(pgTransaction);
+	  logPgAccountFee(pgTransaction, pgAccount);
 	  String descriptionTemplate =
 	      Properties.getProperty("chatak-pay.reverse.description.template");
 	  descriptionTemplate =
@@ -1008,7 +1036,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	      pgTransaction.getTransactionId());
 	  originalSaleTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_VOIDED);
 	  pgTransaction.setMerchantSettlementStatus(PGConstants.TXN_TYPE_VOID);
-	  logPgAccountFee(pgTransaction);
+	  logPgAccountFee(pgTransaction, null);
 	  voidTransactionDao.createTransaction(originalSaleTransaction);
 	}
 
@@ -1017,7 +1045,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 
 	  updateMerchantAccountDetails(pgTransaction, originalSaleTransaction);
 	  logPgAccountHistory(pgTransaction.getMerchantId(), PGConstants.PAYMENT_METHOD_DEBIT,
-	      pgTransaction.getTransactionId());
+	      pgTransaction.getTransactionId(), null);
 	}
   }
 
@@ -1158,7 +1186,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	  voidTransactionDao.createTransaction(pgTransaction);
 	  refundResponse.setAuthId(pgTransaction.getAuthId());
 	} else {
-	  updateMerchantAccount(pgTransaction.getMerchantId(), PGConstants.PAYMENT_METHOD_CREDIT,
+		PGAccount pgAccount = updateMerchantAccount(pgTransaction.getMerchantId(), PGConstants.PAYMENT_METHOD_CREDIT,
 	      pgTransaction.getTxnAmount(),
 	      pgTransaction.getFeeAmount() == null ? 0 : pgTransaction.getFeeAmount(),
 	      pgTransaction.getTransactionId());
@@ -1168,7 +1196,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	      MessageFormat.format(descriptionTemplate, pgTransaction.getRefTransactionId());
 	  pgTransaction.setTxnDescription(descriptionTemplate);
 	  pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-	  logPgAccountFee(pgTransaction);// Logging transaction fee details
+	  logPgAccountFee(pgTransaction, pgAccount);// Logging transaction fee details
 	}
   }
 
@@ -1188,9 +1216,10 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
 	orignalSaleTxn.setMerchantSettlementStatus(PGConstants.PG_TXN_REFUNDED);
 	orignalSaleTxn.setTxnDescription(descriptionTemplate);
-	logPgAccountFee(pgTransaction);// Logging transaction fee details
+	PGAccount pgAccount = null;
+	logPgAccountFee(pgTransaction, pgAccount);// Logging transaction fee details
 	logPgAccountHistory(pgTransaction.getMerchantId(), PGConstants.PAYMENT_METHOD_DEBIT,
-	    pgTransaction.getTransactionId());
+	    pgTransaction.getTransactionId(), pgAccount);
   }
 
   private void validateMerchantSettlementExecuted(PGTransaction orignalSaleTxn, PGTransaction pgTransaction,RefundRequest refundRequest)
@@ -1209,7 +1238,8 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	  orignalSaleTxn.setEftStatus(PGConstants.LITLE_REFUNDED);
 	}
 	orignalSaleTxn.setTxnDescription(descriptionTemplate + nbFlag);
-	logPgAccountFee(pgTransaction);// Logging transaction fee details
+	PGAccount pgAccount = null;
+	logPgAccountFee(pgTransaction, pgAccount);// Logging transaction fee details
 	// Reversing issuance fee
 	postReversalFeeToIssuance(orignalSaleTxn.getMerchantId(),
 	    orignalSaleTxn.getTransactionId(), pgTransaction.getTransactionId());
@@ -1352,7 +1382,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
         originalRefundTransaction.setTxnDescription(descriptionTemplate + nbFlag);
         voidTransactionDao.createTransaction(originalRefundTransaction);
         logPgAccountHistory(pgTransaction.getMerchantId(), PGConstants.PAYMENT_METHOD_DEBIT,
-            pgTransaction.getTransactionId());
+            pgTransaction.getTransactionId(), null);
       }
       voidResponse.setAuthId(pgTransaction.getAuthId());
     }
@@ -1833,8 +1863,10 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     return cashWithdrawalResponse;
   }
 
-  public void logPgAccountFee(PGTransaction pgTransaction) throws Exception {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+
+  public void logPgAccountFee(PGTransaction pgTransaction, PGAccount pgAccount) throws Exception {
+    logger.info("Entering :: SwitchServiceBroker :: logPgAccountFee");
+
     Long merchantFeeAmount = 0l;
     Long chatakFeeValue = null;
     boolean iterationFlag = true;
@@ -1853,7 +1885,10 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     } else {
       chatakFeeAmountTotal = totalFeeAmount;
     }
-    PGAccount pgAccount = accountDao.getPgAccount(pgTransaction.getMerchantId());
+    if(null == pgAccount) {
+    	pgAccount = accountDao.getPgAccount(pgTransaction.getMerchantId());
+    }
+    String parentEntityId = merchantDao.getParentMerchantCode(pgTransaction.getMerchantId());
     for (ProcessingFee chatakFee : list) {
       chatakFeeValue = CommonUtil.getLongAmount(chatakFee.getChatakProcessingFee());
       pgAccountFeeLog = new PGAccountFeeLog();
@@ -1864,7 +1899,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       pgAccountFeeLog.setEntityId(pgAccount.getEntityId());
       pgAccountFeeLog.setEntityType(pgAccount.getEntityType());
       pgAccountFeeLog
-          .setParentEntityId(merchantDao.getParentMerchantCode(pgTransaction.getMerchantId()));
+          .setParentEntityId(parentEntityId);
       pgAccountFeeLog.setMerchantFee(iterationFlag ? merchantFeeAmount : 0);
       pgAccountFeeLog.setChatakFee(
           chatakFeeAmountTotal > chatakFeeValue ? chatakFeeValue : chatakFeeAmountTotal);
@@ -1880,7 +1915,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
           ? (chatakFeeAmountTotal - chatakFeeValue) : 0l;
 
     }
-    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+    logger.info("Exiting :: SwitchServiceBroker :: logPgAccountFee");
   }
 
   /**
@@ -1927,9 +1962,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 
   private void fetchListOfPGTransaction(Timestamp currentTime, PGAccountTransactions accTxn) {
     PGAccount account;
-    List<PGTransaction> transactions =
-        transactionRepository.findByTransactionId(accTxn.getPgTransactionId());
-    PGTransaction transaction = transactions.get(0);
+    PGTransaction transaction = transactionRepository.findByTransactionId(accTxn.getPgTransactionId());
 
     PGCurrencyConfig currencyConfig =
         currencyConfigDao.getcurrencyCodeAlpha(transaction.getTxnCurrencyCode());

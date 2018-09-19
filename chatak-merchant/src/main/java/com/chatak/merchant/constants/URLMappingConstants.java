@@ -203,6 +203,8 @@ public interface URLMappingConstants {
 	public static final String CHATAK_PROCESS_SUB_MERCHANT_UPDATE_PAGE = "sub-merchant-update";
 
 	public static final String CHATAK_SUB_MERCHANTS_PAGINATION = "getMerchants";
+	
+	public static final String CHATAK_MERCHANT_TRANSACTION_REVENUE_PAGINATION = "getMerchantRevenueReportPagination";
 
 	public static final String CHATAK_SUB_MERCHANT_REPORT = "get-merchant-report";
 

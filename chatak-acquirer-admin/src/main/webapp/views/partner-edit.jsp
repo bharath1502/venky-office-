@@ -372,8 +372,6 @@
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/sorting.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/messages.js"></script>

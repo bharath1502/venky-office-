@@ -10,6 +10,10 @@ public class ReportsDTO implements Serializable {
    */
   private static final long serialVersionUID = -6917838503245452240L;
 
+  private Integer pageIndex;
+
+  private Integer pageSize;
+  
   private String dateTime;
   
   private String companyName;
@@ -98,6 +102,32 @@ public class ReportsDTO implements Serializable {
   
   private String batchId;
   
+  private Integer noOfRecords;
+  
+  public Integer getNoOfRecords() {
+    return noOfRecords;
+  }
+
+  public void setNoOfRecords(Integer noOfRecords) {
+    this.noOfRecords = noOfRecords;
+  }
+
+  public Integer getPageIndex() {
+    return pageIndex;
+  }
+
+  public void setPageIndex(Integer pageIndex) {
+    this.pageIndex = pageIndex;
+  }
+
+  public Integer getPageSize() {
+    return pageSize;
+  }
+
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
+  }
+
   public Integer getCurrencyExponent() {
     return currencyExponent;
   }
@@ -461,4 +491,5 @@ public class ReportsDTO implements Serializable {
   public void setBatchId(String batchId) {
     this.batchId = batchId;
   }
+
 }

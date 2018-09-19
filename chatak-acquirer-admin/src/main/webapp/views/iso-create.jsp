@@ -223,9 +223,10 @@
 													<label><spring:message code="label.extension" /></label>
 													<form:input path="programManagerRequest.extension" maxlength="5"
 														cssClass="form-control" id="extension"
+														onblur="clientValidation('extension','extension_not_mandatory','extensionerr')"
 														onkeypress="return numbersonly(this, event);" />
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="extensionerr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -243,27 +244,27 @@
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="bank.label.bankname" /></label>
 													<form:input path="bankName"
-														cssClass="form-control" id="bankName" />
+														cssClass="form-control" id="bankName" onblur="clientValidation('bankName','companyname_not_mandatory','banknameerr')"/>
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="banknameerr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="merchant.label.bankaccountnumber" /></label>
 													<form:input path="bankAccNum" 
 														cssClass="form-control" id="bankAccNum" maxlength="<%=Constants.BANK_ACCOUNT_NUMBER.toString()%>"
-														onkeypress="return numbersonly(this, event);" />
+														onkeypress="return numbersonly(this, event);" onblur="clientValidation('bankAccNum','bank_Code','bankaccerr')" />
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="bankaccerr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="merchant.label.bankroutingnumber" /></label>
 													<form:input path="routingNumber"
 														cssClass="form-control" id="routingNumber" maxlength="<%=Constants.ACCOUNT_ROUTING_NUMBER.toString()%>"
-														onkeypress="return numbersonly(this, event)" />
+														onkeypress="return numbersonly(this, event)" onblur="clientValidation('routingNumber','bank_Code','routingNumbererr')"/>
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="routingNumbererr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -326,6 +327,10 @@
 								</tr>
 							</table>
 							<!-- Search Table Header End -->
+							<div class="discriptionErrorMsg" data-toggle="tooltip"
+								data-placement="top" title="">
+								<span id="ambiguityFlag" class="red-error">&nbsp;</span>
+							</div>
 							<!-- Search Table Content Start -->
 							<table id="serviceResults"
 								class="table table-striped table-bordered table-responsive table-condensed tablesorter marginBM1 common-table">
@@ -518,35 +523,45 @@
 		}
 		/* Select Services moving form Left to Right and Right to Left functionality End */
 		var cardProgramIdList = [];
-		function addCardProgram(cardProgramId){
+		var selectedCpId = [];
+		function addCardProgram(cardProgramId,entityId){
 			var tempCardProgramIds = [];
 			var j=0;
-			var selectedId = 'cpId' + cardProgramId;
+			var selectedId = 'cpId' + cardProgramId + entityId;
 			
 			if($('#' + selectedId).is(":checked")){
-				cardProgramIdList.push(cardProgramId);				
+				cardProgramIdList.push(cardProgramId+'@'+entityId);
+				selectedCpId.push(parseInt(cardProgramId));
 			}else if(!($('#' + selectedId).is(":checked"))){
 				for(var i=0; i < cardProgramIdList.length; i++){
-					if(cardProgramIdList[i] != cardProgramId){
+					if(cardProgramIdList[i] != cardProgramId+'@'+entityId){
 						tempCardProgramIds[j] = cardProgramIdList[i];
 						j++;
 					}
 				}
-				cardProgramIdList = tempCardProgramIds;			
+				cardProgramIdList = tempCardProgramIds;
+				var index = selectedCpId.indexOf(parseInt(cardProgramId));
+				if (index > -1) {
+					selectedCpId.splice(index, 1);
+				}
 			}
 			//set selected card pogram ids
 		$('#cardProgramIds').val(cardProgramIdList);	
 		}
-		function doUnCheckedToCardProgram(cardProgramId){
+		function doUnCheckedToCardProgram(cardProgramId,entityId){
 			var tempCardProgramIds = [];
 			var j=0;
 			for(var i=0; i < cardProgramIdList.length; i++){
-				if(cardProgramIdList[i] != cardProgramId){
+				if(cardProgramIdList[i] != cardProgramId+'@'+entityId){
 					tempCardProgramIds[j] = cardProgramIdList[i];
 					j++;
 				}
 			}
 			cardProgramIdList = tempCardProgramIds;
+			var index = selectedCpId.indexOf(parseInt(cardProgramId));
+			if (index > -1) {
+				selectedCpId.splice(index, 1);
+			}
 		}
 		function resetSelectedPmCp(){
 			document.getElementById('programManagers').options.length = 0;
@@ -554,6 +569,37 @@
 			$("#serviceResults").find("tr:gt(0)").remove();
 			cardProgramIdList = [];
 			programManagerIdList = [];
+		}
+		
+		function checkAmbiguity() {
+			if (!validateSelectedCardProgram()) {
+				return false;
+			}
+			var sortedCardProgramIdList = selectedCpId.sort();
+			for (var i = 0; i < sortedCardProgramIdList.length; i++) {
+				for (var j = i + 1; j < sortedCardProgramIdList.length; j++) {
+					if (sortedCardProgramIdList[i] == sortedCardProgramIdList[j]) {
+						$('#ambiguityFlag').text(
+								webMessages.DUPLICATE_CARD_RPOGRAM);
+						return false;
+					}
+				}
+			}
+			$('#ambiguityFlag').text('');
+			return true;
+
+		}
+		
+		function validateSelectedCardProgram() {
+			var selectedCardProgramIdList = selectedCpId;
+			if (selectedCardProgramIdList === undefined
+					|| selectedCardProgramIdList.length == 0) {
+				$('#ambiguityFlag').text(webMessages.SELECT_CARD_PROGRAM);
+				return false;
+			} else {
+				$('#ambiguityFlag').text(' ');
+				return true;
+			}
 		}
 		
 		$(document).ready(function() {

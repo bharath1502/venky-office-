@@ -23,6 +23,7 @@ import com.chatak.pg.model.CurrencyDTO;
 import com.chatak.pg.user.bean.CurrencyDTOList;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.StringUtils;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.BooleanExpression;
@@ -104,7 +105,8 @@ public class CurrencyConfigDaoImpl implements CurrencyConfigDao {
 				.where(isStatus(currencyDTO.getStatus()),isStatusNotEq(),
 						isCurrencyName(currencyDTO.getCurrencyName()),
 						isCurrencyCodeNumeric(currencyDTO.getCurrencyCodeNumeric()),
-						isCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha()))
+						isCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha()),
+						isCurrencyExponent(currencyDTO.getCurrencyExponent()))
 				.offset(offset).limit(limit).orderBy(orderByIdDesc()).list(qpgCurrencyConfig);
 		logger.info("CurrencyConfigDaoImpl | searchCurrencyConfig | Exiting");
 		return list;
@@ -117,7 +119,8 @@ public class CurrencyConfigDaoImpl implements CurrencyConfigDao {
 				.where(isStatus(currencyDTO.getStatus()),isStatusNotEq(),
 						isCurrencyName(currencyDTO.getCurrencyName()),
 						isCurrencyCodeNumeric(currencyDTO.getCurrencyCodeNumeric()),
-						isCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha()))
+						isCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha()),
+						isCurrencyExponent(currencyDTO.getCurrencyExponent()))
 				.list(QPGCurrencyConfig.pGCurrencyConfig.id);
 		logger.info("CurrencyConfigDaoImpl | getTotalNumberOfRecords | Exiting");
 		return (StringUtil.isListNotNullNEmpty(list) ? list.size() : 0);
@@ -227,4 +230,11 @@ public class CurrencyConfigDaoImpl implements CurrencyConfigDao {
 	public PGCurrencyConfig createOrUpdateCurrencyConfig(PGCurrencyConfig pgCurrencyConfig) {
 	    return currencyConfigRepository.save(pgCurrencyConfig);
 	}
+	
+	private BooleanExpression isCurrencyExponent(Integer currencyExponent) {
+		return (!StringUtils.isNull(currencyExponent))
+				? QPGCurrencyConfig.pGCurrencyConfig.currencyExponent.eq(currencyExponent)
+				: null;
+	}
+	
 }

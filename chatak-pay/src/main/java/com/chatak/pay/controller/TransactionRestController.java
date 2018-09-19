@@ -4,16 +4,21 @@
 package com.chatak.pay.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +28,8 @@ import com.chatak.pay.constants.ChatakPayErrorCode;
 import com.chatak.pay.constants.Constant;
 import com.chatak.pay.constants.URLMappingConstants;
 import com.chatak.pay.controller.model.CardData;
+import com.chatak.pay.controller.model.ClientCurrencyDTO;
+import com.chatak.pay.controller.model.ClientSsoLoginResponse;
 import com.chatak.pay.controller.model.LoginRequest;
 import com.chatak.pay.controller.model.LoginResponse;
 import com.chatak.pay.controller.model.Request;
@@ -54,12 +61,9 @@ import com.chatak.pg.model.OAuthToken;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 import com.sleepycat.je.utilint.Timestamp;
-
 /**
  * @Author: Girmiti Software
  * @Date: Apr 23, 2015
@@ -70,12 +74,11 @@ import com.sleepycat.je.utilint.Timestamp;
 @RestController
 @RequestMapping(value = "/transaction", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
 public class TransactionRestController extends BaseController implements URLMappingConstants, Constant {
-	
+
+  private static Logger logger = LogManager.getLogger(TransactionRestController.class.getName());
 
   @Autowired
   private MessageSource messageSource;	
-  
-  private Logger logger = Logger.getLogger(TransactionRestController.class);
 
   @RequestMapping(value = "/process", method = RequestMethod.POST)
   public Response process(HttpServletRequest request,
@@ -115,9 +118,6 @@ public class TransactionRestController extends BaseController implements URLMapp
 	      if(null != transactionRequest.getShareMode()) {
 	        validateSplitTransactionData(transactionRequest);
 	        PGMerchant merchant = validateProcessRequest(transactionRequest);
-	        
-	        logger.info("Processing the transaction");
-	
 	        Response responseLoadFund = pgTransactionService.processTransaction(transactionRequest, merchant);
 	        
 	        if(null != responseLoadFund) {
@@ -128,7 +128,6 @@ public class TransactionRestController extends BaseController implements URLMapp
 	        transactionResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0999.name(), null, LocaleContextHolder.getLocale()));
 	      } else {
 	    	PGMerchant merchant = validateProcessRequest(transactionRequest);
-	        logger.info("Processing the transaction");
 	        logger.info("Transaction Currency : " + transactionRequest.getCurrencyCode());
 	        transactionResponse = (TransactionResponse) pgTransactionService.processTransaction(transactionRequest, merchant);
 	      }
@@ -161,9 +160,7 @@ public class TransactionRestController extends BaseController implements URLMapp
 private void validateTxnResponse(TransactionRequest transactionRequest, TransactionResponse transactionResponse) {
 	if(transactionResponse != null) {
       Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-      LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Time : " + timestamp);
       transactionResponse.setDeviceLocalTxnTime(DateUtil.convertTimeZone(transactionRequest.getTimeZoneOffset(), timestamp.toString()));
-      LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Time after changed to merchant's timezone : " + transactionResponse.getDeviceLocalTxnTime());
     }
 }
 
@@ -209,7 +206,6 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 
   private TransactionResponse getTransactionResponse(TransactionResponse transactionResponse) {
     if(transactionResponse == null) {
-      logger.info("null reponse: transactionResponse");
       transactionResponse = new TransactionResponse();
       transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0999.name());
       transactionResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0999.name(), null, LocaleContextHolder.getLocale()));
@@ -265,16 +261,21 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 				loginResponse.setErrorMessage(
 						messageSource.getMessage("chatak.username.required", null, LocaleContextHolder.getLocale()));
 				return loginResponse;
-			} else if (loginRequest.getPassword() == null || loginRequest.getPassword().equals("")) {
+			} else if (isInvalidPassword(loginRequest)) {
 				loginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
 				loginResponse.setErrorMessage(
 						messageSource.getMessage("chatak.password.required", null, LocaleContextHolder.getLocale()));
 				return loginResponse;
 			}
+			
+			validateCustomerUserName(loginRequest.getUsername());
 
 			loginResponse = pgMerchantService.authenticateMerchantUser(loginRequest);
 
-		} catch (Exception e) {
+		} catch (HttpClientException e) {
+		  logger.error("Error :: TransactionRestController :: login : " + e.getMessage(), e);
+          return getAccessDeniedResponse(messageSource);
+        } catch (Exception e) {
 		  logger.error("Error :: TransactionRestController :: login: ", e);
 		}
 
@@ -369,26 +370,33 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		return resp;
 	}
 	
-	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)	
-	public Response changePassword(@RequestBody ChangePasswordRequest changePassword ) throws ChatakPayException 
-	{		
-	Boolean booleanResp = null;		
-	Response response = new Response();
-	logger.info("Entering:: TransactionRestController:: changePassword method");	
-	try {
-	booleanResp = pgMerchantService.changedPassword(changePassword.getUserName(), changePassword.getCurrentPassword(), changePassword.getNewPassword());
-	if(booleanResp.equals(true)){
-		response.setErrorCode(ChatakPayErrorCode.GEN_001.name());
-		response.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(), null,LocaleContextHolder.getLocale()));
-	}
-	}catch(ChatakPayException e){
-		logger.info("Error:: TransactionRestController:: changePassword method",e);
-		response.setErrorMessage(e.getMessage());
-		return response;	
-	}
-	logger.info("Exiting:: TransactionRestController:: changePassword method");		
-	return response;	
-	}		
+    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
+    public Response changePassword(@RequestBody ChangePasswordRequest changePassword)
+        throws ChatakPayException {
+      Boolean booleanResp = null;
+      Response response = new Response();
+      logger.info("Entering:: TransactionRestController:: changePassword method");
+      try {
+        validateCustomerUserName(changePassword.getUserName());
+        booleanResp = pgMerchantService.changedPassword(changePassword.getUserName(),
+            changePassword.getCurrentPassword(), changePassword.getNewPassword());
+        if (booleanResp.equals(true)) {
+          response.setErrorCode(ChatakPayErrorCode.GEN_001.name());
+          response.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(), null,
+              LocaleContextHolder.getLocale()));
+        }
+      } catch (HttpClientException e) {
+        logger.error("Error :: TransactionRestController :: login : Invalid Access Token.." + e.getMessage(), e);
+
+        return getAccessDeniedResponse(messageSource);
+      } catch (ChatakPayException e) {
+        logger.info("Error:: TransactionRestController:: changePassword method", e);
+        response.setErrorMessage(e.getMessage());
+        return response;
+      }
+      logger.info("Exiting:: TransactionRestController:: changePassword method");
+      return response;
+    }	
 	
 	@RequestMapping(value = "/forgotPassword", method = RequestMethod.POST)	
 	public Response forgotPassword(HttpServletRequest request ,@RequestBody ForgotPasswordRequest changePassword ) throws ChatakPayException {		
@@ -398,7 +406,6 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		String url = request.getRequestURL().toString();
         String uri = request.getRequestURI();
         String baseUrl = url.substring(0, url.length() - uri.length()) + "/" + Properties.getProperty("chatak.merchant.portal");
-        LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Base URL -->> " + baseUrl);
 		try {
 			booleanResp = pgMerchantService.forgotPassword(changePassword.getUserName(), baseUrl);
 			if(booleanResp.equals(true)){
@@ -418,64 +425,65 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
         public Response clientSsoLogin(HttpServletRequest request, HttpServletResponse response,
             HttpSession session, @RequestBody LoginRequest loginRequest) {
           logger.info("Entering:: TransactionRestController:: login method");
-          LoginResponse loginResponse = new LoginResponse();
+          ClientSsoLoginResponse clientLoginResponse = new ClientSsoLoginResponse();
           try {
             if (loginRequest.getUsername() == null || loginRequest.getUsername().equals("")) {
-              loginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
-              loginResponse.setErrorMessage(messageSource.getMessage("chatak.username.required", null,
+              clientLoginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
+              clientLoginResponse.setErrorMessage(messageSource.getMessage("chatak.username.required", null,
                   LocaleContextHolder.getLocale()));
-              return loginResponse;
-            } else if (loginRequest.getPassword() == null || loginRequest.getPassword().equals("")) {
-              loginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
-              loginResponse.setErrorMessage(messageSource.getMessage("chatak.password.required", null,
+              return clientLoginResponse;
+            } else if (isInvalidPassword(loginRequest)) {
+              clientLoginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
+              clientLoginResponse.setErrorMessage(messageSource.getMessage("chatak.password.required", null,
                   LocaleContextHolder.getLocale()));
-              return loginResponse;
+              return clientLoginResponse;
             }
       
-            loginResponse = pgMerchantService.authenticateMerchantUser(loginRequest);
-      
-            if (loginResponse.getErrorCode().equals(ChatakPayErrorCode.GEN_001.name())
-                || loginResponse.getErrorCode().equals(ChatakPayErrorCode.GEN_003.name())) {
+            LoginResponse loginResponse = pgMerchantService.authenticateMerchantUser(loginRequest);
+            clientLoginResponse = CommonUtil.copyBeanProperties(loginResponse, ClientSsoLoginResponse.class);
+            ClientCurrencyDTO currencyDTO = CommonUtil.copyBeanProperties(loginResponse.getCurrencyDTO(), ClientCurrencyDTO.class);
+            clientLoginResponse.setCurrencyDTO(currencyDTO);
+            if (isLoginSuccess(clientLoginResponse)) {
               // OAuth generation
-              LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "OAuth Genartion : " + loginResponse.getErrorCode());
+              logger.info("OAuth Genartion : " + clientLoginResponse.getErrorCode());
               ApplicationClientDTO applicationClientDTO =
                   pgMerchantService.getApplicationClientAuth(loginRequest.getUsername());
       
               if (!StringUtil.isNull(applicationClientDTO)) {
-                LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "ApplicationClientDTO is not NULL");
+                logger.info("ApplicationClientDTO is not NULL");
                 OAuthToken token = null;
       
-                if (!StringUtil.isNullAndEmpty(applicationClientDTO.getAppClientAccess())) {
+                if (!StringUtil.isNullAndEmpty(applicationClientDTO.getRefreshToken())) {
+                  logger.info("Refresh Token is Not Empty");
                   token = JsonUtil.getValidOAuth2TokenLoginRefresh(applicationClientDTO);
+                  
+                  // refresh token expired, need to update here
+                  token = updatingTokenOnExpiration(applicationClientDTO, token);
                 } else {
+                  logger.info("Refresh Token is Empty");
                   token = JsonUtil.getValidOAuth2TokenLogin(applicationClientDTO);
       
-                  // save the fresh token for the first time
-                  if (!StringUtil.isNull(token)) {
-                    applicationClientDTO.setAppClientAccess(token.getRefresh_token());
-                    PGApplicationClient applicationClient =
-                        CommonUtil.copyBeanProperties(applicationClientDTO, PGApplicationClient.class);
-                    pgMerchantService.saveOrUpdateApplicationClient(applicationClient);
-                  }
+                  // save the refresh token for the first time
+                  saveFirstTimeRefreshToken(applicationClientDTO, token);
                 }
       
                 if (StringUtil.isNull(token)) {
-                  loginResponse.setStatus(false);
-                  loginResponse.setMessage("Failed");
-                  return loginResponse;
+                  logger.info("Token is NULL");
+                  clientLoginResponse.setStatus(false);
+                  clientLoginResponse.setMessage("Failed");
+                  return clientLoginResponse;
                 }
-                loginResponse.setAccessToken(token.getAccess_token());
-                loginResponse.setRefreshToken(token.getRefresh_token());
+                clientLoginResponse.setAccessToken(token.getAccess_token());
+                clientLoginResponse.setRefreshToken(token.getRefresh_token());
                 PGApplicationClient applicationClient =
                     CommonUtil.copyBeanProperties(applicationClientDTO, PGApplicationClient.class);
                 applicationClient.setRefreshToken(token.getRefresh_token());
                 pgMerchantService.saveOrUpdateApplicationClient(applicationClient);
-                LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Updated Application Client");
               } else {
-                loginResponse.setStatus(false);
-                loginResponse.setMessage("Failed");
-                LogHelper.logExit(logger, LoggerMessage.getCallerName());
-                return loginResponse;
+                clientLoginResponse.setStatus(false);
+                clientLoginResponse.setMessage("Failed");
+                logger.info("Exiting :: TransactionRestController :: clientSsoLogin");
+                return clientLoginResponse;
               }
             }
           } catch (Exception e) {
@@ -484,55 +492,73 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
       
           logger.info("Exiting:: TransactionRestController:: login method");
       
-          return loginResponse;
+          return clientLoginResponse;
+        }
+
+        private boolean isInvalidPassword(LoginRequest loginRequest) {
+          return loginRequest.getPassword() == null || loginRequest.getPassword().equals("");
+        }
+
+        private boolean isLoginSuccess(ClientSsoLoginResponse loginResponse) {
+          return loginResponse.getErrorCode().equals(ChatakPayErrorCode.GEN_001.name())
+              || loginResponse.getErrorCode().equals(ChatakPayErrorCode.GEN_003.name());
+        }
+
+        private void saveFirstTimeRefreshToken(ApplicationClientDTO applicationClientDTO,
+            OAuthToken token) throws InstantiationException, IllegalAccessException {
+          if (!StringUtil.isNull(token)) {
+            logger.info("Generated Token is valid");
+            PGApplicationClient applicationClient =
+                CommonUtil.copyBeanProperties(applicationClientDTO, PGApplicationClient.class);
+            pgMerchantService.saveOrUpdateApplicationClient(applicationClient);
+          }
         }
       
         @RequestMapping(value = "getAccessToken", method = RequestMethod.POST)
         public Response generateAccessTokenOnRefreshToken(HttpServletRequest request,
             HttpServletResponse response, HttpSession session, @RequestBody LoginRequest loginRequest) {
-          LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+          logger.info("Entering :: TransactionRestController :: generateAccessTokenOnRefreshToken");
           LoginResponse loginResponse = new LoginResponse();
           try {
             if (loginRequest.getUsername() == null || loginRequest.getUsername().equals("")) {
               loginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
               loginResponse.setErrorMessage(messageSource.getMessage("chatak.username.required", null,
                   LocaleContextHolder.getLocale()));
-              LogHelper.logExit(logger, LoggerMessage.getCallerName() + "UserName is null");
+              logger.info("UserName is null");
               return loginResponse;
             }
             String headerRefreshToken = request.getHeader("authorization")
                 .substring(request.getHeader("authorization").indexOf(' ') + 1);
-            LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-                "Fetched Refresh Token from Headers : " + headerRefreshToken);
+            logger.info("Fetched Refresh Token from Headers : " + headerRefreshToken);
             ApplicationClientDTO applicationClientDTO =
                 pgMerchantService.getApplicationClientAuth(loginRequest.getUsername());
-            LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-                "Validating Refresh Token -->> Application Client DTO : " + applicationClientDTO);
+            logger.info("Validating Refresh Token -->> Application Client DTO : " + applicationClientDTO);
             if (applicationClientDTO != null
                 && (!applicationClientDTO.getRefreshToken().equals(headerRefreshToken))) {
               loginResponse.setErrorCode("ERROR_1685");
               loginResponse.setErrorMessage(messageSource.getMessage(loginResponse.getErrorCode(), null,
                   LocaleContextHolder.getLocale()));
-              LogHelper.logExit(logger, LoggerMessage.getCallerName() + "Refresh Token Not Matched");
+              logger.info("Exiting :: TransactionRestController :: generateAccessTokenOnRefreshToken :: Refresh Token Not Matched");
               return loginResponse;
             }
-            LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "valid Refresh Token");
             OAuthToken token = null;
             // OAuth generation
-            LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "OAuth Genartion");
-            if (!StringUtil.isNull(applicationClientDTO)) {
-              if (!StringUtil.isNullAndEmpty(applicationClientDTO.getAppClientAccess())) {
+            logger.info("OAuth Genartion");
+            if (null != applicationClientDTO) {
+              if (!StringUtil.isNullAndEmpty(applicationClientDTO.getRefreshToken())) {
+                logger.info("Refresh Token is Not Empty");
                 token = JsonUtil.getValidOAuth2TokenLoginRefresh(applicationClientDTO);
+
+                token = updatingTokenOnExpiration(applicationClientDTO, token);
               } else {
+                logger.info("Refresh Token is Empty");
                 token = JsonUtil.getValidOAuth2TokenLogin(applicationClientDTO);
 
                 // save the fresh token for the first time
                 if (!StringUtil.isNull(token)) {
-                  applicationClientDTO.setAppClientAccess(token.getRefresh_token());
                   PGApplicationClient applicationClient =
                       CommonUtil.copyBeanProperties(applicationClientDTO, PGApplicationClient.class);
                   pgMerchantService.saveOrUpdateApplicationClient(applicationClient);
-                  LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Updated Application Client");
                 }
               }
               loginResponse.setAccessToken(token.getAccess_token());
@@ -541,15 +567,63 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
                   CommonUtil.copyBeanProperties(applicationClientDTO, PGApplicationClient.class);
               applicationClient.setRefreshToken(token.getRefresh_token());
               pgMerchantService.saveOrUpdateApplicationClient(applicationClient);
-              LogHelper.logExit(logger, LoggerMessage.getCallerName() + "Updated Application Client >> Exiting");
+              logger.info("Updated Application Client >> Exiting");
             }
-            LogHelper.logExit(logger, LoggerMessage.getCallerName());
+            logger.info("Exiting :: TransactionRestController :: generateAccessTokenOnRefreshToken");
           } catch (Exception e) {
-            LogHelper.logError(logger, LoggerMessage.getCallerName(), e, e.getMessage() + " TXN_0993");
+            logger.error("Error :: TransactionRestController :: generateAccessTokenOnRefreshToken : " + e.getMessage(), e);
             loginResponse.setErrorCode("TXN_0993");
             loginResponse.setErrorMessage(messageSource.getMessage(loginResponse.getErrorCode(), null,
                 LocaleContextHolder.getLocale()));
           }
           return loginResponse;
         }
+
+        private OAuthToken updatingTokenOnExpiration(ApplicationClientDTO applicationClientDTO, OAuthToken token) {
+          if (token == null) {
+              token = JsonUtil.getValidOAuth2TokenLogin(applicationClientDTO);
+              applicationClientDTO.setRefreshToken(token.getRefresh_token());
+          }
+          return token;
+      }
+
+      @RequestMapping(value = "/clientProcess", method = RequestMethod.POST)
+      public Response clientProcess(HttpServletRequest request, HttpServletResponse response,
+          HttpSession session, @RequestBody TransactionRequest transactionRequest) {
+        try {
+          validateCustomerUserName(transactionRequest.getUserName());
+          return process(request, response, session, transactionRequest);
+        } catch (HttpClientException e) {
+          logger.error("Error :: TransactionRestController :: clientProcess : " + e.getMessage(), e);
+          return getAccessDeniedResponse(messageSource);
+        }
+      }
+
+      public String getCustomerUserName() {
+        OAuth2Authentication auth =
+            (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
+        if (null != auth) {
+          Map<String, String> map = auth.getAuthorizationRequest().getAuthorizationParameters();
+          logger.info(" With UserName : " + auth.getName());
+          return map.get("client_id");
+        }
+        return null;
+      }
+
+      public void validateCustomerUserName(String customerUserName) throws HttpClientException {
+        if (!getCustomerUserName().equals(customerUserName)) {
+        	logger.info("Invalid Access Token..");
+        	logger.info("UserName in JSON Request : "
+              + customerUserName + " UserName in Authentication : " + getCustomerUserName());
+          throw new HttpClientException("403", HttpStatus.FORBIDDEN_403);
+        }
+      }
+
+      public Response getAccessDeniedResponse(MessageSource messageSource) {
+        Response response = new Response();
+        response.setErrorCode(ChatakPayErrorCode.TXN_0403.name());
+        response.setErrorMessage(
+            messageSource.getMessage(response.getErrorCode(), null, LocaleContextHolder.getLocale()));
+        return response;
+      }
 }

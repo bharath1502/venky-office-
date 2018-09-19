@@ -26,7 +26,7 @@ function doAjaxToGetCardProgramByPmId(pmId){
 						var programManagerName = obj.cardProgramList[i].programManagerName;
 						var currency = obj.cardProgramList[i].currency;
 						
-						var recRow = '<tr id="rowId'+cardProgramId+'">'
+						var recRow = '<tr id="rowId'+cardProgramId+pmId+'">'
 							+'<td>'+partnerName+'</td>'
 							+'<td>'+cardProgramName+'</td>'
 							+'<td>'+iin+'</td>'
@@ -34,7 +34,7 @@ function doAjaxToGetCardProgramByPmId(pmId){
 							+'<td>'+iinExt+'</td>'
 							+'<td>'+programManagerName+'</td>'
 							+'<td>'+currency+'</td>'
-							+'<td data-title="Action" ><input id="cpId'+cardProgramId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+')"></td>'
+							+'<td data-title="Action" ><input id="cpId'+cardProgramId+pmId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+','+pmId+')"></td>'
 					       +'</tr>';	
 							jQuery('#serviceResults').append(recRow);
 					}
@@ -67,9 +67,9 @@ function doAjaxToRemoveCardProgramByPmId(pmId){
 					for (var i = 0; i < obj.cardProgramList.length; i++) {
 						var cardProgramId = obj.cardProgramList[i].cardProgramId;
 						
-						var rowId = 'rowId'+ cardProgramId;
+						var rowId = 'rowId'+ cardProgramId+pmId;
 							$('#'+rowId).remove();	
-							doUnCheckedToCardProgram(cardProgramId);
+							doUnCheckedToCardProgram(cardProgramId,pmId);
 					}
 				}	
 			}
@@ -98,6 +98,7 @@ function validateIsoMultiSelect() {
 }
 
 function validateCreateIso(){
+	var imageData = get('isoLogo');
 	var flag = true;
 
 	if (!clientValidation('isoEmailId', 'email',
@@ -108,15 +109,21 @@ function validateCreateIso(){
 					'isocontactpersonerrormsg')
 			| !clientValidation('businessEntityName', 'business_entity_name',
 					'isobusinessentityerrormsg')
+			| !clientValidation('extension','extension_not_mandatory','extensionerr')
 			| !clientValidation('isoName', 'program_manager_name',
 					'isonameerrormsg')
 			| !validateIsoMultiSelect()
 			| !clientValidation('currency','contact_person','isoCurrencyerrormsg')
+			| !clientValidation('bankName','companyname_not_mandatory','banknameerr')
+			| !clientValidation('bankAccNum','bank_Code','bankaccerr')
+			| !clientValidation('routingNumber','bank_Code','routingNumbererr')
+			| !checkAmbiguity()
 			| !validateAddress()
 			| !validateCity()
 			| !validateCountry()
 			| !validateState()
-			| !validateZip()) {
+			| !validateZip()
+			| !readPartnerLogo(imageData,'isoLogoErrorDiv')) {
 		clearValidationType();
 		flag = false;
 		return flag;
@@ -130,6 +137,7 @@ function editIso(isoId){
 }
 
 function validateUpdateIso(){
+	var imageData = get('isoLogo');
 	setSelectedPmAndCpId();
 	var flag = true;
 
@@ -141,15 +149,21 @@ function validateUpdateIso(){
 					'isocontactpersonerrormsg')
 			| !clientValidation('businessEntityName', 'business_entity_name',
 					'isobusinessentityerrormsg')
+			| !clientValidation('extension','extension_not_mandatory','extensionerr')
 			| !clientValidation('isoName', 'program_manager_name',
 					'isonameerrormsg')
 			| !validateIsoMultiSelect()
 			| !clientValidation('currency','contact_person','isoCurrencyerrormsg')
+			| !clientValidation('bankName','companyname_not_mandatory','banknameerr')
+			| !clientValidation('bankAccNum','bank_Code','bankaccerr')
+			| !clientValidation('routingNumber','bank_Code','routingNumbererr')
+			| !checkAmbiguity()
 			| !validateAddress()
 			| !validateCity()
 			| !validateCountry()
 			| !validateState()
-			| !validateZip()) {
+			| !validateZip()
+			| !readPartnerLogo(imageData,'isoLogoErrorDiv')) {
 		clearValidationType();
 		flag = false;
 		return flag;
@@ -183,8 +197,9 @@ function fetchCardProgramByIso(isoId){
 						var partnerIIN = obj.cardProgramRequestList[i].partnerCode;
 						var programManagerName = obj.cardProgramRequestList[i].programManagerName;
 						var currency = obj.cardProgramRequestList[i].currency;
+						var programManagerId = obj.cardProgramRequestList[i].programManagerId;
 						
-						var recRow = '<tr id="rowId'+cardProgramId+'">'
+						var recRow = '<tr id="rowId'+cardProgramId+programManagerId+'">'
 							+'<td>'+partnerName+'</td>'
 							+'<td>'+cardProgramName+'</td>'
 							+'<td>'+iin+'</td>'
@@ -192,7 +207,7 @@ function fetchCardProgramByIso(isoId){
 							+'<td>'+iinExt+'</td>'
 							+'<td>'+programManagerName+'</td>'
 							+'<td>'+currency+'</td>'
-							+'<td data-title="Action" ><input id="cpId'+cardProgramId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+')"></td>'
+							+'<td data-title="Action" ><input id="cpId'+cardProgramId+programManagerId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+','+programManagerId+')"></td>'
 					       +'</tr>';	
 							jQuery('#serviceResults').append(recRow);
 					}
@@ -263,4 +278,17 @@ function validateAddress() {
 		setLable('confirmMaddress1', address1);
 		return true;
 	}
+}
+
+function validateSpecialCharactersISO() {
+	if (!clientValidation('isoName', 'companyname_not_mandatory',
+			'isonameerrormsg')
+			| !clientValidation('businessEntityName',
+					'companyname_not_mandatory', 'isobusinessentityerrormsg')
+			| !clientValidation('contactPhone', 'mobile_optional',
+					'isocontactphoneerrormsg')
+			| !clientValidation('isoEmailId', 'email_Id', 'isoEmailId_ErrorDiv')) {
+		return false;
+	}
+	return true;
 }

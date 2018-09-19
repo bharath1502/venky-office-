@@ -25,6 +25,7 @@ import com.chatak.pg.acq.dao.CardProgramDao;
 import com.chatak.pg.acq.dao.CurrencyConfigDao;
 import com.chatak.pg.acq.dao.EMVTransactionDao;
 import com.chatak.pg.acq.dao.FeeDetailDao;
+import com.chatak.pg.acq.dao.IsoServiceDao;
 import com.chatak.pg.acq.dao.MerchantCardProgramMapDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.PGParamsDao;
@@ -32,8 +33,6 @@ import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.SplitTransactionDao;
 import com.chatak.pg.acq.dao.SwitchDao;
 import com.chatak.pg.acq.dao.SwitchTransactionDao;
-import com.chatak.pg.acq.dao.TransactionDao;
-import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAccountFeeLog;
 import com.chatak.pg.acq.dao.model.PGAccountHistory;
@@ -45,16 +44,15 @@ import com.chatak.pg.acq.dao.model.PGMerchantCardProgramMap;
 import com.chatak.pg.acq.dao.model.PGSplitTransaction;
 import com.chatak.pg.acq.dao.model.PGSwitchTransaction;
 import com.chatak.pg.acq.dao.model.PGTransaction;
-import com.chatak.pg.acq.dao.model.PmCardProgamMapping;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.BINRepository;
 import com.chatak.pg.acq.dao.repository.SplitTransactionRepository;
-import com.chatak.pg.bean.PurchaseRequest;
 import com.chatak.pg.bean.Request;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.bean.ReversalRequest;
 import com.chatak.pg.bean.SplitTxnRequest;
 import com.chatak.pg.constants.ActionCode;
+import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.FeePostingStatus;
 import com.chatak.pg.constants.ISOConstants;
 import com.chatak.pg.constants.PGConstants;
@@ -71,8 +69,6 @@ import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.DateUtils;
 import com.chatak.pg.util.EncryptionUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.MagneticStripeCardUtil;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
@@ -143,6 +139,12 @@ public abstract class TransactionService extends AccountTransactionService {
   
   @Autowired
   ProgramManagerDao programManagerDao;
+  
+  @Autowired
+  IsoServiceDao isoServiceDao;
+  
+  @Autowired
+  public AsyncService asyncService;
 
   protected String txnRefNum = RandomGenerator.generateRandNumeric(PGConstants.LENGTH_TXN_REF_NUM);
 
@@ -201,7 +203,8 @@ public abstract class TransactionService extends AccountTransactionService {
    */
   protected PGTransaction populatePGTransaction(Request request, String txnType)
       throws Exception, ServiceException {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: TransactionService :: populatePGTransaction");
+
     if (txnType.equalsIgnoreCase(TransactionType.SALE.toString())
         && (request.getTotalTxnAmount() < (request.getTxnAmount() + request.getTxnFee()))) {
       throw new ServiceException(ActionCode.ERROR_CODE_12);
@@ -215,9 +218,10 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setMerchantId(request.getMerchantCode());
     pgTransaction.setTerminalId(request.getTerminalId());
     pgTransaction.setInvoiceNumber(request.getInvoiceNumber());
-    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "request's acq_channel" + request.getAcq_channel());
-    pgTransaction
-        .setAcqChannel(request.getAcq_channel() != null ? request.getAcq_channel() : "web");
+    logger.info("request's acq_channel" + request.getAcq_channel());
+
+    pgTransaction.setAcqChannel(setAcqChannel(request));
+
     if (request.getAcq_mode() != null) {
       if (EntryModeEnum.CASH.name().equalsIgnoreCase(request.getAcq_mode())) {
         pgTransaction.setAcqTxnMode(EntryModeEnum.MANUAL.name());
@@ -228,14 +232,15 @@ public abstract class TransactionService extends AccountTransactionService {
       pgTransaction.setAcqTxnMode(Constants.BALANCE_ENQUIRY);
     }
     
-    PGMerchant pgMerchant = merchantUpdateDao.getMerchantByCode(request.getMerchantCode());
+    // PERF >> Replaced by fetching only auto-settlement status and ID based on merchant code
+    PGMerchant pgMerchant = merchantUpdateDao.getMerchantAutoSettlementByCode(request.getMerchantCode());
     String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() != null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
     autoSettlement = (autoSettlement!=null && autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_YES : Constants.BATCH_STATUS_NA;
     
     if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
       pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);
     }
-    pgTransaction.setBatchId(Constants.BATCH_STATUS_NEXT);
+    pgTransaction.setBatchId(Constants.BATCH_STATUS_NA);
     pgTransaction.setBatchDate(new Timestamp(System.currentTimeMillis()));
     pgTransaction.setAutoSettlementStatus(autoSettlement);
     pgTransaction.setMti(request.getMti());
@@ -252,8 +257,11 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setPanMasked(StringUtils.getMaskedString(cardNumber, Integer.parseInt("5"), Integer.parseInt("4")));
     pgTransaction.setPan(EncryptionUtil.encrypt(cardNumber));
     pgTransaction
-        .setExpDate(request.getExpDate() != null ? Long.valueOf(request.getExpDate()) : null);
-    pgTransaction.setTransactionId(transactionDao.generateTransactionRefNumber());
+        .setExpDate(setExpDate(request));
+    
+    // PERF >> Will use the primary auto increment key as the transaction id
+    //pgTransaction.setTransactionId(transactionDao.generateTransactionRefNumber());
+    
     pgTransaction.setAuthId(authId);
     pgTransaction.setCreatedDate(timestamp);
     pgTransaction.setUpdatedDate(timestamp);
@@ -271,10 +279,20 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setTimeZoneOffset(request.getTimeZoneOffset());
     pgTransaction.setTimeZoneRegion(request.getTimeZoneRegion());
     pgTransaction.setDeviceLocalTxnTime(DateUtil.convertTimeZone(request.getTimeZoneOffset(), timestamp.toString()));
-    LogHelper.logExit(logger, LoggerMessage.getCallerName());
-    getCardProgramDetailsByCardNumber(CommonUtil.getIIN(cardNumber), CommonUtil.getPartnerIINExt(cardNumber), CommonUtil.getIINExt(cardNumber), pgTransaction, pgMerchant.getId(),request); 
+
+    getCardProgramDetailsByCardNumber(CommonUtil.getIIN(cardNumber), CommonUtil.getPartnerIINExt(cardNumber), 
+    		CommonUtil.getIINExt(cardNumber), pgTransaction, pgMerchant.getId(),request); 
+    logger.info("Exiting :: TransactionService :: populatePGTransaction");
     return pgTransaction;
   }
+
+	private Long setExpDate(Request request) {
+		return request.getExpDate() != null ? Long.valueOf(request.getExpDate()) : null;
+	}
+
+	private String setAcqChannel(Request request) {
+		return request.getAcq_channel() != null ? request.getAcq_channel() : "web";
+	}
 
   /**
    * Method used to populate PGSwitchTransaction object with request object
@@ -284,17 +302,20 @@ public abstract class TransactionService extends AccountTransactionService {
    * @throws Exception
    */
   protected PGSwitchTransaction populateSwitchTransactionRequest(Request request) throws Exception {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: TransactionService :: populateSwitchTransactionRequest");
+
     PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
     pgSwitchTransaction.setTxnAmount(request.getTxnAmount());
-    pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), Integer.parseInt("5"), Integer.parseInt("4")));
+    pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), 5, 4));
     pgSwitchTransaction.setPosEntryMode(request.getPosEntryMode());
     pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getCardNum()));
-    pgSwitchTransaction.setPgTransactionId(transactionDao.generateTransactionRefNumber());
+    // PERF >> Commenting since PgTransactionId is auto increment
+    //pgSwitchTransaction.setPgTransactionId(transactionDao.generateTransactionRefNumber())
     pgSwitchTransaction.setCreatedDate(timestamp);
-    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "txnRefNum : " + txnRefNum);
+
     pgSwitchTransaction.setStatus(PGConstants.STATUS_INPROCESS);
-    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+    logger.info("Exiting :: TransactionService :: populateSwitchTransactionRequest");
+
     return pgSwitchTransaction;
   }
 
@@ -394,17 +415,17 @@ public abstract class TransactionService extends AccountTransactionService {
    */
   protected ISOMsg getISOMsg(Request request, String mti, String procCode, String txnRef)
       throws ISOException {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: TransactionService :: getISOMsg");
     ISOMsg isoMsg = new ISOMsg();
     try {
     isoMsg.setMTI(mti);
-    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Track 2 data : " + request.getTrack2());
+    logger.info("Track 2 data : " + request.getTrack2());
     if (!StringUtils.isValidString(request.getTrack2())) {
-    	LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Setting PAN in ISO field");
+    	logger.info("Setting PAN in ISO field");
       isoMsg.set(ISOConstants.PAN, request.getCardNum());
     }
-    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "PAN Number in Sale Txn Request : " + request.getCardNum());
-    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "PAN Number in ISO Packet : " + isoMsg.getValue(ISOConstants.PAN));
+    logger.info("PAN Number in Sale Txn Request : " + StringUtils.lastFourDigits(request.getCardNum()));
+    logger.info("PAN Number in ISO Packet : " + StringUtils.lastFourDigits((String)isoMsg.getValue(ISOConstants.PAN)));
     isoMsg.set(ISOConstants.PROCESSING_CODE, procCode);
     isoMsg.set(ISOConstants.TXN_AMOUNT,
         request.getTotalTxnAmount() != null
@@ -459,7 +480,7 @@ public abstract class TransactionService extends AccountTransactionService {
     isoMsg.set(ISOConstants.CARD_ACCEPTOR_IDENTIFICATION_CODE, ISOUtil.padleft(request.getMerchantCode(), Integer.parseInt("15"), '0'));
     isoMsg.set(ISOConstants.CARD_ACCEPTOR_NAME_OR_LOCATION, ISOUtil.padleft(request.getBusinessName(), Integer.parseInt("23"), ' ')
         + ISOUtil.padleft(request.getCity(), Integer.parseInt("13"), ' '));
-    isoMsg.set(ISOConstants.PRIVATE_ADDITIONAL_DATA, "Chatak merchant");// TODO: Merchant/Bank Name
+    isoMsg.set(ISOConstants.PRIVATE_ADDITIONAL_DATA, request.getAddress());// TODO: Merchant/Bank Name
 
     isoMsg.set(ISOConstants.TXN_CURRENCY_CODE, request.getCurrencyCode());
 
@@ -496,7 +517,7 @@ public abstract class TransactionService extends AccountTransactionService {
       throw new ISOException("Invalid IsoMessage");
     }
     logger.info("Transaction Currency : " + request.getCurrencyCode());
-    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+    logger.info("Exiting :: TransactionService :: getISOMsg");
     return isoMsg;
   }
 
@@ -548,7 +569,7 @@ public abstract class TransactionService extends AccountTransactionService {
    * @throws ServiceException
    */
 
-  public void updateMerchantAccount(String merchantId, String paymentMethod, Long txnAmount,
+  public PGAccount updateMerchantAccount(String merchantId, String paymentMethod, Long txnAmount,
       Long feeAmount, String transactionId) throws ServiceException {
     PGAccount pgAccount = accountDao.getPgAccount(merchantId);
     if (paymentMethod.equals(PGConstants.PAYMENT_METHOD_CREDIT)) {
@@ -561,8 +582,8 @@ public abstract class TransactionService extends AccountTransactionService {
       pgAccount.setCurrentBalance(pgAccount.getCurrentBalance() + txnAmount);
     }
     accountRepository.save(pgAccount);
-    logPgAccountHistory(merchantId, paymentMethod, transactionId);
-
+    logPgAccountHistory(merchantId, paymentMethod, transactionId, pgAccount);
+    return pgAccount;
   }
 
   /**
@@ -579,7 +600,7 @@ public abstract class TransactionService extends AccountTransactionService {
     PGAccount pgAccount = accountDao.getPgAccount("1");
     pgAccount.setFeeBalance(pgAccount.getFeeBalance() + feeAmount);
     accountRepository.save(pgAccount);
-    logPgAccountHistory("1", transaction.getPaymentMethod(), transaction.getTransactionId());
+    logPgAccountHistory("1", transaction.getPaymentMethod(), transaction.getTransactionId(), pgAccount);
 
   }
 
@@ -607,7 +628,7 @@ public abstract class TransactionService extends AccountTransactionService {
 
     accountRepository.save(pgAccount);
     logPgAccountHistory(pgAccount.getEntityId(), originalPgTransaction.getPaymentMethod(),
-        originalPgTransaction.getTransactionId());
+        originalPgTransaction.getTransactionId(), pgAccount);
 
     return negativeBalanceFlag;
 
@@ -625,7 +646,7 @@ public abstract class TransactionService extends AccountTransactionService {
 
     accountRepository.save(pgAccount);
     logPgAccountHistory(pgAccount.getEntityId(), transaction.getPaymentMethod(),
-        transaction.getTransactionId());
+        transaction.getTransactionId(), pgAccount);
 
   }
 
@@ -653,9 +674,11 @@ public abstract class TransactionService extends AccountTransactionService {
    * @param merchantId
    * @throws ServiceException
    */
-  public void logPgAccountHistory(String merchantId, String paymentMethod, String transactionId)
+  public void logPgAccountHistory(String merchantId, String paymentMethod, String transactionId, PGAccount updatedAccount)
       throws ServiceException {
-    PGAccount updatedAccount = accountDao.getPgAccount(merchantId);
+	  if(null == updatedAccount) {
+		  updatedAccount = accountDao.getPgAccount(merchantId);
+	  }
     if (null != updatedAccount) {
       PGAccountHistory pgAccountHistory = new PGAccountHistory();
       pgAccountHistory.setEntityType(updatedAccount.getEntityType());
@@ -726,7 +749,7 @@ public abstract class TransactionService extends AccountTransactionService {
 
     accountRepository.save(pgAccount);
     logPgAccountHistory(pgAccount.getEntityId(), originalPgTransaction.getPaymentMethod(),
-        originalPgTransaction.getTransactionId());
+        originalPgTransaction.getTransactionId(), pgAccount);
 
     return negativeBalanceFlag;
 
@@ -751,7 +774,7 @@ public abstract class TransactionService extends AccountTransactionService {
 
     accountRepository.save(pgAccount);
     logPgAccountHistory(pgAccount.getEntityId(), transaction.getPaymentMethod(),
-        transaction.getTransactionId());
+        transaction.getTransactionId(), pgAccount);
 
   }
 
@@ -820,7 +843,7 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setTerminalId(request.getTerminalId());
     pgTransaction.setInvoiceNumber(request.getInvoiceNumber());
     pgTransaction
-        .setAcqChannel(request.getAcq_channel() != null ? request.getAcq_channel() : "web");
+        .setAcqChannel(setAcqChannel(request));
     pgTransaction.setAcqTxnMode(request.getAcq_mode() != null ? request.getAcq_mode() : "rest");
     pgTransaction.setMti(request.getMti());
     pgTransaction.setProcCode(request.getProcessingCode());
@@ -831,7 +854,7 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), Integer.parseInt("5"), Integer.parseInt("4")));
     pgTransaction.setPan(EncryptionUtil.encrypt(request.getCardNum()));
     pgTransaction
-        .setExpDate(request.getExpDate() != null ? Long.valueOf(request.getExpDate()) : null);
+        .setExpDate(setExpDate(request));
     pgTransaction
         .setTransactionId(RandomGenerator.generateRandNumeric(PGConstants.LENGTH_TXN_REF_NUM));
     pgTransaction.setAuthId(authId);
@@ -875,7 +898,7 @@ public abstract class TransactionService extends AccountTransactionService {
       isoMsg.set(ISOConstants.CARD_ACCEPTOR_IDENTIFICATION_CODE, ISOUtil.padleft(request.getMerchantCode(), Integer.parseInt("15"), '0'));
       isoMsg.set(ISOConstants.CARD_ACCEPTOR_NAME_OR_LOCATION, ISOUtil.padleft(request.getBusinessName(), Integer.parseInt("23"), ' ')
           + ISOUtil.padleft(request.getCity(), Integer.parseInt("13"), ' '));
-      isoMsg.set(ISOConstants.PRIVATE_ADDITIONAL_DATA, "Chatak merchant");//  Merchant/Bank Name
+      isoMsg.set(ISOConstants.PRIVATE_ADDITIONAL_DATA, request.getAddress());//  Merchant/Bank Name
       isoMsg.set(ISOConstants.TXN_CURRENCY_CODE, request.getCurrencyCode());
       isoMsg.set(ISOConstants.RESERVED_NATIONAL_57, "220");//  Auth life cycle
       isoMsg.set(ISOConstants.RESERVED_NATIONAL_58, "0000000002");
@@ -1078,24 +1101,33 @@ private void validateVirtualAccFeePostResponse(PGAccountFeeLog feeLog, virtualAc
     return processingFee;
   }
   
-  private void getCardProgramDetailsByCardNumber(Long iin, String iinPartnerCode, String iinExt, PGTransaction pgTransaction, Long merchantId,Request request) {
+  private void getCardProgramDetailsByCardNumber(String iin, String iinPartnerCode, String iinExt, PGTransaction pgTransaction, Long merchantId,Request request)
+      throws ServiceException {
 	  logger.info("TransactionService | getCardProgramDetailsByCardNumber | Entering");
 	  
-	  CardProgram cardprogram = cardProgramDao.findCardProgramByIIN(iin, iinPartnerCode, iinExt);
-	  PGMerchantCardProgramMap pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(merchantId, cardprogram.getCardProgramId());
-	  pgTransaction.setCpId(cardprogram.getCardProgramId());
+	  Long cardProgramId = cardProgramDao.findCardProgramByIIN(iin, iinPartnerCode, iinExt);
+	  PGMerchantCardProgramMap pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(merchantId, cardProgramId);
+	  pgTransaction.setCpId(cardProgramId);
 	  
 	  logger.info("TransactionService | getCardProgramDetailsByCardNumber | pGMerchantCardProgramMap: " + pGMerchantCardProgramMap);
 	  
 	  if(!StringUtils.isNullAndEmpty(pGMerchantCardProgramMap) 
 			  && !StringUtils.isNullAndEmpty(pGMerchantCardProgramMap.getEntitytype())
 			  && pGMerchantCardProgramMap.getEntitytype().equalsIgnoreCase(Constants.ISO_USER_TYPE)) {
-	      PmCardProgamMapping pmCardProgramMap = programManagerDao.findByCardProgramId(cardprogram.getCardProgramId());
+	    
+	      // check if ISO is active
+	      String status = isoServiceDao.findISOStatusById(pGMerchantCardProgramMap.getEntityId());
+	      if(!status.equals("Active")) {
+	        throw new ServiceException(ActionErrorCode.ERROR_CODE_ISO_01);
+	      }
+	    
+	      Long pmId = isoServiceDao.findByIsoIdAndCardProgramId(pGMerchantCardProgramMap.getEntityId(), cardProgramId);
+	    
 		  pgTransaction.setIsoId(pGMerchantCardProgramMap.getEntityId());
 		  request.setIsoId(pgTransaction.getIsoId());
-		  request.setPmId(pmCardProgramMap.getProgramManagerId());
-		  logger.info("TransactionService | getCardProgramDetailsByCardNumber | ISO_USER_TYPE | PM ID: " + pmCardProgramMap.getProgramManagerId()
-		  + ", ISO ID: " + pGMerchantCardProgramMap.getEntityId());
+		  request.setPmId(pmId);
+		  logger.info("TransactionService | getCardProgramDetailsByCardNumber | ISO_USER_TYPE | PM ID: " + pmId
+		        + ", ISO ID: " + pGMerchantCardProgramMap.getEntityId());
 		  
 	  } else if(!StringUtils.isNullAndEmpty(pGMerchantCardProgramMap) 
 			  && !StringUtils.isNullAndEmpty(pGMerchantCardProgramMap.getEntitytype())

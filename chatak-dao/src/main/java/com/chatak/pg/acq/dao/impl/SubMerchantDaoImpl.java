@@ -500,7 +500,7 @@ private void getListOfSubMerchants(List<MerchantRequest> subMerchantList, List<O
 			try {
 				Object[] obj = (Object[]) it.next();
 				MerchantRequest merchantRequest = new MerchantRequest();
-				merchantRequest.setMerchantCode((StringUtil.isNull(obj[0]) ? null : (String) obj[0]));
+				merchantRequest.setMerchantCode(getMerchantCode(obj));
 				merchantRequest.setBusinessName(subMerchantsBusinessName(obj));
 				merchantRequest.setEntityType(subMerchantsEntityType(obj));
 				if(merchantRequest.getEntityType().equals(PGConstants.PROGRAM_MANAGER_NAME)){
@@ -513,7 +513,7 @@ private void getListOfSubMerchants(List<MerchantRequest> subMerchantList, List<O
 				setAddress(obj, merchantRequest);
 				merchantRequest.setStatus(Integer.parseInt(obj[9].toString()));
 				merchantRequest.setCity(subMerchantCity(obj));
-				merchantRequest.setCurrency((StringUtil.isNull(obj[Integer.parseInt("11")]) ? null : (String)obj[Integer.parseInt("11")]));
+				merchantRequest.setCurrency(getCurrency(obj));
 				merchantRequest.setId((StringUtil.isNull(obj[Integer.parseInt("12")]) ? null : ((BigInteger)obj[Integer.parseInt("12")]).longValue()));
 				subMerchantList.add(merchantRequest);
 			} catch (Exception e) {
@@ -522,6 +522,14 @@ private void getListOfSubMerchants(List<MerchantRequest> subMerchantList, List<O
 		}
 	}
 }
+
+	private String getCurrency(Object[] obj) {
+		return StringUtil.isNull(obj[Integer.parseInt("11")]) ? null : (String) obj[Integer.parseInt("11")];
+	}
+
+	private String getMerchantCode(Object[] obj) {
+		return StringUtil.isNull(obj[0]) ? null : (String) obj[0];
+	}
 
 	/**
 	 * @param obj

@@ -1,5 +1,7 @@
 package com.chatak.pg.constants;
 
+import java.math.BigDecimal;
+
 /**
  * @author Kumar
  */
@@ -311,7 +313,7 @@ public interface PGConstants {
   
   String BATCH_STATUS_COMPLETED = "COMPLETED";
   
-   String REGEX_TIME = "(00|[0-9]|1[0-9]|2[0-3])-([0-9]|[0-5][0-9])-([0-9]|[0-5][0-9])$";
+   String REGEX_TIME = "(00|0[0-9]|1[0-9]|2[0-3])-([0-9]|[0-5][0-9])-([0-9]|[0-5][0-9])$";
    
    String REGEX_DATE =  "\\d{2}-\\d{2}-\\d{4}";
    
@@ -350,4 +352,7 @@ public interface PGConstants {
    public static final Integer INDEX_SIXTEEN =16;
    
    String DATE_TIME_ZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+   
+   public static final BigDecimal BIG_DECIMAL_HUNDRED = new BigDecimal("100");
+
 }

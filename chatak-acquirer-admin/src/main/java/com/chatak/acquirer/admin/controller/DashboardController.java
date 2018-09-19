@@ -3,6 +3,7 @@
  */
 package com.chatak.acquirer.admin.controller;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,6 @@ import com.chatak.acquirer.admin.service.CurrencyConfigService;
 import com.chatak.acquirer.admin.service.IsoService;
 import com.chatak.acquirer.admin.service.MerchantUpdateService;
 import com.chatak.acquirer.admin.service.MerchantValidateService;
-import com.chatak.acquirer.admin.service.PartnerService;
 import com.chatak.acquirer.admin.service.ProgramManagerService;
 import com.chatak.acquirer.admin.service.ResellerService;
 import com.chatak.acquirer.admin.service.TransactionService;
@@ -58,8 +58,6 @@ import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 
 /**
  *
@@ -100,9 +98,6 @@ public class DashboardController implements URLMappingConstants {
   MessageSource messageSource;
   @Autowired
   private MerchantValidateService merchantValidateService;
-  
-  @Autowired
-  private PartnerService partnerService;
   
   @Autowired
   RoleController roleController;
@@ -328,8 +323,8 @@ private void validateMerchant(Map model, Merchant merchant) {
   @RequestMapping(value = CHATAK_ADMIN_UNBLOCK_USERS, method = RequestMethod.GET)
   public ModelAndView showUnblockUsers(HttpServletRequest request, Map model, HttpSession session,
       GenericUserDTO userDataDto) {
+	  logger.info("Entering :: DashboardController :: showUnblockUsers method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_UNBLOCK_USERS);
-    logger.info("Entering :: DashboardController :: showUnblockUsers method");
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
     if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_UNBLOCKUSERS_FEATURE_ID)) {
       session.invalidate();
@@ -346,7 +341,7 @@ private void validateMerchant(Map model, Merchant merchant) {
   @RequestMapping(value = CHATAK_ADMIN_UNBLOCK_USERS_SEARCH, method = RequestMethod.POST)
   public ModelAndView searchAdminUser(HttpServletRequest request, HttpServletResponse response,
       Map model, HttpSession session, GenericUserDTO userDataDto, BindingResult bindingResult) {
-    logger.info("Entering:: DashboardController:: searchAdminUser method");
+	  logger.info("Entering :: DashboardController :: searchAdminUser method");
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_UNBLOCK_USERS);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
@@ -361,7 +356,7 @@ private void validateMerchant(Map model, Merchant merchant) {
       if (userDataDto.getUserType().equals(PGConstants.ADMIN) 
     		  || userDataDto.getUserType().equals(Constants.PM_USER_TYPE)
     		  || userDataDto.getUserType().equals(Constants.ISO_USER_TYPE)) {
-        adminUserList = userService.searchAdminUserList();
+        adminUserList = userService.searchAdminUserList(userDataDto.getUserType());
       } else {
         adminUserList = userService.searchMerchantUserList();
       }
@@ -374,13 +369,13 @@ private void validateMerchant(Map model, Merchant merchant) {
       }
 
     } catch (Exception e) {
-      logger.error("ERROR:: DashboardController:: searchAdminUser method", e);
+    	logger.error("Error :: DashboardController :: searchAdminUser method",e);
       model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     modelAndView.addObject(Constants.USERDATA_DTO, userDataDto);
     model.put("userType", userDataDto.getUserType());
-    logger.info("Exit:: DashboardController:: searchAdminUser method");
+    logger.info("Exit :: DashboardController :: searchAdminUser method");
     return modelAndView;
 
   }
@@ -388,7 +383,7 @@ private void validateMerchant(Map model, Merchant merchant) {
   @RequestMapping(value = CHATAK_ADMIN_DO_UNBLOCK_USERS, method = RequestMethod.POST)
   public ModelAndView unblockUser(HttpServletRequest request, HttpServletResponse response,
       Map model, HttpSession session, GenericUserDTO userDataDto) {
-    logger.info("Exit:: DashboardController:: unblockUser method");
+	  logger.info("Entering :: DashboardController :: unblockUser method");
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_UNBLOCK_USERS);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
@@ -415,44 +410,45 @@ private void validateMerchant(Map model, Merchant merchant) {
       } else {
         model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE,
             null, LocaleContextHolder.getLocale()));
-
       }
 
     } catch (ChatakAdminException e) {
-      logger.error("ERROR:: DashboardController:: unblockUser method", e);
+    	logger.error("Error :: DashboardController :: unblockUser method",e);
       model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     modelAndView.addObject(Constants.USERDATA_DTO, new GenericUserDTO());
-    logger.info("Exit:: DashboardController:: searchAdminUser method");
+    logger.info("Exit :: DashboardController :: unblockUser method");
     return modelAndView;
   }
   
 	@RequestMapping(value = FETCH_SETTLEMENT_DATA_BY_PMID)
 	public ModelAndView showViewSettlementDetails(HttpServletRequest request, HttpServletResponse response,
 			@FormParam("programViewId") final Long programViewId, @FormParam("batchDate") final Timestamp batchDate, HttpSession session, Map model) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());		
+	    logger.info("Entering :: DashboardController :: showViewSettlementDetails :: Acquirer Programa manager id : " + programViewId);
 		ModelAndView modelAndView = new ModelAndView(FETCH_SETTLEMENT_DATA_BY_PMID);
 		modelAndView.addObject(Constants.ERROR, null);
 		modelAndView.addObject(Constants.SUCESS, null);
 		Long programId = (Long) session.getAttribute("programViewId");
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Acquirer Programa manager id" + programViewId);
+		Timestamp date = (Timestamp) session.getAttribute("batchDate");
 		try {
 			
-			if (programId == null || programViewId != null) {
+			if ((programId == null || programViewId != null) && (date == null || batchDate != null)) {
 				programId = programViewId;
+				date = batchDate;
 			}
 			
-			List<PGIssSettlementData> list = issSettlementDataDao.findByAcqPmIdAndBatchDate(programId, batchDate);
+			List<PGIssSettlementData> list = issSettlementDataDao.findByAcqPmIdAndBatchDate(programId, date);
 			SettlementDataRequest settlementDataRequest = new SettlementDataRequest();
 			if (StringUtil.isListNotNullNEmpty(list)) {
 				settlementDataRequest.setProgramManagerId(list.get(0).getAcqPmId());
 				settlementDataRequest.setBatchDate(list.get(0).getBatchDate());
-				settlementDataRequest.setTotalAmount(list.get(0).getTotalAmount());
+				settlementDataRequest.setTotalAmount(new BigDecimal(list.get(0).getTotalAmount()).divide(PGConstants.BIG_DECIMAL_HUNDRED));
 				settlementDataRequest.setTotalTxnCount(list.get(0).getTotalTxnCount());
 				settlementDataRequest.setProgramManagerName(list.get(0).getProgramManagerName());
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "selected Program manager details" + settlementDataRequest.getProgramManagerId() 
-				+ settlementDataRequest.getProgramManagerName() + settlementDataRequest.getTotalTxnCount() + settlementDataRequest.getTotalAmount());
+                logger.info("selected Program manager details : " + settlementDataRequest.getProgramManagerId()
+                    + settlementDataRequest.getProgramManagerName()
+                    + settlementDataRequest.getTotalTxnCount() + settlementDataRequest.getTotalAmount());
 			}
 			model.put("settlementDataRequest", settlementDataRequest);
 		} catch (Exception e) {
@@ -461,7 +457,8 @@ private void validateMerchant(Map model, Merchant merchant) {
 					LocaleContextHolder.getLocale()));
 		}
 		session.setAttribute("programViewId", programId);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		session.setAttribute("batchDate", date);
+		logger.info("Exiting :: DashboardController :: showViewSettlementDetails");
 		return modelAndView;
 	}
 
@@ -475,7 +472,7 @@ private void validateMerchant(Map model, Merchant merchant) {
 		if (StringUtil.isListNotNullNEmpty(list)) {
 			for (PGIssSettlementData data : list) {
 				PGIssSettlementData issSettlementData = new PGIssSettlementData();
-				issSettlementData.setProgramManagerId(data.getAcqPmId());
+				issSettlementData.setProgramManagerId(Long.valueOf(data.getAcqPmId()));
 				issSettlementData.setProgramManagerName(data.getProgramManagerName());
 				issSettlementData.setBatchDate(data.getBatchDate());
 				issSettlementData.setTotalAmount(data.getTotalAmount());

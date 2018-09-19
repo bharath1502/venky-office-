@@ -667,9 +667,10 @@ public class StringUtils {
   }
 
   public static String lastFourDigits(String cardNumber) {
-    String maskcardnumber;
-    maskcardnumber = cardNumber.substring(cardNumber.length() - Integer.parseInt("4"), cardNumber.length());
-    return maskcardnumber;
+    if(StringUtils.isNull(cardNumber)) {
+      return "";
+    }
+    return cardNumber.substring(cardNumber.length() - Integer.parseInt("4"), cardNumber.length());
   }
 
   public static String getAmount(String amount) {

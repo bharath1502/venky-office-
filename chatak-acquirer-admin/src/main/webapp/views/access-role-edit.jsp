@@ -204,6 +204,10 @@
 																									<c:if test="${featureSub.getName() eq 'Manual Transactions'}"><spring:message code="reports.label.balancereports.manualtransactions"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Settlement Report'}"><spring:message code="reports.label.settlementReport"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Batch Report'}"><spring:message code="chatak-batch-report"/></c:if>
+																									<c:if test="${featureSub.getName() eq 'Fee Report'}"><spring:message code="fee-report.label.fee.report"/></c:if>
+																					                <c:if test="${featureSub.getName() eq 'ISO Revenue'}"><spring:message code="admin.label.isorevenue"/></c:if>
+																					                <c:if test="${featureSub.getName() eq 'Merchant Revenue'}"><spring:message code="admin.label.merchantrevenue"/></c:if>
+																					                <c:if test="${featureSub.getName() eq 'Program Manager Revenue'}"><spring:message code="admin.label.pmrevenue"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Manual Credit'}"><spring:message code="accounts-manual-credit.label.manualcredit"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Manual Debit'}"><spring:message code="accounts-manual-debit.label.manualdebit"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Run Manual'}"><spring:message code="chatak.manual.funding.header"/></c:if>

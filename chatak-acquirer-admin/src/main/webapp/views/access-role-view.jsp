@@ -183,10 +183,11 @@
 																									<c:if test="${featureSub.getName() eq 'CA Public Keys'}"><spring:message code="header.label.capublickeys"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Fee Programs'}"><spring:message code="fee-program-search.label.feeprogram"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Program Manager'}"><spring:message code="admin.pm.message"/></c:if>
+																									<c:if test="${featureSub.getName() eq 'ISO'}"><spring:message code="admin.partner.message"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Merchant'}"><spring:message code="reports.label.overviewandbalancesheet.merchant"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'SubMerchant'}"><spring:message code="reports.label.overviewandbalancesheet.submerchant"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Bank'}"><spring:message code="bank.label.bank"/></c:if>
-																									<c:if test="${featureSub.getName() eq 'Currency'}"><spring:message code="virtual-terminal-void.label.virtualterminal"/></c:if>
+																									<c:if test="${featureSub.getName() eq 'Currency'}"><spring:message code="reports.label.overviewandbalancesheet.currency"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Sale'}"><spring:message code="reports.option.sale"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Refund'}"><spring:message code="processing-transaction-details.label.refundbutton"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Create'}"><spring:message code="show-dynamic-MDR-create-page.label.create"/></c:if>
@@ -202,6 +203,10 @@
 																									<c:if test="${featureSub.getName() eq 'Manual Transactions'}"><spring:message code="reports.label.balancereports.manualtransactions"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Settlement Report'}"><spring:message code="reports.label.settlementReport"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Batch Report'}"><spring:message code="chatak-batch-report"/></c:if>
+																									<c:if test="${featureSub.getName() eq 'Fee Report'}"><spring:message code="fee-report.label.fee.report"/></c:if>
+																					                <c:if test="${featureSub.getName() eq 'ISO Revenue'}"><spring:message code="admin.label.isorevenue"/></c:if>
+																					                <c:if test="${featureSub.getName() eq 'Merchant Revenue'}"><spring:message code="admin.label.merchantrevenue"/></c:if>
+																					                <c:if test="${featureSub.getName() eq 'Program Manager Revenue'}"><spring:message code="admin.label.pmrevenue"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Manual Credit'}"><spring:message code="accounts-manual-credit.label.manualcredit"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Manual Debit'}"><spring:message code="accounts-manual-debit.label.manualdebit"/></c:if>
 																									<c:if test="${featureSub.getName() eq 'Run Manual'}"><spring:message code="chatak.manual.funding.header"/></c:if>

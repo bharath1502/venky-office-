@@ -15,7 +15,6 @@ import com.chatak.acquirer.admin.service.BlackListedCardService;
 import com.chatak.pg.acq.dao.BINDao;
 import com.chatak.pg.acq.dao.BlackListedCardDao;
 import com.chatak.pg.acq.dao.CardProgramDao;
-import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGBlackListedCard;
 import com.chatak.pg.bean.CardNumberResponse;
 import com.chatak.pg.bean.Response;
@@ -25,7 +24,6 @@ import com.chatak.pg.model.BlackListedCard;
 import com.chatak.pg.user.bean.BlackListedCardRequest;
 import com.chatak.pg.user.bean.BlackListedCardResponse;
 import com.chatak.pg.util.CommonUtil;
-import com.chatak.pg.util.Constants;
 
 @Service
 public class BlackListedCardServiceImpl implements BlackListedCardService, PGConstants {
@@ -177,9 +175,9 @@ public class BlackListedCardServiceImpl implements BlackListedCardService, PGCon
     CardNumberResponse cardNumberResponse = new CardNumberResponse();
     
 	String cardnumber = cardNum.toString();
-	CardProgram cardProgram = cardProgramDao.findCardProgramByIIN(CommonUtil.getIIN(cardnumber),
+	Long cardProgramId = cardProgramDao.findCardProgramByIIN(CommonUtil.getIIN(cardnumber),
 			CommonUtil.getPartnerIINExt(cardnumber), CommonUtil.getIINExt(cardnumber));
-	if (cardProgram == null) {
+	if (cardProgramId == null) {
 		cardNumberResponse.setErrorCode(ActionErrorCode.ERROR_CODE_201);
 		cardNumberResponse
 				.setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_201));

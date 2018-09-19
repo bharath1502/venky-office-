@@ -108,19 +108,19 @@
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="admin.pm.Name.message" /></label>
 													<form:input path="programManagerName" maxlength="50"
-														cssClass="form-control" />
+														cssClass="form-control" onblur="clientValidation('programManagerName','companyname_not_mandatory','pgmmgrNameErrormsg')"/>
 
-													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top">
+														<span id="pgmmgrNameErrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message
 															code="home.label.companyname" /></label>
 													<form:input path="companyName" maxlength="50"
-														cssClass="form-control" />
-													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														cssClass="form-control" onblur="clientValidation('companyName','companyname_not_mandatory','pgmmgrcompanynameerrormsg')"/>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top">
+														<span id="pgmmgrcompanynameerrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -177,7 +177,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
-													value="<spring:message code="common.label.search"/>">
+													value="<spring:message code="common.label.search"/>" onclick="return validateSpecialCharactersPMSearch()">
 												<a href="showProgramManager"
 													class="form-control button pull-right"><spring:message
 														code="common.label.reset" /></a>
@@ -416,6 +416,7 @@
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/validation.js"></script>
 	<script src="../js/messages.js"></script>
 	<script src="../js/program-manager.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>

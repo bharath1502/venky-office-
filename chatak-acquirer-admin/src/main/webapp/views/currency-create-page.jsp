@@ -133,6 +133,16 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+																code="currency-create-page.label.currencyexponent" /><span
+															class="required-field">*</span></label>
+														<form:input cssClass="form-control" onkeypress="return isNumberKey(event);" maxlength="1" path="currencyExponent" id="currencyExponent" />
+														<div class="discriptionErrorMsg" data-toggle="tooltip"
+															data-placement="top" title="">
+															<span id="currencyExponentEr" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-sm-3">
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="currency-create-page.label.currencyseparetorposition" /><span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control"

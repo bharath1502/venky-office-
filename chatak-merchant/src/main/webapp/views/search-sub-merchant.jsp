@@ -80,7 +80,7 @@
 								<div class="col-xs-12">
 									<div class="discriptionMsg" data-toggle="tooltip"
 										data-placement="top" title="">
-										<span class="red-error">&nbsp;${error }</span> <span
+										<span class="red-error">&nbsp;${error }</span> <span id="sucessDiv"
 											class="green-error">&nbsp;${sucess }</span>
 									</div>
 								</div>
@@ -138,69 +138,69 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.submerchantcode" /></label>
 													<form:input cssClass="form-control" path="subMerchantCode"
-														id="subMerchantCode" maxlength="15"/>
+														id="subMerchantCode" maxlength="15" onblur="clientValidation('subMerchantCode','merchant_codes','subMerchantCodeError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="subMerchantCodeError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.merchantcompanyname" /></label>
 													<form:input cssClass="form-control" path="businessName"
-														id="businessName" />
+														id="businessName" onblur="clientValidation('businessName','company_name_aphhanumeric_space_dot_NM','businessNameError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="businessNameError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.firstname" /></label>
 													<form:input cssClass="form-control" path="firstName"
-														id="firstName" />
+														id="firstName" onblur="clientValidation('firstName','passport_number','firstNameError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="firstNameError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.lastname" /></label>
 													<form:input cssClass="form-control" path="lastName"
-														id="lastName" />
+														id="lastName" onblur="clientValidation('lastName','passport_number','lastNameError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="lastNameError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.e-mailid" /> </label>
 													<form:input cssClass="form-control" path="emailId"
-														id="emailId" />
+														id="emailId" onblur="clientValidation('emailId','email_id','emailIdError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="emailIdError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.phone" /></label>
 													<form:input cssClass="form-control" path="phone" id="phone"
-														onkeypress="return numbersonly(this,event)" maxlength="10" />
+														onkeypress="return numbersonly(this,event)" maxlength="10" onblur="clientValidation('phone','mobile_optional','phoneError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="phoneError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.city" /></label>
-													<form:input cssClass="form-control" path="city" id="city" />
+													<form:input cssClass="form-control" path="city" id="city" onblur="clientValidation('city','name_account','cityError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="cityError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -224,20 +224,9 @@
 															code="search-sub-merchant.label.status" /></label>
 													<form:select cssClass="form-control" path="status"
 														id="status">
-														<form:option value="">
-															<spring:message code="search-sub-merchant.lable.all" />
-														</form:option>
-														<form:option value="0">
-															<spring:message code="search-sub-merchant.lable.active" />
-														</form:option>
-														<%-- <form:option value="1">
-															<spring:message code="search-sub-merchant.lable.pending" />
-														</form:option> --%>
-														<form:option value="2">
-															<spring:message code="search-sub-merchant.lable.inactive" />
-														</form:option>
-														<%-- <form:option value="3"><spring:message code="search-sub-merchant.lable.deleted"/></form:option> --%>
-
+														<form:option value=""><spring:message code="search-sub-merchant.lable.all"/></form:option>
+														<form:option value="0"><spring:message code="search-sub-merchant.lable.active"/></form:option>
+														<form:option value="2"><spring:message code="search-sub-merchant.lable.inactive"/></form:option>
 													</form:select>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
@@ -266,7 +255,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
-													onclick="return trimUserData()"
+													onclick="return searchValidationForMerchant();trimUserData()"
 													value="<spring:message code="search-sub-merchant.lable.search"/>">
 												<input type="button" class="form-control button pull-right"
 													value="<spring:message code="search-sub-merchant.lable.reset"/>"
@@ -515,7 +504,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
-	
+	<script src="../js/validation.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/sortable.js"></script>
 	<script src="../js/merchant.js"></script>

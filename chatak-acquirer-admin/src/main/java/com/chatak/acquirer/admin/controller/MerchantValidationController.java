@@ -51,13 +51,10 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.AgentDTOResponse;
-import com.chatak.pg.model.Bank;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 
 @SuppressWarnings({"rawtypes", "unchecked", "unused"})
@@ -711,7 +708,7 @@ public class MerchantValidationController implements URLMappingConstants {
   @RequestMapping(value = FETCH_CARD_PROGRAM_BY_MERCHANTID, method = RequestMethod.GET)
 	public @ResponseBody String fetchCardProgramByMerchantId(Map model, HttpSession session, @FormParam("merchantId") Long merchantId,
 			@FormParam("entityType") String entityType) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: MerchantValidationController :: fetchCardProgramByMerchantId");
 		CardProgramResponse cardProgramResponse = null;
 		try {
 			if (null != entityType && entityType.equals(PGConstants.PROGRAM_MANAGER_NAME)) {
@@ -722,9 +719,9 @@ public class MerchantValidationController implements URLMappingConstants {
 			cardProgramResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
 			return JsonUtil.convertObjectToJSON(cardProgramResponse);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: MerchantValidationController :: fetchCardProgramByMerchantId : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: MerchantValidationController :: fetchCardProgramByMerchantId");
 		return null;
 	}   	
 }

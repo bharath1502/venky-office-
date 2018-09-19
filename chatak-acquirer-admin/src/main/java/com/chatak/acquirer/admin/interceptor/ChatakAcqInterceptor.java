@@ -40,16 +40,17 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
         // Not a POST - allow the request           
         // Valid request        
       } else {
-        try {
-          // This is a POST request - need to check the CSRF token            
-          CSRFTokenManager.validateCSRFToken(request);
-        } catch (com.chatak.pg.exception.PrepaidException e) {
-          logger.error("ERROR:: WalletInterceptor :: preHandle method", e);
-          response.sendRedirect(request.getContextPath() + "/"
-              + URLMappingConstants.INVALID_REQUEST_PAGE);
-          return false;
-        }
-      }
+			// This is a POST request - need to check the CSRF token
+			String sessionToken = CSRFTokenManager.getTokenForSession(request.getSession());
+			String requestToken = CSRFTokenManager.getTokenFromRequest(request);
+			if (sessionToken.equals(requestToken)) {
+				// Valid request
+
+			} else {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bad or missing CSRF value");
+				return false;
+			}
+		}
     
       isDone = isValidRequest(request.getRequestURI());
       if (isDone) {
@@ -99,7 +100,7 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
         }
       }
     } else {
-      return invalidSession(request, response);
+      return invalidSession(response);
     }
     return true;
   }
@@ -155,14 +156,12 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
     return userAgent;
   }
 
-  private boolean invalidSession(javax.servlet.http.HttpServletRequest request,
-      javax.servlet.http.HttpServletResponse response) {
+  private boolean invalidSession(javax.servlet.http.HttpServletResponse response) {
     Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
     myCookie.setMaxAge(0);
     response.addCookie(myCookie);
     try {
-      response.sendRedirect(
-          request.getContextPath() + Constants.URL_SPERATOR + Constants.CHATAK_INVALID_SESSION);
+    	response.sendRedirect(URLMappingConstants.INVALID_REQUEST_PAGE);
     } catch (Exception e) {
       logger.error("Error :: ChatakAcqInterceptor :: checkUserRegistry", e);
     }

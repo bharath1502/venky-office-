@@ -86,5 +86,11 @@ public interface ProgramManagerService {
 
   public ProgramManagerRequest findbyProgramManagerId(Long id);
   
+  public CardProgramResponse searchIssuanceCardProgramByPM(
+      PartnerGroupPartnerMapRequest partnerGroupPartnerMapRequest,String currency,String createdBy,String acquirerPmId)throws ChatakAdminException;
+  
+  public List<CardProgramRequest> getUnselectedCpByPm(Long programManagerId);
+  
+  public List<CardProgramRequest> getUnselectedCpForIndependentPm(Long programManagerId, String currency);
   
 }

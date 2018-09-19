@@ -22,6 +22,8 @@ public interface AccountTransactionsDao {
   public boolean isDuplicateAccountTransactionId(String transactionId);
 
   public PGAccountTransactions createOrUpdate(PGAccountTransactions pgAccountTransactions);
+  
+  public List<PGAccountTransactions> createOrUpdate(PGAccountTransactions... pgAccountTransactions);
 
   public String generateAccountTransactionId();
 

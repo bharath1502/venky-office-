@@ -52,6 +52,8 @@ public class BINDaoImpl implements BINDao {
 
   @PersistenceContext
   private EntityManager entityManager;
+  
+  private static final List<Long> BINS = new ArrayList<>(1);
 
   /**
    * @return
@@ -99,15 +101,22 @@ public class BINDaoImpl implements BINDao {
    */
   @Override
   public List<Long> getAllActiveBins() throws DataAccessException {
-    logger.info("BINDaoImpl | getAllActiveBins | Entering");
-    List<PGBINRange> list = binRepository.getAllActiveBins();
-    List<Long> binList = new ArrayList<Long>(1);
-    if (CommonUtil.isListNotNullAndEmpty(list)) {
-      for (PGBINRange pgBin : list) {
-        binList.add(pgBin.getBin());
-      }
-    }
-    return binList;
+//    logger.info("BINDaoImpl | getAllActiveBins | Entering");
+//    List<PGBINRange> list = binRepository.getAllActiveBins();
+//    List<Long> binList = new ArrayList<Long>(1);
+//    if (CommonUtil.isListNotNullAndEmpty(list)) {
+//      for (PGBINRange pgBin : list) {
+//        binList.add(pgBin.getBin());
+//      }
+//    }
+//    return binList;
+    
+    // PERF >> Retrieve only BIN column that is required
+	if(BINS.isEmpty()) {
+	  List<Long> binList = binRepository.getActiveBins();
+	  BINS.addAll(binList);
+	}
+    return BINS;
   }
 
   /**
@@ -127,6 +136,7 @@ public class BINDaoImpl implements BINDao {
         updateBin.setSwitchId(pgbinRange.getSwitchId());
         return binRepository.save(updateBin);
       } else {
+    	BINS.add(pgbinRange.getBin());
         return binRepository.save(pgbinRange);
       }
     } catch (Exception e) {

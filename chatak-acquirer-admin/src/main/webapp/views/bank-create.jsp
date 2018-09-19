@@ -29,6 +29,7 @@
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/bank.js"></script>
+	<script src="../js/validation.js"></script>
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -273,7 +274,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.contactmobilenumber" /></label>
 													<form:input path="contactPersonCell" id="bankMobile"
-														cssClass="form-control"
+														cssClass="form-control" onblur="this.value=this.value.trim();validContactPersonCell()"
 														maxlength="<%=Constants.PHONE.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
@@ -298,7 +299,7 @@
 															code="common.label.extension" /></label>
 													<input name="extension" id="extension"
 														onKeyPress="return numbersonly(this, event)" placeholder="<spring:message code="common.label.numericsonly"/>"
-														class="form-control"
+														class="form-control" onblur="clientValidation('extension','extension_not_mandatory','extensionEr')"
 														maxlength="<%=Constants.EXTENSION.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
@@ -310,7 +311,7 @@
 															code="common.label.fax" /></label>
 													<input name="contactPersonFax" id="bankFax"
 														onKeyPress="return numbersonly(this, event)" placeholder="<spring:message code="common.label.numericsonly"/>"
-														class="form-control"
+														class="form-control" onblur="clientValidation('bankFax','fax','bankFaxEr')"
 														maxlength="<%=Constants.FAX.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
@@ -355,7 +356,7 @@
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
 													value='<spring:message code="common.label.create"/>'
-													onclick="return validCreateBank()"> <input
+													onclick="return validCreateBank();validateSpecialCharactersBankCreate()"> <input
 													type="button" class="form-control button pull-right"
 													value='<spring:message code="common.label.cancel"/>'
 													onclick="openCancelConfirmationPopup()">

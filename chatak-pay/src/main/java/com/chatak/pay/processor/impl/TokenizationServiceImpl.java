@@ -5,7 +5,8 @@ package com.chatak.pay.processor.impl;
 
 import java.sql.Timestamp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 @Service
 public class TokenizationServiceImpl implements TokenizationService {
 
-  private static Logger logger = Logger.getLogger(CardPaymentProcessorImpl.class);
+  private static Logger logger = LogManager.getLogger(CardPaymentProcessorImpl.class);
   
   private static ObjectMapper mapper=new ObjectMapper();
 

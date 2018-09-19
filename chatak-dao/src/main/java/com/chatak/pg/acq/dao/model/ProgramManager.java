@@ -102,6 +102,9 @@ public class ProgramManager implements Serializable {
 	
 	@Column(name = "SHEDULER_RUN_TIME")
 	private String schedulerRunTime;
+	
+	@Column(name = "SCHEDULER_RUN_STATUS")
+	private String schedulerRunStatus;
   
 
 	/**
@@ -368,5 +371,13 @@ public class ProgramManager implements Serializable {
 	public void setSchedulerRunTime(String schedulerRunTime) {
 		this.schedulerRunTime = schedulerRunTime;
 	}
+
+	public String getSchedulerRunStatus() {
+		return schedulerRunStatus;
+	}
+
+	public void setSchedulerRunStatus(String schedulerRunStatus) {
+		this.schedulerRunStatus = schedulerRunStatus;
+	}    
 	
 }

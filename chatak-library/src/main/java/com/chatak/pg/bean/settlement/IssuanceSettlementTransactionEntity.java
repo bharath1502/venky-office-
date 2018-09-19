@@ -1,5 +1,6 @@
 package com.chatak.pg.bean.settlement;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ public class IssuanceSettlementTransactionEntity {
   
   private String merchantId;
 
-  private BigInteger acqSaleAmount = new BigInteger("0");
+  private BigDecimal acqSaleAmount = new BigDecimal("0");
 
-  private BigInteger issSaleAmount = new BigInteger("0");
+  private BigDecimal issSaleAmount = new BigDecimal("0");
 
   private Long acqPmId;
 
@@ -54,19 +55,19 @@ public class IssuanceSettlementTransactionEntity {
     this.merchantId = merchantId;
   }
 
-  public BigInteger getAcqSaleAmount() {
+  public BigDecimal getAcqSaleAmount() {
     return acqSaleAmount;
   }
 
-  public void setAcqSaleAmount(BigInteger acqSaleAmount) {
+  public void setAcqSaleAmount(BigDecimal acqSaleAmount) {
     this.acqSaleAmount = acqSaleAmount;
   }
 
-  public BigInteger getIssSaleAmount() {
+  public BigDecimal getIssSaleAmount() {
     return issSaleAmount;
   }
 
-  public void setIssSaleAmount(BigInteger issSaleAmount) {
+  public void setIssSaleAmount(BigDecimal issSaleAmount) {
     this.issSaleAmount = issSaleAmount;
   }
 

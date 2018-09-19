@@ -22,6 +22,8 @@ public interface StatusConstants
 	
 	public static final String REASON = "30";
 	
+	  public static final Integer ONE = 1;
+	
 	public static final String ALLOW_RIGHT_CLICK =
 		      Properties.getProperty("chatak.merchant.allow.right.click.flag");
 	

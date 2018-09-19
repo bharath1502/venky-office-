@@ -3,7 +3,9 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
 
@@ -51,7 +53,8 @@ public interface ApplicationClientRepository extends
    * @param appClientId
    * @return
    */
-  public List<PGApplicationClient> findByAppClientId(String appClientId);
+  @Query("SELECT ac FROM PGApplicationClient ac where ac.id=(select min(a.id) from PGApplicationClient a where a.appClientId=:appClientId)")
+  public List<PGApplicationClient> findByAppClientId(@Param("appClientId")String appClientId);
 
   /**
    * DAO method to find Application Client on auth user

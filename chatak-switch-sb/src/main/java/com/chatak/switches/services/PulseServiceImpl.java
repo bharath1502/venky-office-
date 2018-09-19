@@ -584,4 +584,10 @@ public class PulseServiceImpl extends TransactionService implements PulseService
     return null;
   }
 
+@Override
+public PurchaseResponse purchaseTransactionMock() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
 }

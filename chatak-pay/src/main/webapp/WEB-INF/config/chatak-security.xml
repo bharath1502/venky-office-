@@ -30,6 +30,7 @@
 
 	<sec:http pattern="/**/transaction/clientSsoLogin" security="none"/>
 	<sec:http pattern="/**/transaction/getAccessToken" security="none"/>
+	<sec:http pattern="/**/transaction/forgotPassword" security="none"/>
 
 	<!-- This is where we tells spring security what URL should be protected 
 		and what roles have access to them -->
@@ -43,10 +44,10 @@
 		<sec:intercept-url pattern="/session-expired*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
 		<!-- Giving access to ROLE_SUPER_ADMIN and WALLET_ADMIN users -->
-		<sec:intercept-url pattern="/pg/transaction/process" access="hasAnyAuthority('ROLE_APP','WALLET_ADMIN')" />
 		<sec:intercept-url pattern="/pg/transaction/login" access="hasAnyAuthority('ROLE_APP','WALLET_ADMIN')" />
 		<sec:intercept-url pattern="/pg/transaction/changePassword" access="hasAnyAuthority('ROLE_APP','WALLET_ADMIN')" />
 		<sec:intercept-url pattern="/pg/transaction/forgotPassword" access="hasAnyAuthority('ROLE_APP','WALLET_ADMIN')" />
+		<sec:intercept-url pattern="/pg/transaction/clientProcess" access="hasAnyAuthority('WALLET_ADMIN')" />
 
 		<sec:intercept-url pattern="/pg/**" access="hasAnyAuthority('ROLE_APP')" />
 

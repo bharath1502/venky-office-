@@ -7,7 +7,6 @@ import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
 import com.chatak.pg.acq.dao.model.PmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
-import com.chatak.pg.bean.Response;
 import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.user.bean.BankRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
@@ -98,4 +97,11 @@ public interface ProgramManagerDao {
   public CardProgramResponse fetchPMCardProgramByMerchantId(Long merchantId);
   
   public PmCardProgamMapping findByCardProgramId(Long cardProgramId);
+  
+  public ProgramManager findByProgramManagerId(Long pmId);
+  
+  public Set<PmCardProgamMapping> findPmCardProgamMappingMapByProgramManagerId(
+	      Long programManagerId);
+  
+  public ProgramManagerRequest findStatusAndBatchPrefixByProgramManagerId(Long id);
 }

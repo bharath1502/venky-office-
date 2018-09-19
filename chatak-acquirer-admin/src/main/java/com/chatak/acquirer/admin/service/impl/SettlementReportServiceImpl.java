@@ -29,8 +29,8 @@ import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.model.IsoAccount;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGIssSettlementData;
-import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
+import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntityHistory;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactionEntity;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactions;
 import com.chatak.pg.bean.settlement.SettlementEntity;
@@ -43,9 +43,6 @@ import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 
 @Service
 public class SettlementReportServiceImpl implements SettlementReportService {
@@ -143,7 +140,7 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public TransactionResponse calculateSettlementAmounts(Long pmId) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportServiceImpl :: calculateSettlementAmounts");
 		TransactionResponse transactionResponse = new TransactionResponse();
 		
 		// Start with the funds received from Issuance
@@ -162,35 +159,33 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 		// Retrieve all matched transactions where batch Id is not null
 		// Since these are transactions which have found a match in Acquiring.
 		List<IssuanceSettlementTransactionEntity> matchedTransactions = issuanceSettlementDao.getAllMatchedTransactions(pmId);
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "matched txns size : " + matchedTransactions.size());
+		logger.info("matched txns size : " + matchedTransactions.size());
 
 		for (IssuanceSettlementTransactionEntity transaction : matchedTransactions) {
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, MID : " + transaction.getMerchantId());
+		  logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, MID : " + transaction.getMerchantId());
 			
 			List<IssuanceSettlementTransactions> settlementTransactionsList = transaction.getSettlementTransactionsList();
 			
 			for (IssuanceSettlementTransactions issuanceSettlementTransactions : settlementTransactionsList) {
 				// Check if transaction belongs to an ISO or PM
 				if (issuanceSettlementTransactions.getIsoId() != null) {
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, ISO Id : " 
+				  logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, ISO Id : " 
 							+ issuanceSettlementTransactions.getIsoId());
 					
 					// Transaction belongs to ISO
 					// ***** START ISO total revenue calculation ***** 
 					EntityMappedTransactions isoMappedTransaction = isoTotalRevenue.get(issuanceSettlementTransactions.getIsoId());
-					if(isoMappedTransaction == null) {
-						isoMappedTransaction = new EntityMappedTransactions();
-					}
+					isoMappedTransaction = createEntityMappedTransactions(isoMappedTransaction);
 					
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, ISO Id : " 
+					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, ISO Id : " 
 							+ issuanceSettlementTransactions.getIsoId() + " : Adding PG Txn ID: " + issuanceSettlementTransactions.getPgTransactionId());
 					// Add the PG transaction ID
 					isoMappedTransaction.getpGTransactionIds().add(issuanceSettlementTransactions.getPgTransactionId());
 					BigInteger totalISOAmount = isoMappedTransaction.getTotalEntityAmount();
 					Long isoFeeEarned = issuanceSettlementTransactions.getIsoAmount();
 					
-					totalISOAmount = totalISOAmount.add(isoFeeEarned == null ? BigInteger.valueOf(0) : BigInteger.valueOf(isoFeeEarned));
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, ISO Id : " 
+					totalISOAmount = totalISOAmount.add(setIsoFeeEarned(isoFeeEarned));
+					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, ISO Id : " 
 							+ issuanceSettlementTransactions.getIsoId() + " : totalISOAmount: " + totalISOAmount);
 					
 					// Set the total entity amount back
@@ -200,22 +195,20 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 					// *****  END ISO total revenue calculation ***** 
 					
 					// *****  START ISO mapped Merchants grouping ***** 
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, MID : " 
+					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, MID : " 
 					+ transaction.getMerchantId()
 					+ " : ISO transaction: ISO Id: " + issuanceSettlementTransactions.getIsoId());
 					
 					EntityMappedTransactions isoMappedMerchant = isoMappedMerchantTotalRevenue.get(transaction.getMerchantId());
-					if(isoMappedMerchant == null) {
-						isoMappedMerchant = new EntityMappedTransactions();
-					}
+					isoMappedMerchant = createEntityMappedTransactions(isoMappedMerchant);
 					
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, MID : " 
+					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, MID : " 
 					+ transaction.getMerchantId()
 					+ " : Adding PG Txn ID: " + issuanceSettlementTransactions.getPgTransactionId());
 					// Add the PG transaction ID
 					isoMappedMerchant.getpGTransactionIds().add(issuanceSettlementTransactions.getPgTransactionId());
 					
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, MID : " 
+					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, MID : " 
 					+ transaction.getMerchantId()
 					+ " : Gross merchant amount: " + transaction.getMerchantAmount());
 					// Need not add with the previous amount, since it will be the gross amount itself
@@ -225,30 +218,28 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 					// *****  END ISO mapped Merchants grouping ***** 
 					
 					// Subtract the ISO earned amount from the PM received amount
-					pmEarnedAmount = pmEarnedAmount.subtract(isoFeeEarned == null ? BigInteger.valueOf(0) : BigInteger.valueOf(isoFeeEarned));
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, MID : " 
+					pmEarnedAmount = pmEarnedAmount.subtract(setIsoFeeEarned(isoFeeEarned));
+					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, MID : " 
 							+ transaction.getMerchantId()
 							+ " : pmEarnedAmount: " + pmEarnedAmount);
 					
 				} else {
 					
 					// Transaction belongs to PM
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, PM Transaction, PM Id : " 
+				  logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, PM Transaction, PM Id : " 
 							+ transaction.getAcqPmId());
 					
 					// *****  START PM mapped Merchants grouping ***** 
 					EntityMappedTransactions pmMappedTransactions = pmMappedMerchantTotalRevenue.get(transaction.getMerchantId());
-					if(pmMappedTransactions == null) {
-						pmMappedTransactions = new EntityMappedTransactions();
-					}
+					pmMappedTransactions = createEntityMappedTransactions(pmMappedTransactions);
 					
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, PM Transaction, MID : " 
+					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, PM Transaction, MID : " 
 							+ transaction.getMerchantId()
 							+ " : Adding PG Txn ID: " + issuanceSettlementTransactions.getPgTransactionId());
 					// Add the PG transaction ID
 					pmMappedTransactions.getpGTransactionIds().add(issuanceSettlementTransactions.getPgTransactionId());
 					
-					LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, PM Transaction, MID : " 
+					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, PM Transaction, MID : " 
 							+ transaction.getMerchantId()
 							+ " : Gross merchant amount: " + transaction.getMerchantAmount());
 					// Need not add with the previous amount, since it will be the gross amount itself
@@ -261,7 +252,7 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 			}
 			
 			pmEarnedAmount = pmEarnedAmount.subtract(BigInteger.valueOf(transaction.getMerchantAmount()));
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, MID : " + transaction.getMerchantId()
+			logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, MID : " + transaction.getMerchantId()
 			+ ", pmEarnedAmount: " + pmEarnedAmount);
 		}
 		
@@ -270,19 +261,30 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 		transactionResponse.setPmMappedMerchantTotalRevenue(pmMappedMerchantTotalRevenue);
 		transactionResponse.setPmDebitAmount(pmEarnedAmount);
 		
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportServiceImpl :: calculateSettlementAmounts");
 		return transactionResponse;
+	}
+
+	private EntityMappedTransactions createEntityMappedTransactions(EntityMappedTransactions isoMappedTransaction) {
+		if(isoMappedTransaction == null) {
+			isoMappedTransaction = new EntityMappedTransactions();
+		}
+		return isoMappedTransaction;
+	}
+
+	private BigInteger setIsoFeeEarned(Long isoFeeEarned) {
+		return isoFeeEarned == null ? BigInteger.valueOf(0) : BigInteger.valueOf(isoFeeEarned);
 	}
 	
 	@Transactional(rollbackFor = Exception.class)
 	public TransactionResponse executeSettlement(Long pmId, String timeZoneOffset, String timeZoneRegion) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportServiceImpl :: executeSettlement");
 
 		TransactionResponse response = new TransactionResponse(); 
 		
 		// Generate a common AccountTransactionId for all transactions.
 		String accountTransactionId = accountTransactionsDao.generateAccountTransactionId();
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Generated Account Txn id : " + accountTransactionId);
+		logger.info("Generated Account Txn id : " + accountTransactionId);
 		
 		// Fetch PM account
 		ProgramManagerAccount pmAccount = programManagerDao.findByProgramManagerIdAndAccountType(pmId, "System Account");
@@ -290,16 +292,16 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 		// Retrieve all matched transactions where batch Id is not null
 		// Since these are transactions which have found a match in Acquiring.
 		List<IssuanceSettlementTransactionEntity> matchedTransactions = issuanceSettlementDao.getAllMatchedTransactions(pmId);
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "matched txns size : " + matchedTransactions.size());
+		logger.info("matched txns size : " + matchedTransactions.size());
 
 		List<String> pgTxnIdsList = new ArrayList<>();
 		
 		for (IssuanceSettlementTransactionEntity transaction : matchedTransactions) {
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Iterating PG_ISS_SETTLEMENT_ENTITY, calculating for MID : " + transaction.getMerchantId());
+		  logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, calculating for MID : " + transaction.getMerchantId());
 			
 			Long merchantAmount = transaction.getMerchantAmount();
 			
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "PM balance before merchant amount debit : " + pmAccount.getCurrentBalance());
+			logger.info("PM balance before merchant amount debit : " + pmAccount.getCurrentBalance());
 			
 			// ****** PM DEBIT *******
 			// Debit the merchant gross amount
@@ -312,7 +314,7 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 					pmAccount.getCurrentBalance(), pmAccount.getProgramManagerId(), merchantAmount,
 					AccountTransactionCode.SYSTEM_REVENUE_DEBIT, Constants.PM_USER_TYPE, timeZoneOffset, timeZoneRegion,
 					accountTransactionId);
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Logging PM dedit amount: " + merchantAmount + ", for MID: " + transaction.getMerchantId());
+			logger.info("Logging PM dedit amount: " + merchantAmount + ", for MID: " + transaction.getMerchantId());
 			
 			// ******* MERCHANT CREDIT *******
 			// Credit merchant account
@@ -326,7 +328,7 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 					merchantAccount.getCurrentBalance(), Long.parseLong(merchantAccount.getEntityId()),
 					merchantAmount, AccountTransactionCode.SYSTEM_REVENUE_CREDIT, Constants.TYPE_MERCHANT,
 					timeZoneOffset, timeZoneRegion, accountTransactionId);
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Logging Merchant credit amount: " + merchantAmount + ", for MID: " + transaction.getMerchantId());
+			logger.info("Logging Merchant credit amount: " + merchantAmount + ", for MID: " + transaction.getMerchantId());
 			
 			List<IssuanceSettlementTransactions> settlementTransactionsList = transaction.getSettlementTransactionsList();
 			
@@ -337,7 +339,7 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 					totalISORevenue = totalISORevenue.add(BigInteger.valueOf(issuanceSettlementTransactions.getIsoAmount()));
 				}
 			}
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Calculated total ISO revenue earned at MID : " + transaction.getMerchantId()
+			logger.info("Calculated total ISO revenue earned at MID : " + transaction.getMerchantId()
 			+ ", by ISO: " + settlementTransactionsList.get(0).getIsoId() + " : " + totalISORevenue);
 			
 			if(totalISORevenue.compareTo(BigInteger.valueOf(0)) > 0) {
@@ -352,7 +354,7 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 						pmAccount.getCurrentBalance(), pmAccount.getProgramManagerId(), totalISORevenue.longValue(),
 						AccountTransactionCode.SYSTEM_REVENUE_DEBIT, Constants.PM_USER_TYPE, timeZoneOffset, timeZoneRegion,
 						accountTransactionId);
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Logging PM dedit amount: " + totalISORevenue.longValue() 
+				logger.info("Logging PM dedit amount: " + totalISORevenue.longValue() 
 				+ ", for ISO: " + settlementTransactionsList.get(0).getIsoId());
 				
 				// ******* ISO CREDIT *******
@@ -367,7 +369,7 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 						isoAccount.getCurrentBalance(), isoAccount.getIsoId(), totalISORevenue.longValue(),
 						AccountTransactionCode.SYSTEM_REVENUE_CREDIT, Constants.ISO_USER_TYPE, timeZoneOffset, timeZoneRegion,
 						accountTransactionId);
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Logging ISO credit amount: " + totalISORevenue.longValue() 
+				logger.info("Logging ISO credit amount: " + totalISORevenue.longValue() 
 				+ ", for ISO: " + settlementTransactionsList.get(0).getIsoId());
 			}
 			
@@ -377,17 +379,24 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 				for (IssuanceSettlementTransactions issuanceSettlementTransactions : settlementTransactions) {
 					pgTxnIdsList.add(issuanceSettlementTransactions.getPgTransactionId());
 				}
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Added pgTxnIds" + pgTxnIdsList);
+				logger.info("Added pgTxnIds" + pgTxnIdsList);
 			}
 
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Updating the settlementBatchStatus in pgTransaction" + pgTxnIdsList.size());
 			transactionDao.saveorUpdate(pgTxnIdsList);
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Final remaining PM balance: " + pmAccount.getCurrentBalance());
-		
+			logger.info("Final remaining PM balance: " + pmAccount.getCurrentBalance());		
+			
+			//Update the PG_ISS_Settlement data table status as Executed
+			if(StringUtil.isListNotNullNEmpty(matchedTransactions)) {
+			logger.info("Acqpmid and BatchfileDate : " + matchedTransactions.get(0).getAcqPmId() + matchedTransactions.get(0).getBatchFileDate());	
+			PGIssSettlementData isssettlementdata = issSettlementDataDao.getIssSettlementData(matchedTransactions.get(0).getAcqPmId(), matchedTransactions.get(0).getBatchFileDate()).get(0);
+			isssettlementdata.setStatus(Constants.EXECUTED_STATUS);
+			issSettlementDataDao.saveIssSettlementData(isssettlementdata);
+			}
+			
 			response.setErrorCode(Constants.SUCCESS_CODE);
 			response.setErrorMessage(Constants.SUCCESS);
 		
-			LogHelper.logExit(logger, LoggerMessage.getCallerName());
+			logger.info("Exiting :: SettlementReportServiceImpl :: executeSettlement");
 		
 			return response;
 	}
@@ -398,7 +407,7 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 
 	@Override
 	public TransactionResponse getAllMatchedTxnsByPgTxns(FeeReportRequest transactionRequest) throws ChatakAdminException{
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportServiceImpl :: getAllMatchedTxnsByPgTxns");
 		TransactionResponse transactionResponse = new TransactionResponse();
 		try {
 			List<SettlementEntity> settlementEntityList = settlementReportDao.getAllMatchedTxnsByPgTxns(transactionRequest);
@@ -406,14 +415,20 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 				transactionResponse.setSettlementEntity(settlementEntityList);
 			}
 		}catch(Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: SettlementReportServiceImpl :: getAllMatchedTxnsByPgTxns : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportServiceImpl :: getAllMatchedTxnsByPgTxns");
 		return transactionResponse;
 	}
 	
 	@Override
 	public List<SettlementMerchantDetails> fetchMerchantDetailsByMerchantCode(String merchantCode) {
 		return settlementReportDao.fetchMerchantDetailsByMerchantCode(merchantCode);
+	}
+	
+	@Override
+	public PGSettlementEntityHistory findByBatchFileDateandAcqpmid(Long pmId, Timestamp date) {
+		return issuanceSettlementTransactionHistoryDao.findByBatchFileDateandAcqpmid(pmId, date);
+	
 	}
 }

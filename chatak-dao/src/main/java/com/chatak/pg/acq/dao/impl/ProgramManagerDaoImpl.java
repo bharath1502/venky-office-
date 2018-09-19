@@ -118,6 +118,14 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
         bankProgramManagerRepository.findByProgramManagerId(programManagerId);
     return bankProgramManagerMaps;
   }
+  
+  @Override
+  public Set<PmCardProgamMapping> findPmCardProgamMappingMapByProgramManagerId(
+      Long programManagerId) {
+    Set<PmCardProgamMapping> cardProgramMapping =
+    		pmCardProgramMappingRepository.findByProgramManagerId(programManagerId);
+    return cardProgramMapping;
+  }
 
   @Override
   public ProgramManagerAccount findByProgramManagerIdAndAccountNumber(Long pmId, Long accountNumber) {
@@ -728,6 +736,11 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
     	  response.setCreatedBy(result.getCreatedBy());
     	  response.setCompanyName(result.getCompanyName());
     	  response.setBatchPrefix(result.getBatchPrefix());
+    	  response.setIssuancepmid(result.getIssuancepmid());
+    	  response.setCountry(result.getCountry());
+    	  response.setState(result.getState());
+    	  response.setPmTimeZone(result.getPmTimeZone());
+    	  response.setSchedulerRunTime(result.getSchedulerRunTime());
       } catch (Exception e) {
         logger.error(
             className + " : findProgramManagerById : Error in retrieving the program manager.", e);
@@ -864,7 +877,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 			cardProgramRequest.setProgramManagerName(StringUtil.isNull(objs[1]) ? null : ((String) objs[1]));
 			cardProgramRequest.setCardProgramId(StringUtil.isNull(objs[2]) ? null : ((BigInteger) objs[2]).longValue());
 			cardProgramRequest.setCardProgramName(StringUtil.isNull(objs[3]) ? null : ((String) objs[3]));
-			cardProgramRequest.setIin(StringUtil.isNull(objs[4]) ? null : ((BigInteger) objs[4]).longValue());
+			cardProgramRequest.setIin(StringUtil.isNull(objs[4]) ? null : ((String) objs[4]));
 			cardProgramRequest.setIinExt(StringUtil.isNull(objs[5]) ? null : ((String)objs[5]));
 			cardProgramRequest.setPartnerCode(getCardProgramDetails(objs, Integer.parseInt("6")));
 			cardProgramRequest.setPartnerName(getCardProgramDetails(objs, Integer.parseInt("7")));
@@ -889,5 +902,35 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   public PmCardProgamMapping findByCardProgramId(Long cardProgramId) {
     return pmCardProgramMappingRepository.findByCardProgramId(cardProgramId);
   }
+  
+  @Override
+  public ProgramManager findByProgramManagerId(Long pmId) {
+	  return programManagerRepository.findById(pmId);
+  }
 
+  @Override
+  public ProgramManagerRequest findStatusAndBatchPrefixByProgramManagerId(Long id) {
+//	  String batchPrefix = programManagerRepository.findStatusAndBatchPrefixByProgramManagerId(id);
+	  ProgramManagerRequest response = new ProgramManagerRequest();
+	  response.setId(id);
+//	  response.setBatchPrefix(batchPrefix);
+	  
+	  StringBuilder query = new StringBuilder("select BATCH_PREFIX, STATUS from PG_PROGRAM_MANAGER where ID = :id"); 
+	  
+	  Query qry = entityManager.createNativeQuery(query.toString());
+	  qry.setParameter("id", id);
+	  
+	  List<Object> obj = qry.getResultList();
+	  
+	  if(StringUtil.isListNotNullNEmpty(obj)){
+	    Iterator<Object> itr = obj.iterator();
+	    while(itr.hasNext()) {
+	      Object[] pmList = (Object[])itr.next();
+	      response.setBatchPrefix(pmList!=null ? ((String)pmList[0]) : null);
+	      response.setStatus(pmList!=null ? ((String)pmList[1]) : null);
+	    }
+	  }
+      return response;
+  }
+  
 }

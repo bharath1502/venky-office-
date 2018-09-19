@@ -375,7 +375,7 @@
 															value='<spring:message code="common.label.previous"/>' class="form-control button pull-right marginL10 atm-prev"
 															> <input type="button"
 															class="form-control button pull-right marginL10"
-															value='<spring:message code="common.label.cancel"/>' onclick="openCreateCancelConfirmationPopup()">
+															value='<spring:message code="common.label.cancel"/>' onclick="openCancelConfirmationPopup()">
 															<input type="button"
 															class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.reset"/>' onclick="resetConfigurationsInfo()">
@@ -633,7 +633,7 @@
 				class="form-control button pull-right marginL10 pos-prev">
 			<input type="button" class="form-control button pull-right marginL10"
 				value='<spring:message code="common.label.cancel"/>'
-				onclick="openCreateCancelConfirmationPopup()">
+				onclick="openCancelConfirmationPopup()">
 		</fieldset>
 	</div>
 
@@ -659,7 +659,6 @@
 <script src="../js/jquery.cookie.js"></script>
 <script src="../js/messages.js"></script>
 <script type="text/javascript" src="../js/browser-close.js"></script>
-<script src="../js/multi-select.js"></script>
 
 <script type="text/javascript">
 	$(document).ready(function() {

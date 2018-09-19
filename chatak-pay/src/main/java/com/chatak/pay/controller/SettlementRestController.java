@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,14 +19,12 @@ import com.chatak.pg.acq.dao.model.PGIssSettlementData;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.SettlementTxnResponse;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 
 @RestController
 @RequestMapping(value = "/settlementServices", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
 public class SettlementRestController {
 
-	private Logger logger = Logger.getLogger(SettlementRestController.class);
+	private static Logger logger = LogManager.getLogger(SettlementRestController.class);
 
 	@Autowired
 	private SettlementTxnService settlementTxnService;
@@ -33,7 +32,7 @@ public class SettlementRestController {
 	@RequestMapping(value = "/setSettlementData", method = RequestMethod.POST)
 	public SettlementTxnResponse setSettlementData(HttpServletRequest request, HttpServletResponse response,
 			HttpSession session, @RequestBody SettlementTxnRequest settlementTxnRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementRestController :: setSettlementData");
 		SettlementTxnResponse txnResponse = new SettlementTxnResponse();
 		try {
 			if (null != settlementTxnRequest) {
@@ -46,13 +45,13 @@ public class SettlementRestController {
 				settlementData.setStatus(PGConstants.S_STATUS_PENDING);
 				txnResponse = settlementTxnService.saveIssSettlementData(settlementData);
 			} else {
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "SettlementTxnRequest is NULL");
+			  logger.info("SettlementTxnRequest is NULL");
 			}
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, e.getMessage());
+			logger.error("Error :: SettlementRestController :: setSettlementData : " + e.getMessage(), e);
 			txnResponse.setErrorCode(Constants.ERROR_CODE);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementRestController :: setSettlementData");
 		return txnResponse;
 
 	}

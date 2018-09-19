@@ -1,4 +1,4 @@
-C_MERCHANT_MSG = {
+var C_MERCHANT_MSG = {
 	en : {
 		loginUsername : "Please Enter UserName",
 		loginPassword : "Please Enter Password",
@@ -40,7 +40,7 @@ C_MERCHANT_MSG = {
 		pleasenterautotransferlimit : "Please Enter Auto Transfer Limit",
 		invalidautotransferlimit : "Invalid Auto Transfer Limit",
 		pleaseselectatleastonevirtualterminal : "Please select atleast one Virtual Terminal",
-		cancontainalphanumerics : "Can contain 8-16 alphanumerics",
+		cancontainalphanumerics : "Can contain 6-16 alphanumerics",
 		pressOktoconfirmdeletion : "Press Ok to confirm deletion",
 		pleaseacceptthetermsandconditions : "*Please accept the terms and conditions*",
 		expirydateisbeforetodaydatepleaseselectavalidexpirydate : "The expiry date is before today's date. Please select a valid expiry date",
@@ -119,7 +119,7 @@ C_MERCHANT_MSG = {
 		shouldbenumeric : "Should be numeric and 4-16 digit",
 		pleaseentertransactionid : "Please enter Transaction ID",
 		pleaseentercardnumber : "Please enter Card Number",
-		shouldbenumeric1 : "Should be numeric and 16-19 digit",
+		shouldbenumeric1 : "Should be numeric and 19 digit",
 		shouldnotbeempty : "Should not be empty",
 		pleaseenterCV2 : "Please enter CV2",
 		invalidCV2 : "Invalid CV2",
@@ -200,7 +200,11 @@ C_MERCHANT_MSG = {
 		merchantsSettlementsStatus : "Merchant Settlement Status",
 		invalidImageFormat : '*Wrong image format*',
 		deviceLocalTxnTime : 'Device Local Txn Time',
-		RIGHT_CLICK_NOT_ALLOWED : "Right click is not allowed"
+		RIGHT_CLICK_NOT_ALLOWED : "Right click is not allowed",
+		maximumownloadLimit : "Max of 5000 records can be downloaded. Please contact system support for more records.",
+		AlphabetsAndDotUnderScore :"Can contain alphanumerics,dot(.) and space",
+		address_should_contains_message : 'Only # , . / and alphanumerics are allowed'
+
 	},
 	es : {
 		loginUsername : "Introduzca nombre de usuario",
@@ -243,7 +247,7 @@ C_MERCHANT_MSG = {
 		pleasenterautotransferlimit : "Ingrese el límite de transferencia automática",
 		invalidautotransferlimit : "Límite de transferencia automática no válido",
 		pleaseselectatleastonevirtualterminal : "Seleccione al menos un terminal virtual",
-		cancontainalphanumerics : "Puede contener a 8-16 caracteres alfanuméricos",
+		cancontainalphanumerics : "Puede contener a 6-16 caracteres alfanuméricos",
 		pressOktoconfirmdeletion : "Pulse Ok para confirmar la eliminación",
 		pleaseacceptthetermsandconditions : "Por favor, acepte los términos y condiciones",
 		expirydateisbeforetodaydatepleaseselectavalidexpirydate : "La fecha de caducidad es anterior a la fecha de hoy. Por favor, seleccione una fecha de caducidad válida",
@@ -320,7 +324,7 @@ C_MERCHANT_MSG = {
 		shouldbenumeric : "Debe ser numérico, entre 4-16 dígitos",
 		pleaseentertransactionid : "Ingrese ID de transacción",
 		pleaseentercardnumber : "Por favor, introduzca Número de tarjeta",
-		shouldbenumeric1 : "Debe ser numérico, entre 16-19 dígitos",
+		shouldbenumeric1 : "Debe ser numérico, entre 19 dígitos",
 		shouldnotbeempty : "Should not be emptyES",
 		pleaseenterCV2 : "Por favor, introduzca CV2",
 		invalidCV2 : "Invalid CV2ES",
@@ -401,7 +405,10 @@ C_MERCHANT_MSG = {
 		merchantsSettlementsStatus : "Estado del acuerdo comercial",
 		invalidImageFormat : 'Formato de imagen incorrecto',
 		deviceLocalTxnTime : 'Dispositivo Local Txn Time',
-		RIGHT_CLICK_NOT_ALLOWED : "Clic derecho no está permitido."
+		RIGHT_CLICK_NOT_ALLOWED : "Clic derecho no está permitido.",
+		maximumownloadLimit : "Se puede descargar un máximo de 5000 registros. Por favor, póngase en contacto con el soporte del sistema para obtener más registros.",
+		AlphabetsAndDotUnderScore :"Puede contener caracteres alfanuméricos, punto (.) Y espacio",
+		address_should_contains_message : 'Solamente # , . / y alfanuméricos están permitidos',
 	}
 };
 
@@ -452,7 +459,7 @@ function validCardNumber(id, divId) {
 		setDiv(divId, webMessages.pleaseentercardnumber);
 		loadMsgTitleText();
 		return false;
-	} else if (!isDigit(val) || len < 16 || len > 19) {
+	} else if (!isDigit(val) || len != 19) {
 		setDiv(divId, webMessages.shouldbenumeric1);
 		loadMsgTitleText();
 		return false;
@@ -507,8 +514,8 @@ function validCardHolderName() {
 		setDiv("cardHolderNameErrorDiv", webMessages.pleaseentercardholdername);
 		loadMsgTitleText();
 		return false;
-	} else if (isDigit(val)) {
-		setDiv("cardHolderNameErrorDiv", webMessages.shouldbealphabetic);
+	} else if (!isCharacter(val)) {
+		setDiv("cardHolderNameErrorDiv", webMessages.InvalidAgentAccNumber);
 		loadMsgTitleText();
 		return false;
 
@@ -543,6 +550,7 @@ function validAmount(id, divId) {
 
 function validStreet() {
 	var val = getVal("streetDiv");
+	var regex = /^[A-Za-z0-9,-._\/\s#]{1,60}$/;
 	console.log(val);
 	if (val === null) {
 		setDiv("streetErrorDiv", webMessages.pleaseenterstreet);
@@ -551,6 +559,10 @@ function validStreet() {
 	}
 	if (isEmpty(val)) {
 		setDiv("streetErrorDiv", webMessages.pleaseenterstreet);
+		loadMsgTitleText();
+		return false;
+	}else if (!regex.test(val)) {
+		setDiv("streetErrorDiv", webMessages.entervaliddata);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -571,7 +583,7 @@ function validZipcode() {
 		setDiv("zipcodeErrorDiv", webMessages.pleaseenterzipCode);
 		loadMsgTitleText();
 		return false;
-	} else if (len < 3 || len > 7) {
+	} else if (!isCharacter(val) || len < 3 || len > 7) {
 		setDiv("zipcodeErrorDiv", webMessages.shouldbealphanumeric);
 		loadMsgTitleText();
 		return false;
@@ -627,41 +639,7 @@ function validateAuth() {
 }
 
 function resetAuth(monthfield, yearfield) {
-	get('cardNumberDiv').value = "";
-	get('cv2Div').value = "";
-	get('cardHolderNameDiv').value = "";
-	get('subTotalDiv').value = "";
-	get('taxAmtDiv').value = "";
-	get('tipAmountDiv').value = "";
-	get('shippingAmtDiv').value = "";
-	get('totalAmtDiv').value = "";
-	get('streetDiv').value = "";
-	get('cityDiv').value = "";
-	get('stateDiv').value = "";
-	get('zipcodeDiv').value = "";
-	get('invoiceNumberDiv').value = "";
-	get('descriptionDiv').value = "";
-	setDiv("cardNumberErrorDiv", "");
-	setDiv("cv2ErrorDiv", "");
-	setDiv("cardHolderNameErrorDiv", "");
-	setDiv("subTotalErrorDiv", "");
-	setDiv("taxAmtErrorDiv", "");
-	setDiv("tipAmtErrorDiv", "");
-	setDiv("shippingAmtErrorDiv", "");
-	setDiv("totalAmtErrorDiv", "");
-	setDiv("streetErrorDiv", "");
-	setDiv("cityErrorDiv", "");
-	setDiv("zipcodeErrorDiv", "");
-	setDiv("invoiceNumberErrorDiv", "");
-	setDiv("errorDescDiv", "");
-	setDiv("responseDiv", "");
-	setDiv("stateErrorDiv", "");
-	setDiv("descriptionErrorDiv", "");
-	setDiv("feeAmountErrorDiv", "");
-	resetDate(monthfield, yearfield);
-	// document.getElementById("txnForm").reset(true);
-	// $("#refNumberDiv").attr("readOnly",false);
-
+	window.location.href = 'virtual-terminal-sale';
 }
 
 function validatePreAuth() {
@@ -780,6 +758,7 @@ function resetPreAuthFetch() {
 	$("#refNumberDiv").val('');
 	//document.getElementById("txnForm").reset();
 	$('#txnForm').val("");
+	$("#descriptionDiv").val('');
 }
 
 function validState() {

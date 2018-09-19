@@ -13,7 +13,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,7 @@ public class VaultServiceImpl implements VaultService {
   @Autowired
   private TokenCustomerDao tokenCustomerDao;
 
-  private Logger logger = Logger.getLogger(VaultServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(VaultServiceImpl.class);
 
   @Override
   public VaultResponse registerCardToken(RegisterCardRequest registerCardRequest) throws ChatakVaultException {

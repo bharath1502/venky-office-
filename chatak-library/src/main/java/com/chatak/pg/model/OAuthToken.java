@@ -4,8 +4,10 @@
 package com.chatak.pg.model;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *
@@ -30,6 +32,22 @@ public class OAuthToken implements Serializable {
   private String token_type;
 
   private Integer expires_in;
+  
+  private String value;
+  
+  private Integer expiresIn;
+  
+  private Long expiration;
+  
+  private String tokenType;
+  
+  private List<String> scope;
+  
+  private Map additionalInformation;
+  
+  private Boolean expired;
+  
+  private OAuthToken refreshToken;
 
   /**
    * @return the access_token
@@ -89,5 +107,75 @@ public class OAuthToken implements Serializable {
    */
   public void setExpires_in(Integer expires_in) {
     this.expires_in = expires_in;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public void setValue(String value) {
+    setAccess_token(value);
+    this.value = value;
+  }
+
+  public Integer getExpiresIn() {
+    return expiresIn;
+  }
+
+  public void setExpiresIn(Integer expiresIn) {
+    setExpires_in(expiresIn);
+    this.expiresIn = expiresIn;
+  }
+
+  public Long getExpiration() {
+    return expiration;
+  }
+
+  public void setExpiration(Long expiration) {
+    this.expiration = expiration;
+  }
+
+  public String getTokenType() {
+    return tokenType;
+  }
+
+  public void setTokenType(String tokenType) {
+    setToken_type(tokenType);
+    this.tokenType = tokenType;
+  }
+
+  public List<String> getScope() {
+    return scope;
+  }
+
+  public void setScope(List<String> scope) {
+    this.scope = scope;
+  }
+
+  public Map getAdditionalInformation() {
+    return additionalInformation;
+  }
+
+  public void setAdditionalInformation(Map additionalInformation) {
+    this.additionalInformation = additionalInformation;
+  }
+
+  public Boolean getExpired() {
+    return expired;
+  }
+
+  public void setExpired(Boolean expired) {
+    this.expired = expired;
+  }
+
+  public OAuthToken getRefreshToken() {
+    return refreshToken;
+  }
+
+  public void setRefreshToken(OAuthToken refreshToken) {
+    this.refreshToken = refreshToken;
+    if(refreshToken != null) {
+      setRefresh_token(refreshToken.getValue());
+    }
   }
 }

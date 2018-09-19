@@ -25,4 +25,7 @@ public interface IsoCardProgramMapRepository extends JpaRepository<IsoCardProgra
 	@Transactional
 	@Query("delete from IsoCardProgramMap isoCpMap where isoCpMap.isoId = :isoId")
 	public void deleteByIsoId(@Param("isoId")Long isoId);
+	
+	@Query("select ambiguityPmId from IsoCardProgramMap isoCpMap where isoCpMap.isoId = :isoId and isoCpMap.cardProgramId = :cardProgramId")
+	public Long findByIsoIdAndCardProgramId(@Param("isoId")Long isoId,@Param("cardProgramId")Long cardProgramId);
 }

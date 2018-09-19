@@ -122,8 +122,8 @@
 								<div class="col-xs-12">
 									<div class="descriptionMsg" data-toggle="tooltip"
 										data-placement="top" title="">
-										<span class="red-error">${error}</span> <span
-											class="green-error">${sucess}</span>
+										<span class="red-error">${error}</span> 
+										<span id="sucessDiv" class="green-error">${sucess}</span>
 									</div>
 								</div>
 								<!--Success and Failure Message End-->
@@ -156,31 +156,31 @@
 															code="users.label.firstname" /></label>
 
 													<form:input path="firstName" id="firstName"
-														cssClass="form-control" />
+														cssClass="form-control" onblur="clientValidation('firstName','middle_name','firstnameerror')" />
 
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="firstnameerror" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="users.label.lastname" /></label>
 													<form:input path="lastName" id="lastName"
-														cssClass="form-control" />
+														cssClass="form-control" onblur="clientValidation('lastName','middle_name','lastnameerror')" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="lastnameerror" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.emailid" /></label>
 													<form:input path="email" id="emailId"
-														cssClass="form-control" />
+														cssClass="form-control" onblur="clientValidation('emailId','email_search','emailerror')" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="emailerror" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 
@@ -197,11 +197,11 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="users.label.phonenumber" /></label>
-													<form:input path="phone" id="phone" cssClass="form-control"
+													<form:input path="phone" id="phone" cssClass="form-control" onblur="clientValidation('phone','contact_phone_search','phonenumerror')"
 														onkeypress="return numbersonly(this,event)" maxlength="10" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="phonenumerror" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -261,7 +261,7 @@
 												<input type="submit"
 													value='<spring:message code="common.label.search"/>'
 													class="form-control button pull-right"
-													onclick="return trimUserData()"> <input
+													onclick="return searchUserDetails(); trimUserData()"> <input
 													type="button" class="form-control button pull-right"
 													value='<spring:message code="common.label.reset"/>'
 													onclick="resetSearchUser()">
@@ -498,6 +498,7 @@
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/validation.js" type="text/javascript"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js" type="text/javascript"></script>
 	<script src="../js/sortable.js"></script>

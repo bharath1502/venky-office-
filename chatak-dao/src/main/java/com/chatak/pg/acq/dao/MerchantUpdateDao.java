@@ -74,4 +74,6 @@ public interface MerchantUpdateDao {
   public Long getMerchantAccountNumberSeries(String accountNumber)throws DataAccessException;
   
   public List<PGMerchantEntityMap> findByEntityIdAndEntitytype(Long entityId, String entityType);
+  
+  public PGMerchant getMerchantAutoSettlementByCode(String merchantCode);
 }

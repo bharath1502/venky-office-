@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.util.Base64;
-import java.util.Calendar;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -24,8 +23,6 @@ import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.OAuthToken;
 import com.chatak.pg.util.HttpClient;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.switches.sb.exception.ChatakSwitchException;
 import com.chatak.switches.sb.exception.ServiceException;
@@ -61,7 +58,7 @@ public class JsonUtil {
   
   private static int refershRequestCount = 0;
 
-  private static Calendar tokenValidity_fee = null;
+  private static Long tokenValidityFee = null;
   
   /**
    * Method to convert Java object to JSON
@@ -127,9 +124,9 @@ public class JsonUtil {
 					new BasicHeader("consumerSecret", Properties.getProperty("chatak-issuance.consumer.client.secret")),
 					new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + getValidOAuth2TokenForFee()),
 					new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()) };
-			resultantObject = httpClient.invokePost(request, response, headers);
+			resultantObject = httpClient.invokePost(request, response, headers, false);
 		} catch (PrepaidAdminException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "PrepaidException");
+		  logger.error("Error :: JsonUtil :: sendToIssuance : " + e.getMessage(), e);
 			logger.info("Requesting oauth ::");
 			if (refershRequestCount == 0) {
 				refreshOAuth2Token_fee();
@@ -146,7 +143,7 @@ public class JsonUtil {
 
 private static String getValidOAuth2TokenForFee() {
 	String output = null;
-	if (isValidToken_fee()) {
+	if (isValidTokenFee()) {
 		return OAUTH_TOKEN_FEE;
 	} else {
 		if(issuanceBaseServiceUrl.startsWith("https")) {
@@ -191,21 +188,19 @@ private static String getValidOAuth2TokenForFee() {
 			OAuthToken apiResponse = new ObjectMapper().readValue(output, OAuthToken.class);
 			OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
 			OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
-			tokenValidity_fee = Calendar.getInstance();
-			tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
+			tokenValidityFee = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
 		} catch (Exception e) {
 			logger.info("Error:: JsonUtil:: getValidOAuth2Token method " + e);
-			;
 		}
 	}
 	return OAUTH_TOKEN_FEE;
 }
 
-private static boolean isValidToken_fee() {
-  if( tokenValidity_fee == null || OAUTH_TOKEN_FEE == null) {
+private static boolean isValidTokenFee() {
+  if( tokenValidityFee == null || OAUTH_TOKEN_FEE == null) {
     return false;
   }
-  else if(Calendar.getInstance().after(tokenValidity_fee)) {
+  else if(System.currentTimeMillis() > tokenValidityFee) {
     OAUTH_TOKEN_FEE = null;
     return (null != refreshOAuth2Token_fee());
   }
@@ -234,8 +229,7 @@ private static <T> String refreshOAuth2Token_fee() {
 		OAuthToken apiResponse = (OAuthToken) resultantObject;
 		OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
 		OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
-		tokenValidity_fee = Calendar.getInstance();
-		tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
+		tokenValidityFee = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
 		return OAUTH_TOKEN_FEE;
 	} catch (Exception e) { 
 		logger.info("Error:: JsonUtil:: refreshOAuth2Token_fee method " + e);

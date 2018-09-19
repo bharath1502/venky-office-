@@ -43,6 +43,6 @@ public PGMerchantUsers findByPgMerchantId(Long pgMerchantId);
 @Query("select userRoleId from PGMerchantUsers where status != 3")
 public List<Long> getRoleList();
 
-public List<PGMerchantUsers> findByPassRetryCount(Integer status);
+public List<PGMerchantUsers> findByPassRetryCountAndStatusNotLike(Integer passRetryCount, Integer status);
 
 }

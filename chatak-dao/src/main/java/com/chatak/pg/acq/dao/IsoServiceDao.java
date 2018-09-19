@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.acq.dao;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import com.chatak.pg.acq.dao.model.Iso;
@@ -44,7 +45,7 @@ public interface IsoServiceDao {
 	public List<IsoRequest> getAllIso(IsoRequest isoRequest);
 	public List<IsoPmMap> findByPmId(Long pmId);
 	public MerchantResponse getIsoNameByCurrencyAndId(Long id,String currencyId);
-	public MerchantResponse findByMerchantId(Long merchantId);
+	public MerchantResponse findCardProgramByMerchantId(Long merchantId);
 	public CardProgramResponse fetchIsoCardProgramByMerchantId(Long merchantId);
 
 	public List<IsoAccount> findAccountByIsoId(Long isoId);
@@ -56,4 +57,10 @@ public interface IsoServiceDao {
 	public List<IsoRequest> findIsoByProgramaManagerId(Long Pmid);
 	
 	public List<ProgramManagerRequest> findPmByIsoId(Long isoId);
+	
+	public Long findByIsoIdAndCardProgramId(Long isoId,Long cardProgramId);
+	
+	public String findISOStatusById(Long isoId);
+	
+	public int updateISOStatusById(Long isoId, String reason, String updatedBy, Timestamp updatedDate, String status);
 }

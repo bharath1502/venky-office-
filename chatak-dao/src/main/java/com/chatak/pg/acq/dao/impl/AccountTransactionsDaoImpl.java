@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.chatak.pg.acq.dao.AccountTransactionsDao;
@@ -92,6 +93,15 @@ public class AccountTransactionsDaoImpl implements AccountTransactionsDao {
   @Override
   public PGAccountTransactions createOrUpdate(PGAccountTransactions pgAccountTransactions) {
     return accountTransactionsRepository.save(pgAccountTransactions);
+  }
+  
+  /**
+ * @param pgAccountTransactions
+ * @return
+ */
+@Override
+  public List<PGAccountTransactions> createOrUpdate(PGAccountTransactions... pgAccountTransactions) {
+    return accountTransactionsRepository.save(Arrays.asList(pgAccountTransactions));
   }
 
   /**

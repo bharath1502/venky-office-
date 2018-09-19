@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.util.Base64;
-import java.util.Calendar;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
 import org.apache.http.Header;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicHeader;
@@ -18,16 +19,14 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
+
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.OAuthToken;
 import com.chatak.pg.util.HttpClient;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
-
 
 public class JsonUtil {
 
@@ -67,13 +66,13 @@ public class JsonUtil {
 
 	private static String OAUTH_REFRESH_TOKEN = null;
 
-	private static Calendar tokenValidity = null;
+	private static Long tokenValidity = null;
 
 	private static String OAUTH_TOKEN_FEE = null;
 
 	private static String OAUTH_REFRESH_TOKEN_FEE = null;
 
-	private static Calendar tokenValidity_fee = null;
+	private static Long tokenValidityFee = null;
 	
 	private static int refershRequestCount = 0;
 	
@@ -85,7 +84,7 @@ public class JsonUtil {
 	
 	private static String OAUTH_TOKEN_ISSUANCE = null;
 	
-	private static Calendar issuanceTokenValidity = null;
+	private static Long issuanceTokenValidity = null;
 
 	public static String convertObjectToJSON(Object object) throws ChatakAdminException {
 		
@@ -143,9 +142,9 @@ public class JsonUtil {
 					new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + getValidOAuth2Token()),
 	                	
 			};
-			 resultantObject = client.invokePost(request, response, headers);
+			 resultantObject = client.invokePost(request, response, headers, true);
 		} catch(PrepaidAdminException e) {
-            LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "PrepaidException");
+		  logger.error("ERROR: JsonUtil :: postRequest method" + e.getMessage(), e);
             logger.info("Requesting oauth ::");
             if (refershRequestCountPay <=MAX_RETRY_COUNT) {
 				logger.info("Requesting oauth ::");
@@ -248,11 +247,9 @@ public class JsonUtil {
 				OAuthToken apiResponse = new ObjectMapper().readValue(output, OAuthToken.class);
 				OAUTH_TOKEN = apiResponse.getAccess_token();
 				OAUTH_REFRESH_TOKEN = apiResponse.getRefresh_token();
-				tokenValidity = Calendar.getInstance();
-				tokenValidity.add(Calendar.SECOND, apiResponse.getExpires_in());
+				tokenValidity = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
 			} catch (Exception e) {
 				logger.info("Error:: JsonUtil:: getValidOAuth2Token method " + e);
-				;
 			}
 		}
 		return OAUTH_TOKEN;
@@ -277,8 +274,7 @@ public class JsonUtil {
 			  OAuthToken apiResponse = new ObjectMapper().readValue(output, OAuthToken.class);
 		      OAUTH_TOKEN = apiResponse.getAccess_token();
 		      OAUTH_REFRESH_TOKEN = apiResponse.getRefresh_token();
-		      tokenValidity = Calendar.getInstance();
-		      tokenValidity.add(Calendar.SECOND, apiResponse.getExpires_in());
+		      tokenValidity = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
 		    }
 		    catch(Exception e) {
 		      logger.info("Error:: JsonUtil:: refreshOAuth2Token method "+e);
@@ -295,7 +291,7 @@ public class JsonUtil {
 		
 		if(OAUTH_TOKEN == null || tokenValidity == null) {
 			return false;
-		} else if(Calendar.getInstance().after(tokenValidity)) {
+		} else if(System.currentTimeMillis() > tokenValidity) {
 			OAUTH_TOKEN = null;
 			return (null != refreshOAuth2Token());
 		} else {
@@ -312,11 +308,11 @@ public class JsonUtil {
 					new BasicHeader("consumerSecret", Properties.getProperty("chatak-issuance.consumer.client.secret")),
 					new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + getValidOAuth2TokenForFee()),
 					new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()) };
-			resultantObject = httpClient.invokePost(request, response, headers);
+			resultantObject = httpClient.invokePost(request, response, headers, false);
 			issuanceBaseServiceUrl = ProcessorConfig.get(ProcessorConfig.FEE_SERVICE + mode);
 			logger.info("Connecting to Issuance URL :: " + issuanceBaseServiceUrl);
 		} catch (PrepaidAdminException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "PrepaidException");
+		  logger.error("ERROR: JsonUtil :: postRequest method" + e.getMessage(), e);
 			logger.info("Requesting oauth ::");
 			if (refershRequestCount == 0) {
 				refreshOAuth2TokenFee();
@@ -375,8 +371,7 @@ public class JsonUtil {
 				OAuthToken apiResponse = new ObjectMapper().readValue(output, OAuthToken.class);
 				OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
 				OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
-				tokenValidity_fee = Calendar.getInstance();
-				tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
+				tokenValidityFee = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
 			} catch (Exception e) {
 				logger.info("Error:: JsonUtil:: getValidOAuth2Token method " + e);
 			}
@@ -394,9 +389,9 @@ public class JsonUtil {
 	
 	private static boolean isValidTokenFee() {
 		
-		if(OAUTH_TOKEN_FEE == null || tokenValidity_fee == null) {
+		if(OAUTH_TOKEN_FEE == null || tokenValidityFee == null) {
 			return false;
-		} else if(Calendar.getInstance().after(tokenValidity_fee)) {
+		} else if(System.currentTimeMillis() > tokenValidityFee) {
 			OAUTH_TOKEN_FEE = null;
 			return (null != refreshOAuth2TokenFee());
 		} else {
@@ -416,8 +411,7 @@ public class JsonUtil {
 				OAuthToken apiResponse = (OAuthToken) resultantObject;
 				OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
 				OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
-				tokenValidity_fee = Calendar.getInstance();
-				tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
+				tokenValidityFee = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
 				return OAUTH_TOKEN_FEE;
 			} catch (Exception e) {
 				logger.info("Error:: JsonUtil:: refreshOAuth2Token_fee method " + e);
@@ -437,7 +431,7 @@ public class JsonUtil {
 								Properties.getProperty("chatak-merchant.consumer.client.secret")),
 						new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + getValidOAuth2Token()),
 						new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType())};
-				 resultantObject = paymentHttpClient.invokePost(request, response, headers);
+				 resultantObject = paymentHttpClient.invokePost(request, response, headers, false);
 				 if (null != response && refershRequestCountPay == 0 ) {
 						refreshOAuth2Token();
 						refershRequestCountPay++;
@@ -483,12 +477,12 @@ public class JsonUtil {
 					new BasicHeader("consumerSecret", Properties.getProperty("prepaid-admin.consumer.client.secret")),
 					new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + getValidOAuthToken()),
 					new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()) };
-			resultantObject = httpClient.invokePost(request, response, headers);
+			resultantObject = httpClient.invokePost(request, response, headers, false);
 			logger.info("Connecting to Gate way URL ::" + CHATAK_ISSUENCE_SERVICE_URL + serviceEndPoint);
 			logger.info("Received response from Gate way URL :: response: " + response + ", refershRequestCountPay: "
 					+ refershRequestCountPay);
 		} catch (PrepaidAdminException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "PrepaidException");
+		    logger.error("ERROR: JsonUtil :: postRequest method" + e.getMessage(), e);
 			logger.info("Requesting oauth ::");
 			if (refershRequestCountPay < MAX_RETRY_COUNT) {
 				logger.info("Requesting oauth ::");
@@ -530,7 +524,7 @@ public class JsonUtil {
 
 		if (issuanceTokenValidity == null || OAUTH_TOKEN_ISSUANCE == null) {
 			return false;
-		} else if (Calendar.getInstance().after(issuanceTokenValidity)) {
+		} else if (System.currentTimeMillis() > issuanceTokenValidity) {
 			OAUTH_TOKEN_ISSUANCE = null;
 			return (null != refreshIssuanceOAuthToken());
 		} else {
@@ -547,8 +541,7 @@ public class JsonUtil {
 			OAuthToken apiResponse = httpClient.invokeGet(OAuthToken.class, headers);
 			logger.info("URL to generate token : " + (BASE_PREPAID_SERVICE_URL + BASE_PREPAID_ADMIN_OAUTH_SERVICE_URL));
 			OAUTH_TOKEN_ISSUANCE = apiResponse.getAccess_token();
-			issuanceTokenValidity = Calendar.getInstance();
-			issuanceTokenValidity.add(Calendar.SECOND, apiResponse.getExpires_in());
+			issuanceTokenValidity = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
 		} catch (Exception e) {
 			logger.info("Error:: JsonUtil:: refreshIssuanceOAuthToken method " + e);
 		}

@@ -6,7 +6,7 @@ package com.chatak.pg.bean;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Request class to hold search request with page details

@@ -204,9 +204,10 @@
 													<label><spring:message code="label.extension" /></label>
 													<form:input path="extension" maxlength="5"
 														cssClass="form-control" id="extension"
+														onblur="clientValidation('extension','extension_not_mandatory','extensionerr')"
 														onkeypress="return numbersonly(this, event);" />
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="extensionerr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -321,7 +322,7 @@
 												<fieldset class="col-md-3 col-sm-6 acquirerBankNames">
 													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
 													 <select id="acquirerBankName" name="acquirerBankName"
-														class="form-control" onchange="fetchAcquirerCardProgramDetailsByBankId(this.value)"
+														class="form-control"
 														onblur="validateBank('acquirerBankName','acquirerBankNameerrormsg')"
 														onclick="clearErrorMsg('acquirerBankNameerrormsg');" multiple="multiple">
 													 </select>

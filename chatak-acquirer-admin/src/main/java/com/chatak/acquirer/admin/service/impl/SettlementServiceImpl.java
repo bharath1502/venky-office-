@@ -37,6 +37,7 @@ import com.chatak.pg.acq.dao.IssuanceSettlementDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.OnlineTxnLogDao;
+import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
@@ -48,6 +49,7 @@ import com.chatak.pg.acq.dao.model.PGCurrencyCode;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGTransaction;
+import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntity;
 import com.chatak.pg.acq.dao.model.settlement.PGSettlementTransaction;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
@@ -74,8 +76,6 @@ import com.chatak.pg.model.virtualAccFeePostResponse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
@@ -148,6 +148,9 @@ public class SettlementServiceImpl implements SettlementService {
   
   @Autowired
   private IssuanceSettlementDao issSettlementDao;
+  
+  @Autowired
+  private ProgramManagerDao programManagerDao;
 
   private ObjectMapper mapper = new ObjectMapper();
 
@@ -155,7 +158,7 @@ public class SettlementServiceImpl implements SettlementService {
   public boolean updateSettlementStatus(String merchantId, String terminalId, String txnId,
       String txnType, String status, String comments, String userName, String timeZoneOffset,
       String timeZoneRegion) throws ChatakAdminException {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: SettlementServiceImpl :: updateSettlementStatus");
     try {
       PGTransaction pgTransaction =
           transactionDao.getTransactionOnTxnIdAndTxnType(merchantId, terminalId, txnId, txnType);
@@ -172,7 +175,7 @@ public class SettlementServiceImpl implements SettlementService {
 
   private boolean updateSettlement(String status, String comments, PGTransaction pgTransaction,
       String userName, String timeZoneOffset, String timeZoneRegion) {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: SettlementServiceImpl :: updateSettlement");
     PGOnlineTxnLog pgOnlineTxnLog = onlineTxnLogDao.getTransactionOnPgTxnIdAndMerchantId(
         pgTransaction.getTransactionId(), pgTransaction.getMerchantId());
     if (status.equals(PGConstants.PG_SETTLEMENT_EXECUTED)) {
@@ -374,10 +377,9 @@ public class SettlementServiceImpl implements SettlementService {
   private int updateBulkSettlement(String status, String comments,
       BulkSettlementResponse bulkSettlementResponse, int successCount,
       SettlemetActionDTO settlemetActionDTO, String userName) throws DataAccessException {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: SettlementServiceImpl :: updateBulkSettlement");
     PGTransaction pgTransaction;
     PGOnlineTxnLog pgOnlineTxnLog;
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
     pgTransaction = transactionDao.getTransactionOnTxnIdAndTxnType(
         settlemetActionDTO.getMerchantId(), settlemetActionDTO.getTerminalId(),
         settlemetActionDTO.getTxnId(), settlemetActionDTO.getTxnType());
@@ -684,9 +686,8 @@ public class SettlementServiceImpl implements SettlementService {
     logger.info(
         "SettlementServiceImpl:: updateAccountCCTransactions method fetching transactions by PG TRANS ID: "
             + accTxn.getPgTransactionId());
-    List<PGTransaction> transactions =
+    PGTransaction transaction =
         transactionRepository.findByTransactionId(accTxn.getPgTransactionId());
-    PGTransaction transaction = transactions.get(0);
 
     logger.info(
         "SettlementServiceImpl:: updateAccountCCTransactions method :: fetching currencyConfig for fee credit with numeric code: "
@@ -718,24 +719,20 @@ public class SettlementServiceImpl implements SettlementService {
 	@Transactional(rollbackFor=ChatakAdminException.class)
 	public Response saveIssuanceSettlementTransaction(IssuanceSettlementTransactionEntity pgSettlementTransaction, Integer batchCount, Integer batchSize) 
 	    throws InstantiationException, IllegalAccessException, ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementServiceImpl :: saveIssuanceSettlementTransaction");
 		
 		Response response = new Response();
 		try {
-		    Long START_TIME = System.currentTimeMillis();
 		    PGSettlementEntity pgSettlementEntity = seEntityAndTxnValues(pgSettlementTransaction);
-		    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "seEntityAndTxnValues DB Processing time: " + (System.currentTimeMillis() -  START_TIME));
 		    
-		    START_TIME = System.currentTimeMillis();
 		    issSettlementDao.addIssuanceSettlementTransaction(pgSettlementEntity, batchCount, batchSize);
-	        LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "addIssuanceSettlementTransaction DB Processing time: " + (System.currentTimeMillis() -  START_TIME));
 	        response.setErrorCode(PGConstants.SUCCESS);
 	        response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
-	        LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	        logger.info("Exiting :: SettlementServiceImpl :: saveIssuanceSettlementTransaction");
 	        return response;
 	        
 		} catch(Exception ex){
-		  LogHelper.logError(logger, LoggerMessage.getCallerName(), ex, Constants.EXCEPTION);
+		  logger.error("Error :: SettlementServiceImpl :: saveIssuanceSettlementTransaction : " + ex.getMessage(), ex);
           response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
           response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
           throw new ChatakAdminException(StatusConstants.STATUS_CODE_FAILED,StatusConstants.STATUS_MESSAGE_FAILED);
@@ -743,12 +740,12 @@ public class SettlementServiceImpl implements SettlementService {
 	}
 
 	private PGSettlementEntity seEntityAndTxnValues(IssuanceSettlementTransactionEntity pgSettlementTransaction) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementServiceImpl :: seEntityAndTxnValues");
 		PGSettlementEntity pgSettlementEntity = new PGSettlementEntity();
 		List<PGSettlementTransaction> pgSettlementTransactions = new ArrayList<>();
 		pgSettlementEntity.setMerchantId(pgSettlementTransaction.getMerchantId());
-		pgSettlementEntity.setAcqSaleAmount(pgSettlementTransaction.getAcqSaleAmount());
-		pgSettlementEntity.setIssSaleAmount(pgSettlementTransaction.getIssSaleAmount());
+		pgSettlementEntity.setAcqSaleAmount(pgSettlementTransaction.getAcqSaleAmount().toBigInteger());
+		pgSettlementEntity.setIssSaleAmount(pgSettlementTransaction.getIssSaleAmount().toBigInteger());
 		pgSettlementEntity.setAcqPmId(pgSettlementTransaction.getAcqPmId());
 		pgSettlementEntity.setIssPmId(pgSettlementTransaction.getIssPmId());
 		pgSettlementEntity.setBatchid(pgSettlementTransaction.getBatchid());
@@ -758,10 +755,10 @@ public class SettlementServiceImpl implements SettlementService {
 		pgSettlementEntity.setPmAmount(pgSettlementTransaction.getPmAmount());
 		pgSettlementEntity.setMerchantAmount(pgSettlementTransaction.getMerchantAmount());
 		
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "IssuanceSettlementTransactions size: " + pgSettlementTransaction.getSettlementTransactionsList());
+		logger.info("IssuanceSettlementTransactions size: " + pgSettlementTransaction.getSettlementTransactionsList());
 		
 		for(IssuanceSettlementTransactions issuanceSettlementTransactions : pgSettlementTransaction.getSettlementTransactionsList()) {
-		  LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Saving transaction with Pg txn ID: " + issuanceSettlementTransactions.getPgTransactionId()
+		  logger.info("Saving transaction with Pg txn ID: " + issuanceSettlementTransactions.getPgTransactionId()
 		      + ", Iss txn Id: " + issuanceSettlementTransactions.getIssuerTxnID());
 		  
 			PGSettlementTransaction pgSettlementTxn = new PGSettlementTransaction();
@@ -775,8 +772,8 @@ public class SettlementServiceImpl implements SettlementService {
 		}
 		
 		pgSettlementEntity.setSettlementTransactionsList(pgSettlementTransactions);
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Size of the PGSettlementTransaction array is " +pgSettlementTransactions.size());
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Size of the PGSettlementTransaction array is " +pgSettlementTransactions.size());
+		logger.info("Exiting :: SettlementServiceImpl :: seEntityAndTxnValues");
 		return pgSettlementEntity;
 	}
 
@@ -845,5 +842,10 @@ public class SettlementServiceImpl implements SettlementService {
 	@Override
 	public List<PGAccountTransactions> getAccountTransactionsOnTransactionId(String pgTransactionId) {
 		return accountTransactionsDao.getAccountTransactionsOnTransactionId(pgTransactionId);
+	}
+	
+	@Override
+	public List<ProgramManager> findByProgramMangerName(String pmName) {
+		return programManagerDao.findByProgramManagerName(pmName);
 	}
 }

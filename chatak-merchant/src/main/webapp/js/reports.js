@@ -1,3 +1,7 @@
+function resetAll() {
+	document.forms["resubmitForm"].submit();
+}
+
 function getUserAccountDetails(merchantId, merchantCode) {
 	get('getMerchantId').value = merchantId;
 	get('getMerchantCode').value = merchantCode;

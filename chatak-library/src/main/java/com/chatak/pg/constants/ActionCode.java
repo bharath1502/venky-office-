@@ -168,6 +168,10 @@ public class ActionCode {
 	public static final String ERROR_CODE_7C = "7C";
 	public static final String ERROR_CODE_8C = "8C";
 	public static final String ERROR_CODE_9C = "9C";
+	
+	public static final String ERROR_CODE_PM_01  =  "PM01";
+  public static final String ERROR_CODE_PM_02  =  "PM02";
+  public static final String ERROR_CODE_ISO_01  =  "ISO01";
 
 
 	private static void initMessages()
@@ -319,7 +323,9 @@ public class ActionCode {
 		 mMessages.put(ERROR_CODE_7C, "Format error - Mandatory fields check failed for MTI");
 		 mMessages.put(ERROR_CODE_8C, "Format error - Mandatory fields missing");
 		 mMessages.put(ERROR_CODE_9C, "Invalid card data");
-
+     mMessages.put(ERROR_CODE_PM_01 ,"Program manager not associated");
+     mMessages.put(ERROR_CODE_PM_02 ,"Program manager not active");
+     mMessages.put(ERROR_CODE_ISO_01 ,"ISO not active");
 	}
 
 	/**

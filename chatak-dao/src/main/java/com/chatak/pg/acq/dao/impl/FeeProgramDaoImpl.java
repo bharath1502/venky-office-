@@ -312,7 +312,17 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   @Override
   public List<PGAcquirerFeeValue> getAcquirerFeeValueByCardProgramId(Long cardProgramId) throws DataAccessException {
 
-    JPAQuery query = new JPAQuery(entityManager);
+	  List<PGAcquirerFeeValue> acquirerFeeValues = new ArrayList<>(1);
+	  List<Object> objects = acquirerFeeValueRepository.findByFeeProgramIdOnQuery(cardProgramId);
+	  Object[] obhectArray = (Object[]) objects.get(0);
+	  
+	  PGAcquirerFeeValue acquirerFeeValue = new PGAcquirerFeeValue();
+	  acquirerFeeValue.setFeePercentageOnly(Double.valueOf(obhectArray[0].toString()));
+	  acquirerFeeValue.setFlatFee(Long.valueOf(obhectArray[1].toString()));
+	  acquirerFeeValues.add(acquirerFeeValue);
+	  return acquirerFeeValues;
+	  
+    /*JPAQuery query = new JPAQuery(entityManager);
     List<PGAcquirerFeeValue> tupleCardList =
         query.distinct()
             .from(QPGFeeProgram.pGFeeProgram, QPGAcquirerFeeValue.pGAcquirerFeeValue)
@@ -325,6 +335,6 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
     if (CommonUtil.isListNotNullAndEmpty(tupleCardList)) {
       return tupleCardList;
     }
-    return Collections.emptyList();
+    return Collections.emptyList();*/
   }
 }

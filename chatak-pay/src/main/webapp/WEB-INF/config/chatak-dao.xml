@@ -24,7 +24,7 @@
         http://www.springframework.org/schema/data/jpa
         http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd ">
 
-	<context:annotation-config />
+	<context:annotation-config ></context:annotation-config>
 	<context:component-scan base-package="com.chatak.pg" />
 	<mvc:annotation-driven />
 
@@ -57,9 +57,20 @@
 		<property name="password" value="${chatak.pg.db.password}" />
 		<property name="maximumPoolSize" value="${chatak.pg.db.maxPoolSize}" />
 		<property name="minimumIdle" value="${chatak.pg.db.minPoolSize}" />
-		<property name="idleTimeout" value="${chatak.pg.db.idleConnectionTestPeriod}" />
-		
+		<property name="connectionTimeout" value="${chatak.pg.db.connectionTimeout}" />
+		<property name="idleTimeout" value="${chatak.pg.db.idleTimeout}" />
+		<property name="maxLifetime" value="${chatak.pg.db.maxLifetime}" />
+		<property name="leakDetectionThreshold" value="${chatak.pg.db.leakDetectionThreshold}" />
+		<property name="poolName" value="${chatak.pg.db.poolName}" />
+		<property name="dataSourceProperties" ref="dataSourcePropertiesId" />
 	</bean>
+
+	<util:properties id="dataSourcePropertiesId">
+		<prop key="cachePrepStmts">${chatak.pg.db.cachePrepStmts}</prop>
+		<prop key="prepStmtCacheSize">${chatak.pg.db.prepStmtCacheSize}</prop>
+		<prop key="prepStmtCacheSqlLimit">${chatak.pg.db.prepStmtCacheSqlLimit}</prop>
+		<prop key="useServerPrepStmts">${chatak.pg.db.useServerPrepStmts}</prop>
+	</util:properties>
 
 	<!-- Transaction Manager -->
 	<bean id="txManager"
@@ -71,7 +82,7 @@
 
 	<bean id="jpaVendorAdapter"
 		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-		<property name="showSql" value="true" />
+		<property name="showSql" value="false" />
 		<property name="generateDdl" value="false" />
 		<property name="database" value="${chatak.pg.db.database}" />
 	</bean>

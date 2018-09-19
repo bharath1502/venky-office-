@@ -2,7 +2,6 @@ package com.chatak.switches.services;
 
 import java.sql.Timestamp;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -80,14 +79,15 @@ public abstract class AccountTransactionService {
 
   protected static Logger logger = Logger.getLogger(AccountTransactionService.class);
 
-  protected void logAccountTransaction(PGTransaction pgTransaction, Request request) {
+  protected PGAccount logAccountTransaction(PGTransaction pgTransaction, Request request) {
     logger.info("Entering:: AccountTransactionService:: logAccountTransaction method  with TxnType : " + pgTransaction.getTransactionType());
+    PGAccount pgAccount = null;
     switch(pgTransaction.getTransactionType()) {
       case PGConstants.TXN_TYPE_SALE:
-        logSaleToAccountTransaction(pgTransaction, request);
+    	  pgAccount = logSaleToAccountTransaction(pgTransaction, request);
         break;
       case PGConstants.TXN_TYPE_VOID:
-        logVoidToAccountTransaction(pgTransaction);
+    	  pgAccount = logVoidToAccountTransaction(pgTransaction);
         break;
       case PGConstants.TXN_TYPE_REFUND:
     	  logRefundToAccountTransaction(pgTransaction);
@@ -97,9 +97,10 @@ public abstract class AccountTransactionService {
       default:
         break;
     }
+    return pgAccount;
   }
 
-  private void logSaleToAccountTransaction(PGTransaction pgTransaction,  Request request) {
+  private PGAccount logSaleToAccountTransaction(PGTransaction pgTransaction,  Request request) {
     logger.info("Entering:: AccountTransactionService:: logSaleToAccountTransaction method ");
     String accountTxnId = accountTransactionsDao.generateAccountTransactionId();
     PGAccount account = accountDao.getPgAccount(pgTransaction.getMerchantId());
@@ -205,14 +206,16 @@ public abstract class AccountTransactionService {
     }
     
     logger.info("Exiting:: AccountTransactionService:: logSaleToAccountTransaction method ");
+    return account;
   }
 
-  private void logVoidToAccountTransaction(PGTransaction pgTransaction) {
+  private PGAccount logVoidToAccountTransaction(PGTransaction pgTransaction) {
     logger.info("Entering:: AccountTransactionService:: logVoidAccountTransaction method ");
     List<PGAccountTransactions> saleTxnList = accountTransactionsDao.getAccountTransactionsOnTransactionId(pgTransaction.getRefTransactionId());
     PGAccountTransactions voidTxn = null;
     String txnId = accountTransactionsDao.generateAccountTransactionId();
     String descriptionTemplate = null;
+    PGAccount account = accountDao.getPgAccount(pgTransaction.getMerchantId());
     for(PGAccountTransactions pgAccTxn : saleTxnList) {
       pgAccTxn.setDeviceLocalTxnTime(pgTransaction.getDeviceLocalTxnTime());
       pgAccTxn.setTimeZoneOffset(pgTransaction.getTimeZoneOffset());
@@ -225,7 +228,6 @@ public abstract class AccountTransactionService {
       voidTxn.setPgTransactionId(pgTransaction.getTransactionId());
       voidTxn.setTransactionTime(pgTransaction.getCreatedDate());
       voidTxn.setProcessedTime(timestamp);
-      PGAccount account = accountDao.getPgAccount(pgTransaction.getMerchantId());
       voidTxn.setCurrentBalance(account.getCurrentBalance());
       voidTxn.setMerchantCode(pgTransaction.getMerchantId());
       voidTxn.setTransactionType(pgTransaction.getTransactionType());
@@ -260,11 +262,10 @@ public abstract class AccountTransactionService {
       voidTxn.setTimeZoneOffset(pgAccTxn.getTimeZoneOffset());
       voidTxn.setTimeZoneRegion(pgAccTxn.getTimeZoneRegion());
       voidTxn.setDeviceLocalTxnTime(pgAccTxn.getDeviceLocalTxnTime());
-      accountTransactionsDao.createOrUpdate(voidTxn);
-      accountTransactionsDao.createOrUpdate(pgAccTxn);
+      accountTransactionsDao.createOrUpdate(voidTxn, pgAccTxn);
       logger.info("Exiting:: AccountTransactionService:: logVoidAccountTransaction method ");
     }
-
+    return account;
   }
 
   private String setMessageFormat(PGTransaction pgTransaction, PGAccountTransactions pgAccTxn) {
@@ -401,8 +402,7 @@ public abstract class AccountTransactionService {
     PGAccount account;
     
    	logger.info("AccountTransactionService:: logRefundAccountTransaction method fetching transactions by PG TRANS ID: " + pgAccTxn.getPgTransactionId());
-    List<PGTransaction> transactions = transactionRepository.findByTransactionId(pgAccTxn.getPgTransactionId());
-    PGTransaction transaction = transactions.get(0);
+   	PGTransaction transaction = transactionRepository.findByTransactionId(pgAccTxn.getPgTransactionId());
     
    	logger.info("AccountTransactionService:: logRefundAccountTransaction method :: fetching currencyConfig for fee credit with numeric code: " + transaction.getTxnCurrencyCode());
  		PGCurrencyConfig currencyConfig = currencyConfigDao.getcurrencyCodeAlpha(transaction.getTxnCurrencyCode());
@@ -500,8 +500,7 @@ public abstract class AccountTransactionService {
       PGAccountTransactions feeTransactionLog) {
     PGAccount account;
     logger.info("AccountTransactionService:: logFeeAmount method fetching transactions by PG TRANS ID: " + pgAccountTransactions.getPgTransactionId());
-    List<PGTransaction> transactions = transactionRepository.findByTransactionId(pgAccountTransactions.getPgTransactionId());
-    PGTransaction transaction = transactions.get(0);
+    PGTransaction transaction = transactionRepository.findByTransactionId(pgAccountTransactions.getPgTransactionId());
     
     logger.info("AccountTransactionService:: logFeeAmount method :: fetching currencyConfig for fee credit with numeric code: " + transaction.getTxnCurrencyCode());
     PGCurrencyConfig currencyConfig = currencyConfigDao.getcurrencyCodeAlpha(transaction.getTxnCurrencyCode());
@@ -698,8 +697,7 @@ private void fetchPGAcquirerFeeValue(Long txnTotalAmount, List<ProcessingFee> ca
   private PGAccount fetchPGTransactionList(PGAccountTransactions pgAccTxn) {
     PGAccount account;
     logger.info("AccountTransactionService:: logPartialRefundToAccountTransaction method fetching transactions by PG TRANS ID: " + pgAccTxn.getPgTransactionId());
-    List<PGTransaction> transactions = transactionRepository.findByTransactionId(pgAccTxn.getPgTransactionId());
-    PGTransaction transaction = transactions.get(0);
+    PGTransaction transaction = transactionRepository.findByTransactionId(pgAccTxn.getPgTransactionId());
       
     logger.info("AccountTransactionService:: logPartialRefundToAccountTransaction method :: fetching currencyConfig for fee credit with numeric code: " + transaction.getTxnCurrencyCode());
     PGCurrencyConfig currencyConfig = currencyConfigDao.getcurrencyCodeAlpha(transaction.getTxnCurrencyCode());

@@ -1,3 +1,4 @@
+
 var MAX_PROGRAM_MANAGER_FILE_SIZE = 300 * 1024 * 1;
 function Logo() {
 	openPopup();
@@ -26,6 +27,7 @@ function ProgramManagerValidation() {
 			| !clientValidation('companyName','company_name','pgmmgrcompanynameerrormsg')
 			| !clientValidation('country','country','countryNameErrormsg')
 	        | !clientValidation('state','state','stateNameErrormsg')
+	        | !clientValidation('extension','extension_not_mandatory','extensionerr')
 	        | !clientValidation('timezone','state','timezone_ErrorDiv')
 	        | !clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')
 	        | !clientValidation('schedulerRunTime','txn_date','pgmmgrschedulerRunTimeerrormsg')
@@ -165,6 +167,7 @@ function editProgramManagerValidation() {
 					'pgmmgrcontactpersonerrormsg')
 			| !clientValidation('contactPerson', 'contact_person',
 					'pgmmgrcontactpersonerrormsg')
+			| !clientValidation('extension','extension_not_mandatory','extensionerr')
 			| !clientValidation('businessEntityName', 'business_entity_name',
 					'pgmmgrbusinessentityerrormsg')
 			| !clientValidation('companyName', 'company_name',
@@ -992,6 +995,7 @@ function fetchBankDetailsByCurrency(currency) {
 		return;
 	}
 	doAjaxFetchBankDetailsByCurrency(currency);
+	doAjaxFetchAcquirerCardProgramDetailsByCurrency(currency);
 	
 }
 
@@ -1022,19 +1026,11 @@ function doAjaxFetchBankDetailsByCurrency(currency) {
 	});
 }
 
-function fetchAcquirerCardProgramDetailsByBankId(bankId) {
-	if (bankId == '') {
-		return;
-	}
-	doAjaxFetchAcquirerCardProgramDetailsByBankId(bankId);
-	
-}
-
-function doAjaxFetchAcquirerCardProgramDetailsByBankId(bankId) {
+function doAjaxFetchAcquirerCardProgramDetailsByCurrency(currency) {
 	$.ajax({
 
 		type : "GET",
-		url : "getAcquirerCardProgramDetailsByBankId?bankId=" + bankId,
+		url : "getAcquirerCardProgramDetailsByCurrency?currency=" + currency,
 		success : function(response) {
 			// we have the response
 			if (response != "") {
@@ -1046,8 +1042,8 @@ function doAjaxFetchAcquirerCardProgramDetailsByBankId(bankId) {
 					var cardProgramName = obj[i].cardProgramName;
 					{
 						var newOption = document.createElement("option");
-						newOption.value = obj[i].cardProgramId;
-						newOption.innerHTML = obj[i].cardProgramName;
+						newOption.value = obj[i].value;
+						newOption.innerHTML = obj[i].label;
 						$("#acquirerCardprogramId").append(newOption);
 					}
 				}
@@ -1100,6 +1096,50 @@ function doAjaxForTimeZone(countryId) {
 				
 	});
 }
+
+function fetchTimeZoneForEdit(id) {
+	if(id == '') {
+		return;
+	}
+	doAjaxForTimeZoneForEdit(id);
+}
+
+function doAjaxForTimeZoneForEdit(countryId) {
+	
+	$.ajax({
+			type : "GET",
+			url : "fetchTimeZone?countryId="+countryId,
+			
+			success : function(response) {
+						
+					var obj = JSON.parse(response);
+
+					if (response != "") {
+						var obj = JSON.parse(response);
+					
+						document.getElementById('timezone').options.length = 0;
+						var selectOption = document.createElement("option");
+						selectOption.innerHTML = "..:Select:..";
+						selectOption.value = "";
+						$("#timezone").append(selectOption);
+						for (var i = 0; i < obj.length; i++) {
+							var cardProgramId = obj[i].cardProgramId;
+							var cardProgramName = obj[i].cardProgramName;
+							{
+								var newOption = document.createElement("option");
+								newOption.value = obj[i].standardTimeOffset;
+								newOption.innerHTML = obj[i].standardTimeOffset;
+								$("#timezone").append(newOption);
+							}
+						}
+					}
+		},
+		failure :	function(e) {
+		  }
+				
+	});
+}
+
 function goToDashBoard() {
 	window.location.href = 'home';
 }
@@ -1178,5 +1218,52 @@ function setTimeZone() {
 	setValue('timeZoneOffset', new Date().toString().match(
 			/([A-Z]+[\+-][0-9]+)/)[1]);
 	setValue('timeZoneRegion', jstz.determine().name());
+	return true;
+}
+
+function fetchCardProgramByPmId() {
+	var issuancePmId = $('#issuancePmId').val();
+	var acquirerPmId = $('#id').val();
+	var pmCurrency = $('#accountCurrency').val();
+	if(issuancePmId == '' || issuancePmId == null)
+		return;
+	doAjaxFetchIssunaceCardProgramsByPmId(acquirerPmId,issuancePmId,pmCurrency);
+}
+
+function doAjaxFetchIssunaceCardProgramsByPmId(acquirerPmId,issuancePmId,pmCurrency) {
+	$('#errorDiv').text('');
+	$.ajax({
+		type : "GET",
+		url : "getIssuanceCardProgramsByPmId?issuancePmId=" + issuancePmId +"&currency=" +pmCurrency +"&acquirerPmId=" +acquirerPmId,
+		success : function(response) {
+			// we have the response
+			if (response != null && response != "") {
+				var obj = JSON.parse(response);
+				if(obj.cardProgramList.length > 0){
+					for (var i = 0; i < obj.cardProgramList.length; i++) {
+						var cardProgramId = obj.cardProgramList[i].cardProgramId;
+						var cardProgramName = obj.cardProgramList[i].cardProgramName;
+						{
+							var newOption = document.createElement("option");
+							newOption.value = cardProgramId;
+							newOption.innerHTML = cardProgramName;
+							$("#cardprogramId").append(newOption);
+						}
+					}					
+				}else if(obj.errorCode == 'CEC_0001'){
+					$('#errorDiv').text('No new card programs found');
+				}
+			}
+		},
+		failure : function(e) {
+		}
+	});
+}
+
+function validateSpecialCharactersPMSearch() {
+	if (!clientValidation('programManagerName','companyname_not_mandatory','pgmmgrNameErrormsg')
+			| !clientValidation('companyName','companyname_not_mandatory','pgmmgrcompanynameerrormsg')) {
+		return false;
+	}
 	return true;
 }

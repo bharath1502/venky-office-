@@ -36,6 +36,7 @@ import com.chatak.merchant.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
+import com.chatak.pg.util.validator.CSRFTokenManager;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Controller
@@ -330,6 +331,9 @@ public class MerchantProfileController implements URLMappingConstants {
         loginSevice.changdPassword(userId, changePasswordRequest.getCurrentPassword(),
             changePasswordRequest.getNewPassword());
         session.invalidate();
+        HttpSession newsession = request.getSession();
+        String token = CSRFTokenManager.getTokenForSession(newsession);
+        newsession.setAttribute("tokenval", token);
         modelAndView.setViewName(CHATAK_MERCHANT_LOGIN);
         LoginDetails loginDetails = new LoginDetails();
         modelAndView.addObject(Constants.SUCESS, messageSource

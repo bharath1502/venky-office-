@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -340,7 +341,7 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   private Integer getTotalNumberOfRecordsOnSettlementStatus(
       GetTransactionsListRequest getTransactionsListRequest) {
     JPAQuery query = new JPAQuery(entityManager);
-    List<Long> list = query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant)
+    List<BigInteger> list = query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant)
         .where(isMerchantSettlementStatus(getTransactionsListRequest.getSettlementStatus()),
             QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode))
         .list(QPGTransaction.pGTransaction.id);

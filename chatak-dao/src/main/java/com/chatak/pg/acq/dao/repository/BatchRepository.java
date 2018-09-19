@@ -18,6 +18,6 @@ import com.chatak.pg.acq.dao.model.PGBatch;
  */
 public interface BatchRepository extends JpaRepository<PGBatch, Long>,QueryDslPredicateExecutor<PGBatch> {
 	
-	public PGBatch findByProgramManagerId(Long programManagerId);
+	public PGBatch findByProgramManagerIdAndStatus(Long programManagerId, String status);
 
 }

@@ -6,7 +6,8 @@ package com.chatak.pay.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +33,7 @@ import com.chatak.pay.service.AccountService;
 @RequestMapping(value = "/account", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
 public class AccountRestController extends BaseController implements URLMappingConstants, Constant {
 
-	private Logger logger = Logger.getLogger(AccountRestController.class);
+	private static Logger logger = LogManager.getLogger(AccountRestController.class);
 
 	@Autowired
 	private AccountService accountService;

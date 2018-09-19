@@ -88,8 +88,8 @@
 								<!--Success and Failure Message Start-->
 								<div class="col-xs-12">
 									<div class="descriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-										<span class="red-error">&nbsp;</span> <span
-											class="green-error">${sucess}</span>
+										<span class="red-error">&nbsp;</span> 
+										<span id="sucessDiv" class="green-error">${sucess}</span>
 									</div>
 								</div>
 
@@ -166,9 +166,9 @@
 														</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="roles.label.rolename"/></label>
-													<form:input path="roleName" id="roleName" cssClass="form-control" />
+													<form:input path="roleName" id="roleName" cssClass="form-control" onblur="clientValidation('roleName','firstlast_name_notmend','roleNameError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="roleNameError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -202,7 +202,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" value='<spring:message code="common.label.search"/>' class="form-control button pull-right"
-													onclick="return trimUserData()"> <input type="button"
+													onclick="return searchRoleName(); trimUserData()"> <input type="button"
 													class="form-control button pull-right" value='<spring:message code="common.label.reset"/>'
 													onclick="resetSearchRole()">
 											</div>

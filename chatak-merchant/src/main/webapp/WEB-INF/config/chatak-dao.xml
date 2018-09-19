@@ -57,7 +57,20 @@
 		<property name="maximumPoolSize" value="${chatak.pg.db.maxPoolSize}" />
 		<property name="minimumIdle" value="${chatak.pg.db.minPoolSize}" />
 		<property name="idleTimeout" value="${chatak.pg.db.idleConnectionTestPeriod}" />
+		
+		<property name="connectionTimeout" value="${chatak.pg.db.connectionTimeout}" />
+		<property name="maxLifetime" value="${chatak.pg.db.maxLifetime}" />
+		<property name="leakDetectionThreshold" value="${chatak.pg.db.leakDetectionThreshold}" />
+		<property name="poolName" value="${chatak.pg.db.poolName}" />
+		<property name="dataSourceProperties" ref="dataSourcePropertiesId" />
 	</bean>
+
+	<util:properties id="dataSourcePropertiesId">
+		<prop key="cachePrepStmts">${chatak.pg.db.cachePrepStmts}</prop>
+		<prop key="prepStmtCacheSize">${chatak.pg.db.prepStmtCacheSize}</prop>
+		<prop key="prepStmtCacheSqlLimit">${chatak.pg.db.prepStmtCacheSqlLimit}</prop>
+		<prop key="useServerPrepStmts">${chatak.pg.db.useServerPrepStmts}</prop>
+	</util:properties>
 
 	<!-- Transaction Manager -->
 	<bean id="txManager"

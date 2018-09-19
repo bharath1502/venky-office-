@@ -29,8 +29,6 @@ public final class DateUtil {
   
   private static Logger logger = Logger.getLogger(DateUtil.class);
 
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat();
-
 	public static final String VIEW_DATE_FORMAT = "dd/MM/yyyy";
 
 	public static final String VIEW_DATE_TIME_FORMAT = "dd/MM/yyyy hh:mm:ss a";
@@ -62,6 +60,7 @@ public final class DateUtil {
 	 */
 	public static Timestamp toTimestamp(String date, String pattern) {
 		try {
+      SimpleDateFormat dateFormat = new SimpleDateFormat();
 			dateFormat.applyPattern(pattern);
 			return new Timestamp(dateFormat.parse(date).getTime());
 		}
@@ -72,6 +71,7 @@ public final class DateUtil {
 	}
 
 	public static Date toDate(Date date, String pattern) {
+    SimpleDateFormat dateFormat = new SimpleDateFormat();
 		dateFormat.applyPattern(pattern);
 		return new Date(date.getTime());
 
@@ -80,6 +80,7 @@ public final class DateUtil {
 	public static Time toTime(String time, String pattern) {
 
 		try {
+      SimpleDateFormat dateFormat = new SimpleDateFormat();
 			dateFormat.applyPattern(pattern);
 			return new Time(dateFormat.parse(time).getTime());
 
@@ -99,6 +100,7 @@ public final class DateUtil {
 	 */
 	public static String toDateStringFormat(Timestamp date, String pattern) {
 		if(null != date) {
+      SimpleDateFormat dateFormat = new SimpleDateFormat();
 			dateFormat.applyPattern(pattern);
 			return dateFormat.format(date);
 		}
@@ -133,6 +135,7 @@ public final class DateUtil {
       if(null == date || "".equals(date)) {
         return null;
       }
+      SimpleDateFormat dateFormat = new SimpleDateFormat();
       dateFormat.applyPattern(pattern);
       Date date2 = dateFormat.parse(date);
       date2.setHours(00);
@@ -159,6 +162,7 @@ public final class DateUtil {
 			if(null == date || "".equals(date)) {
 				return null;
 			}
+			SimpleDateFormat dateFormat = new SimpleDateFormat();
 			dateFormat.applyPattern(pattern);
 			Date date2 = dateFormat.parse(date);
 			date2.setHours(Integer.parseInt("23"));
@@ -296,7 +300,6 @@ public final class DateUtil {
 	  }
 
     public static String convertTimeZone(String offSet, String time) {
-      LogHelper.logEntry(logger, LoggerMessage.getCallerName());
       String format = PGConstants.DATE_FORMAT;
       Date date = null;
       String convertedTime = null;
@@ -310,7 +313,6 @@ public final class DateUtil {
       catch(ParseException e) {
         logger.error("ERROR:: DateUtil:: convertTimeZone method", e);
       }
-      LogHelper.logExit(logger, LoggerMessage.getCallerName());
       return convertedTime;
     }
 }

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -61,10 +61,9 @@ import com.chatak.pg.user.bean.UpdateMerchantRequest;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * << Add Comments Here >>
@@ -76,7 +75,7 @@ import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 @Service
 
 public class PGMerchantServiceImpl implements PGMerchantService {
-  private static Logger log = Logger.getLogger(PGMerchantServiceImpl.class);
+  private static Logger log = LogManager.getLogger(PGMerchantServiceImpl.class);
   
   private static ObjectMapper mapper=new ObjectMapper();	
 
@@ -336,11 +335,10 @@ public class PGMerchantServiceImpl implements PGMerchantService {
           loginResponse.setErrorCode(ChatakPayErrorCode.GEN_001.name());
           loginResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(),
               null, LocaleContextHolder.getLocale()));
-          LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Setting login  response after validating currency");
+          log.info("Setting login  response after validating currency");
 
           //Check for New User. Means is user login with Temp Password?
           if (merchantUsers.getEmailVerified().equals(Constants.ZERO)) {
-            LogHelper.logInfo(log, LoggerMessage.getCallerName(), "User logged in with Temp Password -->> New User");
             loginResponse.setErrorCode(ChatakPayErrorCode.GEN_003.name());
           }
         } else {
@@ -364,16 +362,16 @@ public class PGMerchantServiceImpl implements PGMerchantService {
           + e.getMessage(), e);
     }
 
-    LogHelper.logInfo(log, LoggerMessage.getCallerName(), loginResponse.getErrorCode() + loginResponse.getErrorMessage());
+    log.info(loginResponse.getErrorCode() + loginResponse.getErrorMessage());
     log.info("RestService | PGMerchantServiceImpl | authenticateMerchantUser | Exiting");
     return loginResponse;
   }
 
   private void validatePGCurrencyConfig(LoginRequest loginRequest, LoginResponse loginResponse,
 		PGMerchantUsers merchantUsers, PGMerchant pgMerchant, PGCurrencyConfig pgCurrencyConfig) throws HttpClientException, IOException {
-    LogHelper.logEntry(log, LoggerMessage.getCallerName());
+    log.info("Entering :: PGMerchantServiceImpl :: validatePGCurrencyConfig");
 	if (pgCurrencyConfig != null) {
-	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Found Valid Currency");
+	  log.info("Found Valid Currency");
 	    CurrencyDTO currencyDTO = new CurrencyDTO();
 	    currencyDTO.setCurrencyCodeAlpha(pgCurrencyConfig.getCurrencyCodeAlpha());
 	    currencyDTO.setCurrencyCodeNumeric(pgCurrencyConfig.getCurrencyCodeNumeric());
@@ -384,29 +382,28 @@ public class PGMerchantServiceImpl implements PGMerchantService {
 	    currencyDTO.setCurrencyThousandsUnit(pgCurrencyConfig.getCurrencyThousandsUnit());
 	    loginResponse.setCurrencyDTO(currencyDTO);
 	  }
-	  LogHelper.logInfo(log, LoggerMessage.getCallerName(), "set currency DTO");
 	  // If TMS is enabled
 	  if (Constants.FLAG_TRUE.equals(Properties.getProperty("chatak-tms.enabled", "false"))) {
-	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "fetching tms details");
+	    log.info("fetching tms details");
 	    // Fetch from TSM any app update available for the device serial number and merchant ID.
 	    TSMRequest request = new TSMRequest();
 	    request.setMerchantCode(pgMerchant.getMerchantCode());
 	    request.setDeviceSerial(loginRequest.getDeviceSerial());
 	    request.setCurrentAppVersion(loginRequest.getCurrentAppVersion());
 
-	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Before hitting tms");
-	    String output = (String) JsonUtil.sendToTSM(String.class, request,
+	    log.info("Before hitting tms");
+	    String output = JsonUtil.sendToTSM(String.class, request,
 		        Properties.getProperty("chatak-tsm.service.fetch.merchant"));
-	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "TMS Response " + output);
+	    log.info("TMS Response " + output);
 	    TSMResponse tsmResponse=mapper.readValue(output, TSMResponse.class);
 	    loginResponse.setTerminalData(tsmResponse);
 	  } else {
-	    LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Chatak TMS Disabled");
+	    log.info("Chatak TMS Disabled");
 	    PGTerminal pgTerminal = terminalDao
 	        .getTerminalonMerchantCode(Long.valueOf(merchantUsers.getPgMerchantId()));
 	    loginResponse.setTerminalID(String.valueOf(pgTerminal.getTerminalId()));
 	  }
-	  LogHelper.logExit(log, LoggerMessage.getCallerName());
+	  log.info("Exiting :: PGMerchantServiceImpl :: validatePGCurrencyConfig");
   }
 
   public MerchantListResponse getMerchantNamesAndMerchantCode() {
@@ -570,12 +567,12 @@ public class PGMerchantServiceImpl implements PGMerchantService {
 
   public ApplicationClientDTO getApplicationClientAuth(String appAuthUser) {
     try {
-      LogHelper.logEntry(log, LoggerMessage.getCallerName());
+      log.info("Entering :: PGMerchantServiceImpl :: getApplicationClientAuth");
       PGApplicationClient applicationClient = merchantUserDao.getApplicationClientAuth(appAuthUser);
       if (applicationClient != null) {
         ApplicationClientDTO applicationClientDTO =
             CommonUtil.copyBeanProperties(applicationClient, ApplicationClientDTO.class);
-        LogHelper.logExit(log, LoggerMessage.getCallerName());
+        log.info("Exiting :: PGMerchantServiceImpl :: getApplicationClientAuth");
         return applicationClientDTO;
       }
     } catch (Exception e) {

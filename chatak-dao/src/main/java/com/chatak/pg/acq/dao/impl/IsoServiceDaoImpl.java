@@ -4,9 +4,12 @@
 package com.chatak.pg.acq.dao.impl;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -14,6 +17,7 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pg.acq.dao.IsoServiceDao;
 import com.chatak.pg.acq.dao.model.Iso;
@@ -43,8 +47,6 @@ import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.OrderSpecifier;
@@ -58,7 +60,7 @@ import com.mysema.query.types.expr.BooleanExpression;
  *
  */
 @Repository("isoServiceDao")
-public class IsoServiceDaoImpl implements IsoServiceDao{
+public class IsoServiceDaoImpl implements IsoServiceDao {
 	
 	private static Logger logger = Logger.getLogger(IsoServiceDaoImpl.class);
 
@@ -139,8 +141,8 @@ public class IsoServiceDaoImpl implements IsoServiceDao{
 	 * @param objs
 	 * @return
 	 */
-	private Long requestIin(Object[] objs) {
-		return StringUtil.isNull(objs[2]) ? null : ((BigInteger) objs[2]).longValue();
+	private String requestIin(Object[] objs) {
+		return StringUtil.isNull(objs[2]) ? null : ((String)objs[2]);
 	}
 
 	/**
@@ -411,38 +413,10 @@ public class IsoServiceDaoImpl implements IsoServiceDao{
 			programManagerRequests.add(programManager);
 		}
 		isoResponse.setProgramManagerRequestList(programManagerRequests);
-		
-		JPAQuery query1 = new JPAQuery(entityManager);
-		List<Tuple> cptupleList = query1
-				.from(QCardProgram.cardProgram,QIsoCardProgramMap.isoCardProgramMap,QPmCardProgamMapping.pmCardProgamMapping,QProgramManager.programManager)
-				.where(QIsoCardProgramMap.isoCardProgramMap.isoId.eq(isoRequest.getId())
-						.and(QIsoCardProgramMap.isoCardProgramMap.cardProgramId.eq(QCardProgram.cardProgram.cardProgramId))
-						.and(QPmCardProgamMapping.pmCardProgamMapping.cardProgramId.eq(QIsoCardProgramMap.isoCardProgramMap.cardProgramId))
-						.and(QProgramManager.programManager.id.eq(QPmCardProgamMapping.pmCardProgamMapping.programManagerId)))
-				.distinct()
-				.list(QCardProgram.cardProgram.cardProgramId,QCardProgram.cardProgram.cardProgramName,QCardProgram.cardProgram.iin,QCardProgram.cardProgram.iinExt,
-						QCardProgram.cardProgram.partnerIINCode,QCardProgram.cardProgram.partnerName,QCardProgram.cardProgram.currency,QProgramManager.programManager.programManagerName);		
-		List<CardProgramRequest> cardProgramList = new ArrayList<>();
-		setCardPrograms(cardProgramList, cptupleList);
-		isoResponse.setCardProgramRequestList(cardProgramList);
+		isoResponse.setCardProgramRequestList(fetchCardProgramByIso(isoRequest.getId()));
 		return isoResponse;
 	}
 
-	private void setCardPrograms(List<CardProgramRequest> cardProgramList,List<Tuple> cptupleList){
-		CardProgramRequest cardProgramRequest;
-		for (Tuple tuple : cptupleList){
-			cardProgramRequest = new CardProgramRequest();
-			cardProgramRequest.setCardProgramId(tuple.get(QCardProgram.cardProgram.cardProgramId));
-			cardProgramRequest.setCardProgramName(tuple.get(QCardProgram.cardProgram.cardProgramName));
-			cardProgramRequest.setIin(tuple.get(QCardProgram.cardProgram.iin));
-			cardProgramRequest.setIinExt((tuple.get(QCardProgram.cardProgram.iinExt)));
-			cardProgramRequest.setPartnerCode((tuple.get(QCardProgram.cardProgram.partnerIINCode)));
-			cardProgramRequest.setPartnerName(tuple.get(QCardProgram.cardProgram.partnerName));
-			cardProgramRequest.setCurrency(tuple.get(QCardProgram.cardProgram.currency));
-			cardProgramRequest.setProgramManagerName(tuple.get(QProgramManager.programManager.programManagerName));
-			cardProgramList.add(cardProgramRequest);
-		}
-	}
 	/**
 	 * @param iso
 	 * @return
@@ -472,31 +446,88 @@ public class IsoServiceDaoImpl implements IsoServiceDao{
 	}
 	@Override
 	public List<CardProgramRequest> fetchCardProgramByIso(Long isoId) {
-		List<CardProgramRequest> cardProgramList = new ArrayList<>(0);
-		Long pmId=null;
-		//this method is being used to fetch cardPrograms which aren't associated with ISO but mapped with PM(PmCardProgamMapping)
-		StringBuilder query = new StringBuilder("select subqry.ID,subqry.CARD_PROGRAM_NAME,subqry.IIN,")
-							  .append(" subqry.IIN_EXT,subqry.ISSUANCE_PARTNER_NAME, subqry.CURRENCY,")
-							  .append(" subqry.PROGRAM_MANAGER_NAME,subqry.IIN_PARTNER_EXT ")
-							  .append(" from (select distinct cp.ID,cp.CARD_PROGRAM_NAME,cp.IIN,")
-							  .append(" cp.IIN_EXT,cp.ISSUANCE_PARTNER_NAME,cp.CURRENCY,pm.PROGRAM_MANAGER_NAME,cp.IIN_PARTNER_EXT")
-							  .append(" from PG_PM_ISO_MAPPING as pmiso")
-							  .append(" left join PG_PM_CARD_PROGRAM_MAPPING as pmcp on pmiso.PM_ID =pmcp.PM_ID")
-							  .append(" right join PG_PROGRAM_MANAGER as pm on pmiso.PM_ID = pm.ID")
-							  .append(" left join PG_CARD_PROGRAM as cp on pmcp.CARD_PROGRAM_ID = cp.ID")
-							  .append(" where pmiso.ISO_ID = :isoId )as subqry")
-							  .append(" where subqry.ID not in (select isocp.CARD_PROGRAM_ID from PG_ISO_CARD_PROGRAM_MAPPING as isocp")
-							  .append(" where subqry.ID = isocp.CARD_PROGRAM_ID and isocp.ISO_ID = :isoId)");
+		List<CardProgramRequest> allCardProgramList = new ArrayList<>(0);
+		List<CardProgramRequest> selectedCardProgramList = new ArrayList<>(0);
+
+		StringBuilder allCardProgramQuery = new StringBuilder("select subqry.ID,subqry.CARD_PROGRAM_NAME,subqry.IIN,")
+        .append(" subqry.IIN_EXT,subqry.ISSUANCE_PARTNER_NAME, subqry.CURRENCY,")
+        .append(" subqry.PROGRAM_MANAGER_NAME,subqry.IIN_PARTNER_EXT, subqry.PM_ID ")
+        .append(" from (select distinct cp.ID,cp.CARD_PROGRAM_NAME,cp.IIN,")
+        .append(" cp.IIN_EXT,cp.ISSUANCE_PARTNER_NAME,cp.CURRENCY,pm.PROGRAM_MANAGER_NAME,cp.IIN_PARTNER_EXT,pmcp.PM_ID")
+        .append(" from PG_PM_ISO_MAPPING as pmiso")
+        .append(" left join PG_PM_CARD_PROGRAM_MAPPING as pmcp on pmiso.PM_ID =pmcp.PM_ID")
+        .append(" right join PG_PROGRAM_MANAGER as pm on pmiso.PM_ID = pm.ID")
+        .append(" left join PG_CARD_PROGRAM as cp on pmcp.CARD_PROGRAM_ID = cp.ID")
+        .append(" where pmiso.ISO_ID = :isoId )as subqry");
 							  
-		Query qry = entityManager.createNativeQuery(query.toString());
-		qry.setParameter("isoId", isoId);
-		List<Object> cardProgramResponse = qry.getResultList();
+		Query allCardProgramQry = entityManager.createNativeQuery(allCardProgramQuery.toString());
+		allCardProgramQry.setParameter("isoId", isoId);
+		List<Object> cardProgramResponse = allCardProgramQry.getResultList();
 		if(StringUtil.isListNotNullNEmpty(cardProgramResponse)){
 			Iterator<Object> itr = cardProgramResponse.iterator();
-			setCardPrograms(cardProgramList, itr,pmId,isoId);			
+			setCardPrograms(allCardProgramList, itr,isoId);			
 		}
-		return cardProgramList;
+		
+		//selected cp's
+		StringBuilder selectedCardProgramQuery = new StringBuilder("select subqry.ID,subqry.CARD_PROGRAM_NAME,subqry.IIN,")
+        .append(" subqry.IIN_EXT,subqry.ISSUANCE_PARTNER_NAME, subqry.CURRENCY,")
+        .append(" subqry.PROGRAM_MANAGER_NAME,subqry.IIN_PARTNER_EXT, subqry.AMBIGUITY_PM_ID ")
+        .append(" from (select distinct cp.ID,cp.CARD_PROGRAM_NAME,cp.IIN,")
+        .append(" cp.IIN_EXT,cp.ISSUANCE_PARTNER_NAME,cp.CURRENCY,pm.PROGRAM_MANAGER_NAME,cp.IIN_PARTNER_EXT,pmiso.AMBIGUITY_PM_ID")
+        .append(" from PG_ISO_CARD_PROGRAM_MAPPING as pmiso")
+        .append(" right join PG_PROGRAM_MANAGER as pm on pmiso.AMBIGUITY_PM_ID = pm.ID")
+        .append(" left join PG_CARD_PROGRAM as cp on pmiso.CARD_PROGRAM_ID = cp.ID")
+        .append(" where pmiso.ISO_ID = :isoId )as subqry");
+		
+		Query selectedCardProgramQry = entityManager.createNativeQuery(selectedCardProgramQuery.toString());
+		selectedCardProgramQry.setParameter("isoId", isoId);
+        List<Object> cardProgramResponse1 = selectedCardProgramQry.getResultList();
+        if(StringUtil.isListNotNullNEmpty(cardProgramResponse1)){
+            Iterator<Object> itr = cardProgramResponse1.iterator();
+            setCardPrograms(selectedCardProgramList, itr,isoId);            
+        }
+        
+        Map<String, CardProgramRequest> masterCpMap = new HashMap<>();
+        for(CardProgramRequest masterCp : allCardProgramList){
+          masterCpMap.put(getKey(masterCp.getProgramManagerId(),masterCp), masterCp);
+        }
+        for(CardProgramRequest selectedCp : selectedCardProgramList){
+          if(masterCpMap.containsKey(getKey(selectedCp.getProgramManagerId(),selectedCp))){
+            CardProgramRequest cardProgram = masterCpMap.get(getKey(selectedCp.getProgramManagerId(),selectedCp));
+            if(selectedCp.getCardProgramId().equals(cardProgram.getCardProgramId()) 
+                // Compare the ambiguity ID
+                && (selectedCp.getProgramManagerId().equals(cardProgram.getProgramManagerId()))) {
+                // Set the card program as selected in the master card list
+                cardProgram.setSelected(true);
+            }
+          }
+        }
+        allCardProgramList = new ArrayList<>(masterCpMap.values());
+		return allCardProgramList;
 	}
+	
+	private String getKey(Long entityId, CardProgramRequest cardProgramRequest){
+	  return entityId+"_"+cardProgramRequest.getCardProgramId();
+	}
+	
+	private void setCardPrograms(List<CardProgramRequest> cardProgramList,Iterator<Object> itr,Long isoId) {
+      CardProgramRequest cardProgramRequest;
+      while(itr.hasNext()){
+          Object[] objs = (Object[]) itr.next();
+          cardProgramRequest= new CardProgramRequest();
+          cardProgramRequest.setCardProgramId(StringUtil.isNull(objs[0]) ? null : ((BigInteger) objs[0]).longValue());
+          cardProgramRequest.setCardProgramName(requestCardProgramName(objs));
+          cardProgramRequest.setIin(requestIin(objs));
+          cardProgramRequest.setIinExt(requestIinExt(objs));
+          cardProgramRequest.setPartnerName(StringUtil.isNull(objs[4]) ? null : ((String) objs[4]));
+          cardProgramRequest.setCurrency(StringUtil.isNull(objs[5]) ? null : ((String) objs[5]));
+          cardProgramRequest.setProgramManagerName(StringUtil.isNull(objs[6]) ? null : ((String) objs[6]));
+          cardProgramRequest.setPartnerCode(StringUtil.isNull(objs[7]) ? null : ((String)objs[7]));
+          cardProgramRequest.setProgramManagerId(StringUtil.isNull(objs[8]) ? null : ((BigInteger) objs[8]).longValue());
+          cardProgramRequest.setIsoId(isoId !=null ? isoId : null);
+          cardProgramList.add(cardProgramRequest);
+      }
+  }
 
 	/**
 	 * @param isoId
@@ -539,7 +570,7 @@ public class IsoServiceDaoImpl implements IsoServiceDao{
 	 */
 	@Override
 	public List<IsoRequest> getAllIso(IsoRequest isoRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceDaoImpl :: getAllIso");
 		List<IsoRequest> isoRequests = new ArrayList<>();
 	    JPAQuery query = new JPAQuery(entityManager);
 	    List<Iso> isos = query.from(QIso.iso)
@@ -551,12 +582,12 @@ public class IsoServiceDaoImpl implements IsoServiceDao{
 				isoRequests =
 				    CommonUtil.copyListBeanProperty(isos, IsoRequest.class);
 			} catch (InstantiationException e) {
-				LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "InstantiationException");
+				logger.error("Error :: IsoServiceDaoImpl :: getAllIso :: InstantiationException :: " + e.getMessage(), e);
 			} catch (IllegalAccessException e) {
-				LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "IllegalAccessException");
+			    logger.error("Error :: IsoServiceDaoImpl :: getAllIso :: IllegalAccessException :: " + e.getMessage(), e);
 			}
 	    }
-	    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	    logger.info("Exiting :: IsoServiceDaoImpl :: getAllIso");
 	    return isoRequests;
 	  }
 	
@@ -628,37 +659,86 @@ public class IsoServiceDaoImpl implements IsoServiceDao{
 	 * @return
 	 */
 	@Override
-	public MerchantResponse findByMerchantId(Long merchantId) {
+	public MerchantResponse findCardProgramByMerchantId(Long merchantId) {
 		MerchantResponse response = new MerchantResponse();
-		JPAQuery query = new JPAQuery(entityManager);
-		List<Tuple> tupleList = query
-				.from(QIso.iso, QCardProgram.cardProgram,
-						QPGMerchantCardProgramMap.pGMerchantCardProgramMap)
-				.where(QPGMerchantCardProgramMap.pGMerchantCardProgramMap.merchantId.eq(merchantId)
-						.and(QPGMerchantCardProgramMap.pGMerchantCardProgramMap.entityId
-								.eq(QIso.iso.id)).and(QPGMerchantCardProgramMap.pGMerchantCardProgramMap.cardProgramId.eq(QCardProgram.cardProgram.cardProgramId)))
-				.distinct().list(QIso.iso.id,
-						QCardProgram.cardProgram.cardProgramId, QCardProgram.cardProgram.cardProgramName,
-						QCardProgram.cardProgram.iin, QCardProgram.cardProgram.iinExt,
-						QCardProgram.cardProgram.partnerName, QCardProgram.cardProgram.partnerIINCode,QIso.iso.isoName,QIso.iso.id,QIso.iso.currency);
-		List<CardProgramRequest> requests = new ArrayList<>();
-		CardProgramRequest cardProgramRequest = null;
-		for (Tuple tuple : tupleList) {
-			cardProgramRequest = new CardProgramRequest();
-			cardProgramRequest.setIsoId(tuple.get(QIso.iso.id));
-			cardProgramRequest.setEntityName(tuple.get(QIso.iso.isoName));
-			cardProgramRequest.setCardProgramId(tuple.get(QCardProgram.cardProgram.cardProgramId));
-			cardProgramRequest.setPartnerName(tuple.get(QCardProgram.cardProgram.partnerName));
-			cardProgramRequest.setPartnerCode(tuple.get(QCardProgram.cardProgram.partnerIINCode));
-			cardProgramRequest.setCardProgramName(tuple.get(QCardProgram.cardProgram.cardProgramName));
-			cardProgramRequest.setIin(tuple.get(QCardProgram.cardProgram.iin));
-			cardProgramRequest.setIinExt((tuple.get(QCardProgram.cardProgram.iinExt)));
-			cardProgramRequest.setCurrency(tuple.get(QIso.iso.currency));
-			requests.add(cardProgramRequest);
-		}
-		response.setCardProgramRequests(requests);
+		List<CardProgramRequest> allCardProgramList = new ArrayList<>(0);
+        List<CardProgramRequest> selectedCardProgramList = new ArrayList<>(0);
+
+        StringBuilder query = new StringBuilder("select subqry.ID,subqry.CARD_PROGRAM_NAME,subqry.IIN,")
+        .append(" subqry.IIN_EXT,subqry.ISSUANCE_PARTNER_NAME, subqry.CURRENCY,")
+        .append(" subqry.ISO_NAME,subqry.IIN_PARTNER_EXT, subqry.ISO_ID ")
+        .append(" from (select distinct cp.ID,cp.CARD_PROGRAM_NAME,cp.IIN,")
+        .append(" cp.IIN_EXT,cp.ISSUANCE_PARTNER_NAME,cp.CURRENCY,iso.ISO_NAME,cp.IIN_PARTNER_EXT,isocp.ISO_ID")
+        .append(" from PG_MERCHANT_ENTITY_MAPPING as merchant_entity")
+        .append(" left join PG_ISO_CARD_PROGRAM_MAPPING as isocp on merchant_entity.ENTITY_ID =isocp.ISO_ID")
+        .append(" right join PG_ISO as iso on merchant_entity.ENTITY_ID = iso.ID")
+        .append(" left join PG_CARD_PROGRAM as cp on isocp.CARD_PROGRAM_ID = cp.ID")
+        .append(" where merchant_entity.MERCHANT_ID = :merchantId )as subqry");
+                              
+        Query allCardProgramQry = entityManager.createNativeQuery(query.toString());
+        allCardProgramQry.setParameter("merchantId", merchantId);
+        List<Object> cardProgramResponse = allCardProgramQry.getResultList();
+        if(StringUtil.isListNotNullNEmpty(cardProgramResponse)){
+            Iterator<Object> itr = cardProgramResponse.iterator();
+            setMerchantCardPrograms(allCardProgramList, itr);         
+        }
+        
+        //selected merchant-iso cp's
+        StringBuilder query1 = new StringBuilder("select subqry.ID,subqry.CARD_PROGRAM_NAME,subqry.IIN,")
+        .append(" subqry.IIN_EXT,subqry.ISSUANCE_PARTNER_NAME, subqry.CURRENCY,")
+        .append(" subqry.ISO_NAME,subqry.IIN_PARTNER_EXT, subqry.ENTITY_ID ")
+        .append(" from (select distinct cp.ID,cp.CARD_PROGRAM_NAME,cp.IIN,")
+        .append(" cp.IIN_EXT,cp.ISSUANCE_PARTNER_NAME,cp.CURRENCY,iso.ISO_NAME,cp.IIN_PARTNER_EXT,merchantCpMap.ENTITY_ID")
+        .append(" from PG_MERCHANT_CARD_PROGRAM_MAPPING as merchantCpMap")
+        .append(" right join PG_ISO as iso on merchantCpMap.ENTITY_ID = iso.ID")
+        .append(" left join PG_CARD_PROGRAM as cp on merchantCpMap.CARD_PROGRAM_ID = cp.ID")
+        .append(" where merchantCpMap.MERCHANT_ID = :merchantId )as subqry");
+        
+        Query selectedCardProgramQry = entityManager.createNativeQuery(query1.toString());
+        selectedCardProgramQry.setParameter("merchantId", merchantId);
+        List<Object> selectedCardProgramResponse = selectedCardProgramQry.getResultList();
+        if(StringUtil.isListNotNullNEmpty(selectedCardProgramResponse)){
+            Iterator<Object> itr = selectedCardProgramResponse.iterator();
+            setMerchantCardPrograms(selectedCardProgramList, itr);            
+        }
+        
+        Map<String, CardProgramRequest> masterCpMap = new HashMap<>();
+        for(CardProgramRequest masterCp : allCardProgramList){
+          masterCpMap.put(getKey(masterCp.getIsoId(),masterCp), masterCp);
+        }
+        for(CardProgramRequest selectedCp : selectedCardProgramList){
+          if(masterCpMap.containsKey(getKey(selectedCp.getIsoId(),selectedCp))){
+            CardProgramRequest cardProgram = masterCpMap.get(getKey(selectedCp.getIsoId(),selectedCp));
+            if(selectedCp.getCardProgramId().equals(cardProgram.getCardProgramId()) 
+                // Compare the ambiguity ID
+                && (selectedCp.getIsoId().equals(cardProgram.getIsoId()))) {
+                // Set the card program as selected in the master card list
+                cardProgram.setSelected(true);
+            }
+          }
+        }
+        allCardProgramList = new ArrayList<>(masterCpMap.values());
+		response.setCardProgramRequests(allCardProgramList);
 		return response;
 	}
+	
+	private void setMerchantCardPrograms(List<CardProgramRequest> cardProgramList,Iterator<Object> itr) {
+      CardProgramRequest cardProgramRequest;
+      while(itr.hasNext()){
+          Object[] objs = (Object[]) itr.next();
+          cardProgramRequest= new CardProgramRequest();
+          cardProgramRequest.setCardProgramId(StringUtil.isNull(objs[0]) ? null : ((BigInteger) objs[0]).longValue());
+          cardProgramRequest.setCardProgramName(requestCardProgramName(objs));
+          cardProgramRequest.setIin(requestIin(objs));
+          cardProgramRequest.setIinExt(requestIinExt(objs));
+          cardProgramRequest.setPartnerName(StringUtil.isNull(objs[4]) ? null : ((String) objs[4]));
+          cardProgramRequest.setCurrency(StringUtil.isNull(objs[5]) ? null : ((String) objs[5]));
+          cardProgramRequest.setEntityName(StringUtil.isNull(objs[6]) ? null : ((String) objs[6]));
+          cardProgramRequest.setPartnerCode(StringUtil.isNull(objs[7]) ? null : ((String)objs[7]));
+          cardProgramRequest.setIsoId(StringUtil.isNull(objs[8]) ? null : ((BigInteger) objs[8]).longValue());
+          cardProgramList.add(cardProgramRequest);
+      }
+  }
 
 	/**
 	 * @param merchantId
@@ -706,7 +786,7 @@ public class IsoServiceDaoImpl implements IsoServiceDao{
 			cardProgramRequest.setProgramManagerName(StringUtil.isNull(objs[1]) ? null : ((String) objs[1]));
 			cardProgramRequest.setCardProgramId(StringUtil.isNull(objs[2]) ? null : ((BigInteger) objs[2]).longValue());
 			cardProgramRequest.setCardProgramName(StringUtil.isNull(objs[3]) ? null : ((String) objs[3]));
-			cardProgramRequest.setIin(StringUtil.isNull(objs[4]) ? null : ((BigInteger) objs[4]).longValue());
+			cardProgramRequest.setIin(StringUtil.isNull(objs[4]) ? null : ((String) objs[4]));
 			cardProgramRequest.setIinExt(StringUtil.isNull(objs[5]) ? null : ((String)objs[5]));
 			cardProgramRequest.setPartnerCode(getCardProgramDetails(objs, Integer.parseInt("6")));
 			cardProgramRequest.setPartnerName(getCardProgramDetails(objs, Integer.parseInt("7")));
@@ -770,4 +850,18 @@ public class IsoServiceDaoImpl implements IsoServiceDao{
 		return programManagerRequestList;
 	}
 	
+	@Override
+    public Long findByIsoIdAndCardProgramId(Long isoId,Long cardProgramId) {
+        return isoCardProgramMapRepository.findByIsoIdAndCardProgramId(isoId,cardProgramId);
+    }
+	
+	@Override
+    public String findISOStatusById(Long isoId)  {
+        return isoRepository.findISOStatusById(isoId);
+    }
+	
+	@Override
+    public int updateISOStatusById(Long isoId, String reason, String updatedBy, Timestamp updatedDate, String status)  {
+        return isoRepository.updateISOStatusById(isoId, reason, updatedBy, updatedDate, status);
+    }
 }

@@ -31,6 +31,7 @@ public interface MerchantCardProgramMapRepository extends JpaRepository<PGMercha
 	@Query("delete from PGMerchantCardProgramMap merchantCpMap where merchantCpMap.merchantId = :merchantId")
 	public void deleteMerchantCpMapByMerchantId(@Param("merchantId")Long merchantId);
 	
-	public PGMerchantCardProgramMap findByMerchantIdAndCardProgramId(Long merchantId, Long cardProgramId);
+	@Query("select merchantCpMap from PGMerchantCardProgramMap merchantCpMap where merchantCpMap.merchantId = :merchantId and merchantCpMap.cardProgramId = :cardProgramId")
+	public PGMerchantCardProgramMap findByMerchantIdAndCardProgramId(@Param("merchantId") Long merchantId, @Param("cardProgramId") Long cardProgramId);
 	
 }

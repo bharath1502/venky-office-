@@ -37,6 +37,9 @@ public class CardProgram implements Serializable {
 
 	@Column(name = "ISSUANCE_CARD_PROGRAM_ID")
 	private Long issuanceCradProgramId;
+	
+	@Column(name = "ACQ_PM_ID")
+    private Long acquirerPmId;
 
 	@Column(name = "CARD_PROGRAM_NAME")
 	private String cardProgramName;
@@ -48,7 +51,7 @@ public class CardProgram implements Serializable {
 	private String partnerName;
 
 	@Column(name = "IIN")
-	private Long iin;
+	private String iin;
 
 	@Column(name = "IIN_EXT")
 	private String iinExt;
@@ -86,11 +89,11 @@ public class CardProgram implements Serializable {
 		return partnerId;
 	}
 
-	public Long getIin() {
+	public String getIin() {
 		return iin;
 	}
 
-	public void setIin(Long iin) {
+	public void setIin(String iin) {
 		this.iin = iin;
 	}
 
@@ -211,5 +214,19 @@ public class CardProgram implements Serializable {
 	public void setPartnerIINCode(String partnerIINCode) {
 		this.partnerIINCode = partnerIINCode;
 	}
+
+  /**
+   * @return the acquirerPmId
+   */
+  public Long getAcquirerPmId() {
+    return acquirerPmId;
+  }
+
+  /**
+   * @param acquirerPmId the acquirerPmId to set
+   */
+  public void setAcquirerPmId(Long acquirerPmId) {
+    this.acquirerPmId = acquirerPmId;
+  }
 
 }

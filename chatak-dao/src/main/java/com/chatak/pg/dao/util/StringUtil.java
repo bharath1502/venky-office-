@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 
 
@@ -291,7 +292,7 @@ public final class StringUtil {
     applicationClient.setStatus(0);
     applicationClient.setActiveFrom(new Timestamp(System.currentTimeMillis()));
     applicationClient.setActiveTill(new Timestamp(System.currentTimeMillis()));
-    applicationClient.setAppClientAccess(Constants.APP_CLIENT_ACCESS);
+    applicationClient.setAppClientAccess(Properties.getProperty("prepaid.mpos.oauth.clientAccess"));
     applicationClient.setAppAuthPass(StringUtils.randomNumeric(Integer.parseInt("12")));
     applicationClient.setCreatedBy(Constants.CREATED_BY);
     applicationClient.setCreatedDate(DateUtil.getCurrentTimestamp());

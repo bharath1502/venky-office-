@@ -672,7 +672,6 @@
 				document.getElementById("associatedID").innerHTML = "Associated with ISO Name";
 				document.getElementById("userType").innerHTML = "ISO Name";
 			}
-			fetchCardProgramByMerchantId($('#getMerchantId').val());
 			validateVirtualTerminal();
 			validateOnlineOptions();
 			$("#navListId6").addClass("active-background");

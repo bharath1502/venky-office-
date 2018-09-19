@@ -112,7 +112,15 @@
 							<td>${cardProgramDetail.iinExt}&nbsp;</td>
 							<td>${cardProgramDetail.entityName}&nbsp;</td>
 							<td>${cardProgramDetail.currency}&nbsp;</td>
+							<c:if test="${cardProgramDetail.selected eq true}">
 							<td><input id="cpId${cardProgramDetail.cardProgramId}" type="checkbox" checked="checked" onclick="addCardProgram('${cardProgramDetail.cardProgramId}')"></td>
+							<script>
+							setCardProgramId('${cardProgramDetail.cardProgramId}');
+							</script>												
+							</c:if>
+							<c:if test="${cardProgramDetail.selected eq false}">
+							<td><input id="cpId${cardProgramDetail.cardProgramId}" type="checkbox"  onclick="addCardProgram('${cardProgramDetail.cardProgramId}')"></td>												
+							</c:if>
 						</tr>
 					</c:forEach>
 				</c:when>

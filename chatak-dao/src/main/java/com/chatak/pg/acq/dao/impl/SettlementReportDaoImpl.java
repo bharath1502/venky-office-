@@ -4,7 +4,6 @@
 package com.chatak.pg.acq.dao.impl;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,15 +21,12 @@ import org.springframework.util.CollectionUtils;
 
 import com.chatak.pg.acq.dao.SettlementReportDao;
 import com.chatak.pg.acq.dao.model.PGSettlementReport;
-import com.chatak.pg.acq.dao.model.QIso;
 import com.chatak.pg.acq.dao.model.QPGAccount;
-import com.chatak.pg.acq.dao.model.QPGAccountTransactions;
 import com.chatak.pg.acq.dao.model.QPGBankCurrencyMapping;
 import com.chatak.pg.acq.dao.model.QPGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.model.QPGMerchantBank;
 import com.chatak.pg.acq.dao.model.QPGTransaction;
-import com.chatak.pg.acq.dao.model.QProgramManager;
 import com.chatak.pg.acq.dao.repository.SettlementRepository;
 import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.bean.settlement.SettlementMerchantDetails;
@@ -38,19 +34,13 @@ import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.EntryModePortalDisplayEnum;
-import com.chatak.pg.model.FeeReportDto;
 import com.chatak.pg.model.FeeReportRequest;
-import com.chatak.pg.model.FeeReportResponse;
-import com.chatak.pg.model.TransactionRequest;
-import com.chatak.pg.model.TransactionResponse;
 import com.chatak.pg.user.bean.GetBatchReportRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -477,11 +467,11 @@ public PGSettlementReport save(PGSettlementReport pgSettlementReport) {
  */
 	@Override
 	public List<SettlementEntity> getAllMatchedTxnsByPgTxns(FeeReportRequest transactionRequest) {
-		LogHelper.logEntry(log, LoggerMessage.getCallerName());
+	    log.info("Entering :: SettlementReportDaoImpl :: getAllMatchedTxnsByPgTxns");
 		List<SettlementEntity> settlementEntityList = new ArrayList<>();
 		String pgTxnIds = transactionRequest.getPgTxnIds().replaceAll("\\[", "").replaceAll("\\]","");
 		String[] txnIdsArr = pgTxnIds.split(",");
-		LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Pg Txn ids " + transactionRequest.getPgTxnIds());
+		log.info("Pg Txn ids " + transactionRequest.getPgTxnIds());
 		try {
 			StringBuilder matchedBuilder = new StringBuilder();
 			matchedBuilder.append("SELECT pgTxn.MERCHANT_ID,pgTxn.TERMINAL_ID,pgAccTxn.PG_TRANSACTION_ID,");
@@ -494,15 +484,15 @@ public PGSettlementReport save(PGSettlementReport pgSettlementReport) {
 			qry.setParameter("pmCode", AccountTransactionCode.CC_PM_FEE_CREDIT);
 			qry.setParameter("isoCode", AccountTransactionCode.CC_ISO_FEE_CREDIT);
 			List<Object> objectList = qry.getResultList();
-			LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Retrieved txns size" + objectList.size());
+			log.info("Retrieved txns size" + objectList.size());
 			if (StringUtil.isListNotNullNEmpty(objectList)) {
 				iterateFeeReportDetails(settlementEntityList, objectList);
 			}
 		} catch (Exception e) {
-			LogHelper.logError(log, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+		  log.error("Error :: SettlementReportDaoImpl :: getAllMatchedTxnsByPgTxns : " + e.getMessage(), e);
 		}
-		LogHelper.logInfo(log, LoggerMessage.getCallerName(), "settlementEntityList size: " + settlementEntityList.size());
-		LogHelper.logExit(log, LoggerMessage.getCallerName());
+		log.info("settlementEntityList size: " + settlementEntityList.size());
+		log.info("Entering :: SettlementReportDaoImpl :: getAllMatchedTxnsByPgTxns");
 		return settlementEntityList;
 	}
 

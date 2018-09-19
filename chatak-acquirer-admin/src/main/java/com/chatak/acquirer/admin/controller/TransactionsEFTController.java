@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.FormParam;
+
 import org.apache.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
@@ -46,8 +49,6 @@ import com.chatak.pg.user.bean.Response;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -317,7 +318,7 @@ public class TransactionsEFTController implements URLMappingConstants {
   public ModelAndView processSettlementAction(HttpServletRequest request,
       HttpServletResponse response, HttpSession session, SettlemetActionDTO actionDTO,
       BindingResult bindingResult, Map model) {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: TransactionsEFTController :: processSettlementAction");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE);
     String userName = (String)session.getAttribute(CHATAK_ADMIN_USER_NAME);
     try {
@@ -380,7 +381,7 @@ public class TransactionsEFTController implements URLMappingConstants {
   public ModelAndView processDashBoardSettlementAction(HttpServletRequest request,
       HttpServletResponse response, HttpSession session, SettlemetActionDTO actionDTO,
       BindingResult bindingResult, Map model) {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: TransactionsEFTController :: processDashBoardSettlementAction");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_DASH_BOARD_SEARCH_TRANSACTION_PAGE);
     try {
       String userName = (String)session.getAttribute(CHATAK_ADMIN_USER_NAME);
@@ -425,7 +426,7 @@ public class TransactionsEFTController implements URLMappingConstants {
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       modelAndView.addObject(Constants.SETTLEMENT_DTO, new SettlemetActionDTO());
     }
-    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+    logger.info("Exiting :: TransactionsEFTController :: processDashBoardSettlementAction");
     return modelAndView;
   }
 

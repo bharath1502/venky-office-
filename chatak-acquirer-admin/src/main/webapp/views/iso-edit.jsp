@@ -28,11 +28,13 @@
 	<script type="text/javascript">
 	var programManagerIdList = [];
 	var cardProgramIdList = [];
+	var selectedCpId = [];
 	function setProgramManagerId(pmId){
 		programManagerIdList.push(pmId);
 	}
-	function setCardProgramId(cpId){
-		cardProgramIdList.push(cpId);
+	function setCardProgramId(cpId,entityId){
+		cardProgramIdList.push(cpId+'@'+entityId);
+		selectedCpId.push(parseInt(cpId));
 	}
 	</script>
 </head>
@@ -233,9 +235,10 @@
 													<label><spring:message code="label.extension" /></label>
 													<form:input path="isoRequest[0].programManagerRequest.extension" maxlength="5"
 														cssClass="form-control" id="extension"
+														onblur="clientValidation('extension','extension_not_mandatory','extensionerr')"
 														onkeypress="return numbersonly(this, event);" />
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="extensionerr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -253,27 +256,27 @@
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="bank.label.bankname" /></label>
 													<form:input path="isoRequest[0].bankName"
-														cssClass="form-control" id="bankName" />
+														cssClass="form-control" id="bankName" onblur="clientValidation('bankName','companyname_not_mandatory','banknameerr')" />
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="banknameerr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="merchant.label.bankaccountnumber" /></label>
 													<form:input path="isoRequest[0].bankAccNum" 
 														cssClass="form-control" id="bankAccNum" maxlength="<%=Constants.BANK_ACCOUNT_NUMBER.toString()%>"
-														onkeypress="return numbersonly(this, event);" />
+														onkeypress="return numbersonly(this, event);" onblur="clientValidation('bankAccNum','bank_Code','bankaccerr')" />
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="bankaccerr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="merchant.label.bankroutingnumber" /></label>
 													<form:input path="isoRequest[0].routingNumber"
 														cssClass="form-control" id="routingNumber" maxlength="<%=Constants.ACCOUNT_ROUTING_NUMBER.toString()%>"
-														onkeypress="return numbersonly(this, event)"  />
+														onkeypress="return numbersonly(this, event)" onblur="clientValidation('routingNumber','bank_Code','routingNumbererr')"  />
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="routingNumbererr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -348,6 +351,10 @@
 								</tr>
 							</table>
 							<!-- Search Table Header End -->
+							<div class="discriptionErrorMsg" data-toggle="tooltip"
+								data-placement="top" title="">
+								<span id="ambiguityFlag" class="red-error">&nbsp;</span>
+							</div>
 							<!-- Search Table Content Start -->
 							<table id="serviceResults"
 								class="table table-striped table-bordered table-responsive table-condensed tablesorter marginBM1 common-table">
@@ -364,12 +371,9 @@
 									</tr>
 								</thead>
 								<c:choose>
-									<c:when test="${!(fn:length(selectedCardProgramList) eq 0) }">
-										<c:forEach items="${selectedCardProgramList}" var="cardProgramDetail">
-												<script>
-												setCardProgramId('${cardProgramDetail.cardProgramId}');
-												</script>
-												<tr id="rowId${cardProgramDetail.cardProgramId}">
+									<c:when test="${!(fn:length(cardProgramList) eq 0) }">
+										<c:forEach items="${cardProgramList}" var="cardProgramDetail">
+												<tr id="rowId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}">
 												<td  class="ellipsis"
 													id="15" >${cardProgramDetail.partnerName}&nbsp;</td>
 												<td  class="ellipsis"
@@ -379,7 +383,15 @@
 												<td >${cardProgramDetail.iinExt}&nbsp;</td>
 												<td>${cardProgramDetail.programManagerName}&nbsp;</td>
 												<td>${cardProgramDetail.currency}&nbsp;</td>
-												<td><input id="cpId${cardProgramDetail.cardProgramId}" type="checkbox" checked="checked" onclick="addCardProgram('${cardProgramDetail.cardProgramId}')"></td>
+												<c:if test="${cardProgramDetail.selected eq true}">
+												<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}" type="checkbox" checked="checked" onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.programManagerId}')"></td>
+												<script>
+												setCardProgramId('${cardProgramDetail.cardProgramId}','${cardProgramDetail.programManagerId}');
+												</script>												
+												</c:if>
+												<c:if test="${cardProgramDetail.selected eq false}">
+												<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}" type="checkbox"  onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.programManagerId}')"></td>												
+												</c:if>
 											</tr>
 										</c:forEach>
 									</c:when>
@@ -448,7 +460,6 @@
 	<script src="../js/bank.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
-		<script src="../js/multi-select.js"></script>
 	<script>
 		/* Select li full area function Start */
 		$("li").click(function() {
@@ -565,21 +576,26 @@
 			}
 		}
 		/* Select Services moving form Left to Right and Right to Left functionality End */
-		function addCardProgram(cardProgramId){
+		function addCardProgram(cardProgramId,entityId){
 			var tempCardProgramIds = [];
 			var j=0;
-			var selectedId = 'cpId' + cardProgramId;
+			var selectedId = 'cpId' + cardProgramId + entityId;
 			
 			if($('#' + selectedId).is(":checked")){
-				cardProgramIdList.push(cardProgramId);				
+				cardProgramIdList.push(cardProgramId+'@'+entityId);
+				selectedCpId.push(parseInt(cardProgramId));
 			}else if(!($('#' + selectedId).is(":checked"))){
 				for(var i=0; i < cardProgramIdList.length; i++){
-					if(cardProgramIdList[i] != cardProgramId){
+					if(cardProgramIdList[i] != cardProgramId+'@'+entityId){
 						tempCardProgramIds[j] = cardProgramIdList[i];
 						j++;
 					}
 				}
-				cardProgramIdList = tempCardProgramIds;			
+				cardProgramIdList = tempCardProgramIds;
+				var index = selectedCpId.indexOf(parseInt(cardProgramId));
+				if (index > -1) {
+					selectedCpId.splice(index, 1);
+				}
 			}
 		}
 		
@@ -589,20 +605,50 @@
 			//set selected card pogram ids
 			$('#cardProgramIds').val(cardProgramIdList);
 		}
-		function doUnCheckedToCardProgram(cardProgramId){
+		function doUnCheckedToCardProgram(cardProgramId,entityId){
 			var tempCardProgramIds = [];
 			var j=0;
 			for(var i=0; i < cardProgramIdList.length; i++){
-				if(cardProgramIdList[i] != cardProgramId){
+				if(cardProgramIdList[i] != cardProgramId+'@'+entityId){
 					tempCardProgramIds[j] = cardProgramIdList[i];
 					j++;
 				}
 			}
 			cardProgramIdList = tempCardProgramIds;
+			var index = selectedCpId.indexOf(parseInt(cardProgramId));
+			if (index > -1) {
+				selectedCpId.splice(index, 1);
+			}
 		}
-		$(document).ready(function() {
-			fetchCardProgramByIso($('#isoId').val());
-		});
+		function checkAmbiguity() {
+			if (!validateSelectedCardProgram()) {
+				return false;
+			}
+			var sortedCardProgramIdList = selectedCpId.sort();
+			for (var i = 0; i < sortedCardProgramIdList.length; i++) {
+				for (var j = i + 1; j < sortedCardProgramIdList.length; j++) {
+					if (sortedCardProgramIdList[i] == sortedCardProgramIdList[j]) {
+						$('#ambiguityFlag').text(
+								webMessages.DUPLICATE_CARD_RPOGRAM);
+						return false;
+					}
+				}
+			}
+			$('#ambiguityFlag').text('');
+			return true;
+
+		}
+		function validateSelectedCardProgram() {
+			var selectedCardProgramIdList = selectedCpId;
+			if (selectedCardProgramIdList === undefined
+					|| selectedCardProgramIdList.length == 0) {
+				$('#ambiguityFlag').text(webMessages.SELECT_CARD_PROGRAM);
+				return false;
+			} else {
+				$('#ambiguityFlag').text(' ');
+				return true;
+			}
+		}
 		function closePopup(){
 			$('#LogoDiv').popup("hide");
 		}

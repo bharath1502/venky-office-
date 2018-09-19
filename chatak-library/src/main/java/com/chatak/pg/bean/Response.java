@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.chatak.pg.model.AgentDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @SuppressWarnings("rawtypes")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Response implements Serializable {
 
   /**

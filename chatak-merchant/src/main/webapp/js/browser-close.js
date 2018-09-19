@@ -37,15 +37,15 @@ window.addEventListener('focus', function () {
 window.addEventListener('blur', function () {
     hover = false;
 });
-
-window.onbeforeunload = function (e) {
+// commented for browser close issue #2817
+/*window.onbeforeunload = function (e) {
     if ((hover == false || spcKey == true) && contextMenu==false) {
         $.ajax({
         	type : 'GET',
 			url : 'logout'
         });
     }
-};
+};*/
 
 function goToLoginPage() {
     hover = true;

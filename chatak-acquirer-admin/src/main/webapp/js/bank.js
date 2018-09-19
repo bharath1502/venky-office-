@@ -104,7 +104,7 @@ function validContactPersonName() {
 
 function validContactPersonCell() {
 	var bankMobile = get('bankMobile').value.trim();
-	var spaceRegx = /^[a-zA-Z0-9]+(\s{0,1}[a-zA-Z0-9])*$/;
+	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
 
 	if (isEmpty(bankMobile)) {
 		setError(get('bankMobile'), webMessages.pleaseEnterContactMobileNumber);
@@ -124,7 +124,7 @@ function validContactPersonCell() {
 
 function validContactPersonPhone() {
 	var bankPhone = get('bankPhone').value.trim();
-	var spaceRegx = /^[a-zA-Z0-9]+(\s{0,1}[a-zA-Z0-9])*$/;
+	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
 
 	if (isEmpty(bankPhone)) {
 		setError(get('bankPhone'), webMessages.pleaseEnterContactPhoneNumber);
@@ -151,7 +151,7 @@ function validBankCode() {
 		loadMsgTitleText();
 		return false;
 	} else if (!spaceRegx.test(bankCode)) {
-		setError(get('bankCode'), webMessages.invalidBankCode);
+		setError(get('bankCode'), webMessages.PleaseEnterNumericsOnly);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -346,26 +346,7 @@ function resetBankSearch() {
 	return cancelCreateOrUpdateBank();
 }
 function openCancelConfirmationPopup() {
-
-	if ((isEmpty(get('bankName').value.trim()))
-			&& (isEmpty(get('settleAccountNo').value.trim()))
-			&& (isEmpty(get('routingNumber').value.trim()))
-			&& (isEmpty(get('bankCode').value.trim()))
-			&& (isEmpty(get('bankPhone').value.trim()))
-			&& (isEmpty(get('bank_Mobile').value.trim()))
-			&& (isEmpty(get('contactName').value.trim()))
-			&& (isEmpty(get('bankEmailId').value.trim()))
-			&& (isEmpty(get('address1').value.trim()))
-			&& (isEmpty(get('address2').value.trim()))
-			&& (isEmpty(get('city').value.trim()))
-			&& (isEmpty(get('state').value.trim()))
-			&& (isEmpty(get('zip').value.trim()))) {
-		window.location.href = 'bank-search';
-	}
-
-	else {
-		$('#my_popup1').popup("show");
-	}
+	$('#my_popup1').popup("show");
 }
 
 function closeCancelConfirmationPopup() {
@@ -408,8 +389,13 @@ function validateCurrency() {
 }
 function validSettlRoutingNumber() {
 	var settlRoutingNumber = getVal('settlRoutingNumber');
+	var spaceRegx = /^[a-zA-Z0-9]+(\s{0,1}[a-zA-Z0-9])*$/;
 	if (isEmpty(settlRoutingNumber)) {
 		setError(get('settlRoutingNumber'), webMessages.pleaseSelectSettlementRoutingNumber);
+		loadMsgTitleText();
+		return false;
+	}  else if (!spaceRegx.test(settlRoutingNumber)) {
+		setError(get('settlRoutingNumber'), webMessages.PleaseEnterNumericsOnly);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -420,8 +406,13 @@ function validSettlRoutingNumber() {
 }
 function validSettlAccountNumber() {
 	var settleAccountNo = getVal('settleAccountNo');
+	var spaceRegx = /^[a-zA-Z0-9]+(\s{0,1}[a-zA-Z0-9])*$/;
 	if (isEmpty(settleAccountNo)) {
 		setError(get('settleAccountNo'), webMessages.pleaseSelectSettlementAccountNumber);
+		loadMsgTitleText();
+		return false;
+	}else if (!spaceRegx.test(settleAccountNo)) {
+		setError(get('settleAccountNo'), webMessages.PleaseEnterNumericsOnly);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -473,4 +464,65 @@ function getPmStates(countryid, elementId) {
 		error : function(e) {
 		}
 	});
+}
+
+function fetchPmStateForEdit(countryid, elementId){
+	if (countryid == '') {
+		clearState(elementId);
+		return;
+	}
+	getPmStateForEdit(countryid, elementId);
+}
+
+function getPmStateForEdit(countryid, elementId) {
+	$.ajax({
+		type : "GET",
+		url : "getPMStatesByCountryId?countryid=" + countryid,
+		async : false,
+		success : function(response) {
+			var obj = JSON.parse(response);
+			if (obj.errorCode === '00') {
+				// remove the previous option from element
+				document.getElementById(elementId).options.length = 0;
+				// create select option
+				var selectOption = document.createElement("option");
+				selectOption.innerHTML = "..:Select:..";
+				selectOption.value = "";
+				$(("#" + elementId)).append(selectOption);
+
+				if (obj.errorMessage == "SUCCESS") {
+					var data = obj.responseList;
+
+					for (var i = 0; i < data.length; i++) {
+						var state = data[i].label;
+
+						var newOption = document.createElement("option");
+						newOption.value = data[i].value;
+						newOption.innerHTML = data[i].value;
+
+						$(("#" + elementId)).append(newOption);
+					}
+				}
+			}
+		},
+		error : function(e) {
+		}
+	});
+}
+
+function validateSpecialCharactersBank() {
+	if (!clientValidation('bankName','companyname_not_mandatory','bankNameEr')
+			| !clientValidation('bankCode','bank_Code','bankCodeEr')
+			| !clientValidation('bankEmailId','email_Id','bankEmailIdEr')) {
+		return false;
+	}
+	return true;
+}
+
+function validateSpecialCharactersBankCreate() {
+	if (!clientValidation('bankFax','fax','bankFaxEr')
+			| !clientValidation('extension','extension_not_mandatory','extensionEr')) {
+		return false;
+	}
+	return true;
 }

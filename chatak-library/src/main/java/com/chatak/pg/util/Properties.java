@@ -10,9 +10,6 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
  */
 public final class Properties extends PropertyPlaceholderConfigurer {
 
-  // Property key for propsExported
-  private static java.util.Properties propsExported = new java.util.Properties();
-
   /*
    * (non-Javadoc)
    * @see
@@ -21,8 +18,9 @@ public final class Properties extends PropertyPlaceholderConfigurer {
    */
   @Override
   public java.util.Properties mergeProperties() throws IOException {
-	  propsExported =  super.mergeProperties();
-	  return propsExported;
+    java.util.Properties prop = super.mergeProperties();
+    PropertiesContainer.getInstance().setPropsExported(prop);
+    return prop;
   }
 
   /**
@@ -32,7 +30,7 @@ public final class Properties extends PropertyPlaceholderConfigurer {
    * @return
    */
   public static String getProperty(final String key) {
-    String value = propsExported.getProperty(key);
+    String value = PropertiesContainer.getInstance().getPropsExported().getProperty(key);
     return ((value == null) ? "" : value);
   }
   
@@ -44,12 +42,11 @@ public final class Properties extends PropertyPlaceholderConfigurer {
    * @return
    */
   public static String getProperty(final String key, final String defaultValue) {
-    String value = propsExported.getProperty(key);
+    String value = PropertiesContainer.getInstance().getPropsExported().getProperty(key);
     return ((value == null) ? defaultValue : value);
   }
-  
 
-public static void mergeProperties(java.util.Properties propsExportedLocal) {
-    propsExported = propsExportedLocal;
+  public static void mergeProperties(java.util.Properties propsExportedLocal) {
+    PropertiesContainer.getInstance().setPropsExported(propsExportedLocal);
   }
 }

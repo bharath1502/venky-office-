@@ -64,7 +64,7 @@
 								<div class="col-xs-12">
 									<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
 										<span class="red-error">&nbsp;${error }</span> 
-										<span class="green-error">&nbsp;${sucess }</span> 
+										<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span> 
 									</div>
 								</div>
 								<form:form action="transactions-search" name="resubmitForm" method="get"></form:form>
@@ -106,25 +106,25 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.TxnID" /></label> 
 													<form:input path="transactionId" id="transactionId" onkeypress="return amountValidate(this,event)"
-														cssClass="form-control" />
+														cssClass="form-control" onblur="clientValidation('transactionId','bank_Code','transactionIdEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="transactionIdEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.processortxnID" /></label>
 													<form:input path="processCode" id="processCode"
-														cssClass="form-control" />
+														cssClass="form-control" onblur="clientValidation('processCode','mobile_optional','processCodeEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="processCodeEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.merchantcode" /></label>
 													<form:input path="merchant_code" id="merchantCode"  onkeypress="return numbersonly(this,event)"
-														cssClass="form-control" />
+														cssClass="form-control" onblur="clientValidation('merchantCode','merchant_ID','merchantCodeError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="merchantCodeError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -162,17 +162,17 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.fromAmtrange" /></label>
 													<form:input path="fromAmtRange" id="fromAmtRange"  maxlength="10"
-														cssClass="form-control alignright" onkeypress="return numbersonly(this,event)"/>
+														cssClass="form-control alignright" onkeypress="return numbersonly(this,event)" onblur="clientValidation('fromAmtRange','amount_False','fromAmtRangeEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="fromAmtRangeEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.toAmtrange" /></label>
 													<form:input path="toAmtRange" cssClass="form-control alignright"  maxlength="10"
-														id="toAmtRange" onkeypress="return numbersonly(this,event)"/>
+														id="toAmtRange" onkeypress="return numbersonly(this,event)" onblur="clientValidation('toAmtRange','amount_False','toAmtRangeEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="toAmtRangeEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -220,7 +220,7 @@
 										<div class="col-sm-12 form-action-buttons">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<input type="submit" class="form-control button pull-right" onclick="return validateCardNum();"
+												<input type="submit" class="form-control button pull-right" onclick="return searchValidationForTransactions();validateCardNum();"
 													value="<spring:message code="reports.label.searchbutton" />"> <input type="button"
 													class="form-control button pull-right" value="<spring:message code="reports.label.resetbutton" />"
 													onclick="resetAll()">
@@ -293,7 +293,7 @@
 										<th style="width: 40px;"><spring:message code="currency-search-page.label.currency"/></th>
 										<th style="width: 40px;"><spring:message code="transaction-file-exportutil-totaltxnamt"/></th>
 										<th style="width: 50px;"><spring:message code="reports.label.transactions.txntype"/></th>
-										<th style="width: 50px;"><spring:message code="reports.label.transactions.status" /></th>
+										<th style="width: 50px;"><spring:message code="reports.label.transactions.txnstatus" /></th>
 										<th style="width: 10px;" class="sorter-false tablesorter-header tablesorter-headerUnSorted"><input type="checkbox" id="selectall"/><spring:message code="reports.label.transactions.bulkupdate" /></th>
 										<th class="sorter-false tablesorter-header tablesorter-headerUnSorted"><spring:message code="common.label.action"/></th>
 									</tr>
@@ -325,7 +325,7 @@
 															<td style="width: 10px;">${transaction.batchId}</td>
 															<td class="alignright" style="width: 10px;">${transaction.maskCardNumber}</td>
 															<td class="alignright" style="width: 10px;">${transaction.localCurrency}</td>
-							                      			<td class="alignright" style="width: 10px;">${transaction.txn_total_amount}</td>
+							                      			<td class="alignright" style="width: 10px;"><fmt:formatNumber value="${transaction.transactionAmount}"/></td>
 							                      			<td class="alignleft" style="width: 10px;">${fn:toUpperCase(transaction.transaction_type) }</td>
 												             <td>${transaction.merchantSettlementStatus }</td>
 							                      			<c:choose>
@@ -494,7 +494,7 @@
 		<!--Container block End -->
 	</div>
 	<!--Body Wrapper block End -->
-
+	<script src="../js/validation.js"></script>
 	<script src="../js/transactions.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->

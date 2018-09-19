@@ -105,7 +105,7 @@
 								<th style="width: 150px;"><spring:message code="bank.label.bankname"/></th>
 								<th style="width: 150px;"><spring:message code="merchant.label.bankaccountnumber"/></th>
 								<th style="width: 150px;"><spring:message code="merchant.label.bankroutingnumber"/></th>
-								<th style="width: 150px;"><spring:message code="home.label.grossamount"/>(${currency})</th>
+								<th style="width: 150px;"><spring:message code="home.label.grossamount"/>(${isoRevenueCurrency})</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -212,7 +212,7 @@
 										<div class="col-sm-7">
 											<input type="submit" class="form-control button pull-right" onclick="return setTimeZone()"
 												value="<spring:message code="admin.label.confirm"/>"  >
-												<!-- onclick=" return executeSettlement() -->">
+												<!-- onclick=" return executeSettlement() -->
 											<input type="button" class="form-control button pull-right"
 												value="<spring:message code="reports.label.cancelbutton"/>"
 												onclick="showSettlementPage()">
@@ -240,8 +240,6 @@
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/sorting.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/bank.js"></script>
 	<script src="../js/validation.js"></script>

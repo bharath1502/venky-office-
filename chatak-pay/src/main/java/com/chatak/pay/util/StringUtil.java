@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.chatak.pay.constants.Constant;
 import com.chatak.pay.exception.ChatakPayException;
@@ -33,7 +34,7 @@ import com.chatak.pg.util.Properties;
  */
 public final class StringUtil {
 
-  private static Logger logger = Logger.getLogger(StringUtil.class);
+  private static Logger logger = LogManager.getLogger(StringUtil.class);
 
   private static final String TOKEN_DELIMITER = "@K@";
 

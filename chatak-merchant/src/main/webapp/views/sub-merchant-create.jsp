@@ -155,7 +155,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.fax"/></label>
 														<form:input cssClass="form-control" path="fax" id="fax" onkeypress="return amountValidate(this,event)"
-															maxlength="13"  onblur="this.value=this.value.trim();"/><%-- onblur="validateFax()" --%>
+															maxlength="13"  onblur="this.value=this.value.trim();clientValidation('fax','fax','faxEr')"/><%-- onblur="validateFax()" --%>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="faxEr" class="red-error">&nbsp;</span>
 														</div>
@@ -180,7 +180,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address2"/></label>
 														<form:input cssClass="form-control" path="address2"
-															id="address2" maxlength="50" onblur="this.value=this.value.trim();validateAddress2()" />
+															id="address2" maxlength="50" onblur="this.value=this.value.trim();validateAddress2();clientValidation('address2','address2','address2Er')" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="address2Er" class="red-error">&nbsp;</span>
 														</div>
@@ -222,7 +222,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.zipcode"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="pin" id="pin" onkeypress ="generalZipCode()"
-															maxlength="7" onblur="this.value=this.value.trim();return zipCodeNotEmpty(id)" />
+															maxlength="7" onblur="this.value=this.value.trim();return zipCodeNotEmpty(id);" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="pinEr" class="red-error">&nbsp;</span>
 														</div>
@@ -342,7 +342,7 @@
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
 														<input type="button"
-															class="form-control button pull-right acc-next"
+															class="form-control button pull-right acc-next" onclick="createValidationForMerchant()"
 															value="<spring:message code="sub-merchant-create.label.continue"></spring:message>"> <input
 															type="button"
 															class="form-control button pull-right marginL10"
@@ -416,7 +416,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.city"></spring:message></label>
 														<form:input cssClass="form-control" path="bankCity" id="bankCity" maxlength="50" 
-														onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');"  onkeydown="validateSpace(this)"/>
+														onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_city_id','bankCityErrorDiv');"  onkeydown="validateSpace(this)"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankCityErrorDiv" class="red-error">&nbsp;</span>
 														</div>
@@ -477,7 +477,7 @@
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-8 pull-right">
 														<input type="button"
-															class="form-control button pull-right bank-next" onclick="zipCodeNotEmpty('bankPin')"
+															class="form-control button pull-right bank-next" onclick="createValidationStep2()"
 															value="<spring:message code="sub-merchant-create.label.continue"></spring:message>"> <input type="button"
 															class="form-control button pull-right marginL10 bank-prev"
 															value="<spring:message code="sub-merchant-create.label.previous"></spring:message>"> <input type="button"

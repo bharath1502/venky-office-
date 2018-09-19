@@ -40,8 +40,6 @@ import com.chatak.pg.model.RolesFeatureMappingDTO;
 import com.chatak.pg.model.UserRoleDTO;
 import com.chatak.pg.model.UserRolesDTO;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 
@@ -445,7 +443,7 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	public FeatureResponse getFeatureDataByIds(List<Long> featureIds) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+	  logger.info("Entering :: RoleServiceImpl :: getFeatureDataByIds");
 		FeatureResponse response = new FeatureResponse();
 		List<FeatureDTO> featureDTOs = new ArrayList<>();
 		List<PGFeature> pgFeature = roleDao.getFeatureDataByIds(featureIds);
@@ -453,7 +451,7 @@ public class RoleServiceImpl implements RoleService {
 			featureDTOs = CommonUtil.copyListBeanProperty(pgFeature, FeatureDTO.class);
 		}
 		response.setFeatureDTO(featureDTOs);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: RoleServiceImpl :: getFeatureDataByIds");
 		return response;
 	}
 }

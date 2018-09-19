@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,9 +82,9 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
 
   @Override
   public Integer getRefundStatus(String pgTransactionId) {
-    List<PGTransaction> pgTransactionList =
+    PGTransaction pgTransaction =
         transactionRepository.findByTransactionId(pgTransactionId);
-    return pgTransactionList.get(0).getRefundStatus();
+    return pgTransaction.getRefundStatus();
   }
 
   @Override
@@ -101,12 +102,10 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
   @Override
   public PGTransaction getTransactionForVoidOrRefundByAccountTransactionId(
       String accountTransactionId, String merchantCode) {
-    List<PGTransaction> list = null;
     String pgTransactionId =
         accountTransactionsDao.getSaleAccountTransactionId(accountTransactionId, merchantCode);
     if (null != pgTransactionId) {
-      list = transactionRepository.findByTransactionId(pgTransactionId);
-      return CommonUtil.isListNotNullAndEmpty(list) ? list.get(0) : null;
+    	return transactionRepository.findByTransactionId(pgTransactionId);
     }
     return null;
   }
@@ -542,7 +541,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
       merchantList.add(getTransactionsListRequest.getMerchant_code());
     }
     JPAQuery query = new JPAQuery(entityManager);
-    List<Long> list =
+    List<BigInteger> list =
         query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount)
             .where(isMerchantIdorParentMerchantId(merchantList),
                 isTxnId(getTransactionsListRequest.getTransactionId()),
@@ -614,11 +613,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
 
   @Override
   public PGTransaction getTransactionOnId(String id) {
-    List<PGTransaction> list = transactionRepository.findByTransactionId(id);
-    if (StringUtil.isListNotNullNEmpty(list)) {
-      return list.get(0);
-    }
-    return null;
+	  return transactionRepository.findByTransactionId(id);
   }
   
   protected BooleanExpression isMerchantIdorParentMerchantId(List<String> merchantCodeList) {

@@ -93,7 +93,7 @@
 										<input type="button" class="form-control button login-main-button" value='<spring:message code="common.label.cancel"/>' onclick="cancelNewUserChangePassword('${forgotPasswordRequest.isNewUser}')">
 									</div>
 									<div class="col-sm-2">
-										<input type="submit" class="form-control button login-main-button" value="Submit" onclick="return trimUserPassword();validSubmit()">
+										<input type="submit" class="form-control button login-main-button" value="Submit" onclick="return validSubmit();return trimUserPassword()">
 									</div>	
 									<div class="col-sm-3"></div>
 								</div>

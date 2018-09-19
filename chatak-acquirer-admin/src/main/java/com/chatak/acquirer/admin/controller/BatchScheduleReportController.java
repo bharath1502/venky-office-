@@ -151,7 +151,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
     
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
-    if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_UNBLOCKUSERS_FEATURE_ID)) {
+    if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_FUNDING_REPORT_FEATURE_ID)) {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
@@ -172,7 +172,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
-    if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_UNBLOCKUSERS_FEATURE_ID)) {
+    if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_FUNDING_REPORT_FEATURE_ID)) {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
@@ -183,8 +183,14 @@ public class BatchScheduleReportController implements URLMappingConstants {
     session.setAttribute(Constants.DAILY_FUNDING_REQUEST_OBJECT, dailyFundingReport);
     dailyFundingReport.setPageIndex(Constants.ONE);
     dailyFundingReport.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
+    String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
     List<DailyFundingReport> list = new ArrayList<>();
     try {
+    	if(userType.equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+    		Long pmId= (Long)session.getAttribute(Constants.LOGIN_USER_ID);
+    		dailyFundingReport.setId(pmId);
+    	}
+    	
       GetDailyFundingReportResponse getReportResponse =
           batchSchedularService.searchDailyFundingReportDetails(dailyFundingReport);
       if (getReportResponse.getDailyFundingReport() != null

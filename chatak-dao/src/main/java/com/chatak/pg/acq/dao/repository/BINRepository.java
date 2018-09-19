@@ -32,7 +32,6 @@ public interface BINRepository extends JpaRepository<PGBINRange, Long>, QueryDsl
   
   public PGBINRange findByBin(Long bin);  
   
- 
-  
-
+  @Query("select bin from PGBINRange t where t.status=0")
+  public List<Long> getActiveBins();
 }

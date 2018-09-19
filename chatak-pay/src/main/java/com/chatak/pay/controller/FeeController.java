@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -47,7 +48,7 @@ import com.chatak.pg.util.Constants;
  
 public class FeeController implements URLMappingConstants, Constant {
 
-  private Logger logger = Logger.getLogger(FeeController.class);
+  private static Logger logger = LogManager.getLogger(FeeController.class);
   
   @Autowired
   private MessageSource messageSource;

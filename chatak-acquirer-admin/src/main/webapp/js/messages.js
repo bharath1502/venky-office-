@@ -1,4 +1,4 @@
-C_MERCHANT_MSG = {
+var C_MERCHANT_MSG = {
 	en : {
 		loginUsername : "Please Enter UserName",
 		loginPassword : "Please Enter Password",
@@ -97,7 +97,7 @@ C_MERCHANT_MSG = {
 		virtualTerminalNumericUpto16 : "Should be numeric and 4-16 digit",
 		virtualTerminalTransactionId : "Please enter Transaction ID",
 		virtualTerminalCardNumber : "Please enter Card Number",
-		virtualTerminalNumericUpto19 : "Should be numeric and 16-19 digit",
+		virtualTerminalNumericUpto19 : "Should be numeric and 19 digit",
 		virtualTerminalNotEmpty : "Should not be empty",
 		virtualTerminalCV2 : "Please enter CV2",
 		virtualTerminalInvalidCV2 : "Invalid CV2",
@@ -106,6 +106,7 @@ C_MERCHANT_MSG = {
 		virtualTerminalAmount : "Please enter Amount",
 		virtualTerminalValidData : "Please Enter Valid Text For Reason",
 		virtualTerminalStreet : "Please enter Street",
+		invalidStreet : "Invalid Street",
 		virtualTerminalZipCode : "Please enter Zip Code",
 		virtualTerminalAlphaNumericUpto8 : "Should be alpha-numeric and 3-8 digit",
 		virtualTerminalCity : "Please enter City",
@@ -132,6 +133,7 @@ C_MERCHANT_MSG = {
 		pleaseSelectCountry : "Please select Country",
 		pleaseEnterCity : "Please enter City",
 		invalidCity : "Invalid City",
+		invalidState: "Invalid State",
 		pleaseSelectState : "Please select State",
 		pleaseEnterZipCode : "Please Enter Zip Code",
 		invalidZipCode : "Invalid Zip Code",
@@ -248,7 +250,7 @@ C_MERCHANT_MSG = {
 		invalidVantivMerchantId : "Invalid Vantiv Merchant Id",
 		pleaseSelectatleastoneVirtualTerminal : "Please select atleast one Virtual Terminal",
 		pleaseEnterUserName : "Please enter User Name ",
-		canContainAlphanumerics : "*Can contain 8-16 alphanumerics*",
+		canContainAlphanumerics : "*Can contain 6-16 alphanumerics*",
 		userNamenotAvailable : "User Name not available",
 		invalidLength : "Invalid length",
 		shouldContainonlyNumeric : "Should contain only numeric",
@@ -295,7 +297,7 @@ C_MERCHANT_MSG = {
 		// validatecurrencysymbol:"Please Enter Valide Currency Symbol",
 		// validatecurrenctexport:"Please Enter valide Currency Export",
 		pressOktoconfirmdeletion : "Press Ok to confirm deletion",
-		provideonlycommaordecemal : "Provide Only ( . , ' ) ",
+		provideonlycommaordecemal : "Provide Only ( . ,) ",
 		providecurrencycode : "Provide 3 Digit Currency Code ",
 		providecurrencyalphcode : "Provide 3 Character Currency Code Alpha",
 		providebetweenzerotofour : "Provide value Between 0-4",
@@ -361,7 +363,9 @@ C_MERCHANT_MSG = {
 		SELECT_ISO : "Please select ISO",
 		Select : '..:Select:..',
 		RIGHT_CLICK_NOT_ALLOWED : "Right click is not allowed",
-		shouldContainNumericAndAlphabets : "Should contain numeric and alpbhabets"
+		shouldContainNumericAndAlphabets : "Should contain numeric and alpbhabets",
+		maximumownloadLimit : "Max of 5000 records can be downloaded. Please contact system support for more records.",
+		address_should_contains_message : 'Only # , . / and alphanumerics are allowed'
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",
@@ -461,7 +465,7 @@ C_MERCHANT_MSG = {
 		virtualTerminalNumericUpto16 : "Debe ser numérico y entre 4-16 dígitos",
 		virtualTerminalTransactionId : "Por favor, Introduzca el ID de transacción",
 		virtualTerminalCardNumber : "Por favor, introduzca Número de tarjeta",
-		virtualTerminalNumericUpto19 : "Debe ser numérico de 16-19 dígitos",
+		virtualTerminalNumericUpto19 : "Debe ser numérico de 19 dígitos",
 		virtualTerminalNotEmpty : "No debería estar vacío",
 		virtualTerminalCV2 : "Por favor, introduzca Codigo de verificación de la tarjeta (reverso)",
 		virtualTerminalInvalidCV2 : "Codigo verificación de la tarjeta inválido",
@@ -470,6 +474,7 @@ C_MERCHANT_MSG = {
 		virtualTerminalAmount : "Por favor, Ingrese monto",
 		virtualTerminalValidData : "Ingrese datos válidos",
 		virtualTerminalStreet : "Por favor, introduzca la calle",
+		invalidStreet : "Calle inválida",
 		virtualTerminalZipCode : "Por favor, introduzca el código postal",
 		virtualTerminalAlphaNumericUpto8 : "Debe ser alfanumérico y de 3 a 8 dígitos",
 		virtualTerminalCity : "Por favor, Ingrese la ciudad",
@@ -499,6 +504,7 @@ C_MERCHANT_MSG = {
 		pleaseSelectCountry : "Por favor, seleccione País",
 		pleaseEnterCity : "Por favor, introduzca la ciudad",
 		invalidCity : "Ciudad inválida",
+		invalidState: "Estado Inválida",
 		pleaseSelectState : "Por favor, Seleccione Estado",
 		pleaseEnterZipCode : "Por favor, introduzca el código postal",
 		invalidZipCode : "Código postal inválido",
@@ -614,7 +620,7 @@ C_MERCHANT_MSG = {
 		invalidVantivMerchantId : "Identificación de comerciante de Vantiv inválido",
 		pleaseSelectatleastoneVirtualTerminal : "Por favor, Seleccione al menos un terminal virtual",
 		pleaseEnterUserName : "Por favor, Ingrese el nombre de usuario",
-		canContainAlphanumerics : "*Puede contener 8-16 caracteres alfanuméricos*",
+		canContainAlphanumerics : "*Puede contener 6-16 caracteres alfanuméricos*",
 		userNamenotAvailable : "Nombre de usuario no disponible",
 		invalidLength : "Longitud inválida",
 		shouldContainonlyNumeric : "Deben contener sólo números",
@@ -661,7 +667,7 @@ C_MERCHANT_MSG = {
 		// validatecurrencysymbol:"Introduzca el símbolo de moneda válida",
 		// validatecurrenctexport:"Introduzca una moneda válida Exportar",
 		pressOktoconfirmdeletion : "Pulse Ok para confirmar la eliminación",
-		provideonlycommaordecemal : "Proporcionar sólo ( . , ' )",
+		provideonlycommaordecemal : "Proporcionar sólo ( . , )",
 		providecurrencycode : "Proporcionar código de moneda de 3 dígitos",
 		providecurrencyalphcode : "Proporcionar 3 caracteres Código de moneda Alfa",
 		providebetweenzerotofour : "Proporcionar valor Entre 0-4",
@@ -727,7 +733,9 @@ C_MERCHANT_MSG = {
 		SELECT_ISO : "Seleccione ISO",
 		Select : '..:Seleccionar:..',
 		RIGHT_CLICK_NOT_ALLOWED : "Clic derecho no está permitido.",
-		shouldContainNumericAndAlphabets : "Debe contener numérico y alpbhabets"
+		shouldContainNumericAndAlphabets : "Debe contener numérico y alpbhabets",
+		maximumownloadLimit : "Se puede descargar un máximo de 5000 registros. Por favor, póngase en contacto con el soporte del sistema para obtener más registros.",
+		address_should_contains_message : 'Solamente # , . / y alfanuméricos están permitidos',
 	}
 };
 

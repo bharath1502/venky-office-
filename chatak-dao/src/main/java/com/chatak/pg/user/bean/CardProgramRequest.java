@@ -94,7 +94,7 @@ public class CardProgramRequest extends Response implements Serializable {
 	
 	private String createdBy;
 	
-	private Long iin;
+	private String iin;
 	
 	private String iinExt;
 	
@@ -102,7 +102,7 @@ public class CardProgramRequest extends Response implements Serializable {
 	
 	private String currency;
 	
-	private Long partnerIINCode;	
+	private String partnerIINCode;	
 		
 	private String isoName;
 	
@@ -110,11 +110,13 @@ public class CardProgramRequest extends Response implements Serializable {
 	
 	private String partnerCode;
 	
-	public Long getPartnerIINCode() {
+	private boolean selected=false;
+	
+	public String getPartnerIINCode() {
 		return partnerIINCode;
 	}
 
-	public void setPartnerIINCode(Long partnerIINCode) {
+	public void setPartnerIINCode(String partnerIINCode) {
 		this.partnerIINCode = partnerIINCode;
 	}
 
@@ -485,14 +487,14 @@ public class CardProgramRequest extends Response implements Serializable {
 	/**
 	 * @return the iin
 	 */
-	public Long getIin() {
+	public String getIin() {
 		return iin;
 	}
 
 	/**
 	 * @param iin the iin to set
 	 */
-	public void setIin(Long iin) {
+	public void setIin(String iin) {
 		this.iin = iin;
 	}
 
@@ -574,5 +576,19 @@ public class CardProgramRequest extends Response implements Serializable {
 	public void setEntityName(String entityName) {
 		this.entityName = entityName;
 	}
+
+  /**
+   * @return the selected
+   */
+  public boolean isSelected() {
+    return selected;
+  }
+
+  /**
+   * @param selected the selected to set
+   */
+  public void setSelected(boolean selected) {
+    this.selected = selected;
+  }
 }
 

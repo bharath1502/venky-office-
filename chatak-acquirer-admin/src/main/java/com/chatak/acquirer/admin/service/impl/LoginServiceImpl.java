@@ -152,20 +152,19 @@ public class LoginServiceImpl implements LoginService {
 
 	private void setLoginResponse(LoginResponse loginResponse, PGAdminUser adminUser)
 			throws InstantiationException, IllegalAccessException {
-		if (adminUser != null && adminUser.getEmailVerified().equals(Constants.ONE)) {
-
-			if (adminUser.getStatus() == PGConstants.STATUS_SUCCESS) {
+		if (adminUser != null && adminUser.getStatus() == PGConstants.STATUS_SUCCESS) {
+			if (adminUser.getEmailVerified().equals(Constants.ONE)) {
 				long currentPassCreateOrModifiedDateTimeMillis = 0;
 				currentPassCreateOrModifiedDateTimeMillis = getAdminUser(adminUser);
 				long currDateTimeMillis = new Timestamp(System.currentTimeMillis()).getTime();
 				processLoginResponse(loginResponse, adminUser, currentPassCreateOrModifiedDateTimeMillis, currDateTimeMillis);
-			} else {
-				loginResponse.setStatus(false);
-				loginResponse.setMessage(Properties.getProperty("admin.service.login.inactive.error.message"));
+			}  else if (adminUser.getEmailVerified().equals(Constants.ZERO)) {
+				loginResponse.setUserType(PGConstants.NEW_USER);
+				loginResponse.setUserId(adminUser.getAdminUserId());
 			}
-		} else if (adminUser != null && adminUser.getEmailVerified().equals(Constants.ZERO)) {
-			loginResponse.setUserType(PGConstants.NEW_USER);
-			loginResponse.setUserId(adminUser.getAdminUserId());
+		} else {
+			loginResponse.setStatus(false);
+			loginResponse.setMessage(Properties.getProperty("admin.service.login.inactive.error.message"));
 		}
 	}
 

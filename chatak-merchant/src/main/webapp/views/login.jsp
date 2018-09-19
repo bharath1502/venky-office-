@@ -67,6 +67,7 @@
 							<form:form action="authenticate" commandName="loginDetails"
 								name="loginDetails">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
+								<form:hidden id="timeZoneRegion" path="timeZoneRegion" />
 								<div class="col-sm-12 login-elements-holder">
 
 									<fieldset class="col-sm-12">
@@ -181,10 +182,12 @@
 		});
 		
 		 $(document).ready(function() {
-				var cookieVal = getUserLocale();
+			 	var cookieVal = getUserLocale();
 				$('#localeSelectId').val(cookieVal);
+				var timeZoneRegion = jstz.determine().name();
 				var offset = new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
 				$('#currentDateId').val(offset);
+				$('#timeZoneRegion').val(timeZoneRegion);
 			});
 		 
 		 

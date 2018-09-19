@@ -450,6 +450,8 @@ public class CurrencyController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("currency-search-page.label.currencycodenumeric", null,
             LocaleContextHolder.getLocale()),
+        messageSource.getMessage("currency-create-page.label.currencyexponent", null,
+                LocaleContextHolder.getLocale()),
         messageSource.getMessage("reports.label.transactions.status", null,
             LocaleContextHolder.getLocale())};
     return new ArrayList<String>(Arrays.asList(headerArr));
@@ -461,7 +463,7 @@ public class CurrencyController implements URLMappingConstants {
     for (CurrenyValue currencyDTO : list) {
 
       Object[] rowData = {currencyDTO.getCurrencyName(), currencyDTO.getCurrencyCodeAlpha(),
-          Long.parseLong(currencyDTO.getCurrencyCodeNumeric()), currencyDTO.getStatus()
+          Long.parseLong(currencyDTO.getCurrencyCodeNumeric()),currencyDTO.getCurrencyExponent(), currencyDTO.getStatus()
 
       };
       fileData.add(rowData);

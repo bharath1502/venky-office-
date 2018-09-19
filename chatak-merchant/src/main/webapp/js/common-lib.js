@@ -1,3 +1,7 @@
+var userNameRegex = /^[A-Za-z0-9]{6,16}$/;
+
+var downloadLimit = 5000;
+
 /**
  * System constants
  */
@@ -11,7 +15,7 @@ String.prototype.trim = function() {
 };
 
 function isCharacter(value) {
-	var characterValue = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	var characterValue = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
 	for ( var i = 0; i <= value.length; i++) {
 		if (characterValue.indexOf(value.charAt(i)) == -1)
 			return false;
@@ -620,6 +624,10 @@ function downloadReport(curPageNumber, type, totalRecords) {
 	get('totalRecords').value = totalRecords;
 	if($('#totalRecordsDownload').prop('checked')== true){
 		setValue('downloadAllRecords', true );
+		if (type == 'PDF') {
+			get('totalRecords').value = downloadLimit;
+			document.getElementById("sucessDiv").innerHTML = webMessages.maximumownloadLimit;
+		}
 	}
 	else{
 		setValue('downloadAllRecords', false );
@@ -780,16 +788,18 @@ function goToDashboard() {
 	window.location.href = 'dash-board';
 }
 
-function downloadDashboardReport(curPageNumber, type, reportType, requestFrom) {
+function downloadDashboardReport(curPageNumber, type, reportType, requestFrom, totalRecords) {
 	if(reportType == 'processingTxn') {
 		get('processingTxnDownloadPageNumberId').value = curPageNumber;
 		get('processingTxnDownloadTypeId').value = type;
 		get('requestFromId1').value = requestFrom;
+		get('totalRecords1').value = totalRecords;
 		document.forms["downloadProcessingTxnReport"].submit();
 	} else if(reportType == 'exetutedTxn') {
 		get('executedTxnDownloadPageNumberId').value = curPageNumber;
 		get('executedTxnDownloadTypeId').value = type;
 		get('requestFromId').value = requestFrom;
+		get('totalRecords').value = totalRecords;
 		document.forms["downloadExecutedTxnReport"].submit();
 	}
 	else if(reportType == 'manualTxn') {	
@@ -1016,11 +1026,16 @@ function generalZipCode(){
 
 function zipCodeNotEmpty(id) {
 	var pin = getVal(id);
+	var regex = /^[A-Za-z0-9 ]+$/;
 	if (isEmpty(pin)) {
 		setError(get(id), webMessages.thisfieldismandatory);
 		loadMsgTitleText();
 		return false;
 	}else if ((pin.length < 3) || (pin.length > 7)) {
+		setError(get(id), webMessages.invalidZipcode);
+		loadMsgTitleText();
+		return false;
+	}else if (!regex.test(pin)) {
 		setError(get(id), webMessages.invalidZipcode);
 		loadMsgTitleText();
 		return false;

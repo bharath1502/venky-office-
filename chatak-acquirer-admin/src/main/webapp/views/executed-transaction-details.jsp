@@ -56,6 +56,13 @@
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
 
+						<div class="col-xs-12">
+							<div class="discriptionMsg" data-toggle="tooltip"
+								data-placement="top" title="">
+								<span id="sucessDiv" class="green-error">${sucess}</span>
+							</div>
+						</div>
+
 						<form action="executed-transaction-details-pagination"
 							name="paginationForm" method="post">
 							<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
@@ -298,9 +305,10 @@
 		<div class="col-sm-12 popup-hf-bc">
 			<input type="submit" class="form-control button pull-right margin5"
 				value="<spring:message code="home.label.refundbutton"/>"
-				onclick="refundTxn();"> <input type="button"
-				class="form-control button pull-right margin5 close-btn"
-				value="<spring:message code="home.label.cancelbutton"/>">
+				onclick="refundTxn();" id="buttonCreate1">
+				 <input type="button" value="Processing" style="display: none;" id="processingButton2" class="form-control button pull-right" />
+				 <input type="button" class="form-control button pull-right margin5 close-btn"
+				value="<spring:message code="home.label.cancelbutton"/>" onclick="return goToDashboard();">
 		</div>
 		<input type="hidden" id="refundMerchantId" name="merchantId" /> <input
 			type="hidden" id="refundAccountTransactionId"
@@ -601,7 +609,8 @@
 		}
 
 		function refundTxn() {
-
+			get('processingButton2').style.display = 'inline-block';
+			get('buttonCreate1').style.display = 'none';
 			var isPartialRefund = $('#fullRefund').is(':checked') ? 0 : 1;
 			var refundAmount = 0;
 			if (isPartialRefund == 1) {
@@ -644,6 +653,8 @@
 						$('#cgRefNo').text(response.cgRefNumber);
 
 					} else {
+						get('buttonCreate1').style.display = 'inline-block';
+						get('processingButton2').style.display = 'none';
 						$('#refundResultInfo').hide();
 						$('#refundErrorData').text(response.errorMessage);
 					}

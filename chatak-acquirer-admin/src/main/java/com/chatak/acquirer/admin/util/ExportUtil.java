@@ -37,6 +37,7 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 public class ExportUtil {
 
@@ -109,13 +110,7 @@ public class ExportUtil {
         LocaleContextHolder.getLocale()) + headerDate));
 
 		Map<String, String> map = null;
-		if (exportDetails.getMap() != null) {
-			map = exportDetails.getMap();
-			int cellCount = CELL_COUNT;
-			for (Map.Entry  MapColummn : map.entrySet()) {
-				s.addCell(new Label(0, cellCount++, MapColummn.getKey() + "" + MapColummn.getValue()));
-			}
-		}
+		isCheckNull(exportDetails, s);
 	
     int rowNum = TABLE_ROW_NUM;
     if (exportDetails.getExcelStartRowNumber() != null) {
@@ -159,6 +154,18 @@ public class ExportUtil {
     w.write();
     w.close();
   }
+  
+	private static void isCheckNull(ExportDetails exportDetails, WritableSheet s)
+			throws WriteException, RowsExceededException {
+		Map<String, String> map;
+		if (exportDetails.getMap() != null) {
+			map = exportDetails.getMap();
+			int cellCount = CELL_COUNT;
+			for (Map.Entry MapColummn : map.entrySet()) {
+				s.addCell(new Label(0, cellCount++, MapColummn.getKey() + "" + MapColummn.getValue()));
+			}
+		}
+	}
 
   private static double processDoubleAmount(Object rowElement) {
     return (!"".equals(rowElement)) ? Double.parseDouble(rowElement.toString()): 0d;

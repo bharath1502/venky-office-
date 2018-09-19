@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,7 @@ public class VaultController extends BaseController implements URLMappingConstan
   @Autowired
   private VaultService vaultService;
 
-  private Logger logger = Logger.getLogger(VaultController.class);
+  private static Logger logger = LogManager.getLogger(VaultController.class);
 
   /**
    * @param request

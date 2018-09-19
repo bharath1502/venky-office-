@@ -27,11 +27,11 @@ import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
 import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
-import com.chatak.acquirer.admin.model.Response;
 import com.chatak.acquirer.admin.model.TransactionResponse;
 import com.chatak.acquirer.admin.service.FeeReportService;
 import com.chatak.acquirer.admin.service.IsoService;
 import com.chatak.acquirer.admin.service.ProgramManagerService;
+import com.chatak.acquirer.admin.util.CommonUtil;
 import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
@@ -39,20 +39,15 @@ import com.chatak.pg.acq.dao.model.Iso;
 import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.ExportType;
-import com.chatak.pg.enums.RoleLevel;
 import com.chatak.pg.model.FeeReportDto;
 import com.chatak.pg.model.FeeReportRequest;
 import com.chatak.pg.model.FeeReportResponse;
 import com.chatak.pg.model.Merchant;
-import com.chatak.pg.user.bean.BankResponse;
 import com.chatak.pg.user.bean.IsoRequest;
 import com.chatak.pg.user.bean.IsoResponse;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.user.bean.ProgramManagerResponse;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Controller
@@ -75,7 +70,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = PREPAID_SHOW_FEE_REPORT_PAGE, method = RequestMethod.GET)
 	public ModelAndView showFeeReport(HttpServletRequest request, HttpServletResponse response,
 			FeeReportRequest feeReportRequest, BindingResult bindingResult, Map model, HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: showFeeReport");
 		ModelAndView modelAndView = new ModelAndView(PREPAID_FEE_REPORT_PAGE);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
 	    if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_FEE_REPORT_FEATURE_ID)) {
@@ -91,11 +86,11 @@ public class FeeReportController implements URLMappingConstants {
 				model.put("programManagersList", programManagerResponse.getProgramManagersList());
 			}
 		} catch (ChatakAdminException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
+		    logger.error("Error :: FeeReportController :: showFeeReport :: ChatakAdminException :: " + e.getMessage(), e);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: showFeeReport : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: showFeeReport");
 		return modelAndView;
 	}
 
@@ -109,7 +104,7 @@ public class FeeReportController implements URLMappingConstants {
 	public ModelAndView processFeeReport(HttpServletRequest request, HttpServletResponse response,
 			FeeReportRequest feeReportRequest, Merchant merchant, BindingResult bindingResult, Map model,
 			HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: processFeeReport");
 		ModelAndView modelAndView = new ModelAndView(PREPAID_FEE_REPORT_PAGE);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
 		if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_FEE_REPORT_FEATURE_ID)) {
@@ -129,14 +124,14 @@ public class FeeReportController implements URLMappingConstants {
 			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
 		} catch (ChatakAdminException e) {
 			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
+            logger.error("Error :: FeeReportController :: processFeeReport :: ChatakAdminException :: " + e.getMessage(), e);
 		} catch (Exception e) {
 			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: processFeeReport : " + e.getMessage(), e);
 		}
 
 		modelAndView.addObject("flag", true);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: processFeeReport");
 		return modelAndView;
 	}
 	  
@@ -144,7 +139,7 @@ public class FeeReportController implements URLMappingConstants {
 	public ModelAndView showISOFeeReport(HttpSession session,
 		      @FormParam("getISOId") final Long getISOId, @FormParam("getFromDate") final String getFromDate, @FormParam("getFromDate") final String getToDate, Map<String, Object> model,
 		      HttpServletRequest request, HttpServletResponse response) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: showISOFeeReport");
 		ModelAndView modelAndView = new ModelAndView(PREPAID_ISO_FEE_REPORT);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
 		if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_FEE_REPORT_FEATURE_ID)) {
@@ -163,9 +158,9 @@ public class FeeReportController implements URLMappingConstants {
 				model.put("totalRecords", feeReportResponse.getSettlementEntity().size());
 			}
 		} catch (ChatakAdminException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
+		    logger.error("Error :: FeeReportController :: showISOFeeReport :: ChatakAdminException :: " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: showISOFeeReport");
 		return modelAndView;
 	}
 	
@@ -173,7 +168,7 @@ public class FeeReportController implements URLMappingConstants {
 	  public ModelAndView getFeeReportPagination(final HttpSession session,
 	      @FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
 	      @FormParam("totalRecords") final Integer totalRecords, Map model) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: getFeeReportPagination");
 	    ModelAndView modelAndView = new ModelAndView(PREPAID_FEE_REPORT_PAGE);
 	    try {
 	    	FeeReportRequest feeReportRequest = new FeeReportRequest();
@@ -197,9 +192,9 @@ public class FeeReportController implements URLMappingConstants {
 	    } catch (Exception e) {
 	      modelAndView.addObject(Constants.ERROR,
 	          messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-	      LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+	      logger.error("Error :: FeeReportController :: getFeeReportPagination : " + e.getMessage(), e);
 	    }
-	    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	    logger.info("Exiting :: FeeReportController :: getFeeReportPagination");
 	    return modelAndView;
 	  }
 	
@@ -208,7 +203,7 @@ public class FeeReportController implements URLMappingConstants {
 			HttpSession session, Map model, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
 			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
 			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: downloadFeeTxnReport");
 		try {
 			FeeReportRequest feeReportRequest = (FeeReportRequest) session
 					.getAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA);
@@ -235,9 +230,9 @@ public class FeeReportController implements URLMappingConstants {
 			}
 			feeReportRequest.setPageSize(pageSize);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: downloadFeeTxnReport : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: downloadFeeTxnReport");
 		return null;
 	}
 	
@@ -269,7 +264,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = SHOW_ISO_REVENUE_REPORT_PAGE, method = RequestMethod.GET)
 	public ModelAndView showIsoRevenueReport(HttpServletRequest request, HttpServletResponse response,
 			FeeReportRequest feeReportRequest, BindingResult bindingResult, Map model, HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: showIsoRevenueReport");
 		ModelAndView modelAndView = new ModelAndView(ISO_REVENUE_REPORT_PAGE);
 		String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
@@ -304,18 +299,18 @@ public class FeeReportController implements URLMappingConstants {
 			modelAndView.addObject(Constants.FEE_REPORT_REQUEST, feeReportRequest);
 			modelAndView.addObject("flag", false);
 		} catch (ChatakAdminException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
+		    logger.error("Error :: FeeReportController :: showIsoRevenueReport :: ChatakAdminException :: " + e.getMessage(), e);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: showIsoRevenueReport : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: showIsoRevenueReport");
 		return modelAndView;
 	}
 
 	@RequestMapping(value = PROCESS_ISO_REVENUE_REPORT_PAGE, method = RequestMethod.POST)
 	public ModelAndView processIsoRevenueReport(HttpServletRequest request, HttpServletResponse response,
 			FeeReportRequest feeReportRequest, BindingResult bindingResult, Map model, HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: processIsoRevenueReport");
 		ModelAndView modelAndView = new ModelAndView(ISO_REVENUE_REPORT_PAGE);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
 		if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_ISO_REVENUE_REPORT_FEATURE_ID)) {
@@ -334,10 +329,15 @@ public class FeeReportController implements URLMappingConstants {
 			modelAndView = PaginationUtil.getPagenationModel(modelAndView,
 					feeReportRequest.getNoOfRecords().intValue());
 			showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
+			List<IsoRequest> isoRequestList = isoService
+                .findIsoByProgramaManagerId(Long.valueOf(feeReportRequest.getProgramManagerId()));
+            modelAndView.addObject("isoRequestsList", isoRequestList);
+            session.setAttribute("isoRequestsList", isoRequestList);
 		} catch (Exception e) {
 			showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: processIsoRevenueReport : " + e.getMessage(), e);
 		}
+		logger.info("Exiting :: FeeReportController :: processIsoRevenueReport");
 		return modelAndView;
 
 	}
@@ -346,7 +346,7 @@ public class FeeReportController implements URLMappingConstants {
 	public @ResponseBody String getPartnerByPMId(HttpServletRequest request, HttpServletResponse response,
 			Map<String, Object> model, @FormParam("ProgrammanagerId") final Long programManagerId,
 			HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: getPartnerByPMId");
 		try {
 			IsoResponse isoResponse = new IsoResponse();
 			FeeReportRequest feeReportRequest = new FeeReportRequest();
@@ -359,9 +359,9 @@ public class FeeReportController implements URLMappingConstants {
 			isoResponse.setErrorMessage(Constants.SUCESS);
 			return JsonUtil.convertObjectToJSON(isoResponse);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: getPartnerByPMId : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: getPartnerByPMId");
 		return null;
 	}
 
@@ -369,14 +369,14 @@ public class FeeReportController implements URLMappingConstants {
 	public ModelAndView showIsoAndMerchantMatchedTxnsByPgTxnId(HttpSession session,
 			@FormParam("issuanceSettlementEntityId") final Long issuanceSettlementEntityId, Map<String, Object> model,
 			HttpServletRequest request, HttpServletResponse response) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: showIsoAndMerchantMatchedTxnsByPgTxnId");
 		
-		ModelAndView modelAndView = new ModelAndView(ISO_REVENUE_REPORT_PAGE);
 		FeeReportRequest transactionRequest = new FeeReportRequest();
 		transactionRequest.setIssuanceSettlementEntityId(issuanceSettlementEntityId);
 		try {
 			TransactionResponse transactionResponse = feeReportService
 					.getAllMatchedTxnsByEntityId(transactionRequest.getIssuanceSettlementEntityId());
+			logger.info("All Matched TRansactions For PM and ISO" + transactionResponse);
 			ExportDetails exportDetails = new ExportDetails();
 			if (!StringUtil.isNull(transactionResponse)
 					&& StringUtil.isListNotNullNEmpty(transactionResponse.getSettlementEntity())) {
@@ -386,32 +386,30 @@ public class FeeReportController implements URLMappingConstants {
 				exportDetails.setHeaderMessageProperty("matched-transactions.label.matchedtxns");
 				Map<String, String> map = new HashMap<>();
                 
-                Long isoId = transactionResponse.getSettlementEntity().get(0).getIsoId();
-                Iso iso = isoService.findIsoByIsoId(isoId).get(0);
-                map.put("ISO :", iso.getIsoName());
+				if(!StringUtil.isNull(transactionResponse) && !StringUtil.isNull(transactionResponse.getSettlementEntity().get(0).getIsoId())) {
+				    logger.info("ISO ID : " + transactionResponse.getSettlementEntity().get(0).getIsoId().toString());
+					Long isoId = transactionResponse.getSettlementEntity().get(0).getIsoId();
+					Iso iso = isoService.findIsoByIsoId(isoId).get(0);
+					map.put("ISO :", iso.getIsoName());
+				}
                 
                 String pmid = transactionResponse.getSettlementEntity().get(0).getAcqPmId();
+                logger.info("ISO ID : " + transactionResponse.getSettlementEntity().get(0).getAcqPmId());
                 ProgramManagerRequest programManagerRequest = programManagerService.findbyProgramManagerId(Long.valueOf(pmid));
                 map.put("Program Manager :", programManagerRequest.getProgramManagerName());
                 exportDetails.setMap(map);
 				exportDetails.setHeaderList(getSettlementReportHeaderList());
 				exportDetails.setFileData(getSettlementReportFileData(transactionResponse.getSettlementEntity()));
 				ExportUtil.exportData(exportDetails, response, messageSource);
-			} else {
-				modelAndView = showIsoRevenueReport(request, response, transactionRequest, null, model, session);
-				modelAndView.addObject(Constants.ERROR, messageSource
-						.getMessage("matched-transactions.label.nomatchedtxns", null, LocaleContextHolder.getLocale()));
-			}
+			} 
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
-			modelAndView = showIsoRevenueReport(request, response, transactionRequest, null, model, session);
+		  logger.error("Error :: FeeReportController :: showIsoAndMerchantMatchedTxnsByPgTxnId : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
-		return modelAndView;
+		logger.info("Exiting :: FeeReportController :: showIsoAndMerchantMatchedTxnsByPgTxnId");
+		return null;
 	}
 
 	private List<String> getSettlementReportHeaderList() {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
 		String[] headerArr = {
 				messageSource.getMessage("fee-report.label.fee.report.merchantid", null,
 						LocaleContextHolder.getLocale()),
@@ -440,12 +438,10 @@ public class FeeReportController implements URLMappingConstants {
 				messageSource.getMessage("admin.label.Acq.channel", null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("virtual-terminal-void.label.invoicenumber", null, LocaleContextHolder.getLocale()),				
 		};
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
 		return new ArrayList<>(Arrays.asList(headerArr));
 	}
 
 	private static List<Object[]> getSettlementReportFileData(List<SettlementEntity> list) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
 		List<Object[]> fileData = new ArrayList<>();
 		for (SettlementEntity settlementData : list) {
 			Object[] rowData = { settlementData.getMerchantId(), settlementData.getTerminalId(),
@@ -460,11 +456,11 @@ public class FeeReportController implements URLMappingConstants {
 					settlementData.getAcqChannel(), settlementData.getInVoiceNumber() };
 			fileData.add(rowData);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
 		return fileData;
 	}
 
 	private static Object conversionAmountValidation(Long amount) {
+	    logger.info("Entering :: FeeReportController :: conversionAmountValidation");
 		Double amountvalue = null;
 		try {
 			if (amount != null) {
@@ -474,15 +470,16 @@ public class FeeReportController implements URLMappingConstants {
 				amountvalue = 0.0;
 			}
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, e.getMessage());
+		  logger.error("Error :: FeeReportController :: conversionAmountValidation : " + e.getMessage(), e);
 		}
+        logger.info("Exiting :: FeeReportController :: conversionAmountValidation");
 		return amountvalue;
 	}
 
 	@RequestMapping(value = SHOW_MERCHANT_REVENUE_REPORT_PAGE, method = RequestMethod.GET)
 	public ModelAndView showMerchantRevenueReport(HttpServletRequest request, HttpServletResponse response,
 			FeeReportRequest feeReportRequest, BindingResult bindingResult, Map model, HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: showMerchantRevenueReport");
 		ModelAndView modelAndView = new ModelAndView(MERCHANT_REVENUE_REPORT_PAGE);
 		String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
@@ -517,18 +514,18 @@ public class FeeReportController implements URLMappingConstants {
 			modelAndView.addObject(Constants.FEE_REPORT_REQUEST, feeReportRequest);
 			modelAndView.addObject("flag", false);
 		} catch (ChatakAdminException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
+		    logger.error("Error :: FeeReportController :: showMerchantRevenueReport :: ChatakAdminException :: " + e.getMessage(), e);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: showMerchantRevenueReport : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: showMerchantRevenueReport");
 		return modelAndView;
 	}
 
 	@RequestMapping(value = PROCESS_MERCHANT_REVENUE_REPORT_PAGE, method = RequestMethod.POST)
 	public ModelAndView processMerchantRevenueReport(HttpServletRequest request, HttpServletResponse response,
 			FeeReportRequest feeReportRequest, BindingResult bindingResult, Map model, HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: processMerchantRevenueReport");
 		ModelAndView modelAndView = new ModelAndView(MERCHANT_REVENUE_REPORT_PAGE);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
 		if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_MERCHANT_REVENUE_REPORT_FEATURE_ID)) {
@@ -546,11 +543,16 @@ public class FeeReportController implements URLMappingConstants {
 			}
 			modelAndView = PaginationUtil.getPagenationModel(modelAndView,
 					feeReportRequest.getNoOfRecords().intValue());
-			showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
+			showMerchantRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
+			List<IsoRequest> isoRequestList = isoService
+                .findIsoByProgramaManagerId(Long.valueOf(feeReportRequest.getProgramManagerId()));
+            modelAndView.addObject("isoRequestsList", isoRequestList);
+            session.setAttribute("isoRequestsList", isoRequestList);
 		} catch (Exception e) {
-			showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+		    showMerchantRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
+			logger.error("Error :: FeeReportController :: processMerchantRevenueReport : " + e.getMessage(), e);
 		}
+        logger.info("Exiting :: FeeReportController :: processMerchantRevenueReport");
 		return modelAndView;
 
 	}
@@ -559,7 +561,7 @@ public class FeeReportController implements URLMappingConstants {
 	public ModelAndView getMerchantReportPagination(final HttpSession session,
 			@FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
 			@FormParam("totalRecords") final Integer totalRecords, Map model) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: getMerchantReportPagination");
 		ModelAndView modelAndView = new ModelAndView(MERCHANT_REVENUE_REPORT_PAGE);
 		try {
 			FeeReportRequest feeReportRequest = new FeeReportRequest();
@@ -578,9 +580,9 @@ public class FeeReportController implements URLMappingConstants {
 		} catch (Exception e) {
 			modelAndView.addObject(Constants.ERROR,
 					messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: getMerchantReportPagination : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: getMerchantReportPagination");
 		return modelAndView;
 	}
 
@@ -588,7 +590,7 @@ public class FeeReportController implements URLMappingConstants {
 	public ModelAndView getISOReportPagination(final HttpSession session,
 			@FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
 			@FormParam("totalRecords") final Integer totalRecords, Map model) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: getISOReportPagination");
 		ModelAndView modelAndView = new ModelAndView(ISO_REVENUE_REPORT_PAGE);
 		try {
 			FeeReportRequest feeReportRequest = new FeeReportRequest();
@@ -607,9 +609,9 @@ public class FeeReportController implements URLMappingConstants {
 		} catch (Exception e) {
 			modelAndView.addObject(Constants.ERROR,
 					messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: getISOReportPagination : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: getISOReportPagination");
 		return modelAndView;
 	}
 
@@ -618,7 +620,7 @@ public class FeeReportController implements URLMappingConstants {
 			HttpSession session, Map model, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
 			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
 			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: downloadISORevenueReport");
 		try {
 			FeeReportRequest feeReportRequest = (FeeReportRequest) session
 					.getAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA);
@@ -643,15 +645,15 @@ public class FeeReportController implements URLMappingConstants {
 			}
 			feeReportRequest.setPageSize(pageSize);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: downloadISORevenueReport : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: downloadISORevenueReport");
 		return null;
 	}
 
 	private void isoReportHeader(List<SettlementEntity> settlementEntityList, ExportDetails exportDetails) {
-		exportDetails.setReportName("Fee_Report_");
-		exportDetails.setHeaderMessageProperty("fee-report.label.fee.report.download");
+		exportDetails.setReportName("ISO_Revenue_Report_");
+		exportDetails.setHeaderMessageProperty("fee-report.label.ISO.report");
 
 		exportDetails.setHeaderList(getIsoReportHeaderList());
 		exportDetails.setFileData(getIsoReportFileData(settlementEntityList));
@@ -671,8 +673,8 @@ public class FeeReportController implements URLMappingConstants {
 	private static List<Object[]> getIsoReportFileData(List<SettlementEntity> settlementEntityList) {
 		List<Object[]> fileData = new ArrayList<>();
 		for (SettlementEntity settlementEntity : settlementEntityList) {
-			Object[] rowData = { settlementEntity.getMerchantId(), settlementEntity.getAcquirerAmount(),
-					settlementEntity.getIssAmount(), settlementEntity.getIsoAmount(), settlementEntity.getBatchId() };
+			Object[] rowData = { settlementEntity.getMerchantId(), CommonUtil.doubleAmountConversion(settlementEntity.getAcquirerAmount()),
+					CommonUtil.doubleAmountConversion(settlementEntity.getIssAmount()), CommonUtil.getDoubleAmount(settlementEntity.getIsoAmount()), settlementEntity.getBatchId() };
 			fileData.add(rowData);
 		}
 		return fileData;
@@ -683,7 +685,7 @@ public class FeeReportController implements URLMappingConstants {
 			HttpSession session, Map model, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
 			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
 			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: downloadMerchantRevenueReport");
 		try {
 			FeeReportRequest feeReportRequest = (FeeReportRequest) session
 					.getAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA);
@@ -708,15 +710,15 @@ public class FeeReportController implements URLMappingConstants {
 			}
 			feeReportRequest.setPageSize(pageSize);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: downloadMerchantRevenueReport : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: downloadMerchantRevenueReport");
 		return null;
 	}
 
 	private void merchantReportHeader(List<SettlementEntity> settlementEntityList, ExportDetails exportDetails) {
-		exportDetails.setReportName("Fee_Report_");
-		exportDetails.setHeaderMessageProperty("fee-report.label.fee.report.download");
+		exportDetails.setReportName("Merchant_Revenue_Report_");
+		exportDetails.setHeaderMessageProperty("fee-report.label.Merchant.report");
 
 		exportDetails.setHeaderList(getMerchantReportHeaderList());
 		exportDetails.setFileData(getMerchantReportFileData(settlementEntityList));
@@ -736,8 +738,8 @@ public class FeeReportController implements URLMappingConstants {
 	private static List<Object[]> getMerchantReportFileData(List<SettlementEntity> settlementEntityList) {
 		List<Object[]> fileData = new ArrayList<>();
 		for (SettlementEntity settlementEntity : settlementEntityList) {
-			Object[] rowData = { settlementEntity.getMerchantId(), settlementEntity.getAcquirerAmount(),
-					settlementEntity.getIssAmount(), settlementEntity.getMerchantAmount(),
+			Object[] rowData = { settlementEntity.getMerchantId(), CommonUtil.doubleAmountConversion(settlementEntity.getAcquirerAmount()),
+					CommonUtil.doubleAmountConversion(settlementEntity.getIssAmount()), CommonUtil.getDoubleAmount(settlementEntity.getMerchantAmount()),
 					settlementEntity.getBatchId() };
 			fileData.add(rowData);
 		}
@@ -747,7 +749,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = SHOW_PM_REVENUE_REPORT_PAGE, method = RequestMethod.GET)
 	public ModelAndView showPmRevenueReport(HttpServletRequest request, HttpServletResponse response,
 			FeeReportRequest feeReportRequest, BindingResult bindingResult, Map model, HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: showPmRevenueReport");
 		ModelAndView modelAndView = new ModelAndView(PM_REVENUE_REPORT_PAGE);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
 		if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_PM_REVENUE_REPORT_FEATURE_ID)) {
@@ -763,11 +765,11 @@ public class FeeReportController implements URLMappingConstants {
 				model.put("programManagersList", programManagerResponse.getProgramManagersList());
 			}
 		} catch (ChatakAdminException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
+		  logger.error("Error :: FeeReportController :: showPmRevenueReport :: ChatakAdminException :: " + e.getMessage(), e);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: showPmRevenueReport : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: showPmRevenueReport");
 		return modelAndView;
 	}
 	
@@ -775,7 +777,7 @@ public class FeeReportController implements URLMappingConstants {
 	public ModelAndView processPmRevenueReport(HttpServletRequest request, HttpServletResponse response,
 			FeeReportRequest feeReportRequest, Merchant merchant, BindingResult bindingResult, Map model,
 			HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportController :: processPmRevenueReport");
 		ModelAndView modelAndView = new ModelAndView(PM_REVENUE_REPORT_PAGE);
 		String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
 		if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_PM_REVENUE_REPORT_FEATURE_ID)) {
@@ -795,14 +797,108 @@ public class FeeReportController implements URLMappingConstants {
 			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
 		} catch (ChatakAdminException e) {
 			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
+			logger.error("Error :: FeeReportController :: processPmRevenueReport :: ChatakAdminException :: " + e.getMessage(), e);
 		} catch (Exception e) {
 			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportController :: processPmRevenueReport : " + e.getMessage(), e);
 		}
 
 		modelAndView.addObject("flag", true);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportController :: processPmRevenueReport");
+		return modelAndView;
+	}
+	
+	@RequestMapping(value = DOWNLOAD_PM_REVENUE_REPORT, method = RequestMethod.POST)
+	public ModelAndView downloadPmRevenueReport(HttpServletRequest request, HttpServletResponse response,
+			HttpSession session, Map model, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
+			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
+			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
+		logger.info("Entering :: FeeReportController :: downloadPmRevenueReport");
+		try {
+			FeeReportRequest feeReportRequest = (FeeReportRequest) session
+					.getAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA);
+			feeReportRequest.setPageIndex(downLoadPageNumber);
+			Integer pageSize = feeReportRequest.getPageSize();
+			if (downloadAllRecords) {
+				feeReportRequest.setPageIndex(Constants.ONE);
+				feeReportRequest.setPageSize(totalRecords);
+			}
+			FeeReportResponse feeReportResponse = feeReportService.fetchPmRevenueTransactions(feeReportRequest);
+			ExportDetails exportDetails = new ExportDetails();
+			if (!StringUtil.isNull(feeReportResponse)
+					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
+				if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
+					exportDetails.setExportType(ExportType.PDF);
+				} else if (Constants.XLS_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
+					exportDetails.setExportType(ExportType.XLS);
+					exportDetails.setExcelStartRowNumber(Integer.parseInt("5"));
+				}
+				pmReportHeader(feeReportResponse.getSettlementEntity(), exportDetails);
+				ExportUtil.exportData(exportDetails, response, messageSource);
+			}
+			feeReportRequest.setPageSize(pageSize);
+		} catch (Exception e) {
+			logger.error("Error :: FeeReportController :: downloadPmRevenueReport : " + e.getMessage(), e);
+		}
+		logger.info("Exiting :: FeeReportController :: downloadPmRevenueReport");
+		return null;
+	}
+	
+	private void pmReportHeader(List<SettlementEntity> settlementEntityList, ExportDetails exportDetails) {
+		exportDetails.setReportName("Pm_Revenue_Report_");
+		exportDetails.setHeaderMessageProperty("fee-report.label.PM.report");
+
+		exportDetails.setHeaderList(getPmReportHeaderList());
+		exportDetails.setFileData(getPmReportFileData(settlementEntityList));
+	}
+
+	private List<String> getPmReportHeaderList() {
+		String[] headerArr = {
+				messageSource.getMessage("fee-report.label.fee.report.merchantid", null,
+						LocaleContextHolder.getLocale()),
+				messageSource.getMessage("home.label.acqsaleamunt", null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage("home.label.issunceAmunt", null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage("admin.label.pmamount", null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage("transaction-report-batchID", null, LocaleContextHolder.getLocale()) };
+		return new ArrayList<>(Arrays.asList(headerArr));
+	}
+
+	private static List<Object[]> getPmReportFileData(List<SettlementEntity> settlementEntityList) {
+		List<Object[]> fileData = new ArrayList<>();
+		for (SettlementEntity settlementEntity : settlementEntityList) {
+			Object[] rowData = { settlementEntity.getMerchantId(), CommonUtil.doubleAmountConversion(settlementEntity.getAcquirerAmount()),
+					CommonUtil.doubleAmountConversion(settlementEntity.getIssAmount()), CommonUtil.getDoubleAmount(settlementEntity.getPmAmount()), settlementEntity.getBatchId() };
+			fileData.add(rowData);
+		}
+		return fileData;
+	}
+	
+	@RequestMapping(value = PREPAID_PM_REPORT_PAGINATION, method = RequestMethod.POST)
+	public ModelAndView getPMReportPagination(final HttpSession session,
+			@FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
+			@FormParam("totalRecords") final Integer totalRecords, Map model) {
+		logger.info("Entering :: FeeReportController :: getPMReportPagination");
+		ModelAndView modelAndView = new ModelAndView(ISO_REVENUE_REPORT_PAGE);
+		try {
+			FeeReportRequest feeReportRequest = new FeeReportRequest();
+			model.put(Constants.FEE_REPORT_REQUEST, feeReportRequest);
+			feeReportRequest.setPageIndex(pageNumber);
+			feeReportRequest.setNoOfRecords(totalRecords);
+			FeeReportResponse feeReportResponse = feeReportService.fetchPmRevenueTransactions(feeReportRequest);
+			if (!StringUtil.isNull(feeReportResponse)
+					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
+				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
+				modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
+						feeReportResponse.getTotalNoOfRows());
+				session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
+				session.setAttribute("totalRecords", totalRecords);
+			}
+		} catch (Exception e) {
+			modelAndView.addObject(Constants.ERROR,
+					messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+			logger.error("Error :: FeeReportController :: getPMReportPagination : " + e.getMessage(), e);
+		}
+		logger.info("Exiting :: FeeReportController :: getPMReportPagination");
 		return modelAndView;
 	}
 	

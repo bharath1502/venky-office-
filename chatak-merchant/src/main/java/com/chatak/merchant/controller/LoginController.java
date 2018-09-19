@@ -51,14 +51,13 @@ import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.AccountTransactionDTO;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.user.bean.MerchantAccountHistory;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.validator.CSRFTokenManager;
 
@@ -138,7 +137,7 @@ public class LoginController implements URLMappingConstants {
     }
     model.put("currentBuildRelease", Properties.getProperty("current.release.version"));
     String token = CSRFTokenManager.getTokenForSession(session);
-    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Genarated CSRF token before login : " + token);
+    logger.info("Genarated CSRF token before login : " + token);
     session.setAttribute("tokenval", token);
     logger.info("Exiting:: LoginController:: showLogin method");
     return modelAndView;
@@ -170,6 +169,7 @@ public class LoginController implements URLMappingConstants {
         getError(bindingResult, modelAndView);
         return modelAndView;
       }
+      loginDetails.setLoginIpAddress(request.getRemoteAddr());//Setting remote ipaddress
       userAgent = removeWhiteSpace(userAgent);
       loginDetails.setCurrentLoginTime(DateUtils.getFormatLastLoginTime(loginDetails));
       LoginResponse loginResponse = loginSevice.authenticate(loginDetails);
@@ -189,14 +189,7 @@ public class LoginController implements URLMappingConstants {
         session.setAttribute("existingFeatuesData", loginResponse.getExistingFeature());
         session.setAttribute("merchantCode", loginResponse.getMerchantCode());
         for (Object object : sessionRegistry.getAllPrincipals()) {
-          LoginDetails loginResponseData = (LoginDetails) object;
-          if (null != loginResponseData
-              && loginResponseData.getAcqU().trim().equals(loginDetails.getAcqU())) {
-            Cookie[] cookies = request.getCookies();
-            String cookieValue = "";
-            cookieValue = getCookiesValue(cookies, cookieValue);
-            modelAndView = getInvalidSessionResponse(response, loginDetails, userAgent, modelAndView, loginResponseData, cookieValue, object);
-          }
+        	modelAndView = validateLoginResponseData(request, response, session, loginDetails, modelAndView, userAgent, object);
 
         }
         session.setAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME,
@@ -212,6 +205,10 @@ public class LoginController implements URLMappingConstants {
     } catch (ChatakMerchantException e) {
       logger.error("ERROR:: LoginController:: authenticateUser method", e);
       modelAndView.addObject(Constants.ERROR, e.getMessage());
+    } catch (HttpClientException e) {
+        logger.error("ERROR:: LoginController:: authenticateUser method :: HttpClientException ", e);
+        modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
+		return modelAndView;
     } catch (Exception e) {
       logger.error("ERROR:: LoginController:: authenticateUser method", e);
       modelAndView.addObject(Constants.ERROR, messageSource.getMessage(
@@ -220,17 +217,36 @@ public class LoginController implements URLMappingConstants {
     logger.info("Exiting:: LoginController:: authenticateUser method");
     return modelAndView;
   }
+
+	private ModelAndView validateLoginResponseData(HttpServletRequest request, HttpServletResponse response,
+			HttpSession session, LoginDetails loginDetails, ModelAndView modelAndView, String userAgent, Object object)
+			throws HttpClientException {
+		String exIpAdress = loginDetails.getLoginIpAddress();
+		LoginDetails loginResponseData = (LoginDetails) object;
+		if (null != loginResponseData && loginResponseData.getAcqU().trim().equals(loginDetails.getAcqU())) {
+			Cookie[] cookies = request.getCookies();
+			String cookieValue = "";
+			cookieValue = getCookiesValue(cookies, cookieValue);
+			modelAndView = getInvalidSessionResponse(response, loginDetails, userAgent, modelAndView, loginResponseData,
+					cookieValue, object, exIpAdress, session);
+		}
+		return modelAndView;
+	}
   
 	private ModelAndView getInvalidSessionResponse(HttpServletResponse response, LoginDetails loginDetails,
 			String userAgent, ModelAndView modelAndView, LoginDetails loginResponseData, String cookieValue,
-			Object object) {
+			Object object,String exIpAdress,HttpSession session) throws HttpClientException {
 		String encUName = PasswordHandler.encrypt(loginDetails.getAcqU());
 		SessionInformation sessionInformation = sessionRegistry.getSessionInformation(encUName);
 
 		if (null == sessionInformation) {
 			modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
 			return modelAndView;
-		} else {
+		}else if (loginResponseData.getLoginIpAddress().equals(exIpAdress)
+				&& null != session.getAttribute("exUserAgent")
+				&& session.getAttribute("exUserAgent").equals(userAgent)) {
+			return modelAndView;
+		}else {
 			if (!loginResponseData.getjSession().equals(userAgent + cookieValue)) {
 				Date lastSessionRequestDate = sessionInformation.getLastRequest();
 				Date lastRequestDate = new Date(lastSessionRequestDate.getTime());
@@ -239,8 +255,7 @@ public class LoginController implements URLMappingConstants {
 								LocaleContextHolder.getLocale())) * Constants.TIME_OUT));
 				Date curDate = new Date();
 				if (lastRequestDate.after(curDate)) {
-					modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
-					return modelAndView;
+					throw new HttpClientException(Constants.CHATAK_INVALID_SESSION,01);
 				} else {
 					sessionRegistry.getAllSessions(object, false);
 					sessionInformation.expireNow();
@@ -557,7 +572,7 @@ public class LoginController implements URLMappingConstants {
     myCookie.setMaxAge(Constants.MAX_AGE);
     response.addCookie(myCookie);
     loginDetails.setjSession(userAgent + encUName + session.getId());
-
+    session.setAttribute("exUserAgent", userAgent);
     // Registering logged in user to Spring Session registry
     sessionRegistry.registerNewSession(encUName, loginDetails);
     logger.info("Exiting:: LoginController:: setLoginSuccessResponse method");
@@ -626,6 +641,7 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
       session.setAttribute(Constants.PROCESSING_LIST_SIZE, listSize);
       modelAndView.addObject(Constants.PROCESSING_TXN_LIST, transactionList);
       session.setAttribute(Constants.PROCESSING_TXN_LIST, transactionList);
+      modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_TOTAL_RECORDS_PAGE_NUM, processingTxnList.getTotalResultCount());
     } else {
       modelAndView.addObject(Constants.PROCESSING_LIST_SIZE, 0);
       session.setAttribute(Constants.PROCESSING_LIST_SIZE, 0);
@@ -645,12 +661,14 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
       session.setAttribute(Constants.EXECUTED_LIST_SIZE, listSize);
       modelAndView.addObject(Constants.EXECUTED_TXN_LIST, transactionList);
       session.setAttribute(Constants.EXECUTED_TXN_LIST, transactionList);
+      modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_TOTAL_RECORDS_PAGE_NUM, executedTxnList.getTotalResultCount());
     } else {
       modelAndView.addObject(Constants.EXECUTED_LIST_SIZE, 0);
       session.setAttribute(Constants.EXECUTED_LIST_SIZE, 0);
       modelAndView.addObject(Constants.EXECUTED_TXN_LIST, transactionList);
       session.setAttribute(Constants.EXECUTED_TXN_LIST, transactionList);
     }
+     modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_LIST_PAGE_NUMBER, Constants.ONE);
   return transactionList;
 }
 

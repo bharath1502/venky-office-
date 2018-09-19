@@ -10,14 +10,12 @@ import org.springframework.stereotype.Service;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.TransactionResponse;
 import com.chatak.acquirer.admin.service.FeeReportService;
+import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.acq.dao.FeeReportDao;
 import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.model.FeeReportRequest;
 import com.chatak.pg.model.FeeReportResponse;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.acquirer.admin.util.StringUtil;
-import com.chatak.pg.util.LoggerMessage;
 
 
 @Service
@@ -30,10 +28,10 @@ public class FeeReportServiceImpl implements FeeReportService {
 
 	@Override
 	public FeeReportResponse fetchFeeTransactions(FeeReportRequest feeReportRequest) throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportServiceImpl :: fetchFeeTransactions");
 		feeTxnCodes(feeReportRequest);
 		FeeReportResponse feeReportResponse = feeReportDao.fetchFeeTransactions(feeReportRequest);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportServiceImpl :: fetchFeeTransactions");
 		return feeReportResponse;
 	}
 
@@ -64,12 +62,15 @@ public class FeeReportServiceImpl implements FeeReportService {
 	@Override
 	public TransactionResponse getAllMatchedTxnsByEntityId(Long issuanceSettlementEntityId)
 			throws ChatakAdminException {
+		logger.info("Entering :: FeeReportServiceImpl :: getAllMatchedTxnsByEntityId");
 		TransactionResponse response = new TransactionResponse();
 		List<SettlementEntity> settlementTransactions = feeReportDao
 				.getAllMatchedTxnsByEntityId(issuanceSettlementEntityId);
+		logger.info("settlementTransactions : " + settlementTransactions.toString());
 		if (StringUtil.isListNotNullNEmpty(settlementTransactions)) {
 			response.setSettlementEntity(settlementTransactions);
 		}
+		logger.info("Exiting :: FeeReportServiceImpl :: getAllMatchedTxnsByEntityId");
 		return response;
 	}
 	

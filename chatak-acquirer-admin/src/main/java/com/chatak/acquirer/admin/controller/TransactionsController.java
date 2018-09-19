@@ -34,6 +34,7 @@ import com.chatak.acquirer.admin.exception.ChatakPayException;
 import com.chatak.acquirer.admin.service.RestPaymentService;
 import com.chatak.acquirer.admin.service.SettlementService;
 import com.chatak.acquirer.admin.service.TransactionService;
+import com.chatak.acquirer.admin.util.CommonUtil;
 import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
@@ -678,7 +679,7 @@ public class TransactionsController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-txnType", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transaction-file-exportutil-status", null,
+        messageSource.getMessage("reports.label.transactions.txnstatus", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("login.label.username", null, LocaleContextHolder.getLocale())};
     return new ArrayList<String>(Arrays.asList(headerArr));
@@ -700,8 +701,8 @@ public class TransactionsController implements URLMappingConstants {
           transaction.getTerminal_id(),
           transaction.getTxnDescription(), transaction.getRef_transaction_id(),
           transaction.getBatchId(), Long.parseLong(transaction.getMaskCardNumber()), transaction.getLocalCurrency(),
-          Double.parseDouble(transaction.getTransactionAmount()), transaction.getFee_amount(),
-          transaction.getTxn_total_amount(),
+          CommonUtil.toAmount(transaction.getTransactionAmount()), CommonUtil.toAmount(transaction.getFee_amount()),
+          CommonUtil.toAmount(transaction.getTxn_total_amount()),
           transaction.getTransaction_type().toUpperCase(),
           transaction.getMerchantSettlementStatus(), transaction.getUserName()
 

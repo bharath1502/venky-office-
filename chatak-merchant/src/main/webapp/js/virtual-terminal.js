@@ -180,9 +180,11 @@ function doAdd() {
 	var subTot = get('subTotalDiv').value ? get('subTotalDiv').value : 0;
 	
 	var total = parseFloat(subTot);
-	
-	get('totalAmtDiv').value = parseFloat(total).toFixed(2);
-
+	if (parseFloat(total).toFixed(2) == 'NaN') {
+		get('totalAmtDiv').value = '';
+	} else {
+		get('totalAmtDiv').value = parseFloat(total).toFixed(2);
+	}
 }
 
 function doRefundAdd() {
@@ -190,8 +192,11 @@ function doRefundAdd() {
 	var subTot = get('subTotalDiv').value ? get('subTotalDiv').value : 0;
 	var feeAmp = get('feeAmountDiv').value ? get('feeAmountDiv').value : 0;
 	var total = parseFloat(subTot) + parseFloat(feeAmp);
-	get('totalAmtDiv').value = parseFloat(total).toFixed(2);
-
+	if (parseFloat(total).toFixed(2) == 'NaN') {
+		get('totalAmtDiv').value = '';
+	} else {
+		get('totalAmtDiv').value = parseFloat(total).toFixed(2);
+	}
 }
 
 function doAddAdjust() {
@@ -276,3 +281,13 @@ function validateVoidTrans() {
 	}
 }
 
+function searchValidationForTransaction(){
+	if(!clientValidation('transactionId','gateway_id','transactionIdError')
+			| !clientValidation('processCode','mobile_optional','processCodeError')
+			| !clientValidation('cardHolderName','passport_number','cardHolderNameError')
+			| !clientValidation('fromAmtRange','amount_False','fromAmtRangeError')
+			| !clientValidation('toAmtRange','amount_False','toAmtRangeError')){
+		return false;
+	}
+	return true;
+}

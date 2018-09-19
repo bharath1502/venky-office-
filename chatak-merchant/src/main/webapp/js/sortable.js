@@ -82,6 +82,9 @@ if ( settings.tableArray.length ) {
 	} );
 }
 
+if(this[ 0 ] == undefined || this[ 0 ] == null){
+	return;
+}
 var tableID = this[ 0 ].id;
 var tableParent = '#sortable'+ tableID;
 var trH = $tbtr.height();
@@ -236,6 +239,10 @@ var scrollTimeout;
 		}, settings.timeout );
 	} );
 } )();
+
+if(this[ 0 ] == undefined || this[ 0 ] == null) {	
+	return;
+}
 
 // reference for scrolling calculation
 var fromShortViewport = ( $window.height() <= settings.shortViewportH ) ? 1 : 0;

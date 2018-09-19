@@ -43,8 +43,7 @@ import com.chatak.pg.user.bean.BankRequest;
 import com.chatak.pg.user.bean.BankResponse;
 import com.chatak.pg.user.bean.GetBankListResopnse;
 import com.chatak.pg.util.CommonUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
+import com.chatak.pg.util.StringUtils;
 
 @Service
 public class BankServiceImpl implements BankService, PGConstants {
@@ -141,11 +140,19 @@ public class BankServiceImpl implements BankService, PGConstants {
       bank.setSettlRoutingNumber(pgBank.getSettlRoutingNumber());
       bank.setExtension(pgBank.getExtension());
       bank.setSettlAccountNumber(pgBank.getSettlAccountNumber());
-      bank.setContactPersonCell(pgBank.getContactPersonCell().replaceAll("[-+.^:,]",""));
+      if (StringUtils.isNotNullAndEmpty(pgBank.getContactPersonCell())) {
+    	  bank.setContactPersonCell(pgBank.getContactPersonCell().replaceAll("[-+.^:,]",""));		
+      } else {
+    	  bank.setContactPersonCell(pgBank.getContactPersonCell());
+      }
       bank.setContactPersonEmail(pgBank.getContactPersonEmail());
       bank.setContactPersonFax(pgBank.getContactPersonFax());
       bank.setContactPersonName(pgBank.getContactPersonName());
-      bank.setContactPersonPhone(pgBank.getContactPersonPhone().replaceAll("[-+.^:,]",""));
+      if (StringUtils.isNotNullAndEmpty(pgBank.getContactPersonPhone())) {
+    	  bank.setContactPersonPhone(pgBank.getContactPersonPhone().replaceAll("[-+.^:,]",""));		
+      } else {
+    	  bank.setContactPersonPhone(pgBank.getContactPersonPhone());
+      }
       CurrencyDTO currencyDTO = currencyService.getCurrencyConfigById(pgBank.getCurrencyId());
       bank.setCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha());
     }
@@ -200,7 +207,7 @@ public class BankServiceImpl implements BankService, PGConstants {
       response.setErrorMessage(messageSource.getMessage("chatak.bank.pm.association.error", null,
           LocaleContextHolder.getLocale()));
     }
-    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+    logger.info("Exiting :: BankServiceImpl :: deleteBankByName");
     return response;
   }
 
@@ -348,7 +355,7 @@ public class BankServiceImpl implements BankService, PGConstants {
         }
         Set<BankProgramManagerMap> set = programManagerDao.findByBankId(pgBank.getId());
         if (!set.isEmpty()) {
-          LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Select bank linked to " + set.size() + " Entitie(s)");
+          logger.info("Select bank linked to " + set.size() + " Entitie(s)");
           bankResponse.setErrorCode(ActionErrorCode.ERROR_CODE_01);
           bankResponse.setErrorMessage(messageSource.getMessage("chatak.bank.pm.association.error",
               null, LocaleContextHolder.getLocale()));

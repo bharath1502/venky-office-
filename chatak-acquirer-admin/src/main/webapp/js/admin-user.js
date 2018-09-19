@@ -12,14 +12,13 @@
 }
 
 function validUserName() {
-	var reg = /^[A-Za-z0-9]{8,16}$/;
 	var userName = get('userName').value.trim();
 	
 	if (isEmpty(userName)) {
 		setDiv('userNameDiv', webMessages.adminUserUserName);
 		loadMsgTitleText();
 		return false;
-	} else if (reg.test(userName) == false) {
+	} else if (userNameRegex.test(userName) == false) {
 		setDiv('userNameDiv', webMessages.canContainAlphanumerics);
 		loadMsgTitleText();
 		return false;
@@ -550,4 +549,14 @@ function validEntityName() {
 		setDiv('entityIdDiv', '');
 		return true;
 	}
+}
+
+function searchUserDetails(){
+	if(!clientValidation('firstName','middle_name','firstnameerror')
+			| !clientValidation('lastName','middle_name','lastnameerror')
+			| !clientValidation('emailId','email_search','emailerror')
+			| !clientValidation('phone','contact_phone_search','phonenumerror')){
+		return false;
+	}
+	return true;
 }

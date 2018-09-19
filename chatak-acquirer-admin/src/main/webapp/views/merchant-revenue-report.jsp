@@ -50,8 +50,8 @@
 						<!--Success and Failure Message Start-->
 						<div class="col-xs-12">
 							<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-								<span class="red-error" style="font-size: 13px;">&nbsp;${error }</span> <span
-									class="green-error">&nbsp;${sucess }</span>
+								<span class="red-error" style="font-size: 13px;">&nbsp;${error }</span> 
+								<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 							</div>
 						</div>
 						<form:form action="getMerchantRevenueReportPagination" name="paginationForm" method="post">
@@ -117,8 +117,8 @@
 												<c:if test="${feeReportRequest.getEntityType() eq 'Admin' || feeReportRequest.getEntityType() eq 'Program Manager'}">
 												<fieldset class="col-sm-3">
 													<label><spring:message code="admin.iso.label.message"/><span
-														class="required-field">*</span></label>
-													<form:select id="isoId" path="isoId" onclick="validateISO()"
+														class="required-field"></span></label>
+													<form:select id="isoId" path="isoId" 
 														cssClass="form-control" >
 														<form:option value=""><spring:message code="fee-report.label.select"/></form:option>
 														<c:if test="${not empty isoRequestsList}">
@@ -202,9 +202,9 @@
 										<c:forEach items="${feeTransactionList}" var="transaction">
 											<tr>
 												<td><a href="javascript:showAllTxnsForIso('${transaction.issuanceSettlementEntityId }')" style="text-decoration: underline;">${transaction.merchantId }</a></td>
-												<td>${transaction.acquirerAmount }</td>
-												<td>${transaction.issAmount }</td>
-												<td>${transaction.merchantAmount }</td>
+												<td><fmt:formatNumber value="${transaction.acquirerAmount/100.0}"/></td>
+												<td><fmt:formatNumber value="${transaction.issAmount/100.0}"/></td>
+												<td><fmt:formatNumber value="${transaction.merchantAmount/100.0}"/></td>
 												<td>${transaction.batchId }</td>
 											</tr>
 										</c:forEach>
@@ -377,8 +377,7 @@
 		setDiv('errorDiv','');
 		if(!clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
 				| !clientValidation('transToDate', 'endDate','transToDateErrorDiv') 
-				| !validatePM()
-				| !validateISO()){
+				| !validatePM()){
 			return false;
 		}
 		return true;

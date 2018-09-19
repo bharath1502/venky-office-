@@ -62,8 +62,8 @@
 								<!--Success and Failure Message Start-->
 								<div class="col-xs-12">
 									<div class="descriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-										<span class="red-error">&nbsp;${error }</span> <span
-											class="green-error">&nbsp;${sucess }</span>
+										<span class="red-error">&nbsp;${error }</span> 
+										<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 									</div>
 								</div>
 								<form:form action="getPaymentSchemeInfo" name="paginationForm" method="post">

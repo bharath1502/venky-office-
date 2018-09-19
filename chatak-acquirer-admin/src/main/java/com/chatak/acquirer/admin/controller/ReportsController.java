@@ -118,7 +118,7 @@ public class ReportsController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("accounts-manual-debit.label.merchantorsubmerchantcode", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("reports.label.balancereports.manualtransactions.transactionID",
+        messageSource.getMessage("home.label.accounttransactionid",
             null, LocaleContextHolder.getLocale()),
         messageSource.getMessage("currency-search-page.label.currencycode", null,
             LocaleContextHolder.getLocale()),
@@ -611,7 +611,7 @@ public class ReportsController implements URLMappingConstants {
   
   private void setExportDetailsDataForDownloadGlobalBalanceReport(
       List<AccountBalanceReportDTO> balanceReportList, ExportDetails exportDetails) {
-    exportDetails.setReportName("Balance_");
+    exportDetails.setReportName("Balance_Reports_");
     exportDetails.setHeaderMessageProperty("chatak.header.global.bal.reports.messages");
 
     exportDetails.setHeaderList(getGlobalBalanceHeaderList());
@@ -789,8 +789,8 @@ public class ReportsController implements URLMappingConstants {
 
       Object[] rowData = {accData.getUserName(), accData.getBusinessName(),
           accData.getAccCreationDate(), accData.getAccountNumber(),
-          accData.getAccountType(), accData.getCurrency(), Double.parseDouble(accData.getAvailableBalance()),
-          Double.parseDouble(accData.getCurrentBalance()), accData.getStatus()
+          accData.getAccountType(), accData.getCurrency(), String.format("%.2f", Double.parseDouble(accData.getAvailableBalance())),
+          String.format("%.2f", Double.parseDouble(accData.getCurrentBalance())), accData.getStatus()
 
       };
       fileData.add(rowData);

@@ -730,3 +730,10 @@ function doAjaxRoleNameDuplicate() {
 		}
 	});
 }
+
+function searchRoleName(){
+	if(!clientValidation('roleName','firstlast_name_notmend','roleNameError')){
+		return false;
+	}
+	return true;
+}

@@ -1,9 +1,11 @@
 package com.chatak.acquirer.admin.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.TransactionResponse;
+import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntityHistory;
 import com.chatak.pg.bean.settlement.SettlementMerchantDetails;
 import com.chatak.pg.model.FeeReportRequest;
 import com.chatak.pg.user.bean.GetBatchReportRequest;
@@ -27,5 +29,7 @@ public interface SettlementReportService {
   public List<SettlementMerchantDetails> fetchMerchantDetailsByMerchantCode(String merchantCode);
   
   public void insertDataFromIssuanceSettlementTransaction();
+ 
+  public PGSettlementEntityHistory findByBatchFileDateandAcqpmid(Long pmId, Timestamp date);
 
 }

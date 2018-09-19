@@ -3,9 +3,11 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
@@ -41,6 +44,7 @@ import com.chatak.pg.acq.dao.repository.TerminalRepository;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.user.bean.AddMerchantRequest;
 import com.chatak.pg.user.bean.AddMerchantResponse;
 import com.chatak.pg.user.bean.UpdateMerchantRequest;
@@ -182,16 +186,19 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       }
       merchant = merchantRepository.save(merchant);
 
+      PGAccount pgAccount = new PGAccount();
+
       //Inserting into PgApplicationClient table for OAuth Token Related changes
       if (merchant != null) {
         PGApplicationClient applicationClient = com.chatak.pg.dao.util.StringUtil.getApplicationClientDTO();
         applicationClient.setAppClientId(addMerchantRequest.getUserName());
         applicationClient.setAppAuthUser(addMerchantRequest.getUserName());
         applicationClientRepository.save(applicationClient);
+
+        pgAccount.setEntityId(merchant.getMerchantCode());
       }
 
       merchantRepository.findByUserName(addMerchantRequest.getUserName());
-      PGAccount pgAccount = new PGAccount();
       pgAccount.setAccountDesc(PGConstants.ACC_DESC);
    // Generating Merchant AccountNumber
       String accountNumber = Properties.getProperty("merchant.account.number.series");
@@ -207,7 +214,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       pgAccount.setCurrentBalance(PGConstants.ZERO);
       pgAccount.setFeeBalance(PGConstants.ZERO);
       pgAccount.setCurrency(addMerchantRequest.getLocalCurrency());
-      pgAccount.setEntityId(merchant.getMerchantCode());
       pgAccount.setAutoSettlement(addMerchantRequest.getAutoSettlement());
       if (null != parentMerchant) {
         pgAccount.setEntityType(PGConstants.SUB_MERCHANT);
@@ -226,7 +232,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       pgAccount.getPgMerchantBank().setCreatedBy(Long.valueOf(addMerchantRequest.getCreatedBy()));
       pgAccount.getPgMerchantBank().setCurrencyCode(addMerchantRequest.getBankCurrencyCode()); // Need to change later
       pgAccount.getPgMerchantBank().setCreatedDate(DateUtil.getCurrentTimestamp());
-      pgAccount.getPgMerchantBank().setMerchantId(merchant.getMerchantCode());
+      pgAccount.getPgMerchantBank().setMerchantId(getMerchantCode(merchant));
       pgAccount.getPgMerchantBank().setStatus(addMerchantRequest.getBankStatus());
       pgAccount.getPgMerchantBank().setUpdatedDate(pgAccount.getPgMerchantBank().getCreatedDate());
       pgAccount.getPgMerchantBank().setNameOnAccount(addMerchantRequest.getBankNameOnAccount());
@@ -268,6 +274,14 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
     logger.info("MerchantUpdateDaoImpl | addmerchant | Exiting");
     return addMerchantResponse;
   }
+  
+	/**
+	 * @param merchant
+	 * @return
+	 */
+	private String getMerchantCode(PGMerchant merchant) {
+		return merchant.getMerchantCode();
+	}
 
   private void setPGMerchantConfig(AddMerchantRequest addMerchantRequest, Timestamp currentDate,
 		PGMerchantConfig pgMerchantConfig) {
@@ -841,5 +855,36 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 	@Override
 	public List<PGMerchantEntityMap> findByEntityIdAndEntitytype(Long entityId, String entityType) {
 		return merchantEntityMapRepository.findByEntityIdAndEntitytype(entityId, entityType);
+	}
+
+	@Override
+	public PGMerchant getMerchantAutoSettlementByCode(String merchantCode) {
+		//return merchantRepository.getMerchantAutoSettlementByCode(merchantCode);
+		// PERF >> Return only 2 columns instead of the complete object
+		PGMerchant merchant = new PGMerchant();
+		
+		Query qry = entityManager
+				.createNativeQuery("select pgm.ID, pgmc.AUTO_SETTLEMENT from PG_MERCHANT pgm join PG_MERCHANT_CONFIG pgmc on pgm.MER_CONFIG_ID = pgmc.MER_CONFIG_ID "
+						+ "and pgm.MERCHANT_CODE = :merchantCode");
+		qry.setParameter("merchantCode", merchantCode);
+
+		List<Object> list = qry.getResultList();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			Iterator it = list.iterator();
+			while (it.hasNext()) {
+				Object[] objs = (Object[]) it.next();
+
+				Long id = StringUtil.isNull(objs[0]) ? null : ((BigInteger) objs[0]).longValue();
+				Integer autoSettlement = StringUtil.isNull(objs[1]) ? null : ((BigInteger) objs[1]).intValue();
+				
+				PGMerchantConfig config = new PGMerchantConfig();
+				config.setAutoSettlement(autoSettlement);
+				
+				merchant.setId(id);
+				merchant.setMerchantConfig(config);
+			}
+		}
+		
+		return merchant;
 	}
 }

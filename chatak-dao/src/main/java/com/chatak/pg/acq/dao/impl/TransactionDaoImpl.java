@@ -44,8 +44,6 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.DateUtils;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -317,6 +315,7 @@ public class TransactionDaoImpl implements TransactionDao {
                 isAcqChannel(getTransactionsListRequest.getAcqChannel()), isCardHolderNameLike(
                     getTransactionsListRequest.getCardHolderName()),
             isMerchantSettlementStatus(getTransactionsListRequest.getMerchantSettlementStatus()),
+            isMerchantBusinessNameLike(getTransactionsListRequest.getMerchantBusinessName()),
             isValidTxn(getTransactionsListRequest.getFromAmtRange(),
                 getTransactionsListRequest.getToAmtRange()),
             QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
@@ -772,11 +771,12 @@ public class TransactionDaoImpl implements TransactionDao {
 		if (!CollectionUtils.isEmpty(tupleList)) {
 			for (Tuple tuple : tupleList) {
 			  cardProgramRequest = new CardProgramRequest();
-			  cardProgramRequest.setIin(tuple.get(QCardProgram.cardProgram.iin));
+			  cardProgramRequest.setIin((tuple.get(QCardProgram.cardProgram.iin) != null)
+		                ? (tuple.get(QCardProgram.cardProgram.iin)) : null);
 		        cardProgramRequest.setIinExt(((tuple.get(QCardProgram.cardProgram.iinExt) != null)
 		                ?  (tuple.get(QCardProgram.cardProgram.iinExt)) : null));
-		        cardProgramRequest.setPartnerIINCode(((tuple.get(QCardProgram.cardProgram.partnerIINCode) != null)
-		                ? (Long.valueOf(tuple.get(QCardProgram.cardProgram.partnerIINCode))) : 0));
+		        cardProgramRequest.setPartnerIINCode((tuple.get(QCardProgram.cardProgram.partnerIINCode) != null)
+		                ? (tuple.get(QCardProgram.cardProgram.partnerIINCode)) : null);
 		        CardProgramRequestList.add(cardProgramRequest);
 			}
 		}
@@ -795,8 +795,8 @@ public class TransactionDaoImpl implements TransactionDao {
 	 * @return
 	 */
 	private String cardInfo(CardProgramRequest card) {
-		return ((card.getIin() != 0) ? card.getIin().toString() : "")
-				+ ((card.getPartnerIINCode() != 0) ? card.getPartnerIINCode().toString() : "")
+		return ((card.getIin() != null) ? card.getIin() : "")
+				+ ((card.getPartnerIINCode() != null) ? card.getPartnerIINCode() : "")
 				+ ((card.getIinExt() != null) ? card.getIinExt() : "");
 	}
 
@@ -853,11 +853,7 @@ public class TransactionDaoImpl implements TransactionDao {
 				settlementEntity.setBatchDate(tuple.get(QPGTransaction.pGTransaction.batchDate));
 				settlementEntity.setSettlementBatchStatus(tuple.get(QPGTransaction.pGTransaction.settlementBatchStatus));
 				
-				if(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
-				    && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.ISO_USER_TYPE)){
-					settlementEntity.setIsoAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.credit)));
-					settlementEntity.setIsoId(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityId));
-				}
+				settlementEntityAmoutAndId(settlementEntity, tuple);
 				
 				if(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
 				    && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.PM_USER_TYPE)){
@@ -875,6 +871,14 @@ public class TransactionDaoImpl implements TransactionDao {
 		log.info("TransactionDaoImpl | getPgTransactions :: Returning records: " + list.size());
 		log.info("TransactionDaoImpl | getPgTransactions :: Exit");
 		return list;
+	}
+
+	private void settlementEntityAmoutAndId(SettlementEntity settlementEntity, Tuple tuple) {
+		if (tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType) != null
+				&& tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.ISO_USER_TYPE)) {
+			settlementEntity.setIsoAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.credit)));
+			settlementEntity.setIsoId(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityId));
+		}
 	}
 
 	private BooleanExpression isTerminalIdEq(String terminalId) {
@@ -952,7 +956,7 @@ public class TransactionDaoImpl implements TransactionDao {
 	}
 	
 	public void saveorUpdate(List<String> pgTxnIdsList) {
-		LogHelper.logEntry(log, LoggerMessage.getCallerName());
+		log.info("Entering :: TransactionDaoImpl :: saveorUpdate");
 		StringBuilder sb = new StringBuilder();
 		sb.append(" update PG_TRANSACTION set SETTLEMENT_BATCH_STATUS = :status ");
 		sb.append(" where TRANSACTION_ID  in (:pg_Txnid) ");
@@ -960,18 +964,18 @@ public class TransactionDaoImpl implements TransactionDao {
 		qry.setParameter("pg_Txnid", pgTxnIdsList);
 		qry.setParameter("status", Constants.EXECUTED_STATUS);
 		qry.executeUpdate();
-		LogHelper.logExit(log, LoggerMessage.getCallerName() + " Updated Successfully");
+		log.info("Exiting :: TransactionDaoImpl :: saveorUpdate :: Updated Successfully");
 	}
 	
 	public synchronized String generateTransactionRefNumber() throws DataAccessException {
-		LogHelper.logEntry(log, LoggerMessage.getCallerName());
+	    log.info("Entering :: TransactionDaoImpl :: generateTransactionRefNumber");
 		String transRefNumber = null;
 		List list = entityManager.createNativeQuery("select `udf_txn_ref_num`();").getResultList();
 		if (StringUtil.isListNotNullNEmpty(list)) {
 			transRefNumber = list.get(0).toString();
 		}
-		LogHelper.logInfo(log, LoggerMessage.getCallerName(), " : " + "Generated trans ref number is" + transRefNumber);
-		LogHelper.logExit(log, LoggerMessage.getCallerName());
+		log.info(" : " + "Generated trans ref number is" + transRefNumber);
+		log.info("Exiting :: TransactionDaoImpl :: generateTransactionRefNumber");
 		return transRefNumber;
 	}
 	

@@ -44,8 +44,6 @@ import com.chatak.pg.user.bean.GetBankListResopnse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -358,7 +356,7 @@ public class BankDaoImpl implements BankDao {
 			
 			Set<BankProgramManagerMap> set = bankProgramManagerRepository.findByBankId(pgBank.getId());
 	        if (!set.isEmpty()) {
-	          LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Select bank linked to " + set.size() + " Entitie(s)");
+	          logger.info("Select bank linked to " + set.size() + " Entitie(s)");
 	          bankDeleteResponse.setErrorCode(ActionErrorCode.ERROR_CODE_01);
 	          return bankDeleteResponse;
 	        }

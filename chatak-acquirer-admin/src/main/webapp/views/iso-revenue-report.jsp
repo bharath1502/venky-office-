@@ -50,8 +50,8 @@
 						<!--Success and Failure Message Start-->
 						<div class="col-xs-12">
 							<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-								<span class="red-error" style="font-size: 13px;">&nbsp;${error }</span> <span
-									class="green-error">&nbsp;${sucess }</span>
+								<span class="red-error" style="font-size: 13px;">&nbsp;${error }</span> 
+								<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 							</div>
 						</div>
 						<form:form action="getIsoRevenueReportPagination" name="paginationForm" method="post">
@@ -80,6 +80,7 @@
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 												<c:if test="${feeReportRequest.getEntityType() eq 'ISO' || feeReportRequest.getEntityType() eq 'Program Manager'}">
 												<fieldset class="col-md-3 col-sm-6">
+												<td><fmt:formatNumber value="${transaction.pmAmount/100}"/></td>
 													<label><spring:message code="fee-report.label.pm.name" /></label>
 													<form:input id="programManagerId" cssClass="form-control" path="programManagerName" readonly="true" />
 													<div class="discriptionErrorMsg">
@@ -202,9 +203,9 @@
 										<c:forEach items="${feeTransactionList}" var="transaction">
 											<tr>
 												<td><a href="javascript:showAllTxnsForIso('${transaction.issuanceSettlementEntityId }')" style="text-decoration: underline;">${transaction.merchantId }</a></td>
-												<td>${transaction.acquirerAmount }</td>
-												<td>${transaction.issAmount }</td>
-												<td>${transaction.isoAmount }</td>
+												<td><fmt:formatNumber value="${transaction.acquirerAmount/100.0}"/></td>
+												<td><fmt:formatNumber value="${transaction.issAmount/100.0}"/></td>
+												<td><fmt:formatNumber value="${transaction.isoAmount/100.0}"/></td>
 												<td>${transaction.batchId }</td>
 											</tr>
 										</c:forEach>

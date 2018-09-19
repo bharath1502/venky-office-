@@ -163,9 +163,6 @@ public class ExecutedTransactionsController implements URLMappingConstants {
     logger.info("Entering :: ExecutedTransactionsController :: executedTransactionsReport method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_EXECUTED_TRANSACTIONS);
 
-    if (!StringUtil.isNullAndEmpty(requestFrom) && "dashobard".equals(requestFrom)) {
-      modelAndView.setViewName(CHATAK_ADMIN_HOME);
-    }
 
     List<AccountTransactionDTO> executedTxnsList = null;
     try {
@@ -175,6 +172,12 @@ public class ExecutedTransactionsController implements URLMappingConstants {
           (List<AccountTransactionDTO>) session.getAttribute(Constants.EXECUTED_TXN_LIST);
       if (null != executedTxnsList) {
         transaction = new GetTransactionsListRequest();
+        transaction.setPageSize(Integer.parseInt("20"));
+        transaction.setPageIndex(Constants.ONE);
+        if (!StringUtil.isNullAndEmpty(requestFrom) && "dashobard".equals(requestFrom)) {
+        	transaction.setPageSize(Integer.parseInt("10"));
+        	modelAndView.setViewName(CHATAK_ADMIN_HOME);
+        }
         transactionResponse = new TransactionResponse();
         List<String> txnCodeList = new ArrayList<>(Constants.ELEVEN);
         validateTxnCodeList(txnCodeList);
@@ -330,10 +333,6 @@ public class ExecutedTransactionsController implements URLMappingConstants {
         .info("Entering :: ExecutedTransactionsController :: processingTransactionsReport method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_PROCESSING_TRANSACTIONS);
 
-    if (!StringUtil.isNullAndEmpty(requestFrom) && "dashobard".equals(requestFrom)) {
-      modelAndView.setViewName(CHATAK_ADMIN_HOME);
-    }
-
     List<AccountTransactionDTO> processingTxnList = null;
     try {
       GetTransactionsListRequest transaction = null;
@@ -341,7 +340,13 @@ public class ExecutedTransactionsController implements URLMappingConstants {
       processingTxnList =
           (List<AccountTransactionDTO>) session.getAttribute(Constants.PROCESSING_TXN_LIST);
       if (null != processingTxnList) {
-        transaction = new GetTransactionsListRequest();
+    	  transaction = new GetTransactionsListRequest();
+          transaction.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
+          transaction.setPageIndex(Constants.ONE);
+          if (!StringUtil.isNullAndEmpty(requestFrom) && "dashobard".equals(requestFrom)) {
+          	transaction.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
+          	modelAndView.setViewName(CHATAK_ADMIN_HOME);
+          }
         transactionResponse = new TransactionResponse();
         List<String> txnCodeList = new ArrayList<>(Constants.NINE);
         validateTxnCodeList(txnCodeList);
@@ -386,6 +391,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
     if (downloadAllRecords) {
       transaction.setPageIndex(Constants.ONE);
       transaction.setPageSize(totalRecords);
+    }
       GetTransactionsListResponse executedTxnList =
           transactionService.searchAccountTransactions(transaction);
       if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
@@ -397,7 +403,6 @@ public class ExecutedTransactionsController implements URLMappingConstants {
         processingTxnList = transactionResponse.getAccountTxnList() != null
             ? transactionResponse.getAccountTxnList() : new ArrayList<AccountTransactionDTO>();
       }
-    }
     return processingTxnList;
   }
 

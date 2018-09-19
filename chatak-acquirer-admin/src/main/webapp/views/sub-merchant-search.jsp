@@ -109,8 +109,8 @@
 								<!--Success and Failure Message Start-->
 								<div class="col-xs-12">
 									<div class="discriptionMsg col-xs-12">
-										<span class="red-error">&nbsp;${error }</span> <span
-											class="green-error">&nbsp;${sucess }</span>
+										<span class="red-error">&nbsp;${error }</span> 
+										<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 									</div>
 								</div>
 								<!--Success and Failure Message End-->
@@ -124,56 +124,56 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.submerchantcode" /></label>
 													<form:input cssClass="form-control" path="subMerchantCode"
-														id="subMerchantCode" maxlength="15"/>
+														id="subMerchantCode" maxlength="15" onblur="clientValidation('subMerchantCode','merchant_ID','subMerchantCodeEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="subMerchantCodeEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.merchantname" /></label>
 													<form:input cssClass="form-control" path="businessName"
-														id="businessName" />
+														id="businessName" onblur="clientValidation('businessName','companyname_not_mandatory','businessNameEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="businessNameEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="admin.pm.Name.message" /></label>
 													<form:input cssClass="form-control" path="programManagerName"
-														id="firstName" />
+														id="programManagerName" onblur="clientValidation('programManagerName','companyname_not_mandatory','programManagerNameEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="programManagerNameEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 													<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="admin.iso.label.message" /></label>
 													<form:input cssClass="form-control" path="isoName"
-														id="isoName" />
+														id="isoName" onblur="clientValidation('isoName','companyname_not_mandatory','isoNameEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="isoNameEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="admin.cardprogramname" /></label>
 													<form:input cssClass="form-control" path="cardProgramName"
-														id="lastName" />
+														id="cardProgramName" onblur="clientValidation('cardProgramName','middle_name','cardProgramNameEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="cardProgramNameEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.E-mailID" /></label>
 													<form:input cssClass="form-control" path="emailId"
-														id="emailId" />
+														id="emailId" onblur="clientValidation('emailId','email_Id','emailIdEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="emailIdEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.city" /></label>
-													<form:input cssClass="form-control" path="city" id="city" />
+													<form:input cssClass="form-control" path="city" id="city" onblur="clientValidation('city','middle_name','cityEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="cityEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -223,7 +223,7 @@
 										<div class="col-sm-12 form-action-buttons">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<input type="submit" class="form-control button pull-right" onclick="return trimUserData()"
+												<input type="submit" class="form-control button pull-right" onclick="return validateSpecialCharactersSubMerchant();trimUserData()"
 													value="<spring:message code="manage.buttton.sub-merchant.search" />"> <input type="button"
 													class="form-control button pull-right" value="<spring:message code="manage.buttton.sub-merchant.reset" />"
 													onclick="goToSubMerchantSearch()">

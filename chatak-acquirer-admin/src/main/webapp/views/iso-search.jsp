@@ -109,8 +109,8 @@
 													<label><spring:message code="admin.iso.Name.message" /></label>
 													<form:input id="isoName"
 														path="isoName" maxlength="100"
-														cssClass="form-control" />
-													<div class="discriptionErrorMsg">
+														cssClass="form-control" onblur="clientValidation('isoName','companyname_not_mandatory','isonameerrormsg')"/>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top">
 														<span id="isonameerrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
@@ -118,8 +118,8 @@
 													<label><spring:message
 															code="admin.BusinessEntityName.message" /></label>
 													<form:input path="programManagerRequest.businessName" maxlength="50"
-														cssClass="form-control" id="businessEntityName" />
-													<div class="discriptionErrorMsg">
+														cssClass="form-control" id="businessEntityName" onblur="clientValidation('businessEntityName','companyname_not_mandatory','isobusinessentityerrormsg')" />
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top">
 														<span id="isobusinessentityerrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
@@ -127,8 +127,8 @@
 													<label><spring:message
 															code="users.label.phonenumber" /></label>
 													<form:input path="programManagerRequest.contactPhone" maxlength="10"
-														cssClass="form-control" id="contactPhone" />
-													<div class="discriptionErrorMsg">
+														cssClass="form-control" id="contactPhone" onblur="clientValidation('contactPhone','mobile_optional','isocontactphoneerrormsg')"/>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top">
 														<span id="isocontactphoneerrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
@@ -136,8 +136,8 @@
 													<label><spring:message
 															code="userList-file-exportutil-emailId" /></label>
 													<form:input path="programManagerRequest.contactEmail" id="isoEmailId"
-														cssClass="form-control" maxlength="50" />
-													<div class="discriptionErrorMsg">
+														cssClass="form-control" maxlength="50" onblur="clientValidation('isoEmailId','email_Id','isoEmailId_ErrorDiv')"/>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top">
 														<span id="isoEmailId_ErrorDiv"
 															class="red-error">&nbsp;</span>
 													</div>
@@ -180,7 +180,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
-													value="<spring:message code="common.label.search"/>">
+													value="<spring:message code="common.label.search"/>" onclick="return validateSpecialCharactersISO()">
 												<a href="showIsoSearch"
 													class="form-control button pull-right"><spring:message
 														code="common.label.reset" /></a>
@@ -416,6 +416,7 @@
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/validation.js"></script>
 	<script src="../js/program-manager.js"></script>
 	<script src="../js/iso.js"></script>
 	<script src="../js/messages.js"></script>

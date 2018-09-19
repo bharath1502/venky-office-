@@ -8,19 +8,7 @@ function goToCurrencySearch() {
 }
 
 function openCancelConfirmationPopup() {
-
-	if ((isEmpty(get('currencyName').value.trim()))
-			&& (isEmpty(get('currencyCodeNumeric').value.trim()))
-			&& (isEmpty(get('currencyCodeAlpha').value.trim()))
-			&& (isEmpty(get('currencySeparatorPosition').value.trim()))
-			&& (isEmpty(get('currencyThousandsUnit').value.trim()))
-			&& (isEmpty(get('currencyMinorUnit').value.trim()))) {
-		window.location.href = 'show-currency-search';
-	}
-
-	else {
-		$('#my_popup1').popup("show");
-	}
+	$('#my_popup1').popup("show");
 }
 
 function closeCancelConfirmationPopup() {
@@ -162,7 +150,7 @@ function validateStatus() {
 }
 
 function validatecurrencyThousSeparatorUnit() {
-	var regex = /^[.,']+$/;
+	var regex = /^[.,]+$/;
 	var currencyThousandsUnit = get('currencyThousandsUnit').value.trim();
 	if (isEmpty(currencyThousandsUnit)) {
 		setError(get('currencyThousandsUnit'),
@@ -179,7 +167,7 @@ function validatecurrencyThousSeparatorUnit() {
 }
 
 function validatecurrencyMinorSeparatorUnit() {
-	var regex = /^[.,']+$/;
+	var regex = /^[.,]+$/;
 	var currencyMinorUnit = get('currencyMinorUnit').value.trim();
 	if (isEmpty(currencyMinorUnit)) {
 		setError(get('currencyMinorUnit'),
@@ -200,7 +188,8 @@ function validateCreateCurrency() {
 			| !validateCurrencyCodeAlpha()
 			| !validateCurrencySeparatorPosition()
 			| !validatecurrencyMinorSeparatorUnit()
-			| !validatecurrencyThousSeparatorUnit()) {
+			| !validatecurrencyThousSeparatorUnit()
+			| !validateCurrencyExport()) {
 		return false;
 	}
 	return true;
@@ -261,8 +250,26 @@ function validateCurrencyNumeric() {
 }
 
 function validateSearchData() {
-	if (!validateCurrencyAlpha() | !validateCurrencyNumeric()) {
+	if (!validateCurrencyAlpha() | !validateCurrencyNumeric() | !clientValidation('currencyName','firstlast_name_notmend','currencyName_Error') | !clientValidation('currencyExponent','amount_False','currencyExponentEr')) {
 		return false;
 	}
 	return true;
+}
+
+function validateCurrencyExport() {
+	var currencyexponent = get('currencyExponent').value.trim();
+	var spaceRegx = /^[0-4]/;
+
+	if (isEmpty(currencyexponent)) {
+		setError(get('currencyExponent'),	webMessages.validationthisfieldismandatory);
+		return false;
+	} 
+	else if (!spaceRegx.test(currencyexponent)) {
+		setError(get('currencyExponent'),	webMessages.providebetweenzerotofour);
+		return false;
+	}
+	else {
+		setError(get('currencyExponent'), '');
+		return true;
+	}
 }

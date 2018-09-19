@@ -1,6 +1,7 @@
 package com.chatak.pg.acq.dao.model;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -22,7 +23,7 @@ public class PGTransaction implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "ID")
-  private Long id;
+  private BigInteger id;
 
   @Column(name = "TRANSACTION_ID")
   private String transactionId;
@@ -208,11 +209,11 @@ public class PGTransaction implements Serializable {
   @Column(name = "ISS_PARTNER")
   private String issuancePartner;
 
-  public Long getId() {
+  public BigInteger getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(BigInteger id) {
     this.id = id;
   }
 

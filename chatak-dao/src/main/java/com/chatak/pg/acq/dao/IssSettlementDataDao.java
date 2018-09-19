@@ -24,5 +24,9 @@ public interface IssSettlementDataDao {
 	
 	public List<PGIssSettlementData> findByAcqPmIdAndBatchDate(Long programManagerId,  Timestamp batchDate);
 
+	public List<PGIssSettlementData> findByProgramManagerIdByStatus(Long programManagerId, String status);
+
+	public List<PGIssSettlementData> getIssSettlementData(Long programManagerId, Timestamp batchDate);
+
 
 }

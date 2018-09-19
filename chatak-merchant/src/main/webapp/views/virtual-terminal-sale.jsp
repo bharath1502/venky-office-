@@ -101,19 +101,22 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
+					<c:if test="${fn:contains(existingFeatures,virtualTerminalSale)}">
 					<div class="tab-header-container-first active-background">
 						<a href="#"><spring:message code="virtual-terminal-sale.label.sale"/></a>
 					</div>
+					</c:if>
 					<%-- <div class="tab-header-container">
 						<a href="virtual-pre-auth"><spring:message code="virtual-terminal-sale.label.preauth"/></a>
 					</div>
 					<div class="tab-header-container">
 						<a href="virtual-terminal-pre-auth-completion"><spring:message code="virtual-terminal-sale.label.preauthlookup"/></a>
 					</div> --%>
+					<c:if test="${fn:contains(existingFeatures,virtualTerminalRefund)}">
 					<div class="tab-header-container" id="refundOption">
 						<a href="virtual-terminal-refund"><spring:message code="virtual-terminal-sale.label.refund"/></a>
 					</div>
-				
+				   </c:if>
 					<%-- <div class="tab-header-container">
 						<a href="virtual-terminal-void"><spring:message code="virtual-terminal-sale.label.void"/></a>
 					</div> --%>
@@ -273,7 +276,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.zipcode"/><span class="required-field">*</span></label>
 													<form:input path="zip" cssClass="form-control"
 														id="zipcodeDiv"
-															maxlength="6" onblur="this.value=this.value.trim();validZipcode('zipcodeDiv','zipcodeErrorDiv')" />
+															maxlength="6" onblur="this.value=this.value.trim(),validZipcode();" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error" id="zipcodeErrorDiv">&nbsp;</span>
 													</div>

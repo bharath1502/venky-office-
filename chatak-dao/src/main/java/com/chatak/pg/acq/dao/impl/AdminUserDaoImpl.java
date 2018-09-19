@@ -425,9 +425,9 @@ public class AdminUserDaoImpl implements AdminUserDao {
      * @return
      */
     @Override
-    public List<AdminUserDTO> searchAdminUserList() {
+    public List<AdminUserDTO> searchAdminUserList(String userType) {
         List<AdminUserDTO> userAdminListData = new ArrayList<AdminUserDTO>();
-        List<PGAdminUser> userAdminList = adminUserDaoRepository.findByPassRetryCount(Integer.parseInt("3"));
+        List<PGAdminUser> userAdminList = adminUserDaoRepository.findByPassRetryCountAndUserTypeAndStatusNotLike(Integer.parseInt("3"), userType, PGConstants.STATUS_DELETED);
         AdminUserDTO userData = null;
         if ( null != userAdminList) {
             for (PGAdminUser pgadminuser : userAdminList) {

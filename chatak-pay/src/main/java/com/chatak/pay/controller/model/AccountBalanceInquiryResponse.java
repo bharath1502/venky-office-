@@ -5,7 +5,7 @@ package com.chatak.pay.controller.model;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.chatak.pg.model.AccountBalanceDTO;

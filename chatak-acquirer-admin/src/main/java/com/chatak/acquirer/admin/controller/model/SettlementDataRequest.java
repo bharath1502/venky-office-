@@ -1,12 +1,13 @@
 package com.chatak.acquirer.admin.controller.model;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 
 public class SettlementDataRequest {
 	
 	private Long programManagerId;
-	private BigInteger totalAmount;
+	private BigDecimal totalAmount;
 	private Timestamp batchDate;
 	private Integer totalTxnCount;
 	private String programManagerName;
@@ -42,11 +43,11 @@ public class SettlementDataRequest {
 		this.programManagerId = programManagerId;
 	}
 
-	public BigInteger getTotalAmount() {
+	public BigDecimal getTotalAmount() {
 		return totalAmount;
 	}
 
-	public void setTotalAmount(BigInteger totalAmount) {
+	public void setTotalAmount(BigDecimal totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 

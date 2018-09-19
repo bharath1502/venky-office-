@@ -83,8 +83,8 @@
 								<!--Success and Failure Message Start-->
 								<div class="col-xs-12">
 									<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-										<span class="red-error">${error}</span> <span
-											class="green-error">${sucess}</span>
+										<span class="red-error">${error}</span> 
+										<span id="sucessDiv" class="green-error">${sucess}</span>
 									</div>
 								</div>
 
@@ -130,10 +130,10 @@
 											<div class="field-element-row">
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fee-program-search.label.feeprogramname" /></label>
-													<form:input path="feeProgramName" id="feeProgramName"
+													<form:input path="feeProgramName" id="feeProgramName" onblur="clientValidation('feeProgramName', 'companyname_not_mandatory','feeProgramNameEr')"
 														cssClass="form-control" onkeydown="validateSpace(this)"/>
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top">
+														<span id="feeProgramNameEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<%-- <fieldset class="col-sm-3">
@@ -179,7 +179,7 @@
 										<div class="col-sm-12 form-action-buttons">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<input type="submit" class="form-control button pull-right" onclick="return trimUserData()"
+												<input type="submit" class="form-control button pull-right" onclick="return validateFeeProgramName();trimUserData()"
 													value="<spring:message code="fee-program-search.label.searchbutton" />"> <input type="button"
 													class="form-control button pull-right" value="<spring:message code="fee-program-search.label.resetbutton" />"
 													onclick="resetFeeSearch()">
@@ -478,6 +478,7 @@
 	<script src="../js/sortable.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/validation.js"></script>
 	<script src="../js/messages.js"></script>
 	<script src="../js/feeprogram.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -551,6 +552,11 @@
 									});
 							});
 							});
+		
+		
+		$(document).ready(function() {
+			$(".glyphicon-trash").hide();
+		});
 	</script>
 </body>
 </html>

@@ -43,7 +43,7 @@ public interface UserService {
 	
 	public UserData validateUserName(String userName) throws ChatakAdminException;
 	
-	public List<AdminUserDTO> searchAdminUserList() throws ChatakAdminException;
+	public List<AdminUserDTO> searchAdminUserList(String userType) throws ChatakAdminException;
 	
 	public List<AdminUserDTO> searchMerchantUserList() throws ChatakAdminException;
 	

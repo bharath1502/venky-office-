@@ -9,7 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -22,7 +23,6 @@ import com.chatak.pay.controller.model.SplitStatusResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
 import com.chatak.pay.exception.SplitTransactionException;
-import com.chatak.pay.processor.impl.CardPaymentProcessorImpl;
 import com.chatak.pay.service.PGSplitTransactionService;
 import com.chatak.pay.service.PGTransactionService;
 import com.chatak.pg.acq.dao.RefundTransactionDao;
@@ -75,7 +75,7 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
   @Autowired
   RefundTransactionDao refundTransactionDao;
 
-  private static Logger log = Logger.getLogger(PGSplitTransactionServiceImpl.class);
+  private static Logger log = LogManager.getLogger(PGSplitTransactionServiceImpl.class);
 
   protected String txnRefNum = RandomGenerator.generateRandNumeric(PGConstants.LENGTH_TXN_REF_NUM);
 
@@ -224,8 +224,7 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
 	    minuites = Long.parseLong(String.valueOf(currentDateAndTime.getMinutes()))
 	        - simpleDateFormat.parse(requestTime.toString()).getMinutes();
       } catch (ParseException e) {
-        Logger.getLogger(PGSplitTransactionServiceImpl.class)
-            .error("Error :: PGSplitTransactionServiceImpl :: validateRequestTime", e);
+        log.error("Error :: PGSplitTransactionServiceImpl :: validateRequestTime", e);
       }
 	return minuites;
   }

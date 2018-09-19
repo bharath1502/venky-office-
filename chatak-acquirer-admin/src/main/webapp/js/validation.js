@@ -23,11 +23,26 @@ var ValidationRules = {
 		mandatory : true
 
 	},
+	
+	firstlast_name_notmend : {
+		type : "alphanumericDotAndSpace",
+		min : "",
+		max : "20",
+		mandatory : false
+	},
 
 	fax : {
 		type : "numeric",
 		min : "9",
 		max : "15",
+		mandatory : false
+
+	},
+	
+	extension_not_mandatory : {
+		type : "numeric",
+		min : "0",
+		max : "50",
 		mandatory : false
 
 	},
@@ -41,13 +56,12 @@ var ValidationRules = {
 	},
 
 	company_name : {
-		type : "all",
+		type : "alphanumericDotAndSpace",
 		min : "2",
 		max : "50",
 		mandatory : true
 
 	},
-	
 	zip_code : {
 		type : "alphanumeric",
 		min : "4",
@@ -104,6 +118,14 @@ var ValidationRules = {
 		mandatory : true
 
 	},
+	
+	email_search : {
+		type : "email",
+		min : "0",
+		max : "50",
+		mandatory : false
+
+	},
 
 	confirmemail : {
 		type : "confirmemail",
@@ -122,7 +144,7 @@ var ValidationRules = {
 	},
 
 	address2 : {
-		type : "all",
+		type : "addressField",
 		min : "0",
 		max : "50",
 		mandatory : false
@@ -182,6 +204,13 @@ var ValidationRules = {
 		mandatory : true
 	},
 	
+	url :{
+		type : "is_url",
+		min : "2",
+		max : "30",
+		mandatory : false
+		
+	},
 	
 	zip : {
 		type : "numeric",
@@ -286,7 +315,7 @@ var ValidationRules = {
 	},
 
 	bank_address2 : {
-		type : "all",
+		type : "addressField",
 		min : "0",
 		max : "50",
 		mandatory : false
@@ -419,7 +448,6 @@ var ValidationRules = {
 		mandatory : false
 
 	},
-
 	passport_number : {
 		type : "alphanumeric",
 		min : "2",
@@ -427,7 +455,7 @@ var ValidationRules = {
 		mandatory : false
 
 	},
-
+	
 	question : {
 		type : "dropdown",
 		min : "0",
@@ -468,7 +496,7 @@ var ValidationRules = {
 	
 
 	business_entity_name : {
-		type : "all",
+		type : "alphanumericDotAndSpace",
 		min : "2",
 		max : "50",
 		mandatory : true
@@ -504,6 +532,14 @@ var ValidationRules = {
 		min : "8",
 		max : "14",
 		mandatory : true
+
+	},
+	
+	contact_phone_search : {
+		type : "mobile",
+		min : "8",
+		max : "14",
+		mandatory : false
 
 	},
 
@@ -855,6 +891,13 @@ var ValidationRules = {
 		mandatory : true
 	},
 	
+	card_Number_search : {
+		type : "numeric",
+		min : "12",
+		max : "19",
+		mandatory : false
+	},
+	
 	remap_ToAgent : {
 		type : "alphanumeric",
 		min : "",
@@ -948,13 +991,37 @@ var ValidationRules = {
 		max : "15",
 		mandatory : true
 	},
+	
 	program_manager_name : {
-		type : "all",
+		type : "alphanumericDotAndSpace",
 		min : "2",
 		max : "100",
 		mandatory : true
-	}
-	 
+	},
+	companyname_not_mandatory : {
+		type : "alphanumericDotAndSpace",
+		min : "2",
+		max : "50",
+		mandatory : false
+	},
+	email_Id : {
+		type : "email",
+		min : "0",
+		max : "50",
+		mandatory : false
+	},
+	merchant_ID : {
+		type : "numeric",
+		min : "14",
+		max : "16",
+		mandatory : false
+	},
+	bank_Code : {
+		type : "numeric",
+		min : "0",
+		max : "30",
+		mandatory : false
+	},
 };
 
 var validationType;
@@ -990,6 +1057,17 @@ function clientValidation(field_id, field_name,div_id) {
 				   return false;
 		} 
 		
+		if (ValidationRules[name].type == "is_url") {
+			if (!is_url(data, div_id)){
+				return false;
+			}
+
+		}
+		
+		if (ValidationRules[name].type == "alphanumericDotAndSpace") {
+			if(!alphanumericDotAndSpace(data,div_id))
+				   return false;
+		} 
 		if (ValidationRules[name].type == "numericWithDash") {
 			if(!numericWithDash(data,div_id))
 				   return false;
@@ -1000,9 +1078,14 @@ function clientValidation(field_id, field_name,div_id) {
 				   return false;
 		} 
 		
+		if (ValidationRules[name].type == "addressField") {
+			if (!addressField(data, div_id))
+				return false;
+		}
+		
 		if(ValidationRules[name].type == "alphanumeric"){
-			alphaNumeric(data,div_id);
-			
+			if(!alphaNumeric(data, div_id))
+				return false;
 		}
 		
 		if(ValidationRules[name].type == "alphanumsplchar"){
@@ -1107,7 +1190,17 @@ function alpha(data,div_id) {
 			return false;
 		}
 	}
-	
+function alphanumericDotAndSpace(data,div_id) {
+	var regex = /^[a-zA-Z0-9 .]*$/;
+	if (regex.test(data)) {
+		setDiv(div_id,"");
+		return true;
+	} else {
+		setDiv(div_id,webMessages.cancontain_alphanumerics_dot_space);
+		loadMsgTitleText();
+		return false;
+	}
+}	
 	function numericWithDash(data,div_id) {
 		var regex = /^[0-9-]*$/;
 		if (regex.test(data)) {
@@ -1622,14 +1715,27 @@ function specialchar(data,div_id)  {
 		return flag;
 	}
 	
-//	function validateRadio(err) {
-//	if (get('No').checked == false
-//			&& get('Yes').checked == false) {
-//		setDiv(err, webMessages.pleaseSelectOne);
-//		return false;
-//	}else{
-//		setDiv(err, '');
-//		return true;
-//		
-//	}
-//}
+	function is_url(data, div_id)
+	{
+	 var regex = /(\w)+\.(\w)+\.(\w)/ ;
+	 if (regex.test(data)) {
+			setDiv(div_id, "");
+			return true;
+
+		} else {
+			setDiv(div_id, webMessages.invalidWebSiteAddress);
+			return false;
+
+		}       
+	}
+	
+	function addressField(data, div_id) {
+	var regex = /^[A-Za-z0-9,-._\/\s#]{1,60}$/;
+	if (regex.test(data)) {
+		setDiv(div_id, "");
+		return true;
+	} else {
+		setDiv(div_id, webMessages.address_should_contains_message);
+		return false;
+	}
+}

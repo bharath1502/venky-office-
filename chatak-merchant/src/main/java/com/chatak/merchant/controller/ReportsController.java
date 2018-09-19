@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +35,7 @@ import com.chatak.merchant.service.RestPaymentService;
 import com.chatak.merchant.service.TransactionService;
 import com.chatak.merchant.util.ExportUtil;
 import com.chatak.merchant.util.JsonUtil;
+import com.chatak.merchant.util.PaginationUtil;
 import com.chatak.merchant.util.StringUtil;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
@@ -134,12 +136,14 @@ public class ReportsController implements URLMappingConstants {
     transactionsListRequest.setTo_date(toDate);
     transactionsListRequest.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
     transactionsListRequest.setEntryMode(revenueType);
+    transactionsListRequest.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
+    transactionsListRequest.setPageIndex(Constants.ONE);
 
     Long merchantId = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
     PGMerchant pgMerchant = merchantInfoService.getMerchantOnId(merchantId);
     String parentMerchantCode = merchantInfoService.getParentMerchantCode(merchantCode);
     String currency = pgMerchant.getLocalCurrency();
-
+    session.setAttribute(Constants.CURRENCY, currency);
     if (null != pgMerchant) {
       if (fetchMerchantCode(merchantCode, pgMerchant, parentMerchantCode)) {
         transactionsListRequest.setMerchant_code(merchantCode);
@@ -149,26 +153,29 @@ public class ReportsController implements URLMappingConstants {
         modelAndView.addObject(Constants.ERROR, messageSource.getMessage(
             "chatak.invalid.submerchant.error.message", null, LocaleContextHolder.getLocale()));
         modelAndView.addObject(Constants.TRANSACTION_DIV, Boolean.FALSE);
-        modelAndView.addObject("startDate", fromDate);
-        modelAndView.addObject("endDate", toDate);
+        modelAndView.addObject(Constants.START_DATE, fromDate);
+        modelAndView.addObject(Constants.END_DATE, toDate);
         modelAndView.addObject(Constants.CURRENCY, currency);
-        modelAndView.addObject("rapidRevenue", rapidRevenue);
-        modelAndView.addObject("subMerRevenue", subMerRevenue);
-        modelAndView.addObject("merchantRevenue", merchantRevenue);
+        modelAndView.addObject(Constants.RAPID_REVENUE, rapidRevenue);
+        modelAndView.addObject(Constants.SUB_MER_REVENUE, subMerRevenue);
+        modelAndView.addObject(Constants.MERCHANT_REVENUE, merchantRevenue);
         modelAndView.addObject(Constants.REVENUE_GENERATED_REPORT_LIST,
             new ArrayList<ReportsDTO>());
         return modelAndView;
       }
     }
     try {
+    	 session.setAttribute(Constants.TRANSACTIONS_LIST_REQUEST, transactionsListRequest);
       List<ReportsDTO> revenueGeneratedReportList =
           transactionService.getAllExecutedAccTransFeeOnDate(transactionsListRequest);
-      
       if(revenueGeneratedReportList == null) {
         modelAndView.addObject(Constants.ERROR,
             Properties.getProperty("chatak.admin.revenue.error.message"));
         return modelAndView;
       }
+         int totalcount = 0;
+         totalcount = getTotalCount(revenueGeneratedReportList, totalcount);
+         modelAndView.addObject(Constants.TOTAL_RECORDS,totalcount);
       
         for (ReportsDTO reportsDto : revenueGeneratedReportList) {
           getSystemRevenueAmount(rapidRevenue, reportsDto);
@@ -188,14 +195,22 @@ public class ReportsController implements URLMappingConstants {
         fetchRevenueType(revenueType, modelAndView);
         session.setAttribute(Constants.REVENUE_GENERATED_REPORT_LIST, revenueGeneratedReportList);
         modelAndView.addObject(Constants.TRANSACTION_DIV, Boolean.TRUE);
-        modelAndView.addObject("startDate", fromDate);
-        modelAndView.addObject("endDate", toDate);
+        modelAndView.addObject(Constants.START_DATE, fromDate);
+        modelAndView.addObject(Constants.END_DATE, toDate);
         modelAndView.addObject(Constants.CURRENCY, currency);
-        modelAndView.addObject("rapidRevenue", rapidRevenue);
-        modelAndView.addObject("subMerRevenue", subMerRevenue);
-        modelAndView.addObject("merchantRevenue", merchantRevenue);
+        modelAndView.addObject(Constants.RAPID_REVENUE, rapidRevenue);
+        session.setAttribute(Constants.RAPID_REVENUE, rapidRevenue);
+        modelAndView.addObject(Constants.SUB_MER_REVENUE, subMerRevenue);
+        session.setAttribute(Constants.SUB_MER_REVENUE, subMerRevenue);
+        modelAndView.addObject(Constants.MERCHANT_REVENUE, merchantRevenue);
+        session.setAttribute(Constants.REVENUE_TYPE, StringUtil.isNullAndEmpty(revenueType)?Constants.ALL:revenueType);
+        session.setAttribute(Constants.MERCHANT_REVENUE, merchantRevenue);
         modelAndView.addObject(Constants.REVENUE_GENERATED_REPORT_LIST, revenueGeneratedReportList);
-
+        if(!revenueGeneratedReportList.isEmpty()) {
+        	modelAndView = PaginationUtil.getPagenationModel(modelAndView, revenueGeneratedReportList.get(0).getNoOfRecords());
+        } else {
+        	modelAndView = PaginationUtil.getPagenationModel(modelAndView, Constants.ACTIVE_STATUS);
+        }
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -204,6 +219,53 @@ public class ReportsController implements URLMappingConstants {
     logger.info("Exiting:: ReportsController:: showGlobalRevenueGeneratedReport method");
     return modelAndView;
   }
+
+	private int getTotalCount(List<ReportsDTO> revenueGeneratedReportList, int totalcount) {
+		if (!revenueGeneratedReportList.isEmpty()) {
+			totalcount = revenueGeneratedReportList.get(0).getNoOfRecords();
+		}
+		return totalcount;
+	}
+  
+	@RequestMapping(value = CHATAK_MERCHANT_TRANSACTION_REVENUE_PAGINATION, method = RequestMethod.POST)
+	public ModelAndView getPaginationList(final HttpSession session, HttpServletRequest request,
+			@FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
+			@FormParam(Constants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
+		logger.info("Entering:: SubMerchantController:: getPaginationList method");
+		ModelAndView modelAndView = new ModelAndView(SHOW_GLOBAL_REVENUE_GENERATED_REPORT);
+		try {
+			GetTransactionsListRequest transactionsListRequest = (GetTransactionsListRequest) session
+					.getAttribute(Constants.TRANSACTIONS_LIST_REQUEST);
+			transactionsListRequest.setPageIndex(pageNumber);
+			transactionsListRequest.setNoOfRecords(totalRecords);
+			List<ReportsDTO> revenueGeneratedReportList = transactionService
+					.getAllExecutedAccTransFeeOnDate(transactionsListRequest);
+			if (!CollectionUtils.isEmpty(revenueGeneratedReportList)) {
+				modelAndView.addObject(Constants.PAGE_SIZE, transactionsListRequest.getPageSize());
+				modelAndView = PaginationUtil.getPagenationModel(modelAndView,
+						revenueGeneratedReportList.get(0).getNoOfRecords());
+				modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_LIST_PAGE_NUMBER, pageNumber);
+			    modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_LIST_BEGIN_PAGE_NUM, Constants.ONE);
+				session.setAttribute(Constants.TOTAL_RECORDS, totalRecords);
+				modelAndView.addObject(Constants.TRANSACTION_DIV, Boolean.TRUE);
+				modelAndView.addObject(Constants.PAGE_NUMBER, pageNumber);
+				modelAndView.addObject(Constants.START_DATE, transactionsListRequest.getFrom_date());
+				modelAndView.addObject(Constants.END_DATE, transactionsListRequest.getTo_date());
+				modelAndView.addObject(Constants.REVENUE_TYPE, session.getAttribute(Constants.REVENUE_TYPE));
+				modelAndView.addObject(Constants.CURRENCY, session.getAttribute(Constants.CURRENCY));
+				modelAndView.addObject(Constants.RAPID_REVENUE, session.getAttribute(Constants.RAPID_REVENUE));
+				modelAndView.addObject(Constants.SUB_MER_REVENUE, session.getAttribute(Constants.SUB_MER_REVENUE));
+				modelAndView.addObject(Constants.MERCHANT_REVENUE, session.getAttribute(Constants.MERCHANT_REVENUE));
+				modelAndView.addObject(Constants.REVENUE_GENERATED_REPORT_LIST, revenueGeneratedReportList);
+			}
+
+		} catch (Exception e) {
+			logger.error("ERROR:: SubMerchantController:: getPaginationList method", e);
+			modelAndView.addObject(Constants.ERROR, Properties.getProperty("prepaid.admin.general.error.message"));
+		}
+		logger.info("Exiting:: SubMerchantController:: getPaginationList method");
+		return modelAndView;
+	}
   
 private boolean fetchMerchantCode(String merchantCode, PGMerchant pgMerchant, String parentMerchantCode) {
 	return pgMerchant.getMerchantCode().equals(parentMerchantCode)
@@ -230,11 +292,21 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
   @RequestMapping(value = DOWNLOAD_REVENUE_GENERATED_REPORT, method = RequestMethod.POST)
   public ModelAndView downloadRevenueGeneratedReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      @FormParam("downloadType") final String downloadType, HttpServletResponse response) {
+      @FormParam("downloadType") final String downloadType,@FormParam("downloadAllRecords") final boolean downloadAllRecords,
+      @FormParam("totalRecords") final Integer totalRecords, HttpServletResponse response) {
     logger.info("Entering:: ReportsController:: downloadRevenueGeneratedReport method");
     ModelAndView modelAndView = new ModelAndView(SHOW_GLOBAL_REVENUE_GENERATED_REPORT);
-    List<ReportsDTO> revenueGeneratedList =
-        (List<ReportsDTO>) session.getAttribute(Constants.REVENUE_GENERATED_REPORT_LIST);
+    GetTransactionsListRequest transactionsListRequest = (GetTransactionsListRequest) session
+			.getAttribute(Constants.TRANSACTIONS_LIST_REQUEST);
+    transactionsListRequest.setPageIndex(downLoadPageNumber);
+    transactionsListRequest.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
+    if (downloadAllRecords) {
+    	transactionsListRequest.setPageIndex(Constants.ONE);
+    	transactionsListRequest.setPageSize(totalRecords);
+     }
+    
+    List<ReportsDTO> revenueGeneratedReportList = transactionService
+			.getAllExecutedAccTransFeeOnDate(transactionsListRequest);
     try {
       ExportDetails exportDetails = new ExportDetails();
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
@@ -243,7 +315,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
         exportDetails.setExportType(ExportType.XLS);
         exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
       }
-      setExportDetailsDataForDownloadRoleReport(revenueGeneratedList, exportDetails);
+      setExportDetailsDataForDownloadRoleReport(revenueGeneratedReportList, exportDetails);
       ExportUtil.exportData(exportDetails, response, messageSource);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR, messageSource
@@ -453,6 +525,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
       HttpServletRequest request, HttpServletResponse response,
       @FormParam("requestFrom") final String requestFrom,
       @FormParam("downloadType") final String downloadType,
+      @FormParam("totalRecords") final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering :: ReportsController :: processingTransactionsReport method");
 
@@ -463,9 +536,6 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
       return modelAndView;
     }
 
-    if (!StringUtil.isNullAndEmpty(requestFrom) && requestFrom.equals("dashobard")) {
-      modelAndView.setViewName(CHATAK_MERCHANT_DASH_BOARD);
-    }
     GetTransactionsListRequest transactionRequest = null;
     TransactionListResponse transactionResponse = null;
     List<AccountTransactionDTO> processingTxnList = null;
@@ -473,10 +543,16 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
       processingTxnList =
           (List<AccountTransactionDTO>) session.getAttribute(Constants.PROCESSING_TXN_LIST);
       if (null != processingTxnList) {
+    	  transactionRequest = new GetTransactionsListRequest();
+    	  transactionRequest.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
+    	  transactionRequest.setPageIndex(Constants.ONE);
+		  if (!StringUtil.isNullAndEmpty(requestFrom) && "dashobard".equals(requestFrom)) {
+			   transactionRequest.setPageSize(Constants.MAX_ENTITY_DISPLAY_SIZE);
+			   modelAndView.setViewName(CHATAK_MERCHANT_DASH_BOARD);
+		}
         Long merchantId = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
         if (merchantId != null) {
           GetMerchantDetailsResponse merchantDetailsResponse;
-          transactionRequest = new GetTransactionsListRequest();
           transactionResponse = new TransactionListResponse();
 
           merchantDetailsResponse =
@@ -568,7 +644,9 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
       HttpServletRequest request, HttpServletResponse response,
       @FormParam("requestFrom") final String requestFrom,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
+      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam("downloadAllRecords") final boolean downloadAllRecords,
+      @FormParam("downLoadPageNumber") final Integer downLoadPageNumber) {
     logger.info("Entering:: ReportsController:: executedTransactionsReport method");
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_EXECUTED_TRANSACTIONS);
@@ -578,20 +656,23 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
       return modelAndView;
     }
 
-    if (!StringUtil.isNullAndEmpty(requestFrom) && requestFrom.equals("dashobard")) {
-      modelAndView.setViewName(CHATAK_MERCHANT_DASH_BOARD);
-    }
-
     List<AccountTransactionDTO> executedTxnsList = null;
     try {
+      GetTransactionsListRequest transaction = null;
       executedTxnsList =
           (List<AccountTransactionDTO>) session.getAttribute(Constants.EXECUTED_TXN_LIST);
       if (null != executedTxnsList) {
+        transaction = new GetTransactionsListRequest();
+        transaction.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
+        transaction.setPageIndex(Constants.ONE);
+        if (!StringUtil.isNullAndEmpty(requestFrom) && "dashobard".equals(requestFrom)) {
+          transaction.setPageSize(Constants.MAX_ENTITY_DISPLAY_SIZE);
+          modelAndView.setViewName(CHATAK_MERCHANT_DASH_BOARD);
+        }
         GetMerchantDetailsResponse merchantDetailsResponse = null;
         Long merchantId = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
 
         if (merchantId != null) {
-          GetTransactionsListRequest transaction = new GetTransactionsListRequest();
           TransactionListResponse transactionResponse = new TransactionListResponse();
 
           merchantDetailsResponse =
@@ -606,7 +687,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
           transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
 
           processDownloadReport(response, downloadType, downloadAllRecords, executedTxnsList,
-              transaction, transactionResponse);
+              transaction, transactionResponse, totalRecords);
         }
       }
     } catch (Exception e) {
@@ -620,10 +701,12 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 
   private void processDownloadReport(HttpServletResponse response, final String downloadType,
       final boolean downloadAllRecords, List<AccountTransactionDTO> executedTxnsList,
-      GetTransactionsListRequest transaction, TransactionListResponse transactionResponse) throws  IOException {
+      GetTransactionsListRequest transaction, TransactionListResponse transactionResponse, Integer totalRecords) throws IOException {
     if (downloadAllRecords) {
-      executedTxnsList = fetchExecutedTxnList(executedTxnsList, transaction, transactionResponse);
+    	transaction.setPageIndex(Constants.ONE);
+	    transaction.setPageSize(totalRecords);
     }
+    executedTxnsList = fetchExecutedTxnList(executedTxnsList, transaction, transactionResponse);
     ExportDetails exportDetails = new ExportDetails();
     if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
       exportDetails.setExportType(ExportType.PDF);
@@ -875,7 +958,8 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
           transaction.getProcessedTime(),
           Long.parseLong(transaction.getTransactionId()),
           Long.parseLong(transaction.getPgTransactionId()), transaction.getCurrency(),
-          transaction.getType(), transaction.getDescription(),
+          transaction.getType(), !StringUtils.isNullAndEmpty(transaction.getDescription())
+		  ? transaction.getDescription().replaceAll("\t", "") : transaction.getDescription(),
           (!"".equals(transaction.getDebit())) ? Double.parseDouble(transaction.getDebit())
               : transaction.getDebit(),
           (!"".equals(transaction.getCredit())) ? Double.parseDouble(transaction.getCredit())

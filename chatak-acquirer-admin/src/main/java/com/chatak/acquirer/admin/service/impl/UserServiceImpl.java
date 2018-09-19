@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService, PGConstants {
       //Inserting into PgApplicationClient table for OAuth Token Related changes
       PGApplicationClient applicationClient =
           com.chatak.pg.dao.util.StringUtil.getApplicationClientDTO();
-      applicationClient.setAppClientId(merchantUser.getUserName());
+      applicationClient.setAppClientId(Properties.getProperty("prepaid.mpos.oauth.clientId"));
       applicationClient.setAppAuthUser(merchantUser.getUserName());
       merchantUserDao.saveOrUpdateApplicationClient(applicationClient);
 
@@ -649,8 +649,8 @@ public class UserServiceImpl implements UserService, PGConstants {
   }
 
   @Override
-  public List<AdminUserDTO> searchAdminUserList() throws ChatakAdminException {
-    return adminUserDao.searchAdminUserList();
+  public List<AdminUserDTO> searchAdminUserList(String userType) throws ChatakAdminException {
+    return adminUserDao.searchAdminUserList(userType);
   }
 
   @Override
@@ -660,6 +660,7 @@ public class UserServiceImpl implements UserService, PGConstants {
 
   @Override
   public Response unblockAdminUser(String userName) throws ChatakAdminException {
+	  logger.info("Entering :: UserServiceImpl :: unblockAdminUser method");
     PGAdminUser adminUser = adminUserDao.findByUserNameAndStatus(userName);
     Response response = new Response();
     if (null != adminUser) {
@@ -669,11 +670,13 @@ public class UserServiceImpl implements UserService, PGConstants {
       response.setErrorCode("00");
       response.setErrorMessage("SUCCESS");
     }
+    logger.info("Exit :: UserServiceImpl :: unblockAdminUser method");
     return response;
   }
 
   @Override
   public Response unblockMerchantUser(String userName) throws ChatakAdminException {
+	  logger.info("Entering :: UserServiceImpl :: unblockMerchantUser method");
     PGMerchantUsers merchantUsers = merchantUserDao.findByUserName(userName);
     Response response = new Response();
     if (null != merchantUsers) {
@@ -683,6 +686,7 @@ public class UserServiceImpl implements UserService, PGConstants {
       response.setErrorCode("00");
       response.setErrorMessage("SUCCESS");
     }
+    logger.info("Exit :: UserServiceImpl :: unblockMerchantUser method");
     return response;
   }
 

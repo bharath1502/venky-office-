@@ -1,6 +1,7 @@
 package com.chatak.pay.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.chatak.pg.bean.BillingData;
 import com.chatak.pg.util.CommonUtil;
@@ -19,7 +20,7 @@ public class CreditCardValidation {
     super();
   }
 
-  private static Logger logger = Logger.getLogger(CreditCardValidation.class);
+  private static Logger logger = LogManager.getLogger(CreditCardValidation.class);
 
   /**
    * @param args

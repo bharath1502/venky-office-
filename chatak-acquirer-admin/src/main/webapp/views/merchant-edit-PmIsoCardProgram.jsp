@@ -93,15 +93,12 @@
 				</tr>
 			</thead>
 			<c:choose>
-				<c:when test="${!(fn:length(selectedCardProgramList) eq 0) }">
+				<c:when test="${!(fn:length(cardProgramList) eq 0) }">
 				<%-- <c:set var="count" value="0" scope="page" /> --%>
-					<c:forEach items="${selectedCardProgramList}"
+					<c:forEach items="${cardProgramList}"
 						var="cardProgramDetail">
 						<c:if test="${not empty cardProgramDetail.programManagerId }">
-						<script>
-							setCardProgramId('${cardProgramDetail.cardProgramId}','${cardProgramDetail.cardProgramName}','${cardProgramDetail.programManagerId}');
-						</script>
-						<tr id="rowId${cardProgramDetail.cardProgramId}">
+						<tr id="rowId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}">
 							<td class="ellipsis" id="15">${cardProgramDetail.partnerName}&nbsp;</td>
 							<td class="ellipsis" id="15">${cardProgramDetail.cardProgramName}&nbsp;</td>
 							<td>${cardProgramDetail.iin}&nbsp;</td>
@@ -109,14 +106,19 @@
 							<td>${cardProgramDetail.iinExt}&nbsp;</td>
 							<td>${cardProgramDetail.entityName}&nbsp;</td>
 							<td>${cardProgramDetail.currency}&nbsp;</td>
+							<c:if test="${cardProgramDetail.selected eq true}">
 							<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}" type="checkbox" checked="checked" onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.cardProgramName}','${cardProgramDetail.entityName}','${cardProgramDetail.programManagerId}')"></td>
+							<script>
+							setCardProgramId('${cardProgramDetail.cardProgramId}','${cardProgramDetail.cardProgramName}','${cardProgramDetail.programManagerId}');
+							</script>												
+							</c:if>
+							<c:if test="${cardProgramDetail.selected eq false}">
+							<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}" type="checkbox"  onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.cardProgramName}','${cardProgramDetail.entityName}','${cardProgramDetail.programManagerId}')"></td>												
+							</c:if>
 						</tr>						
 						</c:if>
 						<c:if test="${not empty cardProgramDetail.isoId }">
-						<script>
-							setCardProgramId('${cardProgramDetail.cardProgramId}','${cardProgramDetail.cardProgramName}','${cardProgramDetail.isoId}');
-						</script>
-						<tr id="rowId${cardProgramDetail.cardProgramId}">
+						<tr id="rowId${cardProgramDetail.cardProgramId}${cardProgramDetail.isoId}">
 							<td class="ellipsis" id="15">${cardProgramDetail.partnerName}&nbsp;</td>
 							<td class="ellipsis" id="15">${cardProgramDetail.cardProgramName}&nbsp;</td>
 							<td>${cardProgramDetail.iin}&nbsp;</td>
@@ -124,7 +126,15 @@
 							<td>${cardProgramDetail.iinExt}&nbsp;</td>
 							<td>${cardProgramDetail.entityName}&nbsp;</td>
 							<td>${cardProgramDetail.currency}&nbsp;</td>
+							<c:if test="${cardProgramDetail.selected eq true}">
 							<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.isoId}" type="checkbox" checked="checked" onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.cardProgramName}','${cardProgramDetail.entityName}','${cardProgramDetail.isoId}')"></td>
+							<script>
+							setCardProgramId('${cardProgramDetail.cardProgramId}','${cardProgramDetail.cardProgramName}','${cardProgramDetail.isoId}');
+							</script>												
+							</c:if>
+							<c:if test="${cardProgramDetail.selected eq false}">
+							<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.isoId}" type="checkbox"  onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.cardProgramName}','${cardProgramDetail.entityName}','${cardProgramDetail.isoId}')"></td>												
+							</c:if>
 						</tr>						
 						</c:if>
 						<%-- <c:set var="count" value="${count + 1}" scope="page"/> --%>

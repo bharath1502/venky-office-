@@ -53,20 +53,27 @@
 					</div>
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
+					
+					<div class="col-xs-12">
+							<div class="discriptionMsg" data-toggle="tooltip"
+								data-placement="top" title="">
+								<span id="sucessDiv" class="green-error">${sucess}</span>
+							</div>
+						</div>
 
-						<form action="executed-transaction-details-pagination" name="paginationForm" method="post">
+						<form:form action="executed-transaction-details-pagination" name="paginationForm" method="post">
 							<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 							<input type="hidden" id="totalRecordsId" name="totalRecords" />
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
-						</form>
+						</form:form>
 
-						<form action="executed-transaction-details-report" name="downloadReport" method="post">
+						<form:form action="executed-transaction-details-report" name="downloadReport" method="post">
 							<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" />
 							<input type="hidden" id="downloadTypeId" name="downloadType" />
 							<input type="hidden" id="totalRecords" name="totalRecords" />
 							<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
-						</form>
+						</form:form>
 						<!-- Search Table Block Start -->
 						<div class="search-results-table">
 							<table class="table table-striped table-bordered table-condensed" style="margin-bottom: 0px;">
@@ -483,11 +490,11 @@
 		});
 	}
 	function getRefundBalance() {
-		
+		var csrfToken = $("input[name=CSRFToken]").val();
 		$.ajax({
 			type : "POST",
 			url : "chatak-partial-refund-balance",
-			data: { merchantCode: $('#refundMerchantId').val(), accountTransactionId: $('#refundAccountTransactionId').val()},
+			data: { merchantCode: $('#refundMerchantId').val(), accountTransactionId: $('#refundAccountTransactionId').val(), CSRFToken: csrfToken},
 			async:false,
 			success : function(response) {
 				

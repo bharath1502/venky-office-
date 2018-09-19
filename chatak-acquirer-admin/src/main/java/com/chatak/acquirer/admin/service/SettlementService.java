@@ -10,6 +10,7 @@ import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.pg.acq.dao.model.PGAccountFeeLog;
 import com.chatak.pg.acq.dao.model.PGAccountTransactions;
 import com.chatak.pg.acq.dao.model.PGTransaction;
+import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactionEntity;
 import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.exception.PrepaidAdminException;
@@ -58,5 +59,7 @@ public interface SettlementService {
 			String timeZoneOffset, String timeZoneRegion, String accountTransactionId);
   
   public List<PGAccountTransactions> getAccountTransactionsOnTransactionId(String pgTransactionId);
+
+  public List<ProgramManager> findByProgramMangerName(String pmName);
 }
 

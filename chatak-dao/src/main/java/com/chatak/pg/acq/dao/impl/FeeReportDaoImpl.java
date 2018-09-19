@@ -21,8 +21,8 @@ import org.springframework.stereotype.Repository;
 import com.chatak.pg.acq.dao.FeeReportDao;
 import com.chatak.pg.acq.dao.model.PGAccountTransactions;
 import com.chatak.pg.acq.dao.model.QPGTransaction;
-import com.chatak.pg.acq.dao.model.settlement.QPGSettlementEntity;
-import com.chatak.pg.acq.dao.model.settlement.QPGSettlementTransaction;
+import com.chatak.pg.acq.dao.model.settlement.QPGSettlementEntityHistory;
+import com.chatak.pg.acq.dao.model.settlement.QPGSettlementTransactionHistory;
 import com.chatak.pg.acq.dao.repository.AccountTransactionsRepository;
 import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.constants.PGConstants;
@@ -33,8 +33,6 @@ import com.chatak.pg.model.FeeReportResponse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -71,7 +69,7 @@ public class FeeReportDaoImpl implements FeeReportDao {
 	
 	@Override
 	public FeeReportResponse fetchFeeTransactions(FeeReportRequest feeReportRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportDaoImpl :: fetchFeeTransactions");
 		Integer pageIndex = feeReportRequest.getPageIndex();
         Integer pageSize = feeReportRequest.getPageSize();
         Integer offset = 0;
@@ -114,9 +112,9 @@ public class FeeReportDaoImpl implements FeeReportDao {
 			}
 			feeReportResponse.setFeeReportDto(feeReportList);
 		}catch(Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportDaoImpl :: fetchFeeTransactions : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportDaoImpl :: fetchFeeTransactions");
 		return feeReportResponse;
 	}
 
@@ -159,7 +157,7 @@ public class FeeReportDaoImpl implements FeeReportDao {
 				}
 				feeReportResponse.setSettlementEntity(settlementEntityList);
 			}catch(Exception e) {
-				LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+				logger.error("Error :: FeeReportDaoImpl :: fetchISOFeeTransactions : " + e.getMessage(), e);
 			}
 		return feeReportResponse;
 	}
@@ -177,7 +175,7 @@ public class FeeReportDaoImpl implements FeeReportDao {
 	}
 	
 	private int getTotalNumberOfFeeReportRecords(FeeReportRequest feeReportRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportDaoImpl :: getTotalNumberOfFeeReportRecords");
 		    StringBuilder feeReportBuilder = new StringBuilder();
 			feeReportBuilder.append("select a.isoid,a.ISO_NAME,sum(a.TotalAmount) from (");
 			feeReportBuilder.append(" select distinct iso.ID as isoid,iso.ISO_NAME,pgact.CREDIT as TotalAmount");
@@ -193,14 +191,14 @@ public class FeeReportDaoImpl implements FeeReportDao {
 			qry.setParameter(START_DATE, feeReportRequest.getFromDate());
 			qry.setParameter(END_DATE, feeReportRequest.getToDate());
 			List<Object> objectList = qry.getResultList();
-			LogHelper.logExit(logger, LoggerMessage.getCallerName());
+			logger.info("Exiting :: FeeReportDaoImpl :: getTotalNumberOfFeeReportRecords");
         return (objectList != null && !objectList.isEmpty() ? objectList
                 .size() : 0);
     }
 	
 	@Override
 	public FeeReportResponse fetchISORevenueTransactions(FeeReportRequest feeReportRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportDaoImpl :: fetchISORevenueTransactions");
 		
 		Timestamp startDate = null;
 		Timestamp endDate = null;
@@ -234,57 +232,57 @@ public class FeeReportDaoImpl implements FeeReportDao {
 				endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
 			}
 			JPAQuery query = new JPAQuery(entityManager);
-			List<Tuple> infoList = query.from(QPGSettlementEntity.pGSettlementEntity, QPGSettlementTransaction.pGSettlementTransaction)
-					.where(QPGSettlementEntity.pGSettlementEntity.acqPmId
+			List<Tuple> infoList = query.from(QPGSettlementEntityHistory.pGSettlementEntityHistory, QPGSettlementTransactionHistory.pGSettlementTransactionHistory)
+					.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
 							.eq(Long.valueOf(feeReportRequest.getProgramManagerId()))
 							.and(isValidDate(startDate, endDate))
-							.and(QPGSettlementEntity.pGSettlementEntity.id.eq(QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId)),
+							.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)),
 							 isIsoIdEq(feeReportRequest.getIsoId()))
-					.list(QPGSettlementEntity.pGSettlementEntity.merchantId,
-							QPGSettlementEntity.pGSettlementEntity.acqSaleAmount,
-							QPGSettlementEntity.pGSettlementEntity.issSaleAmount,
-							QPGSettlementEntity.pGSettlementEntity.batchid,
-							QPGSettlementTransaction.pGSettlementTransaction.isoAmount,QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId);
+					.list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
+							QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount,QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId);
 			if (StringUtil.isListNotNullNEmpty(infoList)) {
 				for (Tuple tuple : infoList) {
 					SettlementEntity settlementEntity = new SettlementEntity();
 					settlementEntity
-							.setIssuanceSettlementEntityId(tuple.get(QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId));
-					settlementEntity.setMerchantId(tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantId));
+							.setIssuanceSettlementEntityId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId));
+					settlementEntity.setMerchantId(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId));
 					settlementEntity.setAcquirerAmount(
-							tuple.get(QPGSettlementEntity.pGSettlementEntity.acqSaleAmount).toString());
-					settlementEntity.setIsoAmount(tuple.get(QPGSettlementTransaction.pGSettlementTransaction.isoAmount));
-					settlementEntity.setBatchId(tuple.get(QPGSettlementEntity.pGSettlementEntity.batchid));
+							tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount).toString());
+					settlementEntity.setIsoAmount(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount));
+					settlementEntity.setBatchId(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid));
 					settlementEntity
-							.setIssAmount(tuple.get(QPGSettlementEntity.pGSettlementEntity.issSaleAmount).toString());
+							.setIssAmount(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount).toString());
 					feeReportList.add(settlementEntity);
 				}
 			}
 			feeReportResponse.setSettlementEntity(feeReportList);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportDaoImpl :: fetchISORevenueTransactions : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportDaoImpl :: fetchISORevenueTransactions");
 		return feeReportResponse;
 		
 	}
 	
 	protected BooleanExpression isValidDate(Timestamp fromDate, Timestamp toDate) {
 		if ((fromDate != null && toDate == null)) {
-			return QPGSettlementEntity.pGSettlementEntity.batchFileProcessedDate.gt(fromDate);
+			return QPGSettlementEntityHistory.pGSettlementEntityHistory.batchFileProcessedDate.gt(fromDate);
 		} else if ((fromDate == null && toDate != null)) {
-			return QPGSettlementEntity.pGSettlementEntity.batchFileProcessedDate.lt(toDate);
+			return QPGSettlementEntityHistory.pGSettlementEntityHistory.batchFileProcessedDate.lt(toDate);
 		} else if ((fromDate == null))
 			return null;
-		return QPGSettlementEntity.pGSettlementEntity.batchFileProcessedDate.between(fromDate, toDate);
+		return QPGSettlementEntityHistory.pGSettlementEntityHistory.batchFileProcessedDate.between(fromDate, toDate);
 	}
 	
 	protected OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
-		return QPGSettlementEntity.pGSettlementEntity.batchFileProcessedDate.desc();
+		return QPGSettlementEntityHistory.pGSettlementEntityHistory.batchFileProcessedDate.desc();
 	}
 	
 	private int getTotalNumberOfIsoRevenueReportRecords(FeeReportRequest feeReportRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportDaoImpl :: getTotalNumberOfIsoRevenueReportRecords");
 		Timestamp startDate = null;
 		Timestamp endDate = null;
 		if (!CommonUtil.isNullAndEmpty(feeReportRequest.getFromDate())) {
@@ -294,47 +292,48 @@ public class FeeReportDaoImpl implements FeeReportDao {
 			endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
 		}
 		JPAQuery query = new JPAQuery(entityManager);
-		List<Tuple> list = query.from(QPGSettlementEntity.pGSettlementEntity, QPGSettlementTransaction.pGSettlementTransaction)
-				.where(QPGSettlementEntity.pGSettlementEntity.acqPmId
+		List<Tuple> list = query.from(QPGSettlementEntityHistory.pGSettlementEntityHistory, QPGSettlementTransactionHistory.pGSettlementTransactionHistory)
+				.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
 						.eq(Long.valueOf(feeReportRequest.getProgramManagerId()))
 						.and(isValidDate(startDate, endDate))
-						.and(QPGSettlementEntity.pGSettlementEntity.id.eq(QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId)),
+						.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)),
 						 isIsoIdEq(feeReportRequest.getIsoId()))
-				.list(QPGSettlementEntity.pGSettlementEntity.merchantId,
-						QPGSettlementEntity.pGSettlementEntity.acqSaleAmount,
-						QPGSettlementEntity.pGSettlementEntity.issSaleAmount,
-						QPGSettlementEntity.pGSettlementEntity.batchid,
-						QPGSettlementTransaction.pGSettlementTransaction.isoAmount,QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+				.list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
+						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount,QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId);
+		logger.info("Exiting :: FeeReportDaoImpl :: getTotalNumberOfIsoRevenueReportRecords");
 		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
 	
 	private BooleanExpression isIsoIdEq(Long isoid) {
 
-		return (isoid != null && !"".equals(isoid)) ? QPGSettlementTransaction.pGSettlementTransaction.isoId.eq(isoid)
+		return (isoid != null) ? QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoId.eq(isoid)
 				: null;
 	}
 	
 	private BooleanExpression isIssuanceSettlementEntityIdIdEq(Long issuanceSettlementEntityId) {
 
-		return (issuanceSettlementEntityId != null && !"".equals(issuanceSettlementEntityId)) ? QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId.eq(issuanceSettlementEntityId)
-				: null;
+		return QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId.eq(issuanceSettlementEntityId);
 	}
 	
 	@Override
 	public List<SettlementEntity> getAllMatchedTxnsByEntityId(Long issuanceSettlementEntityId) {
+		logger.info("Entering :: FeeReportDaoImpl :: getAllMatchedTxnsByEntityId");
 		List<SettlementEntity> feeReportList = new ArrayList<>();
 		JPAQuery query = new JPAQuery(entityManager);
+		logger.info(String.valueOf(issuanceSettlementEntityId));
 		List<Tuple> infoList = query
-				.from(QPGSettlementTransaction.pGSettlementTransaction, QPGTransaction.pGTransaction, QPGSettlementEntity.pGSettlementEntity)
+				.from(QPGSettlementTransactionHistory.pGSettlementTransactionHistory, QPGTransaction.pGTransaction, QPGSettlementEntityHistory.pGSettlementEntityHistory)
 				.where(isIssuanceSettlementEntityIdIdEq(issuanceSettlementEntityId)
 						.and(QPGTransaction.pGTransaction.transactionId
-								.eq(QPGSettlementTransaction.pGSettlementTransaction.pgTransactionId))
-						.and(QPGSettlementEntity.pGSettlementEntity.id.eq(QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId)))
-				.list(QPGSettlementTransaction.pGSettlementTransaction.terminalId,
-						QPGSettlementTransaction.pGSettlementTransaction.pgTransactionId,
-						QPGSettlementTransaction.pGSettlementTransaction.issuerTxnID,
-						QPGSettlementTransaction.pGSettlementTransaction.isoAmount,
+								.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId))
+						.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)))
+				.list(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.terminalId,
+						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId,
+						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuerTxnID,
+						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount,
 						QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionType,
 						QPGTransaction.pGTransaction.batchId, QPGTransaction.pGTransaction.txnTotalAmount,
 						QPGTransaction.pGTransaction.deviceLocalTxnTime, QPGTransaction.pGTransaction.issuancePartner,
@@ -345,18 +344,18 @@ public class FeeReportDaoImpl implements FeeReportDao {
 						QPGTransaction.pGTransaction.txnCurrencyCode, QPGTransaction.pGTransaction.panMasked,
 						QPGTransaction.pGTransaction.settlementBatchStatus, QPGTransaction.pGTransaction.acqTxnMode,
 						QPGTransaction.pGTransaction.acqChannel, QPGTransaction.pGTransaction.transactionType,
-						QPGTransaction.pGTransaction.invoiceNumber, QPGSettlementEntity.pGSettlementEntity.acqPmId, QPGSettlementTransaction.pGSettlementTransaction.isoId);
+						QPGTransaction.pGTransaction.invoiceNumber, QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId, QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoId);
 		if (StringUtil.isListNotNullNEmpty(infoList)) {
 			for (Tuple tuple : infoList) {
 				SettlementEntity settlementEntity = new SettlementEntity();
-				settlementEntity.setTerminalId(tuple.get(QPGSettlementTransaction.pGSettlementTransaction.terminalId));
+				settlementEntity.setTerminalId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.terminalId));
 				settlementEntity.setMerchantId(tuple.get(QPGTransaction.pGTransaction.merchantId));
-				settlementEntity.setPgTxnId(tuple.get(QPGSettlementTransaction.pGSettlementTransaction.pgTransactionId));
-				settlementEntity.setIssTxnId(tuple.get(QPGSettlementTransaction.pGSettlementTransaction.issuerTxnID));
+				settlementEntity.setPgTxnId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId));
+				settlementEntity.setIssTxnId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuerTxnID));
 				settlementEntity.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
 				settlementEntity.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
 				settlementEntity.setTransactionType(tuple.get(QPGTransaction.pGTransaction.transactionType));
-				settlementEntity.setTxnTotalAmount(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount));
+				settlementEntity.setTxnTotalAmount(BigDecimal.valueOf(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount)));
 				settlementEntity.setBatchDate(tuple.get(QPGTransaction.pGTransaction.batchDate));
 				settlementEntity.setUserName(tuple.get(QPGTransaction.pGTransaction.userName));
 				settlementEntity.setIssPartner(tuple.get(QPGTransaction.pGTransaction.issuancePartner));
@@ -371,19 +370,16 @@ public class FeeReportDaoImpl implements FeeReportDao {
 				settlementEntity.setAcqChannel(tuple.get(QPGTransaction.pGTransaction.acqChannel));
 				settlementEntity.setTxnType(tuple.get(QPGTransaction.pGTransaction.transactionType));
 				settlementEntity.setInVoiceNumber(tuple.get(QPGTransaction.pGTransaction.invoiceNumber));
-				settlementEntity.setAcqPmId(tuple.get(QPGSettlementEntity.pGSettlementEntity.acqPmId).toString());
-				settlementEntity.setIsoId(tuple.get(QPGSettlementTransaction.pGSettlementTransaction.isoId));
+				settlementEntity.setAcqPmId(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId).toString());
+				settlementEntity.setIsoId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoId));
 				
-				List<PGAccountTransactions> pgAccountTransactionsList = accountTransactionsRepository.findByPgTransactionId(tuple.get(QPGSettlementTransaction.pGSettlementTransaction.pgTransactionId));
+				List<PGAccountTransactions> pgAccountTransactionsList = accountTransactionsRepository.findByPgTransactionId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId));
 				for (PGAccountTransactions pgAccountTransaction : pgAccountTransactionsList) {
 					if(pgAccountTransaction.getEntityType().equals(Constants.ISO_USER_TYPE)){
 						Long isoAmount = pgAccountTransaction.getCredit();
 						settlementEntity.setIsoAmount(isoAmount);
 					} 
-					if(pgAccountTransaction.getEntityType().equals(Constants.PM_USER_TYPE)){
-						Long pmAmount = pgAccountTransaction.getCredit();
-						settlementEntity.setPmAmount(pmAmount);
-					}
+					setPmAmount(settlementEntity, pgAccountTransaction);
 					if(pgAccountTransaction.getEntityType().equals(PGConstants.MERCHANT)){
 						Long merchantAmount = pgAccountTransaction.getCredit();
 						settlementEntity
@@ -393,106 +389,117 @@ public class FeeReportDaoImpl implements FeeReportDao {
 				feeReportList.add(settlementEntity);
 			}
 		}
+		logger.info("Exiting :: FeeReportDaoImpl :: getAllMatchedTxnsByEntityId");
 		return feeReportList;
+	}
+
+	/**
+	 * @param settlementEntity
+	 * @param pgAccountTransaction
+	 */
+	private void setPmAmount(SettlementEntity settlementEntity, PGAccountTransactions pgAccountTransaction) {
+		if (pgAccountTransaction.getEntityType().equals(Constants.PM_USER_TYPE)) {
+			Long pmAmount = pgAccountTransaction.getCredit();
+			settlementEntity.setPmAmount(pmAmount);
+		}
 	}
 	
 	@Override
 	public FeeReportResponse fetchMerchantRevenueTransactions(FeeReportRequest feeReportRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
-		
-		Timestamp startDate = null;
-		Timestamp endDate = null;
+		logger.info("Entering :: FeeReportDaoImpl :: fetchMerchantRevenueTransactions");
 		Integer pageIndex = feeReportRequest.getPageIndex();
         Integer pageSize = feeReportRequest.getPageSize();
         Integer offset = 0;
         Integer limit = 0;
         Integer totalRecords;
-		FeeReportResponse feeReportResponse = new FeeReportResponse();
 		List<SettlementEntity> feeReportList = new ArrayList<>();
-		try {
+		FeeReportResponse feeReportResponse = new FeeReportResponse();
+		try {			
 			if (pageIndex == null || pageIndex == 1) {
 	            totalRecords = getTotalNoOfMerchantRevenueRecords(feeReportRequest);
 	            feeReportRequest.setNoOfRecords(totalRecords);
 	        }
 
 	        if (pageIndex == null && pageSize == null) {
-	        	offset = 0;
-	        	limit = Constants.DEFAULT_PAGE_SIZE;
+	            offset = 0;
+	            limit = Constants.DEFAULT_PAGE_SIZE;
 	        } else {
 	            offset = (pageIndex - 1) * pageSize;
 	            limit = pageSize;
-	        }
-			if (!CommonUtil.isNullAndEmpty(feeReportRequest.getFromDate())) {
-				startDate = DateUtil.getStartDayTimestamp(feeReportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
-			}
-			if (!CommonUtil.isNullAndEmpty(feeReportRequest.getToDate())) {
-				endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
-			}
-			JPAQuery query = new JPAQuery(entityManager);
-			List<Tuple> infoList = query.from(QPGSettlementEntity.pGSettlementEntity, QPGSettlementTransaction.pGSettlementTransaction)
-					.where(QPGSettlementEntity.pGSettlementEntity.acqPmId
-							.eq(Long.valueOf(feeReportRequest.getProgramManagerId()))
-							.and(isValidDate(startDate, endDate))
-							.and(QPGSettlementEntity.pGSettlementEntity.id.eq(QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId)),
-							 isIsoIdEq(feeReportRequest.getIsoId()))
-					 .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-					.list(QPGSettlementEntity.pGSettlementEntity.merchantId,
-							QPGSettlementEntity.pGSettlementEntity.acqSaleAmount,
-							QPGSettlementEntity.pGSettlementEntity.issSaleAmount,
-							QPGSettlementEntity.pGSettlementEntity.batchid,
-							QPGSettlementEntity.pGSettlementEntity.merchantAmount, QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId);
-			if (StringUtil.isListNotNullNEmpty(infoList)) {
-				for (Tuple tuple : infoList) {
-					SettlementEntity settlementEntity = new SettlementEntity();
-					settlementEntity
-							.setIssuanceSettlementEntityId(tuple.get(QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId));
-					settlementEntity.setMerchantId(tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantId));
-					settlementEntity.setAcquirerAmount(
-							tuple.get(QPGSettlementEntity.pGSettlementEntity.acqSaleAmount).toString());
-					settlementEntity.setMerchantAmount(tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantAmount));
-					settlementEntity.setBatchId(tuple.get(QPGSettlementEntity.pGSettlementEntity.batchid));
-					settlementEntity
-							.setIssAmount(tuple.get(QPGSettlementEntity.pGSettlementEntity.issSaleAmount).toString());
-					feeReportList.add(settlementEntity);
-				}
+	        } 
+	        StringBuilder feeReportBuilder = new StringBuilder();
+	        feeReportBuilder.append(" select b.MID,b.ACQ_SALE_AMOUNT,b.ISS_SALE_AMOUNT,b.MERCHANT_AMOUNT,min(b.ISS_SETTLEMENT_ENTITY_ID) as ISS_SETTLEMENT_ENTITY_ID, b.BATCH_ID ");
+			feeReportBuilder.append("from(select a.MID as MID, a.ACQ_SALE_AMOUNT as ACQ_SALE_AMOUNT,a.ISS_SALE_AMOUNT, a.MERCHANT_AMOUNT, a.ISS_SETTLEMENT_ENTITY_ID, a.BATCH_ID");
+			feeReportBuilder.append(" from (select pgise.MID, pgise.ACQ_SALE_AMOUNT,pgise.ISS_SALE_AMOUNT, pgise.MERCHANT_AMOUNT, pgise.BATCH_ID,pgist.ISO_ID, pgist.ISS_SETTLEMENT_ENTITY_ID, pgise.ACQ_PM_ID, pgise.BATCH_FILE_PROCESSED_DATE ");  
+			feeReportBuilder.append(" from PG_ISS_SETTLEMENT_ENTITY pgise  ");
+			feeReportBuilder.append(" join PG_ISS_SETTLEMENT_TXN pgist on pgise.id=pgist.ISS_SETTLEMENT_ENTITY_ID  ");
+			feeReportBuilder.append(" where (:isoId is null or pgist.ISO_ID=:isoId) ");
+			feeReportBuilder.append(" and (:acqPmId is null or pgise.ACQ_PM_ID=:acqPmId) ");
+			feeReportBuilder.append(" and pgise.BATCH_FILE_PROCESSED_DATE >= :startDate ");
+			feeReportBuilder.append(" and pgise.BATCH_FILE_PROCESSED_DATE <= :endDate )a ");
+			feeReportBuilder.append(" group by a.MID, a.ACQ_SALE_AMOUNT, a.ISS_SALE_AMOUNT, a.MERCHANT_AMOUNT, a.ISS_SETTLEMENT_ENTITY_ID, a.BATCH_ID )b ");
+			feeReportBuilder.append(" group by b.MID, b.ACQ_SALE_AMOUNT, b.ISS_SALE_AMOUNT, b.MERCHANT_AMOUNT, b.BATCH_ID ");
+			feeReportBuilder.append(" LIMIT :offset, :limit");
+			Query merchantFeeReportParam = entityManager.createNativeQuery(feeReportBuilder.toString());
+			merchantFeeReportParam.setParameter("isoId", feeReportRequest.getIsoId());
+			merchantFeeReportParam.setParameter("acqPmId", feeReportRequest.getProgramManagerId());
+			merchantFeeReportParam.setParameter(START_DATE, DateUtil.getStartDayTimestamp(feeReportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
+			merchantFeeReportParam.setParameter(END_DATE, DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY));
+			merchantFeeReportParam.setParameter("offset", offset);
+			merchantFeeReportParam.setParameter("limit", limit);
+			List<Object> objectList = merchantFeeReportParam.getResultList();
+			Iterator<Object> itr = objectList.iterator();
+			if(StringUtil.isListNotNullNEmpty(objectList)) {
+				iterateMerchantRevenueFeeReportDetails(feeReportList, itr);
 			}
 			feeReportResponse.setSettlementEntity(feeReportList);
-		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+		}catch(Exception e) {
+			logger.error("Error :: FeeReportDaoImpl :: fetchMerchantRevenueTransactions : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
 		return feeReportResponse;		
 	}
 	
+	private void iterateMerchantRevenueFeeReportDetails(List<SettlementEntity> feeReportList, Iterator<Object> itr) {
+		while(itr.hasNext()){
+			Object[] objs = (Object[]) itr.next();
+			SettlementEntity settlementEntity = new SettlementEntity();
+			settlementEntity.setMerchantId(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
+			settlementEntity.setAcquirerAmount(StringUtil.isNull(objs[Integer.parseInt("1")]) ? null : ((BigInteger) objs[Integer.parseInt("1")]).toString());
+			settlementEntity.setIssAmount(StringUtil.isNull(objs[Integer.parseInt("2")]) ? null : ((BigInteger) objs[Integer.parseInt("2")]).toString());
+			settlementEntity.setMerchantAmount((StringUtil.isNull(objs[Integer.parseInt("3")]) ? null : ((BigInteger) objs[Integer.parseInt("3")]).longValue()));
+			settlementEntity.setBatchId((StringUtil.isNull(objs[Integer.parseInt("5")]) ? null : ((String) objs[Integer.parseInt("5")])));
+			settlementEntity.setIssuanceSettlementEntityId((StringUtil.isNull(objs[Integer.parseInt("4")]) ? null : (Long.valueOf(((BigInteger) objs[Integer.parseInt("4")]).toString()))));
+			feeReportList.add(settlementEntity);
+		}
+	}
+	
 	public int getTotalNoOfMerchantRevenueRecords(FeeReportRequest feeReportRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
-		Timestamp startDate = null;
-		Timestamp endDate = null;
-		if (!CommonUtil.isNullAndEmpty(feeReportRequest.getFromDate())) {
-			startDate = DateUtil.getStartDayTimestamp(feeReportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
-		}
-		if (!CommonUtil.isNullAndEmpty(feeReportRequest.getToDate())) {
-			endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
-		}
-		JPAQuery query = new JPAQuery(entityManager);
-		List<Tuple> list = query.from(QPGSettlementEntity.pGSettlementEntity, QPGSettlementTransaction.pGSettlementTransaction)
-				.where(QPGSettlementEntity.pGSettlementEntity.acqPmId
-						.eq(Long.valueOf(feeReportRequest.getProgramManagerId()))
-						.and(isValidDate(startDate, endDate))
-						.and(QPGSettlementEntity.pGSettlementEntity.id.eq(QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId)),
-						 isIsoIdEq(feeReportRequest.getIsoId()))
-				.list(QPGSettlementEntity.pGSettlementEntity.merchantId,
-						QPGSettlementEntity.pGSettlementEntity.acqSaleAmount,
-						QPGSettlementEntity.pGSettlementEntity.issSaleAmount,
-						QPGSettlementEntity.pGSettlementEntity.batchid,
-						QPGSettlementEntity.pGSettlementEntity.merchantAmount, QPGSettlementTransaction.pGSettlementTransaction.issuanceSettlementEntityId);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
-		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
+		logger.info("Entering :: FeeReportDaoImpl :: getTotalNoOfMerchantRevenueRecords");
+		StringBuilder feeReportBuilder = new StringBuilder();
+		feeReportBuilder.append(" select b.MID,b.ACQ_SALE_AMOUNT,b.ISS_SALE_AMOUNT,b.MERCHANT_AMOUNT,min(b.ISS_SETTLEMENT_ENTITY_ID) as ISS_SETTLEMENT_ENTITY_ID, b.BATCH_ID ");
+		feeReportBuilder.append("from(select a.MID as MID, a.ACQ_SALE_AMOUNT as ACQ_SALE_AMOUNT,a.ISS_SALE_AMOUNT, a.MERCHANT_AMOUNT, a.ISS_SETTLEMENT_ENTITY_ID, a.BATCH_ID ");
+		feeReportBuilder.append(" from (select pgise.MID, pgise.ACQ_SALE_AMOUNT,pgise.ISS_SALE_AMOUNT, pgise.MERCHANT_AMOUNT, pgise.BATCH_ID,pgist.ISO_ID, pgist.ISS_SETTLEMENT_ENTITY_ID, pgise.ACQ_PM_ID, pgise.BATCH_FILE_PROCESSED_DATE ");  
+		feeReportBuilder.append(" from PG_ISS_SETTLEMENT_ENTITY pgise  ");
+		feeReportBuilder.append(" join PG_ISS_SETTLEMENT_TXN pgist on pgise.id=pgist.ISS_SETTLEMENT_ENTITY_ID  ");
+		feeReportBuilder.append(" where (:isoId is null or pgist.ISO_ID=:isoId) ");
+		feeReportBuilder.append(" and (:acqPmId is null or pgise.ACQ_PM_ID=:acqPmId) ");
+		feeReportBuilder.append(" and pgise.BATCH_FILE_PROCESSED_DATE >= :startDate ");
+		feeReportBuilder.append(" and pgise.BATCH_FILE_PROCESSED_DATE <= :endDate )a ");
+		feeReportBuilder.append(" group by a.MID, a.ACQ_SALE_AMOUNT, a.ISS_SALE_AMOUNT, a.MERCHANT_AMOUNT, a.ISS_SETTLEMENT_ENTITY_ID, a.BATCH_ID )b ");
+		feeReportBuilder.append(" group by b.MID, b.ACQ_SALE_AMOUNT, b.ISS_SALE_AMOUNT, b.MERCHANT_AMOUNT, b.BATCH_ID ");
+		Query merchantFeeReportParam = entityManager.createNativeQuery(feeReportBuilder.toString());
+		merchantFeeReportParam.setParameter("isoId", feeReportRequest.getIsoId());
+		merchantFeeReportParam.setParameter("acqPmId", feeReportRequest.getProgramManagerId());
+		merchantFeeReportParam.setParameter(START_DATE, DateUtil.getStartDayTimestamp(feeReportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
+		merchantFeeReportParam.setParameter(END_DATE, DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY));
+		List<Object> objectList = merchantFeeReportParam.getResultList();
+		logger.info("Exiting :: FeeReportDaoImpl :: getTotalNoOfMerchantRevenueRecords");
+		return (StringUtils.isListNotNullNEmpty(objectList) ? objectList.size() : 0);
 	}
 	
 	@Override
 	public FeeReportResponse fetchPmRevenueTransactions(FeeReportRequest feeReportRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportDaoImpl :: fetchPmRevenueTransactions");
 		Timestamp startDate = null;
 		Timestamp endDate = null;
 		Integer pageIndex = feeReportRequest.getPageIndex();
@@ -522,41 +529,41 @@ public class FeeReportDaoImpl implements FeeReportDao {
 				endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
 			}
 			JPAQuery query = new JPAQuery(entityManager);
-			List<Tuple> infoList = query.from(QPGSettlementEntity.pGSettlementEntity)
-					.where(QPGSettlementEntity.pGSettlementEntity.acqPmId
+			List<Tuple> infoList = query.from(QPGSettlementEntityHistory.pGSettlementEntityHistory)
+					.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
 							.eq(Long.valueOf(feeReportRequest.getProgramManagerId()))
 							.and(isValidDate(startDate, endDate)))
 					 .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-					.list(QPGSettlementEntity.pGSettlementEntity.merchantId,
-							QPGSettlementEntity.pGSettlementEntity.acqSaleAmount,
-							QPGSettlementEntity.pGSettlementEntity.issSaleAmount,
-							QPGSettlementEntity.pGSettlementEntity.batchid,
-							QPGSettlementEntity.pGSettlementEntity.pmAmount, QPGSettlementEntity.pGSettlementEntity.id);
+					.list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.pmAmount, QPGSettlementEntityHistory.pGSettlementEntityHistory.id);
 			if (StringUtil.isListNotNullNEmpty(infoList)) {
 				for (Tuple tuple : infoList) {
 					SettlementEntity settlementEntity = new SettlementEntity();
 					settlementEntity
-							.setIssuanceSettlementEntityId(tuple.get(QPGSettlementEntity.pGSettlementEntity.id));
-					settlementEntity.setMerchantId(tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantId));
+							.setIssuanceSettlementEntityId(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.id));
+					settlementEntity.setMerchantId(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId));
 					settlementEntity.setAcquirerAmount(
-							tuple.get(QPGSettlementEntity.pGSettlementEntity.acqSaleAmount).toString());
-					settlementEntity.setPmAmount(tuple.get(QPGSettlementEntity.pGSettlementEntity.pmAmount));
-					settlementEntity.setBatchId(tuple.get(QPGSettlementEntity.pGSettlementEntity.batchid));
+							tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount).toString());
+					settlementEntity.setPmAmount(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.pmAmount));
+					settlementEntity.setBatchId(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid));
 					settlementEntity
-							.setIssAmount(tuple.get(QPGSettlementEntity.pGSettlementEntity.issSaleAmount).toString());
+							.setIssAmount(tuple.get(QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount).toString());
 					feeReportList.add(settlementEntity);
 				}
 			}
 			feeReportResponse.setSettlementEntity(feeReportList);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: FeeReportDaoImpl :: fetchPmRevenueTransactions : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: FeeReportDaoImpl :: fetchPmRevenueTransactions");
 		return feeReportResponse;
 	}
 	
 	private int getTotalNumberOfPmRevenueReportRecords(FeeReportRequest feeReportRequest) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: FeeReportDaoImpl :: getTotalNumberOfPmRevenueReportRecords");
 		Timestamp startDate = null;
 		Timestamp endDate = null;
 		if (!CommonUtil.isNullAndEmpty(feeReportRequest.getFromDate())) {
@@ -567,15 +574,15 @@ public class FeeReportDaoImpl implements FeeReportDao {
 		}
 		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> list = query
-				.from(QPGSettlementEntity.pGSettlementEntity)
-				.where(QPGSettlementEntity.pGSettlementEntity.acqPmId
+				.from(QPGSettlementEntityHistory.pGSettlementEntityHistory)
+				.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
 						.eq(Long.valueOf(feeReportRequest.getProgramManagerId())).and(isValidDate(startDate, endDate)))
-				.orderBy(orderByCreatedDateDesc()).list(QPGSettlementEntity.pGSettlementEntity.merchantId,
-						QPGSettlementEntity.pGSettlementEntity.acqSaleAmount,
-						QPGSettlementEntity.pGSettlementEntity.issSaleAmount,
-						QPGSettlementEntity.pGSettlementEntity.batchid, QPGSettlementEntity.pGSettlementEntity.pmAmount,
-						QPGSettlementEntity.pGSettlementEntity.id);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+				.orderBy(orderByCreatedDateDesc()).list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid, QPGSettlementEntityHistory.pGSettlementEntityHistory.pmAmount,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.id);
+		logger.info("Exiting :: FeeReportDaoImpl :: getTotalNumberOfPmRevenueReportRecords");
 		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
 

@@ -142,20 +142,20 @@
 															code="transactions-search.label.txnid" /></label>
 													<form:input path="transactionId" id="transactionId"
 														cssClass="form-control"
-														onkeypress="return amountValidate(this,event)" />
+														onkeypress="return amountValidate(this,event)" onblur="clientValidation('transactionId','gateway_id','transactionIdError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="transactionIdError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.processortxnid" /></label>
 													<form:input path="processCode" id="processCode"
-														cssClass="form-control" />
+														cssClass="form-control" onblur="clientValidation('processCode','mobile_optional','processCodeError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="processCodeError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -173,10 +173,10 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.cardholdername" /></label>
 													<form:input path="cardHolderName" id="cardHolderName"
-														cssClass="form-control" onkeydown="validateSpace(this)" />
+														cssClass="form-control" onkeydown="validateSpace(this)" onblur="clientValidation('cardHolderName','passport_number','cardHolderNameError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="cardHolderNameError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -212,10 +212,10 @@
 															code="transactions-search.label.fromamtrange" /></label>
 													<form:input path="fromAmtRange" id="fromAmtRange"
 														cssClass="form-control" maxlength="10"
-														onkeypress="return numbersonly(this,event)" />
+														onkeypress="return numbersonly(this,event)" onblur="clientValidation('fromAmtRange','amount_False','fromAmtRangeError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="fromAmtRangeError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -223,10 +223,10 @@
 															code="transactions-search.label.toamtrange" /></label>
 													<form:input path="toAmtRange" cssClass="form-control"
 														id="toAmtRange" maxlength="10"
-														onkeypress="return numbersonly(this,event)" />
+														onkeypress="return numbersonly(this,event)" onblur="clientValidation('toAmtRange','amount_False','toAmtRangeError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="toAmtRangeError" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -238,9 +238,6 @@
 																code="transactions-search.label.select" />:..</form:option>
 														<form:option value="sale">
 															<spring:message code="transactions-search.label.sale" />
-														</form:option>
-														<form:option value="void">
-															<spring:message code="transactions-search.label.void" />
 														</form:option>
 														<form:option value="refund">
 															<spring:message code="transactions-search.label.refund" />
@@ -283,7 +280,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
-													onclick="return validateCardNum();"
+													onclick="return searchValidationForTransaction();validateCardNum();"
 													onclick="return trimUserData();validateFromAndToDates()"
 													value="<spring:message code="transactions-search.label.searchbutton"/>">
 												<input type="button" class="form-control button pull-right"
@@ -687,6 +684,7 @@
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="../js/jquery.min.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/validation.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/sortable.js"></script>

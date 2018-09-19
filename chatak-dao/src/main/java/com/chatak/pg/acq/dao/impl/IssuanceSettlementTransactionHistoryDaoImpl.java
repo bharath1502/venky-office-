@@ -3,6 +3,8 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.sql.Timestamp;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -12,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.chatak.pg.acq.dao.IssuanceSettlementTransactionHistoryDao;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
+import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntityHistory;
+import com.chatak.pg.acq.dao.repository.IssuanceSettlementHistoryRepository;
 
 /**
  * @Author: Girmiti Software
@@ -28,22 +30,28 @@ public class IssuanceSettlementTransactionHistoryDaoImpl implements IssuanceSett
 	
 	private static Logger logger = Logger.getLogger(IssuanceSettlementTransactionHistoryDaoImpl.class);
 
+	
+	@Autowired
+	private IssuanceSettlementHistoryRepository issuanceSettlementHistoryRepository;
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 
 	public void insertDataFromIssuanceSettlementTransaction() {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IssuanceSettlementTransactionHistoryDaoImpl :: insertDataFromIssuanceSettlementTransaction");
 		try {
 			StringBuilder sb = new StringBuilder("call `sp_settlement_txn_history`()");
 			Query qry = entityManager.createNativeQuery(sb.toString());
-			int i = qry.executeUpdate();
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-					"Inserted Into IsuuanceSettlementTransactionHistory Successfully" + i);
+			qry.getResultList();
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e.getMessage());
+		  logger.error("Error :: IssuanceSettlementTransactionHistoryDaoImpl :: insertDataFromIssuanceSettlementTransaction :: " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IssuanceSettlementTransactionHistoryDaoImpl :: insertDataFromIssuanceSettlementTransaction");
 
+	}
+	
+	public PGSettlementEntityHistory findByBatchFileDateandAcqpmid(Long pmId, Timestamp batchDate) {
+		return issuanceSettlementHistoryRepository.findByAcqPmIdAndBatchFileDate(pmId, batchDate);
 	}
 
 }

@@ -27,10 +27,16 @@ public interface CardProgramDao {
 	
 	public List<CardProgramRequest> findCardProgramByPmId(Long programManagerId);
 	
-	public List<CardProgramRequest> findByBankId(Long bankId);
-	
 	public CardProgram findByIssuanceCardProgramId(Long issuanceCardProgramId);
 	
-	public CardProgram findCardProgramByIIN(Long iin, String partnerIINCode, String iinExt);
+	public Long findCardProgramByIIN(String iin, String partnerIINCode, String iinExt);
 	public List<CardProgramRequest> getCardProgramListForFeeProgram();
+	
+	public CardProgram findCardProgramIdByIinAndPartnerIINCodeAndIinExt(String iin, String partnerIINCode, String iinExt);
+
+	public List<CardProgram> findByCurrency(String currency) ;
+	
+	public List<CardProgramRequest> getUnselectedCpByPm(Long programManagerId);
+	
+	public List<CardProgramRequest> getUnselectedCpForIndependentPm(Long programManagerId, String currency);
 }

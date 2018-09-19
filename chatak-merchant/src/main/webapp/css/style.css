@@ -103,7 +103,7 @@ textarea.form-control {
 	overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 185px;
+    width: 100%;
 }
 .descriptionMsg {
 	height: 20px;
@@ -405,7 +405,7 @@ table tr td a:hover{
  -o-transition: all 0.2s;
  transition: all 0.2s;
  border-right: 1px solid #cccccc;
- height: 27px;
+ /* height: 27px; */ /*commented for testing  */
 }
 /*.nav-bar ul li:last-child {
 	border-right: 1px solid #cccccc;

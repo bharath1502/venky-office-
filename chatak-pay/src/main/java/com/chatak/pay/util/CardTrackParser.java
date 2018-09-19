@@ -3,10 +3,10 @@
  */
 package com.chatak.pay.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.chatak.pay.controller.model.CardData;
-import com.chatak.pay.service.impl.VaultServiceImpl;
 
 /**
  * << Add Comments Here >>
@@ -16,6 +16,8 @@ import com.chatak.pay.service.impl.VaultServiceImpl;
  * @version 1.0
  */
 public class CardTrackParser {
+
+  private static Logger logger = LogManager.getLogger(CardTrackParser.class);
 
   private String track;
 
@@ -163,7 +165,7 @@ public class CardTrackParser {
   private void lengthValidation(String sTrackData) {
     if("%".equals(sTrackData.substring(0, 1))) {
       String length = sTrackData.substring(1, sTrackData.length());
-      Logger.getLogger(CardTrackParser.class).info("Length : " + length);
+      logger.info("Length : " + length);
     }
   }
 

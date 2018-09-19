@@ -36,17 +36,17 @@ public class ChatakMerchantInterceptor extends HandlerInterceptorAdapter impleme
     if (!request.getMethod().equalsIgnoreCase("POST")) {
         // Not a POST - allow the request           
         // Valid request        
-      } else {
-        try {
-          // This is a POST request - need to check the CSRF token            
-          CSRFTokenManager.validateCSRFToken(request);
-        } catch (com.chatak.pg.exception.PrepaidException e) {
-          logger.error("ERROR:: WalletInterceptor :: preHandle method", e);
-          response.sendRedirect(request.getContextPath() + "/"
-              + URLMappingConstants.INVALID_REQUEST_PAGE);
-          return false;
-        }
-      }
+		} else if (!request.getRequestURI().contains(URLMappingConstants.PROCESS_MERCHANT_RESET_PSWD)) {
+			// This is a POST request - need to check the CSRF token
+			String sessionToken = CSRFTokenManager.getTokenForSession(request.getSession());
+			String requestToken = CSRFTokenManager.getTokenFromRequest(request);
+			if (sessionToken.equals(requestToken)) {
+				// Valid request
+			} else {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bad or missing CSRF value");
+				return false;
+			}
+		}
         
      isDone = isValidRequest(request.getRequestURI());
       if (isDone) {
@@ -100,8 +100,7 @@ public class ChatakMerchantInterceptor extends HandlerInterceptorAdapter impleme
       myCookie.setMaxAge(0);
       response.addCookie(myCookie);
       try {
-        response.sendRedirect(
-            request.getContextPath() + Constants.URL_SPERATOR + Constants.CHATAK_INVALID_SESSION);
+        response.sendRedirect(URLMappingConstants.INVALID_REQUEST_PAGE);
       } catch (Exception e) {
     	  logger.error("ERROR :: ChatakMerchantInterceptor :: checkUserRegistry method", e);
       }

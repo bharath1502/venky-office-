@@ -61,7 +61,7 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.fax"/><!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="fax" id="fax"
 															onkeypress="return amountValidate(this,event)"
-															maxlength="13" onblur="this.value=this.value.trim();"/>
+															maxlength="13" onblur="this.value=this.value.trim();clientValidation('fax','fax','faxEr')"/>
 														<%-- onblur="validateFax()" --%>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="faxEr" class="red-error">&nbsp;</span>
@@ -87,7 +87,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address2"/></label>
 														<form:input cssClass="form-control" path="address2"
-															id="address2" maxlength="50" onblur="this.value=this.value.trim();validateAddress2()" />
+															id="address2" maxlength="50" onblur="this.value=this.value.trim();validateAddress2();clientValidation('address2','address2','address2Er')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="address2Er" class="red-error">&nbsp;</span>
 														</div>
@@ -217,7 +217,7 @@
 														<input type="button"
 															value='<spring:message code="common.label.continue"/>' class="form-control button pull-right acc-next">  
 														<input type="button"class="form-control button pull-right marginL10"
-															value='<spring:message code="common.label.cancel"/>' onclick="openCreateCancelConfirmationPopup()">
+															value='<spring:message code="common.label.cancel"/>' onclick="openCancelConfirmationPopup()">
 														<input type="button" class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.reset"/>' onclick="resetBasicInfo()">
 													</fieldset>

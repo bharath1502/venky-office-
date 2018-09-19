@@ -57,18 +57,22 @@
 				</div>
 				<!-- Breadcrumb End -->
 				<!-- Tab Buttons Start -->
+				<c:if test="${fn:contains(existingFeatures,virtualTerminalSale)}">
 				<div class="tab-header-container-first">
 					<a href="virtual-terminal-sale"><spring:message code="virtual-terminal-sale.label.sale"/></a>
 				</div>
+				</c:if>
 				<%-- <div class="tab-header-container">
 					<a href="virtual-pre-auth"><spring:message code="virtual-terminal-sale.label.preauth"/></a>
 				</div>
 				<div class="tab-header-container">
 					<a href="virtual-terminal-pre-auth-completion"><spring:message code="virtual-terminal-sale.label.preauthlookup"/></a>
 				</div> --%>
+				<c:if test="${fn:contains(existingFeatures,virtualTerminalRefund)}">
 				<div class="tab-header-container active-background">
 					<a href="#"><spring:message code="virtual-terminal-sale.label.refund"/></a>
 				</div>
+				</c:if>
 				<%-- <div class="tab-header-container">
 					<a href="virtual-terminal-void"><spring:message code="virtual-terminal-sale.label.void"/></a>
 				</div>

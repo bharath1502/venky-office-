@@ -283,7 +283,7 @@
 															> <input
 															type="button"
 															class="form-control button pull-right marginL10"
-															value='<spring:message code="common.label.cancel"/>' onclick="openCreateCancelConfirmationPopup()"><input type="button"
+															value='<spring:message code="common.label.cancel"/>' onclick="openCancelConfirmationPopup()"><input type="button"
 															class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.reset"/>' onclick="resetBankInfo()"> 
 													</fieldset>
@@ -556,7 +556,8 @@
 									| !validateCreateMerchantStep1()
 									| !validateCreateMerchantStep2()
 									| !validatePmIsoCardprogram()
-									| !checkAmbiguity()) {
+									| !checkAmbiguity()
+									| !validateMerchantcreates()) {
 								return false
 							}
 							$(".final-circle-tab").addClass("active-circle");
@@ -708,7 +709,7 @@
 			if($('#' + selectedId).is(":checked")){
 				cardProgramIdList.push(cardProgramId+'@'+entityId);
 				cardProgramArr.push(cardProgramName);
-				selectedCpId.push(cardProgramId);
+				selectedCpId.push(parseInt(cardProgramId));
 			}else if(!($('#' + selectedId).is(":checked"))){
 				for(var i=0; i < cardProgramIdList.length; i++){
 					if(cardProgramIdList[i] != cardProgramId+'@'+entityId){
@@ -719,7 +720,7 @@
 				}
 				cardProgramIdList = tempCardProgramIds;
 				cardProgramArr = tempCardProgramArr;
-				var index = selectedCpId.indexOf(cardProgramId);
+				var index = selectedCpId.indexOf(parseInt(cardProgramId));
 				if (index > -1) {
 					selectedCpId.splice(index, 1);
 				}
@@ -730,6 +731,7 @@
 		}
 		function doUnCheckedToCardProgram(cardProgramId,cardProgramName,entityId) {
 			var tempCardProgramIds = [];
+			var tempCardProgramName = [];
 			var j = 0;
 			for (var i = 0; i < cardProgramIdList.length; i++) {
 				if (cardProgramIdList[i] != cardProgramId+'@'+entityId && cardProgramArr[i] != cardProgramName) {
@@ -740,7 +742,7 @@
 			}
 			cardProgramIdList = tempCardProgramIds;
 			cardProgramArr = tempCardProgramName;
-			var index = selectedCpId.indexOf(cardProgramId);
+			var index = selectedCpId.indexOf(parseInt(cardProgramId));
 			if (index > -1) {
 				selectedCpId.splice(index, 1);
 			}

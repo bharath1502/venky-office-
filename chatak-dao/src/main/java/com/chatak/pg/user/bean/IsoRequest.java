@@ -4,6 +4,7 @@
 package com.chatak.pg.user.bean;
 
 import java.util.List;
+import java.util.Map;
 
 import com.chatak.pg.bean.SearchRequest;
 
@@ -21,7 +22,7 @@ public class IsoRequest extends SearchRequest{
 	private ProgramManagerRequest programManagerRequest;	
 	private String isoName;
 	private List<Long> programManagerIds;
-	private List<Long> cardProgramIds;
+	private List<String> cardProgramIds;
 	private Long id;
 	private String address;
 	private String country;
@@ -32,6 +33,8 @@ public class IsoRequest extends SearchRequest{
 	private String bankName;
 	private String bankAccNum;
 	private String routingNumber;
+	private Map<Long, Long> cardProgramAndEntityId;
+	
 	/**
 	 * @return the isoName
 	 */
@@ -129,18 +132,7 @@ public class IsoRequest extends SearchRequest{
 	public void setProgramManagerIds(List<Long> programManagerIds) {
 		this.programManagerIds = programManagerIds;
 	}
-	/**
-	 * @return the cardProgramIds
-	 */
-	public List<Long> getCardProgramIds() {
-		return cardProgramIds;
-	}
-	/**
-	 * @param cardProgramIds the cardProgramIds to set
-	 */
-	public void setCardProgramIds(List<Long> cardProgramIds) {
-		this.cardProgramIds = cardProgramIds;
-	}
+	
 	/**
 	 * @return the programManagerRequest
 	 */
@@ -211,6 +203,22 @@ public class IsoRequest extends SearchRequest{
 	 */
   public void setRoutingNumber(String routingNumber) {
 	  this.routingNumber = routingNumber;
+  }
+  
+  public List<String> getCardProgramIds() {
+    return cardProgramIds;
+  }
+  
+  public void setCardProgramIds(List<String> cardProgramIds) {
+    this.cardProgramIds = cardProgramIds;
+  }
+  
+  public Map<Long, Long> getCardProgramAndEntityId() {
+    return cardProgramAndEntityId;
+  }
+  
+  public void setCardProgramAndEntityId(Map<Long, Long> cardProgramAndEntityId) {
+    this.cardProgramAndEntityId = cardProgramAndEntityId;
   }
 	
 }

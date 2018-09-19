@@ -16,8 +16,6 @@ import org.springframework.security.core.session.SessionInformation;
 
 import com.chatak.merchant.controller.model.LoginDetails;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 
@@ -34,8 +32,6 @@ public class DateUtils {
   
   public static final String YYYY_MM_DD_24HH ="yyyy-MM-dd HH:mm:ss";
   
-  public static final String TIMEZONE_CONVERSION_ERROR="Error in parsing the time zone";
-
   /**
    * This method used for getting the start date time per today.
    * 
@@ -504,7 +500,6 @@ public class DateUtils {
   }
   
   public static String convertServerTimeToDeviceLocalTime(Timestamp serverTime, String deviceOffSet) {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
     String format =YYYY_MM_DD_24HH;
     Date date=null;
     String convertedTime=null;
@@ -514,61 +509,19 @@ public class DateUtils {
       SimpleDateFormat utcFormatter = new SimpleDateFormat(format);
       utcFormatter.setTimeZone(TimeZone.getTimeZone(deviceOffSet));
       convertedTime = utcFormatter.format(date);
-      LogHelper.logInfo(logger, LoggerMessage.getCallerName(), convertedTime);
-      LogHelper.logInfo(logger, LoggerMessage.getCallerName(), new java.sql.Timestamp(date.getTime()).toString());
     } catch (ParseException e) {
-      LogHelper.logError(logger, LoggerMessage.getCallerName(), TIMEZONE_CONVERSION_ERROR);
+      logger.error("Error :: DateUtils :: convertServerTimeToDeviceLocalTime :: ParseException", e);
     }catch(Exception e){
-      LogHelper.logError(logger, LoggerMessage.getCallerName(), TIMEZONE_CONVERSION_ERROR);
+      logger.error("Error :: DateUtils :: convertServerTimeToDeviceLocalTime :: ", e);
     }
-    LogHelper.logExit(logger, LoggerMessage.getCallerName());
     return convertedTime;
   }
 
-public static String getFormatLastLoginTime(LoginDetails loginDetails) throws ParseException {
-    Timestamp serverTime = new Timestamp(System.currentTimeMillis()); 
-     String offset=loginDetails.getCurrentLoginTime();
-     String browserTime = convertServerTimeToDeviceLocalTime(serverTime, offset);
-     DateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-     DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-     Date date = inputFormat.parse(browserTime);
-     String outputText = outputFormat.format(date);
-     Map<String, String> map = new HashMap<String,String>();
-     map.put("GMT+0530", "IST");
-     map.put("GMT-0500", "COT");
-     map.put("GMT+0200", "ZA");
-     map.put("GMT-0400", "AST");
-     map.put("GMT+09:30", "ACT");
-     map.put("GMT+1000", "AET");
-     map.put("GMT-0300", "AGT");
-     map.put("GMT+0200", "ART");
-     map.put("GMT-0800", "AST");
-     map.put("GMT-0300", "BRT");
-     map.put("GMT+0600", "BST");
-     map.put("GMT+0200", "CAT");
-     map.put("GMT-0330", "CNT"); 
-     map.put("GMT+0800", "CTT"); 
-     map.put("GMT+0300", "EAT");
-     map.put("GMT+0100", "ECT");
-     map.put("GMT-0400", "IET"); 
-     map.put("GMT+0900", "JST"); 
-     map.put("GMT+1300", "MIT"); 
-     map.put("GMT+0400", "NET"); 
-     map.put("GMT+1200", "NST");
-     map.put("GMT+0500", "PLT");
-     map.put("GMT-0700", "PNT"); 
-     map.put("GMT-0400", "PRT"); 
-     map.put("GMT-0800", "PST");
-     map.put("GMT+1100", "SST");
-     map.put("GMT+0700", "VST"); 
-     String zonename="";
-     for (Map.Entry<String,String> entry : map.entrySet()){
-       if(offset.equals(entry.getKey())){
-          zonename=entry.getValue();
-       }
-         }
-     String systemTime =outputText+" "+zonename;
-    return systemTime;
+  public static String getFormatLastLoginTime(LoginDetails loginDetails) throws ParseException {
+	 Date today = new Date();
+	 DateFormat df = new SimpleDateFormat(Constants.TIMEZONE_DATE_FORMAT);
+	 df.setTimeZone(TimeZone.getTimeZone(loginDetails.getTimeZoneRegion()));
+	return df.format(today);
   }
   
 }

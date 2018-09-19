@@ -583,13 +583,14 @@ public class RestPaymentServiceImpl implements RestPaymentService {
     TransactionResponse response = new TransactionResponse();
     PGTransaction pgTransaction =
         refundTransactionDao.getTransactionForVoidOrRefundByAccountTransactionId(
-            transactionRequest.getAccountTransactionId(), transactionRequest.getMerchantCode());
+            transactionRequest.getAccountTransactionId(), transactionRequest.getMerchantId().toString());
     if (null != pgTransaction) {
       transactionRequest.setEntryMode(EntryModeEnum.MANUAL);
       transactionRequest.setOriginChannel(OriginalChannelEnum.MERCHANT_WEB.value());
       transactionRequest.setTxnRefNumber(pgTransaction.getTransactionId());
       transactionRequest.setCgRefNumber(pgTransaction.getIssuerTxnRefNum());
       transactionRequest.setTerminalId(pgTransaction.getTerminalId());
+      transactionRequest.setMerchantCode(pgTransaction.getMerchantId());
       String output;
       try {
         output = JsonUtil.postRequest(transactionRequest, Constants.TRANSACTION_PROCESS, String.class);

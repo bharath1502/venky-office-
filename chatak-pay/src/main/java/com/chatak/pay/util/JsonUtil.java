@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.util.Base64;
-import java.util.Calendar;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -14,7 +13,8 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.http.Header;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -31,8 +31,6 @@ import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.model.OAuthToken;
 import com.chatak.pg.util.HttpClient;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 
 
@@ -45,7 +43,7 @@ public class JsonUtil {
   @Autowired
   private static MessageSource messageSource;
 
-  private static final Logger logger = Logger.getLogger(JsonUtil.class);
+  private static final Logger logger =  LogManager.getLogger(JsonUtil.class);
 
   public static final String BASE_SERVICE_URL = Properties.getProperty("chatak-pay.service.url");
 
@@ -71,9 +69,11 @@ public class JsonUtil {
 
   private static String OAUTH_REFRESH_TOKEN_FEE = null;
 
-  private static Calendar tokenValidity_fee = null;
+  private static Long tokenValidityFee = null;
 
   private static final ObjectMapper mapper = new ObjectMapper();
+
+  public static final String PAYGATE_SERVICE_URL = Properties.getProperty("chatak-merchant.service.url");
 
   /**
    * Method to convert Java object to JSON
@@ -142,9 +142,9 @@ public class JsonUtil {
 	    try {
 	    	Header[] headers = new Header[] { new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
 					new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER ) };
-	      resultantObject = httpClient.invokePost(request,className, headers);
+	      resultantObject = httpClient.invokePost(request,className, headers, false);
 	    }catch (HttpClientException hce) {
-	    	LogHelper.logError(logger, LoggerMessage.getCallerName(), hce, hce.getHttpErrorCode() + hce.getMessage());
+	        logger.error("ERROR: JsonUtil :: postRequest method "+ hce.getHttpErrorCode() + hce.getMessage(), hce);
 	    	throw hce;
 	    }catch (Exception e) {
 	        logger.error("Error::PostReqeust::Method", e);
@@ -175,9 +175,9 @@ public class JsonUtil {
 	    			new BasicHeader("consumerSecret", Properties.getProperty("chatak-issuance.consumer.client.secret")),
 	    			new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + getValidIssuanceOAuth2Token()),
 	    			};
-	      resultantObject = httpClient.invokePost(request,className, headers);
+	      resultantObject = httpClient.invokePost(request,className, headers, false);
 	    } catch (HttpClientException hce) {
-	    	LogHelper.logError(logger, LoggerMessage.getCallerName(), hce, hce.getHttpErrorCode() + hce.getMessage());
+	        logger.error("ERROR: JsonUtil :: sendToIssuance method "+ hce.getHttpErrorCode() + hce.getMessage(), hce);
 	    	throw hce;
 	    }catch (Exception e) {
 	    	logger.info("Error:: JsonUtil:: postFee method " + e);
@@ -189,7 +189,7 @@ public class JsonUtil {
   
   private static String getValidIssuanceOAuth2Token() throws IOException {
 		String apiResponse = null;
-		if (isValidToken_fee()) {
+		if (isValidTokenFee()) {
 			logger.info("getValidIssuanceOAuth2Token :: returning same auth token");
 		      return OAUTH_TOKEN_FEE;
 		} else {
@@ -239,8 +239,7 @@ public class JsonUtil {
 				OAuthToken oAuthToken = new ObjectMapper().readValue(apiResponse, OAuthToken.class);
 				OAUTH_TOKEN_FEE = oAuthToken.getAccess_token();
 		        OAUTH_REFRESH_TOKEN_FEE = oAuthToken.getRefresh_token();
-		        tokenValidity_fee = Calendar.getInstance();
-		        tokenValidity_fee.add(Calendar.SECOND, oAuthToken.getExpires_in());
+		        tokenValidityFee = System.currentTimeMillis() + (oAuthToken.getExpires_in() * 60);
 		        
 		        logger.info("getValidIssuanceOAuth2Token :: retrieved token: " + OAUTH_TOKEN_FEE);
 		        
@@ -251,10 +250,10 @@ public class JsonUtil {
 		return OAUTH_TOKEN_FEE;
 	}
 
-  private static boolean isValidToken_fee() {
-    if (OAUTH_TOKEN_FEE == null || tokenValidity_fee == null) {
+  private static boolean isValidTokenFee() {
+    if (OAUTH_TOKEN_FEE == null || tokenValidityFee == null) {
       return false;
-    } else if (Calendar.getInstance().after(tokenValidity_fee)) {
+    } else if (System.currentTimeMillis() > tokenValidityFee) {
       OAUTH_TOKEN_FEE = null;
       return (refreshOAuth2Token_fee() != null);
     } else {
@@ -279,8 +278,7 @@ public class JsonUtil {
 	          OAuthToken apiResponse = (OAuthToken) resultantObject;
 	          OAUTH_TOKEN_FEE = apiResponse.getAccess_token();
 	          OAUTH_REFRESH_TOKEN_FEE = apiResponse.getRefresh_token();
-	          tokenValidity_fee = Calendar.getInstance();
-	          tokenValidity_fee.add(Calendar.SECOND, apiResponse.getExpires_in());
+	          tokenValidityFee = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
 	          return OAUTH_TOKEN_FEE;
 	        } catch (Exception e) {
 	        	logger.info("Error:: JsonUtil:: refreshOAuth2Token_fee method " + e);
@@ -299,19 +297,19 @@ public class JsonUtil {
     public static <T extends Object> T sendToTSM(Class<T> className,Object request,String serviceEndPoint) throws  HttpClientException {
 		T resultantObject = null;
 		String tsmURL = Properties.getProperty("chatak-tsm.service.url");
+		logger.info("-- TMS URL "+tsmURL);
 		HttpClient httpClient = new HttpClient(tsmURL , serviceEndPoint);
 	    try {
 	    	Header[] headers = new Header[] { new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
 	    			new BasicHeader("consumerClientId", Properties.getProperty("chatak-issuance.consumer.client.id")),
 	    			new BasicHeader("consumerSecret", Properties.getProperty("chatak-issuance.consumer.client.secret"))};
-	      resultantObject = httpClient.invokePost(request,className, headers);
-	     
-	       LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "TSM Response Status : " );
+	      resultantObject = httpClient.invokePost(request,className, headers, false);
+	     logger.info("Reponse : Resultant Object "+resultantObject);
 	    } catch (HttpClientException hce) {
-	    	LogHelper.logError(logger, LoggerMessage.getCallerName(), hce, hce.getHttpErrorCode() + hce.getMessage());
+	        logger.error("ERROR: JsonUtil :: sendToTSM method" + hce.getHttpErrorCode() + hce.getMessage(), hce);
 	    	throw hce;
 	    }catch (Exception e) {
-	    	 logger.info("Error:: sendToTSM:: postFee method " + e);
+	    	 logger.error("Error:: sendToTSM:: postFee method " + e);
 	         throw new NoSuchMessageException(messageSource.getMessage(
 	         ActionErrorCode.ERROR_CODE_API_CONNECT, null, LocaleContextHolder.getLocale()));
 	    }
@@ -324,28 +322,30 @@ public class JsonUtil {
      * @return 
      */
     public static OAuthToken getValidOAuth2TokenLoginRefresh(ApplicationClientDTO applicationClient) {
-      LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+      logger.info("Entering :: JsonUtil :: getValidOAuth2TokenLoginRefresh");
       OAuthToken apiResponse= null;    
       try {
-        String serviceEndPoint = Properties.getProperty("chatak.pay.token.url").replace("$", applicationClient.getAppClientId())
-            .replace("#", applicationClient.getAppClientAccess());
+        String serviceEndPoint = Properties.getProperty("chatak-merchant.oauth.refresh.service.url").trim().concat(applicationClient.getRefreshToken().trim());
+        logger.info("URL :: " + PAYGATE_SERVICE_URL + serviceEndPoint);
         Header[] headers =
             new Header[] {new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
                 new BasicHeader(AUTH_HEADER, getBasicAuthValueOnApplicationClientDTO(applicationClient))};
         HttpClient paymentHttpClient =
-            new HttpClient(BASE_SERVICE_URL, serviceEndPoint);
+            new HttpClient(PAYGATE_SERVICE_URL, serviceEndPoint);
         String output = paymentHttpClient.invokePost(String.class, headers);
+        logger.info(output);
         apiResponse = mapper.readValue(output, OAuthToken.class);
       } catch (Exception e) {
         logger.error("ERROR: JsonUtil :: getValidOAuth2Token method", e);
       }
-      LogHelper.logExit(logger, LoggerMessage.getCallerName() + "Got API Response");
+      logger.info("Exiting :: JsonUtil :: getValidOAuth2TokenLoginRefresh");
       return apiResponse;
     }
 
       private static String getBasicAuthValueOnApplicationClientDTO(ApplicationClientDTO applicationClient) {
-          String basicAuth = applicationClient.getAppAuthUser() + ":" + applicationClient.getAppAuthPass();
-          basicAuth = TOKEN_TYPE_BASIC + new String(Base64.getEncoder().encode(basicAuth.getBytes()));
+        String basicAuth = applicationClient.getAppAuthUser().trim() + ":" + applicationClient.getAppAuthPass().trim();
+        logger.info("AppAuthUserAndPass : " + basicAuth);
+        basicAuth = TOKEN_TYPE_BASIC + new String(Base64.getEncoder().encode(basicAuth.getBytes()));
           return basicAuth;
       }
 
@@ -357,30 +357,27 @@ public class JsonUtil {
     public static OAuthToken getValidOAuth2TokenLogin(ApplicationClientDTO applicationClient) {
 
       String tokenEndpointUrl =
-          Properties.getProperty("chatak.pay.token.url").replace("$", applicationClient.getAppAuthUser());
-      tokenEndpointUrl = tokenEndpointUrl.replace("#", applicationClient.getAppAuthPass());
-
+          Properties.getProperty("chatak.pay.token.url").trim().replace("$", applicationClient.getAppClientId().trim()).
+          replace("#", applicationClient.getAppClientAccess().trim());
+      logger.info("URL :: " + PAYGATE_SERVICE_URL + tokenEndpointUrl);
       OAuthToken apiResponse= null;
       try {
 
         Header[] headers =
             new Header[] {new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
-                new BasicHeader(AUTH_HEADER, getBasicAuthValue())};
+                new BasicHeader(AUTH_HEADER,
+                    TOKEN_TYPE_BASIC + new String(Base64.getEncoder().encode(
+                        (applicationClient.getAppAuthUser().trim() + ":" + applicationClient.getAppAuthPass().trim())
+                                .getBytes())))};
        HttpClient paymentHttpClient =
-            new HttpClient(BASE_SERVICE_URL, tokenEndpointUrl);
+            new HttpClient(PAYGATE_SERVICE_URL, tokenEndpointUrl);
 
        String output = paymentHttpClient.invokePost(String.class, headers);
+       logger.info(output);
        apiResponse = mapper.readValue(output, OAuthToken.class);
       } catch (Exception e) {
         logger.error("ERROR: JsonUtil :: getValidOAuth2Token method", e);
       }
       return apiResponse;
-    }
-
-    private static String getBasicAuthValue() {
-      String basicAuth = Properties.getProperty("chatak-merchant.oauth.basic.auth.username") + ":"
-                         + Properties.getProperty("chatak-merchant.oauth.basic.auth.password");
-      basicAuth = TOKEN_TYPE_BASIC + new String(Base64.getEncoder().encode(basicAuth.getBytes()));
-      return basicAuth;
     }
 }

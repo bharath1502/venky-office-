@@ -151,7 +151,8 @@
 						<input type="hidden" id="executedTxnDownloadPageNumberId" name="downLoadPageNumber" />
 						<input type="hidden" id="executedTxnDownloadTypeId" name="downloadType" />
 						<input type="hidden" id="requestFromId" name="requestFrom" />
-						<input type="hidden" id="executedTotalRecords" name="downloadAllRecords" />
+						<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+						<input type="hidden" id="totalRecords" name="totalRecords" />
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form>
 					
@@ -159,7 +160,8 @@
 						<input type="hidden" id="processingTxnDownloadPageNumberId" name="downLoadPageNumber" />
 						<input type="hidden" id="processingTxnDownloadTypeId" name="downloadType" />
 						<input type="hidden" id="requestFromId1" name="requestFrom" />
-						<input type="hidden" id="pendingTotalRecords" name="downloadAllRecords" />
+						<input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
+						<input type="hidden" id="totalRecords" name="totalRecords" />
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form>
 					
@@ -206,11 +208,11 @@
 										<c:forEach items="${settlementDataList}" var="settlementData">
 											<tr>
 												<td class="tbl-text-align-center"><a 
-												href="javascript:getDataByPMId('${settlementData.programManagerId}','${settlementData.batchDate}')"
+												href="javascript:getDataByPMId('${settlementData.acqPmId}','${settlementData.batchDate}')"
 												style="text-decoration: underline;">${settlementData.programManagerName}
 											    </a></td>
 												<td>${settlementData.batchDate}</td>
-												<td>${settlementData.totalAmount}</td>
+												<td>${settlementData.txnTotalAmount}</td>
 												<td>${settlementData.totalTxnCount}</td>
 											</tr>
 										</c:forEach>
@@ -315,101 +317,6 @@
 						</table>
 					</div>
 					<!-- Pending Merchants Ends -->
-					<!-- Processing txns Starts -->
-					<div class="dashboard-tab active-background"><spring:message code="home.label.processingtransactions"/></div>
-					<div id="processingTnsDiv" class="dashboard-container" style="overflow-x:auto;">
-						<table class="table table-striped table-bordered table-condensed" style="margin-bottom: 0px;">
-							<!-- Search Table Header Start -->
-							<tr>
-								<td colspan="12" class="search-table-header-column " style="text-align: left">
-									<spring:message code="home.label.transactionsummary"/>
-								</td>
-							</tr>
-						</table>
-						<!-- Search Table Header End -->
-						<!-- Search Table Content Start -->
-						<table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">
-							<thead>
-								<tr>
-									<th style="width: 120px;"><spring:message code="reports.label.transactions.dateortime"/></th>
-									<th style="width: 120px;"><spring:message code="admin.common-deviceLocalTxnTime"/></th>
-									<th style="width: 100px;"><spring:message code="home.label.accounttransactionid"/> <br></th>
-									<th style="width: 120px;"><spring:message code="home.label.transactionid"/></th>
-									<th style="width: 50px;"><spring:message code="currency-search-page.label.currencycode"/></th>
-									<th style="width: 50px;"><spring:message code="home.label.type"/></th>
-									<th style="width: 500px;"><spring:message code="home.label.description"/></th>
-									<th style="width: 80px;"><spring:message code="home.label.debit"/></th>
-									<th style="width: 80px;"><spring:message code="home.label.credit"/></th>
-								</tr>
-							</thead>
-							<tbody>
-								<c:choose>
-									<c:when test="${!(fn:length(processingTxnList) eq 0)}">
-										<c:forEach items="${processingTxnList}" var="processingTxns">
-											<tr data-txn-merchant-code="${processingTxns.merchantCode}">
-												<td>${processingTxns.transactionTime}</td>
-													<td>${processingTxns.deviceLocalTxnTime}
-													<c:if test="${ not empty processingTxns.timeZoneOffset}" >
-														<br>(${processingTxns.timeZoneOffset})
-													</c:if>
-												</td>
-												<td class="tbl-text-align-right"><span class="t-txn-id anchor-style">${processingTxns.transactionId}</span></td>
-												<td class="tbl-text-align-right">${processingTxns.pgTransactionId}</td>
-												<td class="tbl-text-align-right">${processingTxns.currency}</td>
-												<c:set var="txnType" value="${fn:toUpperCase(processingTxns.type)}"></c:set>
-												<%-- <c:choose>
-													<c:when test="${txnType == 'S' && processingTxns.transactionCode == 'CC_AMOUNT_CREDIT'}">
-														<td class="login-page-content txn-action" data-txn-status="${processingTxns.status}"><a class="anchor-style">${txnType}</a></td>
-													</c:when>
-													<c:otherwise>
-														<td class="login-page-content">${txnType}</td>
-													</c:otherwise>
-												</c:choose> --%>
-												<td class="login-page-content">${txnType}</td>
-												<td class="tbl-text-align-left">${processingTxns.description}</td>
-												<td class="tbl-text-align-right">${processingTxns.debit}</td>
-												<td class="credit tbl-text-align-right">${processingTxns.credit}</td>
-											</tr>
-										</c:forEach>
-									</c:when>
-									<c:otherwise>
-										<tr><td colspan="9" style="color: red; text-align: center;"><spring:message code="home.label.norecordsfound"/></td></tr>
-									</c:otherwise>
-								</c:choose>
-							</tbody>
-						</table>
-						<table class="table table-striped table-bordered table-condensed">
-							<c:if test="${!(fn:length(processingTxnList) eq 0)}">
-								<tr class="table-footer-main">
-									<td colspan="10" class="search-table-header-column">
-										<div class="col-sm-12">
-											<div class="col-sm-12">
-												<div class="btn-toolbar" role="toolbar">
-													<div class="btn-group custom-table-footer-button">
-														<a href="javascript:downloadDashboardReport('${portalListPageNumber}', '<%=Constants.XLS_FILE_FORMAT%>', 'processingTxn', 'dashobard')">
-															<button type="button" class="btn btn-default"><img src="../images/excel.png"> </button>
-														</a> 
-														<a href="javascript:downloadDashboardReport('${portalListPageNumber}', '<%=Constants.PDF_FILE_FORMAT%>', 'processingTxn', 'dashobard')">
-															<button type="button" class="btn btn-default"><img src="../images/pdf.png"></button>
-														</a>
-													</div>
-													<c:choose>
-														<c:when test="${processingListSize gt 10}">
-															<a href="processing-transaction-details"><input type="button" class="form-control button dashboard-table-btn pull-right" value="<spring:message code="home.label.viewall"/>"></a>
-														</c:when>
-														<c:otherwise>
-                                                            <input type="button" class="form-control button dashboard-table-btn pull-right" value="<spring:message code="home.label.viewall"/> " disabled="disabled">														
-                                                            </c:otherwise>
-													</c:choose>
-												</div>
-											</div>
-										</div>
-									</td>
-								</tr>
-							</c:if>
-						</table>
-					</div>
-					<!-- Processing txns Ends -->
 					<!-- Completed txns Starts -->
 					<div class="dashboard-tab active-background"><spring:message code="home.label.completedtransactions"/></div>
 					<div id="completedTnsDiv" class="dashboard-container" style="overflow-x:auto;">
@@ -486,10 +393,10 @@
 											<div class="col-sm-12">
 												<div class="btn-toolbar" role="toolbar">
 													<div class="btn-group custom-table-footer-button">
-														<a href="javascript:downloadDashboardReport('${portalListPageNumber}', '<%=Constants.XLS_FILE_FORMAT%>', 'exetutedTxn', 'dashobard')">
+														<a href="javascript:downloadDashboardReport('${portalListPageNumber}', '<%=Constants.XLS_FILE_FORMAT%>', 'exetutedTxn', 'dashobard', ${totalRecords})">
 															<button type="button" class="btn btn-default"><img src="../images/excel.png"> </button>
 														</a> 
-														<a href="javascript:downloadDashboardReport('${portalListPageNumber}', '<%=Constants.PDF_FILE_FORMAT%>', 'exetutedTxn', 'dashobard')">
+														<a href="javascript:downloadDashboardReport('${portalListPageNumber}', '<%=Constants.PDF_FILE_FORMAT%>', 'exetutedTxn', 'dashobard', ${totalRecords})">
 															<button type="button" class="btn btn-default"><img src="../images/pdf.png"></button>
 														</a>
 														<a>
@@ -550,7 +457,7 @@
 			<div class="ele-container">
 				<div class="margin-left20">
 					<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="home.label.refundamount"/></label> <br>
-					<span class="refundAmtSymbol"><spring:message code="home.label.$"/></span><span><input type="text" id="partialRefundAmt" class="form-control" placeholder="0.00" onkeypress="return amountValidate(this,event)" onblur="validateRefundAmount(this.id)"/></span>
+					<span class="refundAmtSymbol"></span><span><input type="text" id="partialRefundAmt" class="form-control" placeholder="0.00" onkeypress="return amountValidate(this,event)" onblur="validateRefundAmount(this.id)"/></span>
 					<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 						<span class="red-error" id="partialRefundAmtEr">&nbsp;</span>
 					</div>
@@ -561,7 +468,7 @@
 		<div class="col-sm-12 popup-hf-bc">
 			<input type="submit" class="form-control button pull-right margin5" value="<spring:message code="home.label.refundbutton"/>" onclick="refundTxn();" id="buttonCreate1">
 				<input type="button" value="Processing" style="display: none;" id="processingButton2" class="form-control button pull-right" /> 
-			<input type="button" class="form-control button pull-right margin5 close-btn" value="<spring:message code="home.label.cancelbutton"/>">
+			<input type="button" class="form-control button pull-right margin5 close-btn" value="<spring:message code="home.label.cancelbutton"/>"  onclick="return goToDashboard();">
 		</div>
 		<input type="hidden" id="refundMerchantId" name="merchantId" />
 		<input type="hidden" id="refundAccountTransactionId" name="accountTransactionId" />
@@ -638,8 +545,6 @@
 	 <script src="../js/messages.js"></script>
 	<script type="text/javascript" src="../js/transactions.js"></script>
 	<script src="../js/common-lib.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script>

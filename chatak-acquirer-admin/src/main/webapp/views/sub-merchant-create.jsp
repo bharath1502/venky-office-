@@ -188,7 +188,7 @@ Include all compiled plugins (below), or include individual files as needed
 															<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="fax" id="fax"
 															onkeypress="return amountValidate(this,event)"
-															maxlength="13" onblur="this.value=this.value.trim();" />
+															maxlength="13" onblur="this.value=this.value.trim();clientValidation('fax','fax','faxEr')" />
 														<%-- onblur="validateFax()" --%>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="faxEr" class="red-error">&nbsp;</span>
@@ -222,7 +222,7 @@ Include all compiled plugins (below), or include individual files as needed
 																code="manage.label.sub-merchant.address2" /></label>
 														<form:input cssClass="form-control" path="address2"
 															id="address2" maxlength="50"
-															onblur="this.value=this.value.trim();validateAddress2()" />
+															onblur="this.value=this.value.trim();validateAddress2();clientValidation('address2','address2','address2Er')" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="address2Er" class="red-error">&nbsp;</span>
 														</div>

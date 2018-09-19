@@ -20,9 +20,8 @@ import com.chatak.pg.acq.dao.model.PGSettlementReport;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 
 public class MerchantSettelmentReportScheduler {
 
@@ -39,16 +38,17 @@ public class MerchantSettelmentReportScheduler {
 	
 	@Autowired
 	private SettlementReportDao settlementReportDao;
-
+	
 	public void generateMerchantSettelmentReport() {
-		LogHelper.logEntry(LOGGER, LoggerMessage.getCallerName());
 		try {
+			if (Constants.SCHEDULER_ENABLE_FLAG.equalsIgnoreCase("true")) {
 			String startTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
 			String batchDate = LocalDateTime.now().toString();
 			List<ProgramManager> programManagerList = programManagerDao.findByBatchTime(startTime);
 			 processSettlementReport(programManagerList, batchDate);
+			}
 		} catch (Exception e) {
-			LogHelper.logError(LOGGER, LoggerMessage.getCallerName(), e, "");
+			LOGGER.error("Error :: MerchantSettelmentReportScheduler :: generateMerchantSettelmentReport : " + e.getMessage(), e);
 		}
 	}
 
@@ -56,7 +56,8 @@ public class MerchantSettelmentReportScheduler {
 		for (ProgramManager programManagerData : programManagerList) {
 			String batchTime = programManagerData.getPmSystemConvertedTime();
 			Long pmId  = programManagerData.getId();
-			if (!StringUtil.isNullAndEmpty(batchTime) && null != pmId) {
+			String schedulerStatus = programManagerData.getSchedulerRunStatus();
+			if ((!StringUtil.isNullAndEmpty(batchTime) && null != pmId)  && (StringUtil.isNull(schedulerStatus) || schedulerStatus.equalsIgnoreCase(PGConstants.BATCH_STATUS_COMPLETED))) {
 				
 				Runnable task = () ->{
 					processMerchantSettlement(pmId,batchDate);
@@ -68,11 +69,16 @@ public class MerchantSettelmentReportScheduler {
 	}
 
 	private synchronized void processMerchantSettlement(Long pmId,String batchDate){
-		LogHelper.logEntry(LOGGER, LoggerMessage.getCallerName());	
-		PGBatch batch = batchDao.findByProgramManagerId(pmId);
-		if(null != batch && batch.getStatus().equals(PGConstants.BATCH_STATUS_ASSIGNED)){
+		PGBatch batch = batchDao.findByProgramManagerIdAndStatus(pmId, PGConstants.BATCH_STATUS_ASSIGNED);
+		if(null != batch) {
 			batch.setStatus(PGConstants.BATCH_STATUS_PROCESSING);
-			batchDao.save(batch);
+			PGBatch pgbatch = batchDao.save(batch);
+			LOGGER.info("updated Pg Batch as Processing" + pgbatch.getStatus());	
+			//update ProgramManger Status Processing
+			ProgramManager programManager = programManagerDao.findByProgramManagerId(pmId);
+			programManager.setSchedulerRunStatus(PGConstants.BATCH_STATUS_PROCESSING);
+			programManagerDao.saveOrUpdateProgramManager(programManager);
+			
 		List<PGTransaction> transactions = transactionDao.getTransactionsByBatchId(batch.getBatchId());
 		HashMap<String,BigInteger> merchantTxn = new HashMap<>();
 		if(StringUtil.isListNotNullNEmpty(transactions)){
@@ -98,7 +104,12 @@ public class MerchantSettelmentReportScheduler {
 				settlementReportDao.save(settlementReport);
 			}
 			batch.setStatus(PGConstants.BATCH_STATUS_COMPLETED);
-			batchDao.save(batch);
+			PGBatch pgBatchStatus = batchDao.save(batch);
+			LOGGER.info("updated Pg Batch status as completed" + pgBatchStatus.getStatus());
+			
+			//update ProgramManger Status Processing To Completed		
+			programManager.setSchedulerRunStatus(PGConstants.BATCH_STATUS_COMPLETED);
+			programManagerDao.saveOrUpdateProgramManager(programManager);
 		}
 	}
 }

@@ -31,5 +31,7 @@ public interface IssSettlementDataRepository extends JpaRepository<PGIssSettleme
 	 * @return
 	 */
 	List<PGIssSettlementData> findByAcqPmIdAndBatchDate(Long programManagerId, Timestamp batchDate);
+	
+	List<PGIssSettlementData> findByAcqPmIdAndStatus(Long programManagerId, String status);
 
 }

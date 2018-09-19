@@ -47,5 +47,5 @@ public interface AdminUserDaoRepository extends JpaRepository<PGAdminUser,Long>,
 	@Query("select userRoleId from PGAdminUser where status != 3")
 	public List<Long> getRoleList();
 	
-	public List<PGAdminUser> findByPassRetryCount(Integer status);
+	public List<PGAdminUser> findByPassRetryCountAndUserTypeAndStatusNotLike(Integer passRetryCount, String userType, Integer status);
 }

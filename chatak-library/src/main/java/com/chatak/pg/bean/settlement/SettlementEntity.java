@@ -1,5 +1,6 @@
 package com.chatak.pg.bean.settlement;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class SettlementEntity {
@@ -88,7 +89,9 @@ public class SettlementEntity {
   
   private String timeZoneRegion; 
   
-  private Long txnTotalAmount;
+  private BigDecimal txnTotalAmount;
+  
+  private Integer totalTxnCount;
   
   public String getIssTxnId() {
     return issTxnId;
@@ -338,11 +341,11 @@ public class SettlementEntity {
     this.transactionType = transactionType;
   }
 
-  public Long getTxnTotalAmount() {
+  public BigDecimal getTxnTotalAmount() {
     return txnTotalAmount;
   }
 
-  public void setTxnTotalAmount(Long txnTotalAmount) {
+  public void setTxnTotalAmount(BigDecimal txnTotalAmount) {
     this.txnTotalAmount = txnTotalAmount;
   }
 
@@ -433,7 +436,13 @@ public class SettlementEntity {
   public void setTimeZoneRegion(String timeZoneRegion) {
     this.timeZoneRegion = timeZoneRegion;
   }
-  
-  
+
+  public Integer getTotalTxnCount() {
+    return totalTxnCount;
+  }
+
+  public void setTotalTxnCount(Integer totalTxnCount) {
+    this.totalTxnCount = totalTxnCount;
+  }
   
 }

@@ -131,3 +131,10 @@ function validateCardNum() {
 		return true;
 	}
 }
+
+function validateSearchCardNumber() {
+	if(!clientValidation('cardNumber','card_Number_search','cardhNumberEr')) {
+		return false;
+	}
+	return true;
+}

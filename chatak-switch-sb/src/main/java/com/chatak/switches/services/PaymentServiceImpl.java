@@ -1,5 +1,7 @@
 package com.chatak.switches.services;
 
+import java.sql.Timestamp;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -41,9 +43,12 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.MessageTypeCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ProcessorType;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
+import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.Properties;
+import com.chatak.pg.util.RandomGenerator;
 import com.chatak.pg.util.StringUtils;
+import com.chatak.switches.jpos.SwitchISOPackager;
 import com.chatak.switches.prepaid.ChatakPrepaidSwitchTransaction;
 import com.chatak.switches.sb.SwitchTransaction;
 import com.chatak.switches.sb.exception.ChatakSwitchException;
@@ -60,6 +65,9 @@ import com.chatak.switches.sb.util.SpringDAOBeanFactory;
 public class PaymentServiceImpl extends TransactionService implements PaymentService {
 
   private static Logger log = Logger.getLogger(PaymentServiceImpl.class);
+  
+  static final Integer FIELD_124 = 124;
+  static final Integer FIELD_123 = 123;
 
   @Autowired
   VoidTransactionDao voidTransactionDao;
@@ -68,6 +76,13 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
     AutowireCapableBeanFactory acbFactory =
         SpringDAOBeanFactory.getSpringContext().getAutowireCapableBeanFactory();
     acbFactory.autowireBean(this);
+    
+    try {
+		SwitchISOPackager.getChatakGenericPackager();
+	} catch (ISOException e) {
+		e.printStackTrace();
+	}
+    
   }
 
   public AuthResponse authTransaction(AuthRequest authRequest) throws ServiceException {
@@ -162,6 +177,22 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
     return captureResponse;
   }
 
+  public PurchaseResponse purchaseTransactionMock() {
+	    log.info("Entering :: PaymentServiceImpl :: purchaseTransactionMock method");
+	    PurchaseResponse purchaseResponse = new PurchaseResponse();
+	    purchaseResponse.setTxnResponseTime(System.currentTimeMillis());
+	    purchaseResponse.setUpStreamMessage("Approved");
+	    purchaseResponse.setUpStreamTxnRefNum(RandomGenerator.generateRandNumeric(PGConstants.LENGTH_TXN_REF_NUM));
+	    purchaseResponse.setUpStreamStatus(PGConstants.STATUS_SUCCESS);
+	    purchaseResponse.setIssuanceTxnTime(DateUtil.convertTimeZone("",new Timestamp(System.currentTimeMillis()).toString()));
+	    purchaseResponse.setIssuancePartner("1"); 
+	    purchaseResponse.setErrorCode("00");
+	    purchaseResponse.setErrorMessage("Approved");
+	    log.info("Info :: purchaseTransactionMock method :: UpStreamTxnRefNum : "+purchaseResponse.getUpStreamTxnRefNum());
+	    log.info("Exiting :: PaymentServiceImpl :: purchaseTransactionMock method");
+	    return purchaseResponse;
+	  }
+  
   /**
    * Method to Auth-Capture Payment Transaction Steps Involved 1. Validate
    * Request PAYMENT INTEGRATION 2. Create Transaction record 3. Create
@@ -182,15 +213,38 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(), pgSwitch.getPrimarySwitchPort());
-      ISOMsg switchISOMsg = switchTransaction.financial(getISOMsg(purchaseRequest,
-          MessageTypeCode.ONLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, purchaseRequest.getTransactionId() != null ? 
-              purchaseRequest.getTransactionId() : txnRefNum));
-
+      
+   ISOMsg switchISOMsg = switchTransaction.financial(getISOMsg(purchaseRequest,
+   MessageTypeCode.ONLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, purchaseRequest.getTransactionId() != null ? 
+        purchaseRequest.getTransactionId() : txnRefNum));
+      
+      // PERF >> START Used REST instead of socket
+      /*ISOMsg isoMsg = getISOMsg(purchaseRequest,
+              MessageTypeCode.ONLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, purchaseRequest.getTransactionId() != null ? 
+                  purchaseRequest.getTransactionId() : txnRefNum);
+      
+      isoMsg.setPackager(SwitchISOPackager.getChatakGenericPackager());
+      byte[] b = isoMsg.pack();
+      String encoded = Base64.getEncoder().encodeToString(b);
+      
+      TransactionRequest request = new TransactionRequest();
+      request.setRequest(encoded);
+      
+      Response base64Response = JsonUtil.sendToProcessor(Response.class, request, Properties.getProperty("processor.rest.service.endpoint"));
+      
+      log.info(" Processor base64Response : " + base64Response.getErrorMessage());
+      
+      byte[] decoded = Base64.getDecoder().decode(base64Response.getErrorMessage().getBytes());
+      
+      ISOMsg switchISOMsg = SwitchISOPackager.unpackRequest(decoded);*/
+      // PERF >> END Used REST instead of socket
+      
       String switchResponseCode =
-          switchISOMsg.getValue(Integer.parseInt("39")) != null ? (String) switchISOMsg.getValue(Integer.parseInt("39")) : null;
-      LogHelper.logInfo(log, LoggerMessage.getCallerName(), " Processor Tnx Response Code : " + switchResponseCode);
+          switchISOMsg.getValue(Constants.THIRTYNINE) != null ? (String) switchISOMsg.getValue(Constants.THIRTYNINE) : null;
+          log.info(" Processor Tnx Response Code : " + switchResponseCode);
+
       String switchResponseMessage = ActionCode.getInstance().getMessage(switchResponseCode);
-      LogHelper.logInfo(log, LoggerMessage.getCallerName(), " Processor Tnx Response Message : " + switchResponseMessage);
+      log.info(" Processor Tnx Response Message : " + switchResponseMessage);
       purchaseResponse.setTxnResponseTime(System.currentTimeMillis());
       purchaseResponse.setUpStreamMessage(switchResponseMessage);
 
@@ -201,15 +255,16 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       if (purchaseResponse.getUpStreamStatus().equals(PGConstants.STATUS_SUCCESS) ||
     		  purchaseResponse.getUpStreamStatus().equals(PGConstants.STATUS_FAILED)) {
         purchaseResponse.setUpStreamAuthCode(authId);
-        if (switchISOMsg.getValue(Integer.parseInt("37")) != null)
-          purchaseResponse.setUpStreamTxnRefNum(((String) switchISOMsg.getValue(Integer.parseInt("37"))).trim());
+        if (switchISOMsg.getValue(37) != null)
+          purchaseResponse.setUpStreamTxnRefNum(((String) switchISOMsg.getValue(37)).trim());
       }
       
       //Get txn time and issuance partner from processor
-      LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Issuance Txn Time: " + switchISOMsg.getValue(Integer.parseInt("123")));
-      LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Issuance Partner: " + switchISOMsg.getValue(Integer.parseInt("124")));
-      purchaseResponse.setIssuanceTxnTime((String)switchISOMsg.getValue(Integer.parseInt("123")));
-      purchaseResponse.setIssuancePartner((String)switchISOMsg.getValue(Integer.parseInt("124"))); 
+      log.info("Issuance Txn Time: " + switchISOMsg.getValue(FIELD_123));
+      log.info("Issuance Partner: " + switchISOMsg.getValue(FIELD_124));
+      purchaseResponse.setIssuanceTxnTime((String)switchISOMsg.getValue(FIELD_123));
+      purchaseResponse.setIssuancePartner((String)switchISOMsg.getValue(FIELD_124)); 
+
       purchaseResponse.setErrorCode(switchResponseCode);
       purchaseResponse.setErrorMessage(switchResponseMessage);
 
@@ -500,8 +555,8 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       }
       
     //Get txn time and issuance partner from processor
-      LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Issuance Txn Time: " + switchISOMsg.getValue(Integer.parseInt("123")));
-      LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Issuance Partner: " + switchISOMsg.getValue(Integer.parseInt("124")));
+      log.info("Issuance Txn Time: " + switchISOMsg.getValue(Integer.parseInt("123")));
+      log.info("Issuance Partner: " + switchISOMsg.getValue(Integer.parseInt("124")));
       refundResponse.setIssuanceTxnTime((String)switchISOMsg.getValue(Integer.parseInt("123")));
       refundResponse.setIssuancePartner((String)switchISOMsg.getValue(Integer.parseInt("124")));
       refundResponse.setErrorCode(switchResponseCode);

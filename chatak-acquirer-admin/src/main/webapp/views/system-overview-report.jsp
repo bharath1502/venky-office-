@@ -60,8 +60,8 @@
 						<div class="col-xs-12">
 							<div class="discriptionMsg" data-toggle="tooltip"
 								data-placement="top" title="">
-								<span class="red-error">&nbsp;${error }</span> <span
-									class="green-error">&nbsp;${sucess }</span>
+								<span class="red-error">&nbsp;${error }</span> 
+								<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 							</div>
 						</div>
 						<form action="downloadOverviewReport" name="downloadReport"

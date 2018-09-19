@@ -316,4 +316,12 @@ public final class CommonUtil {
 		}
   }
 
+  public static Double doubleAmountConversion(String amount) {
+		return (amount == null ? null : getDoubleValidation(amount));
+  }
+
+  private static double getDoubleValidation(String amount) {
+		return amount == null ? 0d : (double) (Double.valueOf(amount) / Integer.parseInt("100"));
+  }
+
 }

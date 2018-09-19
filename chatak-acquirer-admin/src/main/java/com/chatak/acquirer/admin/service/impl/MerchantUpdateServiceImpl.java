@@ -576,7 +576,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     		for(PGMerchantEntityMap entityMap : merchantEntityMaps){
     			setFindByMerchantId(programManagerRequests, merchant, entityMap);
         	}
-    		 response = merchantCardProgramMapDao.findByMerchantId(getMerchantId);
+    		 response = merchantCardProgramMapDao.findCardProgramByMerchantId(getMerchantId);
     		if(null != response){
     			merchantResponse.setCardProgramRequests(response.getCardProgramRequests());
     		}
@@ -592,7 +592,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 					isoRequests.add(isoRequest);
 				}
 			}
-    	 response = isoServiceDao.findByMerchantId(getMerchantId);
+    	 response = isoServiceDao.findCardProgramByMerchantId(getMerchantId);
     	 if(null != response){
  			merchantResponse.setCardProgramRequests(response.getCardProgramRequests());
  		}

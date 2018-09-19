@@ -16,7 +16,7 @@ import com.chatak.pg.user.bean.MerchantResponse;
  */
 public interface MerchantCardProgramMapDao {
 	
-	public MerchantResponse findByMerchantId(Long merchantId);
+	public MerchantResponse findCardProgramByMerchantId(Long merchantId);
 	
 	public PGMerchantCardProgramMap findByMerchantIdAndCardProgramId(Long merchantId, Long cardProgramId);
 

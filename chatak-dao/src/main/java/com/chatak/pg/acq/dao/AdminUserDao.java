@@ -46,6 +46,6 @@ public interface AdminUserDao {
 	
 	public PGAdminUser findByUserNameAndStatus(String userName);
 	
-	public List<AdminUserDTO> searchAdminUserList();
+	public List<AdminUserDTO> searchAdminUserList(String userType);
 	
 }

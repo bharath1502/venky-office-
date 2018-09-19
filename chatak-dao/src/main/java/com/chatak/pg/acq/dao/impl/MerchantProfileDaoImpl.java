@@ -340,9 +340,9 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 					request.setBusinessName(object[1].toString());
 					request.setEntityType(object[2].toString());
 					if(request.getEntityType().equals(Constants.ISO_USER_TYPE)){
-						request.setEntityName(object[3] != null ? object[3].toString() : "");
+						request.setEntityName(getEntityName(object,Integer.parseInt("3")));
 					}else {
-						request.setEntityName(object[4] != null ? object[4].toString() : "");
+						request.setEntityName(getEntityName(object,Integer.parseInt("4"))); 
 					}
 					request.setCardProgramName(object[5].toString());
 					request.setEmailId(object[6].toString());
@@ -367,6 +367,14 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
     logger.info("MerchantDaoImpl | getMerchantlist | Exiting");
     return getMerchantListResponse;
   }
+
+	/**
+	 * @param object
+	 * @return
+	 */
+	private String getEntityName(Object[] object,Integer index) {
+		return object[index]!= null ? object[index].toString() : "";
+	}
 
 	/**
 	 * @param searchMerchant
@@ -551,22 +559,29 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 
   @Override
   public Response getUserByUsername(String userName) {
-
+    PGMerchantUsers merchantUser = merchantUserRepository.findByUserNameAndStatusNotLike(userName, PGConstants.STATUS_DELETED);
+    Response response = new Response();
+    if (merchantUser != null) {
+      return duplicateUserEntryResponse(response);
+    }
     PGMerchant merchant = merchantRepository.findByUserName(userName);
     PGAdminUser adminUsers =
         adminUserDaoRepository.findByUserNameAndStatusNotLike(userName, PGConstants.STATUS_DELETED);
-    Response response = new Response();
     if (merchant != null || adminUsers != null) {
-      response.setErrorCode(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY);
-      response.setErrorMessage(
-          ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY));
-      return response;
+      return duplicateUserEntryResponse(response);
     } else {
       response.setErrorCode(ActionErrorCode.ERROR_CODE_00);
       response
           .setErrorMessage(ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_00));
       return response;
     }
+  }
+
+  private Response duplicateUserEntryResponse(Response response) {
+    response.setErrorCode(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY);
+    response.setErrorMessage(
+        ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY));
+    return response;
   }
 
   @Override
@@ -980,18 +995,12 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
         merchantRepository.findByEmailIdAndStatusNotLike(emailId, PGConstants.STATUS_DELETED);
     Response response = new Response();
     if (merchant != null) {
-      response.setErrorCode(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY);
-      response.setErrorMessage(
-          ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY));
-      return response;
+      return duplicateUserEntryResponse(response);
     }
     PGMerchantUsers merchantUsers =
         merchantUserRepository.findByEmailIdAndStatusNotLike(emailId, PGConstants.STATUS_DELETED);
     if (merchantUsers != null) {
-      response.setErrorCode(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY);
-      response.setErrorMessage(
-          ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY));
-      return response;
+      return duplicateUserEntryResponse(response);
     } else {
       response.setErrorCode(ActionErrorCode.ERROR_CODE_00);
       response

@@ -496,7 +496,7 @@ public class SubMerchantController implements URLMappingConstants {
 
   private void setExportDetailsDataForDownloadRoleReport(List<MerchantCreateResponse> list,
       ExportDetails exportDetails) {
-    exportDetails.setReportName("Merchant_");
+    exportDetails.setReportName("Sub_Merchant_");
     exportDetails.setHeaderMessageProperty("chatak.header.sub.merchant.messages");
     exportDetails.setHeaderList(getRoleHeaderList());
     exportDetails.setFileData(getRoleFileData(list));

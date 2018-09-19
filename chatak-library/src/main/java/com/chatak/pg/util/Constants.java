@@ -410,7 +410,7 @@ public class Constants {
   public static final String CARD_NUM_MAXLEN = "19";
 
   public static final String MERCHANTS_MODEL = "merchants";
-
+  
   public static final String LOGIN_USER_PARENT_ID = "parentMerchantId";
 
   public static final String ALL_TRANSACTIONS_MODEL = "allTransactions";
@@ -490,7 +490,7 @@ public class Constants {
   public static final String PROCESSOR_NAMES = "processorNames";
 
   public static final String MERCHANT = "merchant";
-
+  
   public static final String AGENT_NAMES_LIST = "agentnamesList";
 
   public static final String BANK_STATE_LIST = "bankStateList";
@@ -596,6 +596,16 @@ public class Constants {
   public static final String EFT_TRANSFER_REPORT_LIST = "eftTransferReportList";
 
   public static final String CURRENCY = "currency";
+  
+  public static final String START_DATE = "startDate";
+  
+  public static final String END_DATE = "endDate";
+  
+  public static final String RAPID_REVENUE = "rapidRevenue";
+  
+  public static final String SUB_MER_REVENUE = "subMerRevenue";
+  
+  public static final String MERCHANT_REVENUE = "merchantRevenue";
 
   public static final String BATCH_ID_DATE_FORMAT = "ddMMyy";
 
@@ -823,7 +833,7 @@ public class Constants {
 
   public static final Integer SUCCESS_STATUS = 200;
 
-  public static final String PROGRAM_MANAGER_ALREADY_EXISTS_WITH_NAME = "Program Manager Already Exist,try with different name";
+  public static final String PROGRAM_MANAGER_ALREADY_EXISTS_WITH_NAME = "Program Manager already on-boarded";
 
   public static final String PROGRAM_MANAGER_ID_IS_EMPTY = "PROGRAM_MANAGER_ID_IS_EMPTY";
 
@@ -978,4 +988,13 @@ public class Constants {
   public static final String CREATED_BY = "2";
 
   public static final String APP_STATUS = "Active";
+
+  public static final Integer MAX_DOWNLOAD_LIMIT = Integer.parseInt(Properties.getProperty("max.download.limit"));
+  
+  public static final String SCHEDULER_ENABLE_FLAG = Properties.getProperty("settlement.scheduler.enabled");
+  
+  public static final String SETTLEMENT_DATE_FORMAT = "MM-dd-yyyy";
+  
+  public static final String TIMEZONE_DATE_FORMAT = "dd-MM-yyyy HH:mm:ss z";
+  
 }

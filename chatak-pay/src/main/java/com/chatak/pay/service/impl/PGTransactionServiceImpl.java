@@ -4,11 +4,11 @@
 package com.chatak.pay.service.impl;
 
 import java.sql.Timestamp;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -16,17 +16,18 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pay.constants.ChatakPayErrorCode;
 import com.chatak.pay.controller.model.CardData;
 import com.chatak.pay.controller.model.Response;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
-import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pay.exception.InvalidRequestException;
 import com.chatak.pay.exception.SplitTransactionException;
 import com.chatak.pay.model.TransactionDTO;
 import com.chatak.pay.model.TransactionDTOResponse;
+import com.chatak.pay.service.AsyncService;
 import com.chatak.pay.service.PGSplitTransactionService;
 import com.chatak.pay.service.PGTransactionService;
 import com.chatak.pay.util.JsonUtil;
@@ -39,31 +40,29 @@ import com.chatak.pg.acq.dao.BatchDao;
 import com.chatak.pg.acq.dao.CardProgramDao;
 import com.chatak.pg.acq.dao.CurrencyConfigDao;
 import com.chatak.pg.acq.dao.FeeProgramDao;
+import com.chatak.pg.acq.dao.IsoServiceDao;
+import com.chatak.pg.acq.dao.MerchantCardProgramMapDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.OnlineTxnLogDao;
 import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.RefundTransactionDao;
 import com.chatak.pg.acq.dao.SplitTransactionDao;
-import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAccountHistory;
-import com.chatak.pg.acq.dao.model.PGAccountTransactions;
 import com.chatak.pg.acq.dao.model.PGAcquirerFeeValue;
 import com.chatak.pg.acq.dao.model.PGBatch;
-import com.chatak.pg.acq.dao.model.PGCurrencyCode;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.acq.dao.model.PGMerchantCardProgramMap;
 import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGSplitTransaction;
 import com.chatak.pg.acq.dao.model.PGTransaction;
-import com.chatak.pg.acq.dao.model.PmCardProgamMapping;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.CurrencyCodeRepository;
 import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
-import com.chatak.pg.acq.dao.repository.PmCardProgramMappingRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
 import com.chatak.pg.bean.AuthRequest;
 import com.chatak.pg.bean.AuthResponse;
@@ -79,13 +78,11 @@ import com.chatak.pg.bean.ReversalRequest;
 import com.chatak.pg.bean.ReversalResponse;
 import com.chatak.pg.bean.VoidRequest;
 import com.chatak.pg.bean.VoidResponse;
-import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.ActionCode;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.NationalPOSEntryModeEnum;
-import com.chatak.pg.enums.ProcessorType;
 import com.chatak.pg.enums.TransactionStatus;
 import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.model.ProcessingFee;
@@ -93,8 +90,7 @@ import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.EncryptionUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
+import com.chatak.pg.util.MDCLoggerUtil;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
@@ -114,7 +110,7 @@ import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 @Service
 public class PGTransactionServiceImpl implements PGTransactionService {
 
-	private static Logger log = Logger.getLogger(PGTransactionServiceImpl.class);
+	private static Logger log = LogManager.getLogger(PGTransactionServiceImpl.class);
 	
 	private static ObjectMapper mapper=new ObjectMapper();
 
@@ -126,9 +122,6 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 
 	@Autowired
 	private OnlineTxnLogDao onlineTxnLogDao;
-
-	@Autowired
-	private TransactionDao transactionDao;
 
 	@Autowired
 	private SplitTransactionDao splitTransactionDao;
@@ -185,12 +178,19 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	private ProgramManagerDao programManagerDao;
 	
 	@Autowired
-	private PmCardProgramMappingRepository pmCardProgramMappingRepository;
-	
-	@Autowired
 	private BatchDao batchDao;
 	
+	@Autowired
+	MerchantCardProgramMapDao merchantCardProgramMapDao;
+	
+	@Autowired
+	IsoServiceDao isoServiceDao;
+	
+	@Autowired
+	private AsyncService asyncService;
+	
 	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) {
+		MDCLoggerUtil.setMDCLoggerParamsAdmin(transactionRequest.getInvoiceNumber());
 		log.info("Entering :: processTransaction :: TxnType :  " + transactionRequest.getTransactionType());
 		try {
 			SpringDAOBeanFactory.setAppContext(appContext);
@@ -224,6 +224,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				log.error("invalid transactiontype:: processCardPayment method");
 				return getErrorResponse(ChatakPayErrorCode.TXN_0001.name());
 			}
+			MDCLoggerUtil.clearMDCLoggerParams();
 			return null;
 		} catch(Exception e) {
 			log.error("ERROR:: processCardPayment method", e);
@@ -252,6 +253,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	 * @param transactionRequest
 	 * @return
 	 */
+	@Transactional
 	public Response processAuthCapture(TransactionRequest transactionRequest, PGMerchant pgMerchant) {
 
 		log.info("RestService | PGTransactionServiceImpl | processAuthCapture | Entering");
@@ -260,7 +262,8 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		try {
 			// Logging into Online txn log
 			pgOnlineTxnLog = logEntry(TransactionStatus.INITATE, transactionRequest);
-			CardProgram cardprogram = cardProgramDao.findCardProgramByIIN(
+			// PERF >> Replaced with card program id
+			CardProgram cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
 					CommonUtil.getIIN(transactionRequest.getCardData().getCardNumber()), 
 					CommonUtil.getPartnerIINExt(transactionRequest.getCardData().getCardNumber()), 
 					CommonUtil.getIINExt(transactionRequest.getCardData().getCardNumber()));
@@ -272,14 +275,18 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			  return transactionResponse;
 			}
 			
-			Double totalTxnAmount = StringUtil.getLong(transactionRequest.getTotalTxnAmount()) / Double.parseDouble("100");
+			Double totalTxnAmount = StringUtil.getLong(transactionRequest.getTotalTxnAmount()) / 100d;
             Double percentage = StringUtil.getDouble(feeValues.get(0).getFeePercentageOnly());
             Long feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
             feeAmount = feeAmount + feeValues.get(0).getFlatFee();
 			
+            if(feeAmount.compareTo(transactionRequest.getTotalTxnAmount()) > 0){
+              transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0117.name());
+              transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0117.value());
+              return transactionResponse;
+            }
 			PurchaseRequest request = new PurchaseRequest();
 			request.setCardNum(transactionRequest.getCardData().getCardNumber());
-			LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Card Number Length : " + request.getCardNum());
 			request.setExpDate(transactionRequest.getCardData().getExpDate());
 			request.setCvv(transactionRequest.getCardData().getCvv());
 			request.setMerchantCode(transactionRequest.getMerchantCode());
@@ -302,25 +309,27 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			request.setAcq_channel(transactionRequest.getOriginChannel());
 			request.setProcessorMid(transactionRequest.getProcessorMid());
 			request.setMode(transactionRequest.getMode());
-			log.info("Processor Merchant ID: "+request.getProcessorMid());
 			request.setCardHolderEmail(transactionRequest.getCardData().getCardHolderEmail());
 			request.setEmv(transactionRequest.getCardData().getEmv());
 			request.setQrCode(transactionRequest.getQrCode());
-			log.info("Transaction Currency : " + transactionRequest.getCurrencyCode());
 			request.setCurrencyCode(transactionRequest.getCurrencyCode());
 			request.setUserName(transactionRequest.getUserName());
 			request.setTimeZoneOffset(transactionRequest.getTimeZoneOffset());
 			request.setTimeZoneRegion(transactionRequest.getTimeZoneRegion());
             getMerchantDetails(pgMerchant, request);
 			request.setUid(transactionRequest.getCardData().getUid());
-			getMerchantBatchId(request, cardprogram);
+			getMerchantBatchId(request, cardprogram, pgMerchant);
+
 			PurchaseResponse purchaseResponse = new SwitchServiceBroker().purchaseTransaction(request, pgMerchant);
 
 			transactionResponse.setErrorCode(purchaseResponse.getErrorCode());
 			transactionResponse.setErrorMessage(purchaseResponse.getErrorMessage());
 			transactionResponse.setTotalAmount(purchaseResponse.getTotalAmount());
-			LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Response TotalAmount : " + purchaseResponse.getTotalAmount());
-			transactionResponse.setTotalTxnAmount((purchaseResponse.getTotalAmount().doubleValue())/Integer.parseInt("100"));
+			
+			if(purchaseResponse.getTotalAmount() != null) {
+				transactionResponse.setTotalTxnAmount((purchaseResponse.getTotalAmount().doubleValue())/Constants.HUNDRED);
+			}
+			
 			transactionResponse.setAuthId(purchaseResponse.getAuthId() != null ? purchaseResponse.getAuthId() : null);
 			transactionResponse.setTxnRefNumber(purchaseResponse.getTxnRefNum() != null ? purchaseResponse.getTxnRefNum()
 					: null);
@@ -340,7 +349,8 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() !=null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
 				if (autoSettlement != null && autoSettlement.equals("1")) {
 					updateSettlementStatus(transactionRequest.getMerchantCode(), transactionRequest.getTerminalId(),
-							purchaseResponse.getTxnRefNum(), "Sale", PGConstants.PG_SETTLEMENT_EXECUTED, "Auto Settlement", feeAmount,request.getBatchId());
+							purchaseResponse.getTxnRefNum(), "Sale", PGConstants.PG_SETTLEMENT_EXECUTED, "Auto Settlement",
+							feeAmount,request.getBatchId(), pgOnlineTxnLog);
 				}
 			}
 
@@ -919,13 +929,17 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			String pgTxnId,
 			String processorResponse,
 			String processTxnId) {
-		pgOnlineTxnLog.setPgTxnId(pgTxnId);
-		pgOnlineTxnLog.setProcessorResponse(processorResponse);
-		pgOnlineTxnLog.setProcessorTxnId(processTxnId);
-		pgOnlineTxnLog.setResponseDateTime(new Timestamp(System.currentTimeMillis()));
-		pgOnlineTxnLog.setTxnState(txnState.name());
-		pgOnlineTxnLog.setTxnReason(reason);
-		onlineTxnLogDao.logRequest(pgOnlineTxnLog);
+		
+		// PERF >> Moving to async service
+		asyncService.logExit(pgOnlineTxnLog, txnState, reason, pgTxnId, processorResponse, processTxnId);
+		
+//		pgOnlineTxnLog.setPgTxnId(pgTxnId);
+//		pgOnlineTxnLog.setProcessorResponse(processorResponse);
+//		pgOnlineTxnLog.setProcessorTxnId(processTxnId);
+//		pgOnlineTxnLog.setResponseDateTime(new Timestamp(System.currentTimeMillis()));
+//		pgOnlineTxnLog.setTxnState(txnState.name());
+//		pgOnlineTxnLog.setTxnReason(reason);
+//		onlineTxnLogDao.logRequest(pgOnlineTxnLog);
 
 	}
 
@@ -1249,66 +1263,13 @@ public class PGTransactionServiceImpl implements PGTransactionService {
         accountHistoryDao.createOrSave(pgAccountHistory);
       }
 
-	  public boolean updateSettlementStatus(String merchantId,
+	  public void updateSettlementStatus(String merchantId,
               String terminalId, String txnId, String txnType,
-              String status, String comments, long feeAmount,String batchId) throws Exception {
-		  try {
-			  log.info("Entering :: PGTransactionServiceImpl :: updateSettlementStatus method");
-			  PGTransaction pgTransaction = transactionDao.getTransactionOnTxnIdAndTxnType(merchantId, terminalId, txnId, txnType);
-			  if(null != pgTransaction) {
-				  PGOnlineTxnLog pgOnlineTxnLog = onlineTxnLogDao.getTransactionOnPgTxnIdAndMerchantId(pgTransaction.getTransactionId(), pgTransaction.getMerchantId());
-				  if(status.equals(PGConstants.PG_SETTLEMENT_EXECUTED)) {
-					  Long chatakFeeAmountTotal;
-					  List<Object> objectResult = getProcessingFee(PGUtils.getCCType(),
-							  pgTransaction.getMerchantId(), pgTransaction.getTxnTotalAmount());
-					  chatakFeeAmountTotal = (Long) objectResult.get(1);
-
-					  validatePGCurrencyCode(status, comments, feeAmount, pgTransaction, pgOnlineTxnLog, chatakFeeAmountTotal);
-					  
-                      pgTransaction.setBatchId(batchId);
-                      pgTransaction.setBatchDate(new Timestamp(System.currentTimeMillis()));
-                      
-					  logAccountHistory(pgTransaction.getMerchantId(), PGConstants.PAYMENT_METHOD_CREDIT, pgTransaction.getTransactionId());
-				  }
-				  pgTransaction.setMerchantSettlementStatus(status);
-				  pgTransaction.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-				  voidTransactionDao.createTransaction(pgTransaction);
-				  log.info("Exiting :: PGTransactionServiceImpl :: updateSettlementStatus method");
-				  return true;
-			  } else {
-				  return false;
-			  }
-		  } catch(Exception e) {
-			  log.error("ERROR :: PGTransactionServiceImpl :: updateSettlementStatus method", e);
-			  throw new ChatakPayException(e.getMessage());
-		  }
+              String status, String comments, long feeAmount,String batchId, PGOnlineTxnLog pgOnlineTxnLog) throws Exception {
+		  // PERF >> Moved to async
+		  asyncService.updateSettlementStatus(merchantId, terminalId, txnId, txnType, status, comments, feeAmount, batchId, pgOnlineTxnLog);
 	  }
 
-	private void validatePGCurrencyCode(String status, String comments, long feeAmount, PGTransaction pgTransaction,
-			PGOnlineTxnLog pgOnlineTxnLog, Long chatakFeeAmountTotal) {
-		Long totalFeeAmount = pgTransaction.getTxnTotalAmount() - pgTransaction.getTxnAmount();
-		Long merchantFeeAmount = 0l;
-
-		  if(totalFeeAmount > chatakFeeAmountTotal) {
-			  merchantFeeAmount = totalFeeAmount - chatakFeeAmountTotal;
-		  }
-		  updateAccountCCTransactions(pgTransaction.getTransactionId(), pgTransaction.getTransactionType(), status);
-		  String descriptionTemplate = messageSource.getMessage("chatak-pay.sale.description.template", null, LocaleContextHolder.getLocale());
-		  if(null != pgOnlineTxnLog) {
-			  PGCurrencyCode pGCurrencyCode = currencyCodeRepository.findByCurrencyCodeNumeric(pgTransaction.getTxnCurrencyCode());
-			  descriptionTemplate = MessageFormat.format(descriptionTemplate,
-					  pGCurrencyCode.getCurrencyCodeAlpha() + " " + StringUtils.amountToString(pgOnlineTxnLog.getMerchantAmount()),
-					  pGCurrencyCode.getCurrencyCodeAlpha() + " " + StringUtils.amountToString(feeAmount));
-		  }
-
-		  pgTransaction.setMerchantFeeAmount(merchantFeeAmount);
-		  pgTransaction.setTxnDescription(descriptionTemplate);
-		  pgTransaction.setReason(comments);
-		  if(ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
-			  pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);
-		  }
-	}
-	  
 	  public List<Object> getProcessingFee(String cardType, String merchantCode, Long txnTotalAmount) throws DataAccessException, Exception {
 		  log.info("Entering :: PGTransactionServiceImpl :: getProcessingFee method ");
 		  List<Object> results = new ArrayList<Object>(Integer.parseInt("2"));
@@ -1346,83 +1307,11 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		  return processingFee;
 	  }
 	  
-	  public void updateAccountCCTransactions(String pgTransactionId, String txnType, String newStatus) {
-		  PGAccount account = null;
-		  Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-		  log.info("Entering :: PGTransactionServiceImpl :: updateAccountCCTransactions method ");
-		  List<PGAccountTransactions> accountTxns = accountTransactionsDao.getAccountTransactionsOnTransactionIdAndTransactionType(pgTransactionId, txnType);
-		  for(PGAccountTransactions accTxn : accountTxns) {
-
-			  if(PGConstants.PG_SETTLEMENT_REJECTED.equals(newStatus)) {
-				  accTxn.setStatus(PGConstants.PG_SETTLEMENT_REJECTED);
-			  } else {
-
-				  switch(accTxn.getTransactionCode()) {
-				  case AccountTransactionCode.CC_AMOUNT_CREDIT:
-					  // updating pg account debting refund amount
-					  account=accountDao.getPgAccount(accTxn.getMerchantCode());
-                      setPGAccountDetails(currentTime, accTxn, account);
-					  break;
-				  case AccountTransactionCode.CC_FEE_DEBIT:
-					  account=accountDao.getPgAccount(accTxn.getMerchantCode());
-					  account.setAvailableBalance(account.getAvailableBalance() - accTxn.getDebit());
-					  account.setCurrentBalance(account.getCurrentBalance() - accTxn.getDebit());
-                      setPGAccDetails(account, currentTime, accTxn);
-					  break;
-				  case AccountTransactionCode.CC_MERCHANT_FEE_CREDIT:
-                      validateForMerchantFeeCredit(currentTime, accTxn);
-					  break;
-				  case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
-					  log.info("PGTransactionServiceImpl :: updateAccountCCTransactions method fetching transactions by PG TRANS ID: " + accTxn.getPgTransactionId());
-					  List<PGTransaction> transactions = transactionRepository.findByTransactionId(accTxn.getPgTransactionId());
-					  PGTransaction transaction = transactions.get(0);
-
-                      validateForEntityTypeAndCurrencyAndStatus(currentTime, accTxn, transaction);
-					  break;
-				  default:
-				  }
-			  }
-			  accTxn.setProcessedTime(new Timestamp(System.currentTimeMillis()));
-			  accountTransactionsDao.createOrUpdate(accTxn);
-		  }
-
-		  log.info("Exiting :: PGTransactionServiceImpl :: updateAccountCCTransactions method ");
+	  public void updateAccountCCTransactions(String pgTransactionId, String txnType, String newStatus, Long totalFeeAmount) {
+		  // PERF >> Moved to async
+		  asyncService.updateAccountCCTransactions(pgTransactionId, txnType, newStatus, totalFeeAmount);
 	  }
 
-      private void validateForMerchantFeeCredit(Timestamp currentTime, PGAccountTransactions accTxn) {
-        PGAccount account;
-        account=accountDao.getPgAccount(merchantDao.getParentMerchantCode(accTxn.getMerchantCode()));
-        if(null==account){
-          account=accountDao.getPgAccount(accTxn.getMerchantCode()); }
-                  setPGAccountDetails(currentTime, accTxn, account);
-      }
-
-      private void setPGAccDetails(PGAccount account, Timestamp currentTime,
-          PGAccountTransactions accTxn) {
-        accountDao.savePGAccount(account);
-        accTxn.setCurrentBalance(account.getCurrentBalance());
-        accTxn.setProcessedTime(currentTime);
-        accTxn.setStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-      }
-
-      private void validateForEntityTypeAndCurrencyAndStatus(Timestamp currentTime,
-          PGAccountTransactions accTxn, PGTransaction transaction) {
-        PGAccount account;
-        log.info("PGTransactionServiceImpl :: updateAccountCCTransactions method :: fetching currencyConfig for fee credit with numeric code: " + transaction.getTxnCurrencyCode());
-        PGCurrencyConfig currencyConfig = currencyConfigDao.getcurrencyCodeAlpha(transaction.getTxnCurrencyCode());
-        log.info("PGTransactionServiceImpl :: updateAccountCCTransactions method :: currency code alpha for the above: " + currencyConfig.getCurrencyCodeAlpha());
-        account = accountRepository.findByEntityTypeAndCurrencyAndStatus(PGConstants.DEFAULT_ENTITY_TYPE, currencyConfig.getCurrencyCodeAlpha(), PGConstants.S_STATUS_ACTIVE);
-  
-        setPGAccountDetails(currentTime, accTxn, account);
-      }
-
-      private void setPGAccountDetails(Timestamp currentTime, PGAccountTransactions accTxn,
-          PGAccount account) {
-        account.setAvailableBalance(account.getAvailableBalance() + accTxn.getCredit());
-        account.setCurrentBalance(account.getCurrentBalance() + accTxn.getCredit());
-        setPGAccDetails(account, currentTime, accTxn);
-      }
-	  
 	  public void logAccountHistory(String merchantId, String paymentMethod, String transactionId) throws Exception {
 		  log.info("Entering :: PGTransactionServiceImpl :: logAccountHistory method");
 		  
@@ -1514,6 +1403,8 @@ public class PGTransactionServiceImpl implements PGTransactionService {
     request.setCity(
         pgMerchant.getCity().substring(0, (pgMerchant.getCity().length() > Constants.THIRTEEN
             ? Constants.THIRTEEN : pgMerchant.getCity().length())));
+    request.setAddress(
+        pgMerchant.getBusinessName() + ", " + pgMerchant.getAddress1() + ", " + pgMerchant.getCity());
   }
 
   private Response getErrorResponse(String errorCode) {
@@ -1523,41 +1414,56 @@ public class PGTransactionServiceImpl implements PGTransactionService {
     response.setTxnDateTime(System.currentTimeMillis());
     return response;
   }
-  
-	private synchronized void getMerchantBatchId(Request request, CardProgram cardProgram) {
-		LogHelper.logEntry(log, LoggerMessage.getCallerName());
-		
-			LogHelper.logInfo(log, LoggerMessage.getCallerName(), " Card program ID "+cardProgram.getCardProgramId());
-			PmCardProgamMapping pmCardProgamMapping = pmCardProgramMappingRepository
-					.findByCardProgramId(cardProgram.getCardProgramId());
+
+  private void getMerchantBatchId(Request request, CardProgram cardProgram, PGMerchant pgMerchant)throws ServiceException {
+	    log.info("Entering :: PGTransactionServiceImpl :: getMerchantBatchId ::  Card program ID " + cardProgram.getCardProgramId());
+		Long pmId;
 			
-			if (null != pmCardProgamMapping) {
-				LogHelper.logEntry(log, LoggerMessage.getCallerName()+" Program Manager ID "+pmCardProgamMapping.getProgramManagerId());
-				ProgramManagerRequest programManagerRequest = programManagerDao
-						.findProgramManagerById(pmCardProgamMapping.getProgramManagerId());
-				LogHelper.logInfo(log, LoggerMessage.getCallerName(), " PM ID "+programManagerRequest.getId());
+			//find by merchnat id and cp id
+		PGMerchantCardProgramMap pGMerchantCardProgramMap = null;
+		 if(pgMerchant.getMerchantType().equals(PGConstants.MERCHANT)){
+			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(request.getMerchantId(), cardProgram.getCardProgramId());
+		 } else {
+			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(pgMerchant.getParentMerchantId(), cardProgram.getCardProgramId());
+		}
+			
+			if(pGMerchantCardProgramMap.getEntitytype().equals(Constants.PM_USER_TYPE)) {
+			  pmId = pGMerchantCardProgramMap.getEntityId();
+			} else {
+			  pmId = isoServiceDao.findByIsoIdAndCardProgramId(pGMerchantCardProgramMap.getEntityId(), cardProgram.getCardProgramId());
+			}
+			
+			if (null != pmId) {
+			    log.info(" Program Manager ID "+pmId);
+				ProgramManagerRequest programManagerRequest = programManagerDao.findStatusAndBatchPrefixByProgramManagerId(pmId);
+				log.info(" PM ID "+programManagerRequest.getId());
+				
+				// Check PM status
+				if(!programManagerRequest.getStatus().equals("Active")) {
+				  throw new ServiceException(ActionErrorCode.ERROR_CODE_PM_02);
+				}
+				
 				PGBatch batchResponse = batchDao.getBatchIdByProgramManagerId(programManagerRequest.getId());
 				
-				LogHelper.logInfo(log, LoggerMessage.getCallerName(), " batchResponse:: " + batchResponse.getStatus());
-				
 				if (batchResponse.getStatus() !=null && batchResponse.getStatus().equals(PGConstants.BATCH_STATUS_ASSIGNED)) {
-					LogHelper.logInfo(log, LoggerMessage.getCallerName(), " Batch Status "+batchResponse.getStatus());
 					request.setBatchId(batchResponse.getBatchId());
+					
 				} else if ((batchResponse.getStatus() !=null && batchResponse.getStatus().equals(PGConstants.BATCH_STATUS_PROCESSING))
 						|| (batchResponse.getStatus() !=null && batchResponse.getStatus().equals(PGConstants.BATCH_STATUS_COMPLETED))) {
-					LogHelper.logInfo(log, LoggerMessage.getCallerName(), " Batch Status "+batchResponse.getStatus());
 					processCompletedBatchId(request, batchResponse);
+					
 				} else {
 					generateNewBatchId(request, programManagerRequest);
 				}
+			} else {
+			  throw new ServiceException(ActionErrorCode.ERROR_CODE_PM_01);
 			}
-		LogHelper.logExit(log, LoggerMessage.getCallerName());
+		log.info("Exiting :: PGTransactionServiceImpl :: getMerchantBatchId");
 	}
 
-	private void processCompletedBatchId(Request request, PGBatch batch) {
-		LogHelper.logInfo(log, LoggerMessage.getCallerName(), "Batch ID " + batch.getBatchId());
-		long number = Long.parseLong(batch.getBatchId().subSequence(Integer.parseInt("5"), batch.getBatchId().length()).toString()) + 1l;
-		batch.setBatchId(batch.getBatchId().subSequence(0, Integer.parseInt("5")) + String.format("%05d", number));
+	private synchronized void processCompletedBatchId(Request request, PGBatch batch) {
+		long number = Long.parseLong(batch.getBatchId().subSequence(Constants.FIVE, batch.getBatchId().length()).toString()) + 1l;
+		batch.setBatchId(batch.getBatchId().subSequence(0, Constants.FIVE) + String.format("%05d", number));
 		batch.setProgramManagerId(batch.getProgramManagerId());
 		batch.setStatus(PGConstants.BATCH_STATUS_ASSIGNED);
 		batch.setCreatedDate(new Timestamp(System.currentTimeMillis()));
@@ -1565,8 +1471,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		request.setBatchId(batch.getBatchId());
 	}
      // Creating New BatchId
-	private void generateNewBatchId(Request request, ProgramManagerRequest programManagerRequest) {
-		LogHelper.logInfo(log, LoggerMessage.getCallerName(), " Batch not available, creating new batch ID");
+	private synchronized void generateNewBatchId(Request request, ProgramManagerRequest programManagerRequest) {
 		PGBatch batch = new PGBatch();
 		batch.setProgramManagerId(programManagerRequest.getId());
 		batch.setBatchId(programManagerRequest.getBatchPrefix() + String.format("%05d", 1));

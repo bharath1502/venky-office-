@@ -162,7 +162,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.fax"/></label>
 														<form:input cssClass="form-control" path="fax" id="fax" onkeypress="return amountValidate(this,event)"
-															maxlength="13" onblur="this.value=this.value.trim();"/>
+															maxlength="13" onblur="this.value=this.value.trim();clientValidation('fax','fax','faxEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="faxEr" class="red-error">&nbsp;</span>
 														</div>
@@ -186,7 +186,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address2"/></label>
 														<form:input cssClass="form-control" path="address2"
-															id="address2" maxlength="50" onblur="this.value=this.value.trim();validateAddress2()"  />
+															id="address2" maxlength="50" onblur="this.value=this.value.trim();validateAddress2();clientValidation('address2','address2','address2Er')"  />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="address2Er" class="red-error">&nbsp;</span>
 														</div>
@@ -339,8 +339,8 @@
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
 														<input type="button"
-															class="form-control button pull-right acc-next"
-															value="<spring:message code="sub-merchant-create.label.continue"></spring:message>"> <input type="button"
+															class="form-control button pull-right acc-next" onclick="createValidationForMerchant()"
+															value="<spring:message code="sub-merchant-create.label.continue"></spring:message>"> <input type="button" 
 															class="form-control button pull-right marginL10"
 															value="<spring:message code="sub-merchant-create.label.cancel"></spring:message>" onclick="openCreateCancelConfirmationPopup()">
 													</fieldset>

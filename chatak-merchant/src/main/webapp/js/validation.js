@@ -102,6 +102,14 @@ var ValidationRules = {
 		mandatory : true
 
 	},
+	
+	email_id : {
+		type : "email",
+		min : "0",
+		max : "50",
+		mandatory : false
+
+	},
 
 	confirmemail : {
 		type : "confirmemail",
@@ -128,7 +136,7 @@ var ValidationRules = {
 	},
 
 	address2 : {
-		type : "all",
+		type : "addressField",
 		min : "0",
 		max : "50",
 		mandatory : false
@@ -284,7 +292,7 @@ var ValidationRules = {
 	},
 
 	bank_address2 : {
-		type : "all",
+		type : "addressField",
 		min : "0",
 		max : "50",
 		mandatory : false
@@ -296,6 +304,13 @@ var ValidationRules = {
 		min : "2",
 		max : "30",
 		mandatory : true
+
+	},
+	bank_city_id : {
+		type : "alpha",
+		min : "2",
+		max : "30",
+		mandatory : false
 
 	},
 
@@ -890,6 +905,22 @@ var ValidationRules = {
 		mandatory : true
 
 	},
+	
+	merchant_codes : {
+		type : "numeric",
+		min : "6",
+		max : "16",
+		mandatory : false
+
+	},
+	
+	gateway_id : {
+		type : "numeric",
+		min : "4",
+		max : "16",
+		mandatory : false
+
+	},
 
 	area : {
 		type : "alpha",
@@ -909,6 +940,13 @@ var ValidationRules = {
 	year : {
 		type : "dropdown",
 		mandatory : true
+	},
+	company_name_aphhanumeric_space_dot_NM : {
+		type : "alphanumericDotAndSpace",
+		min : "2",
+		max : "50",
+		mandatory : false
+
 	}
 // End of card Service
 };
@@ -939,9 +977,18 @@ function clientValidation(field_id, field_name, div_id) {
 		if (!numericWithDash(data, div_id))
 			return false;
 	}
+	if (ValidationRules[name].type == "alphanumericDotAndSpace") {
+		if (!alphanumericDotAndSpace(data, div_id))
+			return false;
+	}
 
 	if (ValidationRules[name].type == "specialchar") {
 		if (!specialchar(data, div_id))
+			return false;
+	}
+	
+	if (ValidationRules[name].type == "addressField") {
+		if (!addressField(data, div_id))
 			return false;
 	}
 
@@ -1614,5 +1661,29 @@ function validateMerchantRadio(err) {
 		setDiv(err, '');
 		return true;
 
+	}
+}
+
+function alphanumericDotAndSpace(data, div_id) {
+	var regex =/^[a-zA-Z0-9 .]*$/;
+	if (regex.test(data)) {
+		setDiv(div_id, "");
+		return true;
+
+	} else {
+		setDiv(div_id,webMessages.AlphabetsAndDotUnderScore);
+		return false;
+
+	}
+}
+
+function addressField(data, div_id) {
+	var regex = /^[A-Za-z0-9,-._\/\s#]{1,60}$/;
+	if (regex.test(data)) {
+		setDiv(div_id, "");
+		return true;
+	} else {
+		setDiv(div_id, webMessages.address_should_contains_message);
+		return false;
 	}
 }

@@ -1,13 +1,14 @@
 package com.chatak.pg.user.bean;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 public class Transaction implements Serializable {
 
   private static final long serialVersionUID = -4097441693665168699L;
 
-  private Long id;
+  private BigInteger id;
 
   private Long txn_ref_num;
 
@@ -111,11 +112,11 @@ public class Transaction implements Serializable {
     this.totalAmt = totalAmt;
   }
 
-  public Long getId() {
+  public BigInteger getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(BigInteger id) {
     this.id = id;
   }
 

@@ -2,7 +2,8 @@ package com.chatak.pay.service.impl;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -31,7 +32,7 @@ import com.chatak.pg.util.Properties;
 @Service
 public class TopupServiceImpl implements TopupService {
 
-	private Logger logger = Logger.getLogger(TopupServiceImpl.class);
+	private static Logger logger = LogManager.getLogger(TopupServiceImpl.class);
 	
 	private static ObjectMapper mapper=new ObjectMapper();	
 

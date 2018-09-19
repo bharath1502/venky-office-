@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,13 +34,14 @@ import com.chatak.acquirer.admin.model.EntityMappedTransactions;
 import com.chatak.acquirer.admin.model.IsoSettlementDetails;
 import com.chatak.acquirer.admin.model.TransactionResponse;
 import com.chatak.acquirer.admin.service.IsoService;
-import com.chatak.acquirer.admin.service.ProgramManagerService;
 import com.chatak.acquirer.admin.service.SettlementReportService;
 import com.chatak.acquirer.admin.service.SettlementService;
 import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.acq.dao.model.Iso;
 import com.chatak.pg.acq.dao.model.PGTransaction;
+import com.chatak.pg.acq.dao.model.ProgramManager;
+import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntityHistory;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactionEntity;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactions;
 import com.chatak.pg.bean.settlement.SettlementEntity;
@@ -54,8 +53,6 @@ import com.chatak.pg.model.FeeReportRequest;
 import com.chatak.pg.model.Response;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 
 @Controller
@@ -68,9 +65,6 @@ public class SettlementReportController implements URLMappingConstants {
 	
 	@Autowired
 	private SettlementService settlementService;
-	
-	@Autowired
-	private ProgramManagerService programManagerService;
 	
 	@Autowired
 	private SettlementReportService settlementReportService;
@@ -105,7 +99,7 @@ public class SettlementReportController implements URLMappingConstants {
 			@RequestParam("dataFile") MultipartFile file) {
 		
 		ModelAndView modelAndView = new ModelAndView(FETCH_SETTLEMENT_DATA_BY_PMID);
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: processAndValidateSettlementData");
 		
 		HashMap<Integer , String> map = new HashMap<>();
 		int rowCount = 0;
@@ -116,35 +110,19 @@ public class SettlementReportController implements URLMappingConstants {
 				bytes = file.getBytes();
 				String[] strArray = file.getOriginalFilename().split("_");
 				String programName = strArray[0];
-				String[] dateTime = strArray[1].split(" ");
 				
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "programName: " + programName + ", dateTime: " + dateTime);
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "time: " + dateTime[1]);
+				String dateTime = strArray[1].substring(0, strArray[1].indexOf('.'));
 				
-				String time = dateTime[1].substring(0, dateTime[1].indexOf('.'));
+				validateFileName(settlementDataRequest, dateTime, programName);
 				
-				validateFileName(settlementDataRequest, dateTime[0], programName, time);
+				if(validateFileExists(programName, dateTime)) {
 				String fileData = new String(bytes, "UTF-8");
 				String[] lines = fileData.split("\n");
 				int length = lines.length;
 				
-				long START_TIME = System.currentTimeMillis();
 				for (int i = 4; i < length; i++) {
-					SettlementDataRequest dataRequest = new SettlementDataRequest();
-					String errorMessage = "";
-					String[] columns = lines[i].split(",");
-					fetchColumn(columns);
-					if (i == 4) {
-						if (validateHeaderForCsv(columns, controller)) {
-							continue;
-						} else {
-							throw new ChatakAdminException(
-									Properties.getProperty("admin.invalid.header.fileupload"));
-						}
-					}
-					rowCount = validateFiledValue(map, rowCount, dataRequest, errorMessage, columns);
+					rowCount = validateRowCount(map, rowCount, controller, lines, i);
 				}
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "CSV validation processed Time " + (System.currentTimeMillis() - START_TIME));
 				
 				if(map.size() > 0) {
 					modelAndView.addObject(map);
@@ -152,12 +130,14 @@ public class SettlementReportController implements URLMappingConstants {
 					return modelAndView;
 				}
 				
-				START_TIME = System.currentTimeMillis();
-				processSettlementData(lines, modelAndView);
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "ProcessSettlementData processed Time " + (System.currentTimeMillis() - START_TIME));
+				processSettlementData(lines, modelAndView, dateTime);
+				} else {
+					modelAndView.addObject(Constants.ERROR, messageSource.getMessage("admin.label.settlement.executed",
+			                null, LocaleContextHolder.getLocale()));
+				}
 			}
 			
-			LogHelper.logExit(logger, LoggerMessage.getCallerName());
+			logger.info("Exiting :: SettlementReportController :: processAndValidateSettlementData");
 			
 		} catch (ChatakAdminException e) {
 			logger.error("ERROR:: SettlementReportController:: processAndValidateSettlementData method", e);
@@ -169,9 +149,26 @@ public class SettlementReportController implements URLMappingConstants {
 		 model.put("settlementDataRequest", settlementDataRequest);
 		return modelAndView;
 	}
+
+	private int validateRowCount(HashMap<Integer, String> map, int rowCount, SettlementReportController controller,
+			String[] lines, int i) throws ChatakAdminException, ParseException {
+		SettlementDataRequest dataRequest = new SettlementDataRequest();
+		String errorMessage = "";
+		String[] columns = lines[i].split(",");
+		fetchColumn(columns);
+		if (i == 4) {
+			if (validateHeaderForCsv(columns, controller)) {
+				return rowCount;
+			} else {
+				throw new ChatakAdminException(Properties.getProperty("admin.invalid.header.fileupload"));
+			}
+		}
+		rowCount = validateFiledValue(map, rowCount, dataRequest, errorMessage, columns);
+		return rowCount;
+	}
 	
-	private ModelAndView processSettlementData(String[] lines, ModelAndView modelAndView) throws ChatakAdminException, PrepaidAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+	private ModelAndView processSettlementData(String[] lines, ModelAndView modelAndView, String fileDate) throws ChatakAdminException, PrepaidAdminException {
+		logger.info("Entering :: SettlementReportController :: processSettlementData");
 		
 		int length = lines.length;
 		
@@ -190,76 +187,46 @@ public class SettlementReportController implements URLMappingConstants {
 		//List of all mapped TxnIds in pgTxnTable
 		List<String> pgTxnIdList = new ArrayList<>();
 		try {
-		  long LOOP_START_TIME = System.currentTimeMillis();
 		  
 		// Truncate all data from issuance settlement transaction table
 		settlementService.deleteAllIssuanceSettlementData(programManagerId);
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "After Processed deleteAllIssuanceSettlementData Time " + (System.currentTimeMillis() - LOOP_START_TIME));
 		
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "processSettlementData :: Removed all item transactions" + programManagerId);
-		
-		LOOP_START_TIME = System.currentTimeMillis();
 		for (int i = 5; i < length; i++) {
 			
 			String[] columns = lines[i].split(",");
 			
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-                "processSettlementData :: Retrieve PG transactions for MID : " + columns[0] + ", TID: " + columns[1]
+			logger.info("processSettlementData :: Retrieve PG transactions for MID : " + columns[0] + ", TID: " + columns[1]
                     + ", Issuance Txn: " + columns[2] + ", PG Txn: " + columns[3]);
 			
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Before fetch PG txns Time " + LocalDateTime.now());
 			// Fetch PG transaction based on mid, tid...
-			Long START_TIME = System.currentTimeMillis();
 			List<SettlementEntity> transactionList = settlementService.getPgTransactions(columns[0], // Merchant id
 					columns[1], // Terminal id
 					columns[2], //TransactionRefferencenumber
 					columns[3]);  //GateWAyTxnId
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "getPgTransactions DB Processed Time : " + (System.currentTimeMillis() - START_TIME));			
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-					"processSettlementData :: Fetched PG transactions : " + transactionList);
 			if(StringUtil.isListNullNEmpty(transactionList)) {
 				// Add to the list of not found acquiring transactions
-			    START_TIME = System.currentTimeMillis();
 				populateMissingAcquiringTransactions(columns, issuanceTransactionNotfoundAcquiringList);
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "populateMissingAcquiringTransactions DB Processed Time : " + (System.currentTimeMillis() - START_TIME));
-				
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-						"processSettlementData :: Collecting missing acquiring transactions");
 				continue;
 			}
 			
 			SettlementEntity transaction = transactionList.get(0);
 			
 			IssuanceSettlementTransactionEntity entity = settlementEntityList.get(transaction.getMerchantId());
-			if(entity == null) {
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-						"processSettlementData :: Merchant entity not found, creating new");
-				
-				entity = new IssuanceSettlementTransactionEntity();
-				entity.setMerchantId(transaction.getMerchantId());
-			}
+			entity = setEntityMerchantId(transaction, entity);
 			
-			START_TIME = System.currentTimeMillis();
-			populateSettlementEntity(entity, transaction, columns, settlementEntityList);
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "populateSettlementEntity Processed Time : " + (System.currentTimeMillis() - START_TIME));
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-					"processSettlementData :: populated settlement data");
+			populateSettlementEntity(entity, transaction, columns, settlementEntityList, fileDate);
 			
 			// List of batch id's vs pg transaction ids
 			// This is to maintain any missing transactions that are present in issuance csv file
 			// but not in acquiring.
 			List<String> pgTxnIdsForBatch = batchIdandTxnIdList.get(transaction.getBatchId());
-			if(StringUtil.isListNullNEmpty(pgTxnIdsForBatch)) {
-				pgTxnIdsForBatch = new ArrayList<>();
-			}
+			pgTxnIdsForBatch = setListPgTxnId(pgTxnIdsForBatch);
 			pgTxnIdsForBatch.add(transaction.getPgTxnId());
 			
 			batchIdandTxnIdList.put(transaction.getBatchId(), pgTxnIdsForBatch);
 			
 			pgTxnIdList.add(transaction.getPgTxnId());
 		}
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Record matching from DB Processing time: " + (System.currentTimeMillis() -  LOOP_START_TIME));
-		LOOP_START_TIME = System.currentTimeMillis();
 		Integer batchCount = 0;
 		Integer batchSize = Integer.parseInt("100");
 		for (Map.Entry<String, IssuanceSettlementTransactionEntity> entry : settlementEntityList.entrySet()) {
@@ -268,23 +235,15 @@ public class SettlementReportController implements URLMappingConstants {
 	        
 	        // If failure, terminate
 	        if (insertion.getErrorCode().equals(PGConstants.SUCCESS)) {
-	            LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-	                    "processSettlementData :: saved issuance settlement row with MID: " + entry.getKey());
+	            logger.info("processSettlementData :: saved issuance settlement row with MID: " + entry.getKey());
 	            // successfully inserted 1 row
 	        } else {
-	            LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-	                    "processSettlementData :: ERROR saving issuance settlement row with MID: "
+	            logger.info("processSettlementData :: ERROR saving issuance settlement row with MID: "
 	                            + entry.getKey() + ", message: " + insertion.getErrorMessage());
-	             throw new ChatakAdminException("ERROR saving issuance settlement row: " + insertion.getErrorMessage());
+	            throw new ChatakAdminException("ERROR saving issuance settlement row: " + insertion.getErrorMessage());
 	        }
         }
 		
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "saveIssuanceSettlementTransaction DB Processing time: " + (System.currentTimeMillis() -  LOOP_START_TIME));
-		
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-				"processSettlementData :: Iterating over all batch IDs: " + batchIdandTxnIdList);
-		
-		LOOP_START_TIME = System.currentTimeMillis();
 		for (Map.Entry<String, List<String>> entry : batchIdandTxnIdList.entrySet()) {
 			// Retrieve all transactions for each batch id from PG transaction table
 			// where the status was not processed					
@@ -292,14 +251,11 @@ public class SettlementReportController implements URLMappingConstants {
 			// where batch id = ? and pg transaction id not in (id1, id2....) ie. pgTxnIdList
 			List<PGTransaction> transactionListNotInPgTransactionTable = settlementService.getPGTransactionListNotInAcquiring(entry.getKey(), entry.getValue());
 			if(StringUtil.isListNotNullNEmpty(transactionListNotInPgTransactionTable)) {
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-						"processSettlementData :: Found missing PG transaction, for batchID: " + entry.getKey()
+			    logger.info("processSettlementData :: Found missing PG transaction, for batchID: " + entry.getKey()
 								+ ", rows: " + transactionListNotInPgTransactionTable.size());
 				acquiringTransactionNotfoundIssuanceList.addAll(transactionListNotInPgTransactionTable);
 			}
 		}
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "getPGTransactionListNotInAcquiring DB Processing time: " + (System.currentTimeMillis() -  LOOP_START_TIME));
-		
 		//Save List of all unmatched transactions, present in csv but absent in PG
 		//Using batch processing
 		Integer batchNotFoundAcqCount = 0;
@@ -324,24 +280,40 @@ public class SettlementReportController implements URLMappingConstants {
 		modelAndView.addObject(Constants.SUCESS, messageSource.getMessage("admin.label.process",
                 null, LocaleContextHolder.getLocale()));
 		
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-				"processSettlementData :: acquiringTransactionNotfoundIssuanceList: "
+		logger.info("processSettlementData :: acquiringTransactionNotfoundIssuanceList: "
 						+ acquiringTransactionNotfoundIssuanceList + ", issuanceTransactionNotfoundAcquiringList: "
 						+ issuanceTransactionNotfoundAcquiringList + ", settlementEntityList: " + settlementEntityList);
 		} catch (InstantiationException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "InstantiationException");
+			logger.error("Error :: SettlementReportController :: processSettlementData : InstantiationException" + e.getMessage(), e);
 		} catch (IllegalAccessException e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "IllegalAccessException");
+		    logger.error("Error :: SettlementReportController :: processSettlementData : IllegalAccessException" + e.getMessage(), e);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, "Exception");
+		    logger.error("Error :: SettlementReportController :: processSettlementData : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: processSettlementData");
 		return modelAndView;
+	}
+
+	private List<String> setListPgTxnId(List<String> pgTxnIdsForBatch) {
+		if (StringUtil.isListNullNEmpty(pgTxnIdsForBatch)) {
+			pgTxnIdsForBatch = new ArrayList<>();
+		}
+		return pgTxnIdsForBatch;
+	}
+
+	private IssuanceSettlementTransactionEntity setEntityMerchantId(SettlementEntity transaction,
+			IssuanceSettlementTransactionEntity entity) {
+		if (entity == null) {
+		    logger.info("processSettlementData :: Merchant entity not found, creating new");
+			entity = new IssuanceSettlementTransactionEntity();
+			entity.setMerchantId(transaction.getMerchantId());
+		}
+		return entity;
 	}
 
 	private void populateMissingAcquiringTransactions(String[] columns, 
 			List<IssuanceSettlementTransactionEntity> issuanceTransactionNotfoundAcquiringList) throws InstantiationException, IllegalAccessException, ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: populateMissingAcquiringTransactions");
 		
 		IssuanceSettlementTransactionEntity entity = new IssuanceSettlementTransactionEntity();
 		entity.setMerchantId(columns[0]); // Merchant id
@@ -349,9 +321,9 @@ public class SettlementReportController implements URLMappingConstants {
 		// Create a new transaction object and add it
 		IssuanceSettlementTransactions settlementTransaction = new IssuanceSettlementTransactions();
 		settlementTransaction.setTerminalId(columns[1]); // Terminal id
-		settlementTransaction.setIssuerTxnID(columns[2]);
-		settlementTransaction.setPgTransactionId(columns[3]);
-		settlementTransaction.setTxnDate(DateUtil.toTimestamp(columns[10], PGConstants.DATE_FORMAT));
+		settlementTransaction.setIssuerTxnID(columns[Integer.parseInt("2")]);
+		settlementTransaction.setPgTransactionId(columns[Integer.parseInt("3")]);
+		settlementTransaction.setTxnDate(DateUtil.toTimestamp(columns[Integer.parseInt("10")], PGConstants.DATE_FORMAT));
 		
 		// Retrieve mapped transactions
 		List<IssuanceSettlementTransactions> settlementTransactionsList = entity.getSettlementTransactionsList();
@@ -360,44 +332,44 @@ public class SettlementReportController implements URLMappingConstants {
 		// Set the data back
 		entity.setSettlementTransactionsList(settlementTransactionsList);
 		
-		entity.setIssSaleAmount(new BigInteger(columns[4]));
-		entity.setIssPmId(Long.valueOf(columns[13]));
+		entity.setIssSaleAmount(new BigDecimal(columns[Integer.parseInt("4")]));
+		entity.setIssPmId(Long.valueOf(columns[Integer.parseInt("13")]));
 		entity.setBatchFileProcessedDate(batchProcessedDate);
-		entity.setIssuerTxnID(columns[2]);
-		entity.setPgTransactionId(columns[3]);
+		entity.setIssuerTxnID(columns[Integer.parseInt("2")]);
+		entity.setPgTransactionId(columns[Integer.parseInt("3")]);
 		issuanceTransactionNotfoundAcquiringList.add(entity);
 		//Commented for Batch Inserts
 		/*settlementService.saveIssuanceSettlementTransaction(entity);*/
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Missing Acquiring Transactions : IssuerTxnID " +columns[2]
+		logger.info("Missing Acquiring Transactions : IssuerTxnID " +columns[2]
 		    +", PgTransactionId " + columns[3]);
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: populateMissingAcquiringTransactions");
 	}
 	
 	private void populateSettlementEntity(IssuanceSettlementTransactionEntity entity, SettlementEntity transaction, String[] columns, 
-			Map<String, IssuanceSettlementTransactionEntity> settlementEntityList) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+			Map<String, IssuanceSettlementTransactionEntity> settlementEntityList, String fileDate) {
+		logger.info("Entering :: SettlementReportController :: populateSettlementEntity");
 		
 		// Create a new transaction object and add it
 		IssuanceSettlementTransactions settlementTransaction = new IssuanceSettlementTransactions();
 		
 		settlementTransaction.setTerminalId(transaction.getTerminalId());
-		settlementTransaction.setIssuerTxnID(columns[2]);
+		settlementTransaction.setIssuerTxnID(columns[Integer.parseInt("2")]);
 		settlementTransaction.setPgTransactionId(transaction.getPgTxnId());
-		settlementTransaction.setTxnDate(DateUtil.toTimestamp(columns[10], PGConstants.DATE_FORMAT));
+		settlementTransaction.setTxnDate(DateUtil.toTimestamp(columns[Integer.parseInt("10")], PGConstants.DATE_FORMAT));
 		settlementTransaction.setIsoId(transaction.getIsoId());
 		
-		BigInteger totalAcquirerAmount = BigInteger.valueOf(Long.valueOf(transaction.getAcquirerAmount()));
+		BigDecimal totalAcquirerAmount = BigDecimal.valueOf(Long.valueOf(transaction.getAcquirerAmount()));
 		totalAcquirerAmount = totalAcquirerAmount.add(entity.getAcqSaleAmount());
 		entity.setAcqSaleAmount(totalAcquirerAmount);
 		
-		BigInteger totalIssuanceAmount = new BigInteger(columns[4]);
+		BigDecimal totalIssuanceAmount = new BigDecimal(columns[Integer.parseInt("4")]);
 		totalIssuanceAmount = totalIssuanceAmount.add(entity.getIssSaleAmount());
 		entity.setIssSaleAmount(totalIssuanceAmount);
 		
 		entity.setAcqPmId(Long.valueOf(transaction.getAcqPmId()));
-		entity.setIssPmId(Long.valueOf(columns[13]));
+		entity.setIssPmId(Long.valueOf(columns[Integer.parseInt("13")]));
 		entity.setBatchid(transaction.getBatchId());
-		entity.setBatchFileDate(transaction.getBatchDate());
+		entity.setBatchFileDate(DateUtil.toTimestamp(fileDate, Constants.SETTLEMENT_DATE_FORMAT));
 		entity.setBatchFileProcessedDate(batchProcessedDate);
 		
 		
@@ -421,8 +393,7 @@ public class SettlementReportController implements URLMappingConstants {
 		entity.setMerchantAmount(entity.getMerchantAmount() == null ? merchantAmount : (entity.getMerchantAmount() + merchantAmount));		
 		entity.setStatus(PGConstants.BATCH_STATUS_PROCESSING);
 		
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(),
-            "populateSettlementEntity :: Actual merchant amount for PgTransactionId: " + transaction.getPgTxnId()
+		logger.info("populateSettlementEntity :: Actual merchant amount for PgTransactionId: " + transaction.getPgTxnId()
             + ", Individual Merchant Amount: " + merchantAmount
             + ", ISO amount: " + transaction.getIsoAmount()
             + ", PM amount: " + transaction.getPmAmount()
@@ -433,7 +404,7 @@ public class SettlementReportController implements URLMappingConstants {
 		
 		settlementEntityList.put(transaction.getMerchantId(), entity);
 		
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: populateSettlementEntity");
 	}
 
 	/**
@@ -464,33 +435,30 @@ public class SettlementReportController implements URLMappingConstants {
 	 * @param time
 	 * @throws ChatakAdminException
 	 */
-	private void validateFileName(SettlementDataRequest settlementRequest, String date, String programName, String time)
+	private void validateFileName(SettlementDataRequest settlementRequest, String date, String programName)
 			throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateFileName");
 		
-		if (!date.matches(PGConstants.REGEX_DATE)) {
+		if (!date.matches(PGConstants.REGEX_DATE) || !date.equals(DateUtil.toDateStringFormat(settlementRequest.getBatchDate(), Constants.SETTLEMENT_DATE_FORMAT))) {
 			throw new ChatakAdminException(Properties.getProperty("admin.invalid.date"));
 		} else if (!programName.equals(settlementRequest.getProgramManagerName())) {
 			throw new ChatakAdminException(Properties.getProperty("admin.invalid.name"));
-		}else if (!time.matches(PGConstants.REGEX_TIME)) {
-			throw new ChatakAdminException(Properties.getProperty("admin.invalid.time"));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateFileName");
 	}
 
 	private void fetchColumn(String[] columns) throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: fetchColumn");
 		if (!StringUtil.isNullAndEmpty(columns[columns.length - 1]) && columns[columns.length - 1].contains("\r")) {
 			columns[columns.length - 1] = columns[columns.length - 1].replaceAll("\r", "");
 		}
 		if (columns.length == 0) {
 			throw new ChatakAdminException(Properties.getProperty("chatak.admin.user.inactive.error.message"));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: fetchColumn");
 	}
 
 	private boolean validateHeaderForCsv(String[] columns, SettlementReportController controller) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
 		return columns[0].equalsIgnoreCase(controller.merchantId)
 				&& columns[PGConstants.INDEX_ONE].equalsIgnoreCase(controller.trminalId)
 				&& columns[PGConstants.INDEX_TWO].equalsIgnoreCase(controller.txnReferenceNumber)
@@ -509,7 +477,7 @@ public class SettlementReportController implements URLMappingConstants {
 
 	private String populateCSVDetails(SettlementDataRequest dataRequest, String[] columns, int j, String errorMessage)
 			throws ParseException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: populateCSVDetails");
 		// setting the Card Number
 		if (j == 0) {
 			merchantId = columns[j];
@@ -555,12 +523,12 @@ public class SettlementReportController implements URLMappingConstants {
 			errorMessage = validatePMId(pmId, dataRequest, errorMessage);
 		}  
 		
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: populateCSVDetails");
 		return errorMessage;
 	}
 
 	private String validateMerchantId(String merchantId, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateMerchantId");
 		if (StringUtil.isNullAndEmpty(merchantId)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource
@@ -574,12 +542,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			errorMessage = (StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") + messageSource.getMessage("admin.valid.merchanid", null, LocaleContextHolder.getLocale());
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateMerchantId");
 		return errorMessage;
 	}
 
 	private String validateTerminalId(String trminalId, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateTerminalId");
 		if (StringUtil.isNullAndEmpty(trminalId)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("transaction-file-exportutil-terminalid",
@@ -594,13 +562,13 @@ public class SettlementReportController implements URLMappingConstants {
 			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ")+  messageSource.getMessage("admin.lable.valid.terminId", null,
 					LocaleContextHolder.getLocale());
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateTerminalId");
 		return errorMessage;
 	}
 
 	private String validateTxnRefNum(String txnReferenceNumber, SettlementDataRequest dataRequest,
 			String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateTxnRefNum");
 		if (StringUtil.isNullAndEmpty(txnReferenceNumber)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("reports.label.transactions.txnRefNume",
@@ -614,12 +582,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") + messageSource.getMessage("admin.lable.txnRefNume", null, LocaleContextHolder.getLocale());
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateTxnRefNum");
 		return errorMessage;
 	}
 
 	private String validateGatewayTxnId(String gatewayTxnId, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateGatewayTxnId");
 		if (StringUtil.isNullAndEmpty(gatewayTxnId)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("reports-file-exportutil-transactionId",
@@ -633,12 +601,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") + messageSource.getMessage("admin.lable.gatewayTxnId", null, LocaleContextHolder.getLocale());
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateGatewayTxnId");
 		return errorMessage;
 	}
 
 	private String validateTxnAmount(String txnAmount, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateTxnAmount");
 		if (StringUtil.isNullAndEmpty(txnAmount)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("admin.label.taxnamountvalue", null,
@@ -653,12 +621,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setTxnAmount(Long.valueOf((txnAmount)));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateTxnAmount");
 		return errorMessage;
 	}
 
 	private String validateTxnType(String txnType, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateTxnType");
 		if (StringUtil.isNullAndEmpty(txnType)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , "
@@ -673,12 +641,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setTxnType(txnType);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateTxnType");
 		return errorMessage;
 	}
 
 	private String validateTxnCode(String txnCode, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateTxnCode");
 		if (StringUtil.isNullAndEmpty(txnCode)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , "
@@ -691,12 +659,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setTxnCode(txnCode);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateTxnCode");
 		return errorMessage;
 	}
 
 	private String validateTxnStatus(String txnStatus, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateTxnStatus");
 		if (StringUtil.isNullAndEmpty(txnStatus)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , "
@@ -710,12 +678,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setTxnStatus(txnStatus);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateTxnStatus");
 		return errorMessage;
 	}
 
 	private String validateTxnDesc(String txnDesc, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateTxnDesc");
 		if (StringUtil.isNullAndEmpty(txnDesc)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage(
@@ -729,12 +697,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setTxnDesc(txnDesc);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateTxnDesc");
 		return errorMessage;
 	}
 
 	private String validateTxnTime(String txnTime, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateTxnTime");
 		if (StringUtil.isNullAndEmpty(txnTime)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("home.label.transaction.date.time", null,
@@ -748,13 +716,13 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setTxnDesc(txnTime);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateTxnTime");
 		return errorMessage;
 	}
 
 	private String validateDeviceLocalTxnTime(String deviceLocalTxnTime, SettlementDataRequest dataRequest,
 			String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateDeviceLocalTxnTime");
 		if (StringUtil.isNullAndEmpty(deviceLocalTxnTime)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
@@ -769,12 +737,12 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setTxnDesc(deviceLocalTxnTime);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateDeviceLocalTxnTime");
 		return errorMessage;
 	}
 
 	private String validatePMName(String pmName, SettlementDataRequest dataRequest, String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validatePMName");
 		if (StringUtil.isNullAndEmpty(pmName)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("access-user-create.label.entityname",
@@ -789,13 +757,13 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setTxnDesc(pmName);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validatePMName");
 		return errorMessage;
 	}
 	
 	private String validateBatchTime(String batchTime, SettlementDataRequest dataRequest,
 			String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validateBatchTime");
 		if (StringUtil.isNullAndEmpty(batchTime)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
@@ -810,13 +778,13 @@ public class SettlementReportController implements URLMappingConstants {
 		} else {
 			dataRequest.setBatchtime(DateUtil.toTimestamp(batchTime, PGConstants.DATE_FORMAT));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validateBatchTime");
 		return errorMessage;
 	}
 	
 	private String validatePMId(String pmId, SettlementDataRequest dataRequest,
 			String errorMessage) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: validatePMId");
 		if (StringUtil.isNullAndEmpty(pmId)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
@@ -832,13 +800,13 @@ public class SettlementReportController implements URLMappingConstants {
 			programManagerId = pmId;
 			dataRequest.setPmId(Long.valueOf(pmId));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: validatePMId");
 		return errorMessage;
 	}
 
 	@RequestMapping(value = SETTLEMENT_MONEY_MOVEMENT, method = RequestMethod.GET)
 	public ModelAndView showMoneyMoment(HttpServletRequest request, Map model, HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: showMoneyMoment");
 		ModelAndView modelAndView = new ModelAndView(SETTLEMENT_MONEY_MOVEMENT);
 		Long programViewId = (Long) session.getAttribute("programViewId");
 		try {
@@ -884,15 +852,17 @@ public class SettlementReportController implements URLMappingConstants {
 				}
 				
 				modelAndView.addObject("isoTotalRevenue",response.getIsoTotalRevenue());
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "isoDetailsList : " + isoDetailsList + " isoMappedMerchantDetails : " + isoMappedMerchantDetails);
+				logger.info("isoDetailsList : " + isoDetailsList + " isoMappedMerchantDetails : " + isoMappedMerchantDetails);
 				if(StringUtil.isListNotNullNEmpty(isoDetailsList)) {
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "isoDetailsList : " + isoDetailsList.get(0).getCurrency());
-				model.put("currency", isoDetailsList.get(0).getCurrency());
+				logger.info("isoDetailsList : " + isoDetailsList.get(0).getCurrency());
+				model.put("isoRevenueCurrency", isoDetailsList.get(0).getCurrency());
 				}
 				if(StringUtil.isListNotNullNEmpty(isoMappedMerchantDetails)) {
 				model.put("isoCurrency", isoMappedMerchantDetails.get(0).getLocalCurrency());
 				}
+				if(StringUtil.isListNotNullNEmpty(pmMappedMerchantDetails)) {
 				model.put("pmCurrency", pmMappedMerchantDetails.get(0).getLocalCurrency());
+				}
 				modelAndView.addObject("isoDetailsList", isoDetailsList);
 				modelAndView.addObject("isoMappedMerchantTotalRevenue", isoMappedMerchantDetails);
 				modelAndView.addObject("pmMappedMerchantTotalRevenue", pmMappedMerchantDetails);
@@ -900,9 +870,9 @@ public class SettlementReportController implements URLMappingConstants {
 				modelAndView.addObject("pmDebitAmount",String.format("%.2f", pmDebitAmount));
 			}
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, e.getMessage());
+		  logger.error("Error :: SettlementReportController :: showMoneyMoment : " + e.getMessage(), e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: showMoneyMoment");
 		return modelAndView;
 	}
 
@@ -940,40 +910,40 @@ public class SettlementReportController implements URLMappingConstants {
 	  
 	@RequestMapping(value = EXECUTE_SETTLEMENT_DATA)
 	public ModelAndView executeSettlementTxn(HttpServletRequest request, Map model, HttpSession session) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: executeSettlementTxn");
 
 		ModelAndView modelAndView = new ModelAndView(SETTLEMENT_MONEY_MOVEMENT);
 
 		Long entityId = (Long) session.getAttribute("programViewId");
 		String timeZoneOffset = request.getParameter("timeZoneOffset");
 		String timeZoneRegion = request.getParameter("timeZoneRegion");
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Executing settlement for entity "+entityId);
+		logger.info("Executing settlement for entity "+entityId);
 
 		try {
 			TransactionResponse response = settlementReportService.executeSettlement(entityId, timeZoneOffset, timeZoneRegion);
 			if (response.getErrorCode().equals(Constants.SUCCESS_CODE)) {
+			  settlementReportService.insertDataFromIssuanceSettlementTransaction();
 			  modelAndView.addObject(Constants.SUCESS, messageSource
                   .getMessage("settlement.executed.success", null,
                           LocaleContextHolder.getLocale()));
-			  settlementReportService.insertDataFromIssuanceSettlementTransaction();
 			}else {
 			  modelAndView.addObject(Constants.ERROR, messageSource.getMessage("settlement.executed.error", null, LocaleContextHolder.getLocale()));
 			}
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, e.getMessage());
+		    logger.error("Error :: SettlementReportController :: executeSettlementTxn : " + e.getMessage(), e);
 			modelAndView.addObject(Constants.ERROR, messageSource.getMessage("settlement.executed.error", null, LocaleContextHolder.getLocale()));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: executeSettlementTxn");
 		return modelAndView;
 	}
 	
 	@RequestMapping(value = PREPAID_SHOW_MATCHED_TRANSACTIONS_PAGE, method = RequestMethod.POST)
 	public ModelAndView showAllMatchedTxnsByPgTxnId(HttpSession session, @FormParam("pgTxnIds") final String pgTxnIds,
 			@FormParam("getModelView") final String getModelView, Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: SettlementReportController :: showAllMatchedTxnsByPgTxnId");
 		ModelAndView modelAndView = new ModelAndView(FETCH_SETTLEMENT_DATA_BY_PMID);
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), pgTxnIds);
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), getModelView);
+		logger.info(pgTxnIds);
+		logger.info(getModelView);
 		if(!StringUtil.isNullAndEmpty(getModelView) && getModelView.equalsIgnoreCase(MONEY_MOMENT)) {
 			modelAndView.setViewName(SETTLEMENT_MONEY_MOVEMENT);
 		}
@@ -999,15 +969,14 @@ public class SettlementReportController implements URLMappingConstants {
 						"matched-transactions.label.nomatchedtxns", null, LocaleContextHolder.getLocale()));
 			}
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.CHATAK_ADMIN_EXCEPTION);
+		    logger.error("Error :: SettlementReportController :: showAllMatchedTxnsByPgTxnId : " + e.getMessage(), e);
 			modelAndView = showMoneyMoment(request, model, session);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: SettlementReportController :: showAllMatchedTxnsByPgTxnId");
 		return modelAndView;
 	}
 	
 	private List<String> getSettlementReportHeaderList() {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
 		String[] headerArr = {
 				messageSource.getMessage("reports.label.transactions.merchantcode", null,
 						LocaleContextHolder.getLocale()),
@@ -1023,12 +992,10 @@ public class SettlementReportController implements URLMappingConstants {
 				messageSource.getMessage("admin.label.merchantamount", null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("admin.label.pmamount", null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("admin.label.isoamount", null, LocaleContextHolder.getLocale()) };
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
 		return new ArrayList<>(Arrays.asList(headerArr));
 	}
 	
 	private static List<Object[]> getSettlementReportFileData(List<SettlementEntity> settlementDatas) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
 		List<Object[]> fileData = new ArrayList<>();
 
 		for (SettlementEntity settlementData : settlementDatas) {
@@ -1038,9 +1005,18 @@ public class SettlementReportController implements URLMappingConstants {
 					(settlementData.getMerchantAmount()/Constants.ONE_HUNDRED), (settlementData.getPmAmount()/Constants.ONE_HUNDRED), (settlementData.getIsoAmount()/Constants.ONE_HUNDRED) };
 			fileData.add(rowData);
 		}
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "XL data size " + fileData.size());
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("XL data size " + fileData.size());
 		return fileData;
+	}
+	
+	private Boolean validateFileExists(String programManagerName, String date) {
+		ProgramManager programManager = settlementService.findByProgramMangerName(programManagerName).get(0);
+		PGSettlementEntityHistory pgSettlementTransactionHistory = settlementReportService
+				.findByBatchFileDateandAcqpmid(programManager.getId(), DateUtil.toTimestamp(date, Constants.SETTLEMENT_DATE_FORMAT));
+		if (pgSettlementTransactionHistory != null) {
+			return false;
+		}
+		return true;
 	}
 	
 }

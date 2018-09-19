@@ -54,8 +54,8 @@
 						<div class="row">
 						<div class="col-xs-12">
 							<div class="descriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-								<span class="red-error" style="font-size: 13px;">&nbsp;${error }</span> <span
-									class="green-error">&nbsp;${sucess }</span>
+								<span class="red-error" style="font-size: 13px;">&nbsp;${error }</span> 
+								<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 							</div>
 						</div>
 						<form:form action="downloadGlobalManualReport" name="downloadReport" method="post">
@@ -130,7 +130,7 @@
 										<th style="width: 104px;"><spring:message code="admin.common-deviceLocalTxnTime"/></th>
 										<th style="width: 121px;"><spring:message code="show-account-transfer.label.description" /></th>
 										<th style="width: 82px;"><spring:message code="accounts-manual-debit.label.merchantorsubmerchantcode" /></th>
-										<th style="width: 83px;"><spring:message code="reports.label.balancereports.manualtransactions.transactionID" /></th>
+										<th style="width: 83px;"><spring:message code="home.label.accounttransactionid" /></th>
 										<th style="width: 42px;"><spring:message code="currency-search-page.label.currencycode" /></th>
 										<th style="width: 58px;"><spring:message code="show-account-transfer.label.availablebalance" /></th>
 										<th style="width: 42px;"><spring:message code="reports.label.balancereports.manualtransactions.credit" /></th>

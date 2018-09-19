@@ -170,7 +170,7 @@
 												class='required-field'>*</span></label>
 													<input type="text" name="feeProgramName" id="feeProgramName"
 												class="form-control"
-												onblur="this.value=this.value.trim();clientValidation('feeProgramName', 'fee_Program_Name','feeProgramNameEr');doAjaxFeeprogramNameDuplicate()">
+												onblur="this.value=this.value.trim();clientValidation('feeProgramName', 'company_name','feeProgramNameErr');doAjaxFeeprogramNameDuplicate()">
 													<div class="discriptionErrorMsg">
 														<span id="feeProgramNameErr" class="red-error">&nbsp;</span>
 													</div>

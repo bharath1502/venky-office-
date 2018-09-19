@@ -74,6 +74,7 @@
 									enctype="multipart/form-data" onsubmit="buttonDisabled()">
 							    <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<form:hidden id="id" path="id" />
+									<form:hidden id="issuancePmId" path="issuancepmid" />
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
@@ -155,10 +156,11 @@
 														type="text" name="extension"
 														value="${programManagerRequest.extension}" maxlength="50"
 														class="form-control" id="extension"
+														onblur="clientValidation('extension','extension_not_mandatory','extensionerr')"
 														onkeypress="return numbersonly(this, event);"
 														placeholder="Numerics only" />
 													<div class="discriptionErrorMsg">
-														<span class="red-error">&nbsp;</span>
+														<span id="extensionerr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
@@ -179,7 +181,7 @@
 														class="required-field">*</span></label>
 													<form:select cssClass="form-control" path="country"
 														id="country" onblur="clientValidation('country','country','countryNameErrormsg')"
-														onchange="fetchPmState(this.value, 'state');fetchTimeZone(this.value)">
+														onchange="fetchPmStateForEdit(this.value, 'state');fetchTimeZoneForEdit(this.value)">
 														<form:option value="">..:<spring:message
 																code="reports.option.select" />:..</form:option>
 																<c:forEach items="${countryList}" var="countryList">
@@ -207,7 +209,7 @@
 														<form:option value="">..:<spring:message
 																code="reports.option.select" />:..</form:option>
 														<c:forEach items="${stateList}" var="item">
-															<form:option value="${item.label}">${item.label}</form:option>
+															<form:option value="${item.label}">${item.value}</form:option>
 														</c:forEach>
 													</form:select>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
@@ -224,10 +226,10 @@
 																code="reports.option.select" />:..</form:option>
 																<c:forEach items="${timeZoneList}" var="timeZoneList">
 															<c:if test="${timeZoneList.standardTimeOffset eq programManagerRequest.pmTimeZone }">
-																<option value="${timeZoneList.id}" selected>${timeZoneList.standardTimeOffset}</option>
+																<form:option value="${timeZoneList.standardTimeOffset}">${timeZoneList.standardTimeOffset}</form:option>
 															</c:if>
 															<c:if test="${timeZoneList.standardTimeOffset ne programManagerRequest.pmTimeZone }">
-																<option value="${timeZoneList.id}">${timeZoneList.standardTimeOffset}</option>
+																<form:option value="${timeZoneList.standardTimeOffset}">${timeZoneList.standardTimeOffset}</form:option>
 															</c:if>
 														</c:forEach>
 													</form:select>
@@ -299,6 +301,11 @@
 															<option value="${cardProgramList.cardProgramId}" selected>${cardProgramList.cardProgramName}</option>
 														</c:forEach>
 														</c:if>
+														<c:if test="${not empty unselectedCardProgramList}">
+														<c:forEach items="${unselectedCardProgramList}" var="unselectCpList">
+															<option value="${unselectCpList.cardProgramId}" >${unselectCpList.cardProgramName}</option>
+														</c:forEach>
+														</c:if>
 													 </select>
 													<div class="discriptionErrorMsg">
 														<span id="pgmmgrCardProgramerrormsg" class="red-error">&nbsp;</span>
@@ -333,6 +340,11 @@
 															<a href="#" onclick="openPopup()"><spring:message code="pm.logo.image.view" /></a>
 														</div>
 													</div>
+												</fieldset>
+												<fieldset class="col-md-3 col-sm-6">
+												<div id="refresh">
+													<button type="button" onclick="fetchCardProgramByPmId()"><spring:message code="pm.edit.refresh.cp.label"/></button>												
+												</div>
 												</fieldset>
 											</div>
 										</div>
@@ -429,6 +441,10 @@
 			$(".issuancePMlogo").hide();
 			$(".acquirerCurrencyNames").hide();
 			$(".acquirerBankNames").hide();
+			var issuancePmId = $('#issuancePmId').val();
+			if(issuancePmId == null || issuancePmId == ''){
+				$('#refresh').hide();
+			}
 		});
 	</script>
 			 

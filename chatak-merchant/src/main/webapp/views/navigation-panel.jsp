@@ -59,6 +59,8 @@
 <spring:message code="merchant.services.subMerchant.delete.feature.id" var="subMerchantDelete"></spring:message>
 
 <spring:message code="merchant.services.virtualTerminal.feature.id" var="virtualTerminal"></spring:message>
+<spring:message code="merchant.services.virtualTerminal.sale.feature.id" var="virtualTerminalSale"></spring:message>
+<spring:message code="merchant.services.virtualTerminal.refund.feature.id" var="virtualTerminalRefund"></spring:message>
 
 <spring:message code="merchant.services.fraud.feature.id" var="fraud"></spring:message>
 
@@ -137,7 +139,23 @@
 		</c:if>
 
 		<c:if test="${fn:contains(existingFeatures,virtualTerminal)}">
-			<li id="navListId2"><a href="virtual-terminal-sale"><spring:message code="virtual-terminal-sale.label.virtualterminal"/></a>
+		     <li id="navListId2" class="dropdown" >
+			<c:choose>
+			<c:when test="${fn:contains(existingFeatures,virtualTerminalSale) && fn:contains(existingFeatures,virtualTerminalRefund)}">
+					<a href="virtual-terminal-sale" class="dropdown-toggle"><spring:message
+							code="virtual-terminal-sale.label.virtualterminal" /></a>
+				</c:when>
+				<c:otherwise>
+				<c:if test="${fn:contains(existingFeatures,virtualTerminalSale)}">
+					<a href="virtual-terminal-sale" class="dropdown-toggle"><spring:message
+							code="virtual-terminal-sale.label.virtualterminal" /></a>
+				</c:if>  <c:if test="${fn:contains(existingFeatures,virtualTerminalRefund)}">
+					<a href="virtual-terminal-refund" class="dropdown-toggle"><spring:message
+							code="virtual-terminal-sale.label.virtualterminal" /></a>
+				</c:if>
+				</c:otherwise>
+				</c:choose>
+			
 			</li>
 		</c:if>
 				

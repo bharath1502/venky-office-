@@ -327,7 +327,7 @@ function validateAmountValue($this,inputType) {
 	
 }
 function validateFeeProgram() {
-	if (!clientValidation('feeProgramName', 'fee_Program_Name','feeProgramNameErr')
+	if (!clientValidation('feeProgramName', 'company_name','feeProgramNameErr')
 			| !clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')
 			| !clientValidation('flatFee', 'fee','flatFeeErr')
 			| !validateFeePercentValue()
@@ -488,4 +488,11 @@ function doAjaxFeeprogramNameDuplicate() {
 		error : function(e) {
 		}
 	});
+}
+
+function validateFeeProgramName() {
+	if (!clientValidation('feeProgramName', 'companyname_not_mandatory','feeProgramNameEr')) {
+		return false;
+	}
+	return true;
 }

@@ -36,6 +36,9 @@ public class IsoCardProgramMap implements Serializable{
 	  
 	  @Column(name = "CARD_PROGRAM_ID")
 	  private Long cardProgramId;
+	  
+	  @Column(name = "AMBIGUITY_PM_ID")
+      private Long ambiguityPmId;
 
 	/**
 	 * @return the id
@@ -78,5 +81,19 @@ public class IsoCardProgramMap implements Serializable{
 	public void setCardProgramId(Long cardProgramId) {
 		this.cardProgramId = cardProgramId;
 	}
+
+  /**
+   * @return the ambiguityPmId
+   */
+  public Long getAmbiguityPmId() {
+    return ambiguityPmId;
+  }
+
+  /**
+   * @param ambiguityPmId the ambiguityPmId to set
+   */
+  public void setAmbiguityPmId(Long ambiguityPmId) {
+    this.ambiguityPmId = ambiguityPmId;
+  }
 
 }

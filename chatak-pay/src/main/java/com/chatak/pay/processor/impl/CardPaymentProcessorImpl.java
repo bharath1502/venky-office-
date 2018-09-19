@@ -8,8 +8,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jpos.iso.ISOMsg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -37,6 +40,7 @@ import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
+import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.TransactionStatus;
 import com.chatak.pg.util.Constants;
@@ -56,7 +60,7 @@ import com.chatak.switches.sb.util.ProcessorConfig;
 @Service
 public class CardPaymentProcessorImpl implements CardPaymentProcessor {
 
-  private static Logger logger = Logger.getLogger(CardPaymentProcessorImpl.class);
+  private static Logger logger = LogManager.getLogger(CardPaymentProcessorImpl.class);
 
   @Autowired
   private MessageSource messageSource;
@@ -84,6 +88,11 @@ public class CardPaymentProcessorImpl implements CardPaymentProcessor {
 
   @Autowired
   VoidTransactionDao voidTransactionDao;
+  
+  @Autowired
+  private MerchantRepository merchantRepository;
+  
+  private static final Map<String, String> currencies = new HashMap<>();
 
   @Override
   public PGMerchant validMerchant(String mId) {
@@ -328,10 +337,14 @@ public class CardPaymentProcessorImpl implements CardPaymentProcessor {
   }
 
   public String fetchCurrencyCodeNumeric(String localCurrencyAlpha) throws ChatakPayException {
+    if(currencies.containsKey(localCurrencyAlpha)) {
+      return currencies.get(localCurrencyAlpha);
+    }
     PGCurrencyConfig pgCurrencyConfig =
         currencyConfigRepository.findByCurrencyCodeAlpha(localCurrencyAlpha);
     if (pgCurrencyConfig != null) {
       logger.info("Merchant currency code: " + pgCurrencyConfig.getCurrencyCodeNumeric());
+      currencies.put(localCurrencyAlpha, pgCurrencyConfig.getCurrencyCodeNumeric());
       return pgCurrencyConfig.getCurrencyCodeNumeric();
     }
     logger.info("Merchant currency code, returning default currency code of \"840\"");
@@ -341,7 +354,7 @@ public class CardPaymentProcessorImpl implements CardPaymentProcessor {
   @Override
   public PGMerchant validateMerchantId(String merchantId) {
     try {
-      return merchantTerminalDao.validateMerchantId(merchantId);
+      return merchantRepository.findOneMerchantCodeAndStatus(merchantId, PGConstants.STATUS_SUCCESS);
     } catch (Exception e) {
       logger.error("ERROR:: validateMerchantId method", e);
     }

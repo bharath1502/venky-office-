@@ -208,3 +208,15 @@ $('#secondarySwitchURL').keypress(function(e) {
 	if (e.which === 32)
 		return false;
 });
+
+function searchValidation(){
+	if(!clientValidation('switchName','middle_name','switchNameEr')
+			| !clientValidation('primarySwitchURL','url','primarySwitchURLEr')
+			| !clientValidation('primarySwitchPort','fax','primarySwitchPortEr')
+			| !clientValidation('secondarySwitchURL','url','secondarySwitchURLEr')
+			| !clientValidation('secondarySwitchPort','fax','secondarySwitchPortEr')
+			| !clientValidation('priority','fax','priorityEr')){
+		return false;
+	}
+	return true;
+}

@@ -138,4 +138,6 @@ public interface PaymentService {
 
   
   public CaptureResponse partialCaptureTransaction(CaptureRequest captureRequest) throws ServiceException;
+  
+  public PurchaseResponse purchaseTransactionMock();
 }

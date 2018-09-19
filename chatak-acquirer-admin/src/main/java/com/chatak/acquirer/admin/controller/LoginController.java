@@ -3,6 +3,8 @@
  */
 package com.chatak.acquirer.admin.controller;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +51,7 @@ import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.model.PGIssSettlementData;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.AccountTransactionDTO;
@@ -57,8 +60,6 @@ import com.chatak.pg.model.UserRolesDTO;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.validator.CSRFTokenManager;
 
@@ -125,7 +126,7 @@ public class LoginController implements URLMappingConstants {
     session.setAttribute(Constants.ERROR, null);
     model.put(Constants.LOGIN_DETAILS, new LoginDetails());
     String token = CSRFTokenManager.getTokenForSession(session);
-    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Genarated CSRF token before login : " + token);
+    logger.info("Genarated CSRF token before login : " + token);
     session.setAttribute("tokenval", token);
     logger.info("Exiting:: LoginController:: showLogin method");
     return modelAndView;
@@ -161,42 +162,34 @@ public class LoginController implements URLMappingConstants {
         getError(bindingResult, modelAndView);
         return modelAndView;
       }
-      if (null != userAgent) {
-        userAgent = userAgent.replaceAll("\\ ", "");
-      }
+	  if (null != userAgent) {
+				userAgent = userAgent.replaceAll("\\ ", "");
+	  }
       loginDetails.setCurrentLoginTime(DateUtils.getFormatLastLoginTime(loginDetails));
       LoginResponse loginResponse = loginService.authenticate(loginDetails);
       if (loginResponse == null)
         throw new ChatakAdminException(messageSource.getMessage("chatak.admin.login.error.message",
             null, LocaleContextHolder.getLocale()));
-      if (null != loginResponse.getUserType()
-          && loginResponse.getUserType().equals(PGConstants.NEW_USER)) {
+      if (null != loginResponse.getStatus() && loginResponse.getStatus().equals(Boolean.FALSE))
+          throw new ChatakAdminException(loginResponse.getMessage());
+      if (checkUserType(loginResponse)) {
         session.setAttribute(Constants.LOGIN_USER_ID, loginResponse.getUserId());
         session.setAttribute("loginUserType", loginResponse.getUserType());
         modelAndView = changePassword(model, request, session);
       } else {
         
-    	  boolean isValid = validateSessionAndRequest(modelAndView, request, response, loginDetails, userAgent);
-    	  if(!isValid) {
-    		  return modelAndView;
-    	  }
+    	  boolean isValid = validateSessionAndRequest(modelAndView, request, response, loginDetails, userAgent,session);
+		  if(!isValid) {
+					return modelAndView;
+		  }
     	  model.put("loginType", loginResponse.getUserType());
     	  session.setAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME,
     	  			(String) session.getAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME));
     	  
-             if (loginResponse.getStatus() != null && loginResponse.getStatus()) {
+             if (checkValidStatus(loginResponse)) {
           modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse,
               loginDetails, userAgent);
-					if (loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
-						List<PGIssSettlementData> list = issSettlementDataDao
-								.findByProgramManagerId(loginResponse.getEntityId());
-						List<PGIssSettlementData> settlementData = new ArrayList<>();
-						processSettlementData(session, list, settlementData);
-					} else if (loginResponse.getUserType().equals(PGConstants.ADMIN)) {
-						List<PGIssSettlementData> list = issSettlementDataDao.getAllPendingPM();
-						List<PGIssSettlementData> settlementData = new ArrayList<>();
-						processSettlementData(session, list, settlementData);
-					}
+          processSettlement(session, loginResponse);
           session.setAttribute("adminId", loginResponse.getUserId());
           List<Merchant> merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
           
@@ -243,29 +236,47 @@ public class LoginController implements URLMappingConstants {
     return modelAndView;
   }
 
+	private void processSettlement(HttpSession session, LoginResponse loginResponse) {
+		if (loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+			List<PGIssSettlementData> list = issSettlementDataDao.findByProgramManagerIdByStatus(loginResponse.getEntityId(), PGConstants.S_STATUS_PENDING);
+			List<SettlementEntity> settlementData = new ArrayList<>();
+			processSettlementData(session, list, settlementData);
+		} else if (loginResponse.getUserType().equals(PGConstants.ADMIN)) {
+			List<PGIssSettlementData> list = issSettlementDataDao.getAllPendingPM();
+			List<SettlementEntity> settlementData = new ArrayList<>();
+			processSettlementData(session, list, settlementData);
+		}
+	}
+
+	private boolean checkValidStatus(LoginResponse loginResponse) {
+		return loginResponse.getStatus() != null && loginResponse.getStatus();
+	}
+
+	private boolean checkUserType(LoginResponse loginResponse) {
+		return null != loginResponse.getUserType() && loginResponse.getUserType().equals(PGConstants.NEW_USER);
+	}
+  
 /**
  * @param session
  * @param list
  * @param settlementData
  */
 	private void processSettlementData(HttpSession session, List<PGIssSettlementData> list,
-			List<PGIssSettlementData> settlementData) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+			List<SettlementEntity> settlementData) {
+		logger.info("Entering :: LoginController :: processSettlementData");
 		if (StringUtil.isListNotNullNEmpty(list)) {
 			for (PGIssSettlementData data : list) {
-				PGIssSettlementData issSettlementData = new PGIssSettlementData();
-				issSettlementData.setProgramManagerId(data.getAcqPmId());
+				SettlementEntity issSettlementData = new SettlementEntity();
+				issSettlementData.setAcqPmId(String.valueOf(data.getAcqPmId()));
 				issSettlementData.setProgramManagerName(data.getProgramManagerName());
 				issSettlementData.setBatchDate(data.getBatchDate());
-				issSettlementData.setTotalAmount(data.getTotalAmount());
+				issSettlementData.setTxnTotalAmount(new BigDecimal(data.getTotalAmount()).divide(PGConstants.BIG_DECIMAL_HUNDRED));
 				issSettlementData.setTotalTxnCount(data.getTotalTxnCount());
 				settlementData.add(issSettlementData);
-				LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "List of PGIssSettlementData" + issSettlementData.getProgramManagerId() + issSettlementData.getProgramManagerName() + 
-						issSettlementData.getTotalTxnCount());
 			}
 			session.setAttribute("settlementDataList", settlementData);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: LoginController :: processSettlementData");
 	}
 
   private void validateMerchantList(HttpSession session, List<Merchant> merchants) {
@@ -280,11 +291,11 @@ public class LoginController implements URLMappingConstants {
   }
 
   private boolean validateSessionAndRequest(ModelAndView modelAndView, HttpServletRequest request, HttpServletResponse response,
-	      LoginDetails loginDetails, String userAgent) {
-	  
+	      LoginDetails loginDetails, String userAgent,HttpSession session) {
+	  String exIpAdress = loginDetails.getLoginIpAddress();
 	for (Object object : sessionRegistry.getAllPrincipals()) {
 		LoginDetails loginResponseData = (LoginDetails) object;
-		if (null != loginResponseData && loginResponseData.getAcqU().trim().equals(loginDetails.getAcqU())) {
+		if (loginResponseData.getAcqU().trim().equals(loginDetails.getAcqU())) {
 			Cookie[] cookies = request.getCookies();
 			String cookieValue = "";
 
@@ -295,7 +306,11 @@ public class LoginController implements URLMappingConstants {
 			if (null == sessionInformation) {
 				modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
 				return false;
-			} else {
+				} else if (loginResponseData.getLoginIpAddress().equals(exIpAdress)
+						&& null != session.getAttribute("exUserAgent")
+						&& session.getAttribute("exUserAgent").equals(userAgent)) {
+				return true;
+			}else {
 				validateSessionInformation(response, modelAndView, userAgent, object, loginResponseData,
 						cookieValue, encUName, sessionInformation);
 				sessionInformation.refreshLastRequest();
@@ -360,6 +375,7 @@ private void loginProcess(HttpSession session, ModelAndView modelAndView, Transa
         session.setAttribute("processingListSize", listSize);
         modelAndView.addObject(Constants.PROCESSING_TXN_LIST, transactionList);
         session.setAttribute(Constants.PROCESSING_TXN_LIST, transactionList);
+        modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_TOTAL_RECORDS_PAGE_NUM, processingTxnList.getTotalResultCount());
       }
       if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
         int listSize = executedTxnList.getAccountTransactionList().size();
@@ -372,7 +388,10 @@ private void loginProcess(HttpSession session, ModelAndView modelAndView, Transa
         session.setAttribute("executedListSize", listSize);
         modelAndView.addObject(Constants.EXECUTED_TXN_LIST, transactionList);
         session.setAttribute(Constants.EXECUTED_TXN_LIST, transactionList);
+        modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_TOTAL_RECORDS_PAGE_NUM, executedTxnList.getTotalResultCount());
+
       }
+      modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_LIST_PAGE_NUMBER, Constants.ONE);
 }
 
 
@@ -511,6 +530,7 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
     myCookie.setMaxAge(Constants.MAX_AGE);
     response.addCookie(myCookie);
     loginDetails.setjSession(userAgent + encUName + session.getId());
+    session.setAttribute("exUserAgent", userAgent);
     // Registering logged in user to Spring Session registry
     sessionRegistry.registerNewSession(encUName, loginDetails);
     logger.info("Exiting:: LoginController:: setLoginSuccessResponse method");

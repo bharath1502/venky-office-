@@ -67,8 +67,8 @@
 								<!--Success and Failure Message Start-->
 								<div class="col-xs-12">
 									<div class="descriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-										<span class="red-error">&nbsp;${error }</span> <span
-											class="green-error">&nbsp;${sucess }</span>
+										<span class="red-error">&nbsp;${error }</span> 
+										<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 									</div>
 								</div>
 
@@ -105,7 +105,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.switchname"/></label>
 														<form:input cssClass="form-control" path="switchName"
-															id="switchName" />
+															id="switchName" onblur="clientValidation('switchName','middle_name','switchNameEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="switchNameEr" class="red-error">&nbsp;</span>
 														</div>
@@ -125,7 +125,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.primaryswitchURL"/></label>
 														<form:input cssClass="form-control" path="primarySwitchURL"
-															 id="primarySwitchURL" />
+															 id="primarySwitchURL" onblur="clientValidation('primarySwitchURL','url','primarySwitchURLEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="primarySwitchURLEr" class="red-error">&nbsp;</span>
 														</div>
@@ -133,7 +133,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.primaryswitchport"/></label>
 														<form:input cssClass="form-control" path="primarySwitchPort"
-															id="primarySwitchPort" onkeypress="return numbersonly(this,event)" maxlength="5" />
+															id="primarySwitchPort" onkeypress="return numbersonly(this,event)" maxlength="5" onblur="clientValidation('primarySwitchPort','fax','primarySwitchPortEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="primarySwitchPortEr" class="red-error">&nbsp;</span>
 														</div>
@@ -141,7 +141,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.secondaryswitchURL"/></label>
 														<form:input cssClass="form-control" path="secondarySwitchURL"
-															 id="secondarySwitchURL" />
+															 id="secondarySwitchURL" onblur="clientValidation('secondarySwitchURL','url','secondarySwitchURLEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="secondarySwitchURLEr" class="red-error">&nbsp;</span>
 														</div>
@@ -149,7 +149,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.secondaryswitchport"/></label>
 														<form:input cssClass="form-control" path="secondarySwitchPort"
-															id="secondarySwitchPort" onkeypress="return numbersonly(this,event)" maxlength="5" />
+															id="secondarySwitchPort" onkeypress="return numbersonly(this,event)" maxlength="5" onblur="clientValidation('secondarySwitchPort','fax','secondarySwitchPortEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="secondarySwitchPortEr" class="red-error">&nbsp;</span>
 														</div>
@@ -157,7 +157,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.priority"/></label>
 														<form:input cssClass="form-control" path="priority"
-															id="priority" onkeypress="return numbersonly(this,event)" maxlength="1" />
+															id="priority" onkeypress="return numbersonly(this,event)" maxlength="1" onblur="clientValidation('priority','fax','priorityEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="priorityEr" class="red-error">&nbsp;</span>
 														</div>
@@ -194,7 +194,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" value='<spring:message code="common.label.search"/>' class="form-control button pull-right"
-													onclick="return trimUserData()"> <input type="button"
+													onclick="return searchValidation();trimUserData()"> <input type="button"
 													class="form-control button pull-right" value='<spring:message code="common.label.reset"/>'
 													onclick="goToSwitchSearch()">
 											</div>
@@ -392,7 +392,7 @@
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
-	
+	<script src="../js/validation.js"></script>
 	
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js" type="text/javascript"></script>

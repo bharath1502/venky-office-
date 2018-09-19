@@ -56,16 +56,16 @@
 						<!--Success and Failure Message Start-->
 						<div class="col-xs-12">
 							<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-								<span class="red-error" style="font-size: 13px;">&nbsp;${error }</span> <span
-									class="green-error">&nbsp;${sucess }</span>
+								<span class="red-error" style="font-size: 13px;">&nbsp;${error }</span> 
+								<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 							</div>
 						</div>
-						<form:form action="getFeeReportPagination" name="paginationForm" method="post">
+						<form:form action="getPmRevenueReportPagination" name="paginationForm" method="post">
 									<input type="hidden" id="pageNumberId" name="pageNumber" /> 
 									<input type="hidden" id="totalRecordsId" name="totalRecords" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
-						<form:form action="downloadFeeTxnReport" name="downloadReport" method="post">
+						<form:form action="downloadPmRevenueReport" name="downloadReport" method="post">
 							<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" /> 
 							<input type="hidden" id="downloadTypeId" name="downloadType" />
 							<input type="hidden" id="totalRecords" name="totalRecords" />
@@ -184,9 +184,9 @@
 										<c:forEach items="${feeTransactionList}" var="transaction">
 											<tr>
 												<td><a href="javascript:showAllTxnsForPM('${transaction.issuanceSettlementEntityId }','PM_REVENUE')" style="text-decoration: underline;">${transaction.merchantId }</a></td>
-												<td>${transaction.acquirerAmount }</td>
-												<td>${transaction.issAmount }</td>
-												<td>${transaction.pmAmount }</td>
+												<td><fmt:formatNumber value="${transaction.acquirerAmount/100.0}"/></td>
+												<td><fmt:formatNumber value="${transaction.issAmount/100.0}"/></td>
+												<td><fmt:formatNumber value="${transaction.pmAmount/100.0}"/></td>
 												<td>${transaction.batchId }</td>
 											</tr>
 										</c:forEach>

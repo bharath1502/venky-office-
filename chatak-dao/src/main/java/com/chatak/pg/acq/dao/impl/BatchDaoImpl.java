@@ -14,13 +14,12 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pg.acq.dao.BatchDao;
 import com.chatak.pg.acq.dao.model.PGBatch;
 import com.chatak.pg.acq.dao.repository.BatchRepository;
 import com.chatak.pg.dao.util.StringUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 
 /**
  * @Author: Girmiti Software
@@ -42,14 +41,13 @@ public class BatchDaoImpl implements BatchDao{
 	private BatchRepository batchRepository;
 
 	@Override
-	public PGBatch findByProgramManagerId(Long programManagerId) {
-		return batchRepository.findByProgramManagerId(programManagerId);
+	public PGBatch findByProgramManagerIdAndStatus(Long programManagerId, String status) {
+		return batchRepository.findByProgramManagerIdAndStatus(programManagerId, status);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public PGBatch getBatchIdByProgramManagerId(Long programManagerId) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName()+"Program Manger Id " +programManagerId);
+	  logger.info("Entering :: BatchDaoImpl :: getBatchIdByProgramManagerId :: Program Manger Id ::" + programManagerId);
 		PGBatch batch = new PGBatch();
 		Query qry = entityManager.createNativeQuery(
 				"SELECT DISTINCT a.PM_ID,a.BATCH_ID, pb.STATUS FROM (SELECT PM_ID, MAX(BATCH_ID) AS BATCH_ID,max(CREATED_DATE) as CREATED_DATE  FROM PG_BATCH  WHERE PM_ID=:programManagerId GROUP BY PM_ID)a JOIN PG_BATCH pb ON pb.BATCH_ID=a.BATCH_ID and a.CREATED_DATE=pb.CREATED_DATE");
@@ -64,8 +62,8 @@ public class BatchDaoImpl implements BatchDao{
 				batch.setStatus(StringUtil.isNull(objs[2]) ? null : ((String) objs[2]));
 			}
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName() + "Batch Id : " + batch.getBatchId() + "Batch Status : "
-				+ batch.getStatus());
+    logger.info("Entering :: BatchDaoImpl :: getBatchIdByProgramManagerId :: Batch Id : "
+        + batch.getBatchId() + " Batch Status : " + batch.getStatus());
 		return batch;
 	}
 

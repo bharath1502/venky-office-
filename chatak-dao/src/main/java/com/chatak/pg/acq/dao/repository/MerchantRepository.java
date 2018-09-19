@@ -26,6 +26,9 @@ public interface MerchantRepository extends JpaRepository<PGMerchant, Long>, Que
   public PGMerchant findByMerchantCode(String merchantCode);
 
   public List<PGMerchant> findByMerchantCodeAndStatus(String merchantCode, Integer status);
+  
+  @Query("select t from PGMerchant t where t.merchantCode=:merchantCode and t.status = :status")
+  public PGMerchant findOneMerchantCodeAndStatus(@Param("merchantCode") String merchantCode, @Param("status") Integer status);
 
   @Query("select t from PGMerchant t where t.userName=:userName and t.status <> 3")
   public PGMerchant findByUserName(@Param("userName") String userName);
@@ -93,14 +96,17 @@ public interface MerchantRepository extends JpaRepository<PGMerchant, Long>, Que
  * @param merchantCategoryCode
  * @return
  */
-public List<PGMerchant> findByMcc(String merchantCategoryCode);
+  public List<PGMerchant> findByMcc(String merchantCategoryCode);
 
-@Query("select new Map(t.merchantCode, t.merchantCode || ' - ' || t.businessName) from PGMerchant t where t.parentMerchantId=(select p.id from PGMerchant p where p.merchantCode=:merchantCode) and t.status=0")
-public List<Map<String, String>> getSubMerchantMapByMerchantId(@Param("merchantCode") String merchantCode);
+  @Query("select new Map(t.merchantCode, t.merchantCode || ' - ' || t.businessName) from PGMerchant t where t.parentMerchantId=(select p.id from PGMerchant p where p.merchantCode=:merchantCode) and t.status=0")
+  public List<Map<String, String>> getSubMerchantMapByMerchantId(@Param("merchantCode") String merchantCode);
 
-@Query("select t.merchantCode from PGMerchant t where t.parentMerchantId=:id or id=:id")
-public List<String> findMerchantsList(@Param("id") Long id);
+  @Query("select t.merchantCode from PGMerchant t where t.parentMerchantId=:id or id=:id")
+  public List<String> findMerchantsList(@Param("id") Long id);
 
-@Query(value = "select t From PGMerchant t where t.merchantConfig=:deviceManufactId")
-public PGMerchant findByMerchantConfig(@Param("deviceManufactId") PGMerchantConfig deviceManufactId);
+  @Query(value = "select t From PGMerchant t where t.merchantConfig=:deviceManufactId")
+  public PGMerchant findByMerchantConfig(@Param("deviceManufactId") PGMerchantConfig deviceManufactId);
+  
+//  @Query(value = "select pgm.id, pgmc.autoSettlement from PGMerchant pgm join PGMerchantConfig pgmc on pgm.merchantConfig = pgmc.id and pgm.merchantCode = :merchantCode")
+//  public PGMerchant getMerchantAutoSettlementByCode(@Param("merchantCode") String merchantCode);
 }

@@ -174,6 +174,9 @@ public class ActionErrorCode {
   public static final String ERROR_CODE_TIME_ZONE_04  =  "T04";
   public static final String ERROR_CODE_TIME_ZONE_05  =  "T05";
   
+  public static final String ERROR_CODE_PM_01  =  "PM01";
+  public static final String ERROR_CODE_PM_02  =  "PM02";
+  public static final String ERROR_CODE_ISO_01  =  "ISO01";  
 
 	/**
 	 * This method get the message based on code
@@ -351,6 +354,9 @@ public class ActionErrorCode {
 		 mMessages.put(ERROR_CODE_TIME_ZONE_03 ," Error in retrieving all the time zone");
 		 mMessages.put(ERROR_CODE_TIME_ZONE_04 ," Error in Merchant Category Code Updation");
 		 mMessages.put(ERROR_CODE_TIME_ZONE_05 ," Error in Merchant Category Code Updation");
+		 mMessages.put(ERROR_CODE_PM_01 ,"Program manager not associated");
+		 mMessages.put(ERROR_CODE_PM_02 ,"Program manager not active");
+		 mMessages.put(ERROR_CODE_ISO_01 ,"ISO not active");
 	}
 
 	/**

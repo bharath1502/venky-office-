@@ -131,7 +131,9 @@ public class Request implements Serializable {
   private Long pmId;
   
   private String transactionId;
-  
+
+  private String address;
+
   public String getCurrencyCode() {
     return currencyCode;
   }
@@ -626,6 +628,14 @@ public class Request implements Serializable {
    */
   public void setTransactionId(String transactionId) {
     this.transactionId = transactionId;
+  }
+
+  public String getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) {
+    this.address = address;
   }
 
 }

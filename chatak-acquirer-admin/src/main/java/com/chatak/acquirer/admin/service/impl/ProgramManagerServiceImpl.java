@@ -59,8 +59,6 @@ import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.user.bean.ProgramManagerResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 
 @Service
@@ -189,39 +187,15 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
   	setBankIdAndSave(pgBank, bankResp, response, pmResponse, issuanceBankRequest);
     }
     
-   //Card Details from issuance and save in acquirer
-    CardProgramRequest cardProgramRequest = new CardProgramRequest();
-    List<Long> cardProgramList = new ArrayList<>();
-    String[] cardProgramArrayLists = programManagerRequest.getCardProgramIds().split(",");
-    setCardList(cardProgramArrayLists, cardProgramList);
-    cardProgramRequest.setCardProgramIds(cardProgramList);
-    CardProgramResponse cardProgramResponse = getCardProgramsDetailsByIds(cardProgramRequest);
-    
-    CardProgram issuanceCardProgramReq = null;
-    CardProgram cardProgram = new CardProgram();
-    for(CardProgramRequest cardProgramReq : cardProgramResponse.getCardProgramList()){
-      issuanceCardProgramReq = new CardProgram();
-  	  issuanceCardProgramReq.setIssuanceCradProgramId(cardProgramReq.getCardProgramId());
-  	  issuanceCardProgramReq.setCardProgramName(cardProgramReq.getCardProgramName());
-  	  issuanceCardProgramReq.setIin(cardProgramReq.getIin());
-  	  issuanceCardProgramReq.setIinExt(cardProgramReq.getIinExt());
-  	  issuanceCardProgramReq.setCurrency(programManagerRequest.getAccountCurrency());
-  	  issuanceCardProgramReq.setStatus(cardProgramReq.getStatus());
-  	  issuanceCardProgramReq.setPartnerId(cardProgramReq.getPartnerId());
-  	  issuanceCardProgramReq.setPartnerName(cardProgramReq.getPartnerName());
-  	  issuanceCardProgramReq.setCreatedDate(new Timestamp(System.currentTimeMillis()));
-  	  issuanceCardProgramReq.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-  	  issuanceCardProgramReq.setCreatedBy(programManagerRequest.getCreatedBy());
-  	  issuanceCardProgramReq.setPartnerIINCode(cardProgramReq.getPartnerCode());
-  	  
-  	  CardProgram existingCardProgram = cardProgramDao.findByIssuanceCardProgramId(cardProgramReq.getCardProgramId());
-  	  
-  	Long cardProgramId = setCardProgramId(existingCardProgram, cardProgram, issuanceCardProgramReq);
-  	cardProgram.setCardProgramId(cardProgramId);
-  	  
-		savePMCardProgramMappingData(cardProgram, pmResponse, response);
-    }    
-			} else {
+    String[] selectedCardProgramIds = programManagerRequest.getCardProgramIds().split(",");
+    PartnerGroupPartnerMapRequest partnerGroupPartnerMapRequest = new PartnerGroupPartnerMapRequest();
+    List<Long> issuancePmId= new ArrayList<>();
+    issuancePmId.add(programManagerRequest.getProgramManagerId());
+    partnerGroupPartnerMapRequest.setProgramManagerId(issuancePmId);
+    //fetch Card program Details from issuance and save in acquirer
+    fetchIssuanceCardProgramByPM(partnerGroupPartnerMapRequest, pManager.getAccountCurrency(),
+        programManagerRequest.getCreatedBy(),selectedCardProgramIds,pmResponse.getId());
+	} else {
 				BankResponse bankResp = null;
 				String[] arrayList = programManagerRequest.getAcquirerBankName().split(",");
 				setBankResponse(arrayList, bankResp, pmResponse, response);
@@ -370,15 +344,6 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 		return cardProgramId;
 	}
   
-	private List<Long> setCardList(String[] cardProgramArrayLists, List<Long> cardProgramList) {
-		for (int i = 0; i < cardProgramArrayLists.length; i++) {
-			if (cardProgramArrayLists[i] != null) {
-				cardProgramList.add(Long.parseLong(cardProgramArrayLists[i]));
-			}
-		}
-		return cardProgramList;
-	}
-
 	private BankRequest setCurrencyCode(BankRequest issuanceBankRequest, PGCurrencyConfig pGCurrencyCode,
 			PGCurrencyConfig pGCurrencyConfig) {
 		if (StringUtil.isNull(pGCurrencyCode)) {
@@ -461,7 +426,6 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
         }
   }
   
-  @Transactional
   private void savePMCardProgramMappingData(CardProgram cardProgram, ProgramManager pmResponse, Response response) throws ReflectiveOperationException , ChatakAdminException{
       try{
             PmCardProgamMapping cardProgamMapping = new PmCardProgamMapping();
@@ -797,6 +761,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
           programManagerDao.findProgramManagerById(programManagerRequest.getId());
       Set<BankProgramManagerMap> map = programManagerDao
           .findBankProgramManagerMapByProgramManagerId(programManagerRequest.getId());
+      Set<PmCardProgamMapping> cardProgamMapping = programManagerDao.findPmCardProgamMappingMapByProgramManagerId(programManagerRequest.getId());
       List<ProgramManagerAccount> pmAccounts = programManagerDao
           .getProgramManagerAccountByProgramManagerId(programManagerRequest.getId());
       ProgramManagerResponse response = new ProgramManagerResponse();
@@ -807,6 +772,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
       programManager.setReason(programManagerRequest.getReason());
       programManager.setUpdatedDate(DateUtil.getCurrentTimestamp());
       programManager.setBankProgramManagerMaps(map);
+      programManager.setCardProgamMapping(cardProgamMapping);
       programManagerDao.saveOrUpdateProgramManager(programManager);
 
       for (ProgramManagerAccount programManagerAccount : pmAccounts) {
@@ -946,7 +912,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
             ProgramManagerResponse programManagerResponse=mapper.readValue(output, ProgramManagerResponse.class);
             return programManagerResponse;
         }catch (HttpClientException e) {
-            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ");
+            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ",e);
             throw new ChatakAdminException(Properties.getProperty("prepaid.service.call.role.error.message"));
         } catch (Exception e1) {
             logger.error("ERROR:: ProgramManagerServiceImpl :: getAllIssuanceProgramManagers method.", e1);
@@ -965,7 +931,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
             ProgramManagerResponse programManagerResponse=mapper.readValue(output, ProgramManagerResponse.class);
             return programManagerResponse;
         }catch (HttpClientException e) {
-            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ");
+            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ",e);
             throw new ChatakAdminException(Properties.getProperty("prepaid.service.call.role.error.message"));
         } catch (Exception e1) {
             logger.error("ERROR:: ProgramManagerServiceImpl :: getIssuanceProgramManagerById method.", e1);
@@ -983,7 +949,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
             CardProgramResponse cardProgramResponse=mapper.readValue(output, CardProgramResponse.class);
             return cardProgramResponse;
         } catch (HttpClientException e) {
-            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ");
+            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ",e);
             throw new ChatakAdminException(Properties.getProperty("prepaid.service.call.role.error.message"));
         } catch (Exception e1) {
             logger.error("ERROR:: ProgramManagerServiceImpl :: searchCardProgramByProgramManager method.", e1);
@@ -1026,7 +992,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
             BankResponse bankResponse=mapper.readValue(output, BankResponse.class);
             return bankResponse;
         }catch (HttpClientException e) {
-            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ");
+            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ",e);
             throw new ChatakAdminException(Properties.getProperty("prepaid.service.call.role.error.message"));
         } catch (Exception e1) {
             logger.error("ERROR:: ProgramManagerServiceImpl :: searchCardProgramByProgramManager method.", e1);
@@ -1044,7 +1010,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
             CardProgramResponse cardProgramResponse=mapper.readValue(output, CardProgramResponse.class);
             return cardProgramResponse;
         }catch (HttpClientException e) {
-            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ");
+            logger.info("Entering:: ProgramManagerServiceImpl :: validateResponseToGetProgramManagers method: ",e);
             throw new ChatakAdminException(Properties.getProperty("prepaid.service.call.role.error.message"));
         }  catch (Exception e1) {
             logger.error("ERROR:: ProgramManagerServiceImpl :: getCardProgramsDetailsByIds method.", e1);
@@ -1083,6 +1049,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     }
     @Override
     public Response findProgramManagerNameByCurrencyAndId(Long id, String currencyId) {
+      logger.info("Entering :: ProgramManagerServiceImpl :: findProgramManagerNameByCurrencyAndId");
         MerchantResponse merchantResponse = programManagerDao.getProgramManagerNameByCurrencyAndId(id,currencyId);
         Response response = new Response();
         if (merchantResponse != null && !StringUtil.isNull(merchantResponse.getProgramManagerRequests())) {
@@ -1102,7 +1069,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
             response.setErrorCode(ActionCode.ERROR_CODE_99);
             response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
         }
-        LogHelper.logExit(logger, LoggerMessage.getCallerName());
+        logger.info("Exiting :: ProgramManagerServiceImpl :: findProgramManagerNameByCurrencyAndId");
         return response;
     }
   @Override
@@ -1133,18 +1100,18 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 
 	@Override
 	public CardProgramResponse findPMCardprogramByMerchantId(Long merchantId) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: ProgramManagerServiceImpl :: findPMCardprogramByMerchantId");
 		CardProgramResponse response = new CardProgramResponse();
 		try {
 			response = programManagerDao.fetchPMCardProgramByMerchantId(merchantId);
 			response.setErrorCode(PGConstants.SUCCESS);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: ProgramManagerServiceImpl :: findPMCardprogramByMerchantId : " + e.getMessage(), e);
 			response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: ProgramManagerServiceImpl :: findPMCardprogramByMerchantId");
 		return response;
 	}
 
@@ -1166,4 +1133,142 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 	public ProgramManagerRequest findbyProgramManagerId(Long id) {
 		return programManagerDao.findProgramManagerById(id);
 	}
+	
+	@Override
+	public CardProgramResponse searchIssuanceCardProgramByPM(
+        PartnerGroupPartnerMapRequest partnerGroupPartnerMapRequest,String currency,String createdBy,String acquirerPmId) throws ChatakAdminException {
+    logger.info("Entering:: ProgramManagerServiceImpl :: searchIssuanceCardProgramByPM method: ");
+    try {
+        String output = JsonUtil.postIssuanceRequest(partnerGroupPartnerMapRequest,
+                "/setupServices/setupService/searchCardProgramByProgramManager",String.class);
+        if(output == null){
+          logger.info("INFO:: Json response null");
+          return null;
+        }
+        CardProgramResponse cardProgramResponse=mapper.readValue(output, CardProgramResponse.class);
+        CardProgram cardProgram;
+        List<CardProgramRequest> cardProgramList = new ArrayList<>();
+        if(StringUtil.isListNotNullNEmpty(cardProgramResponse.getCardProgramList())){
+          for(CardProgramRequest cardProgramRequest: cardProgramResponse.getCardProgramList()){
+            cardProgram = new CardProgram();
+            CardProgram cardPrograms = cardProgramDao.findByIssuanceCardProgramId(cardProgramRequest.getCardProgramId());
+            if(cardPrograms!=null){
+              logger.info("INFO:: Continuing with the already present issuance card program ID " + cardProgramRequest.getCardProgramId());
+              continue;
+            }
+            cardProgram.setIssuanceCradProgramId(cardProgramRequest.getCardProgramId());
+            cardProgram.setCardProgramName(cardProgramRequest.getCardProgramName());
+            cardProgram.setIin(cardProgramRequest.getIin());
+            cardProgram.setIinExt(cardProgramRequest.getIinExt());
+            cardProgram.setStatus(cardProgramRequest.getStatus());
+            cardProgram.setPartnerId(cardProgramRequest.getPartnerId());
+            cardProgram.setPartnerName(cardProgramRequest.getPartnerName());
+            cardProgram.setPartnerIINCode(cardProgramRequest.getPartnerCode());
+            cardProgram.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+            cardProgram.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+            cardProgram.setCreatedBy(createdBy);
+            cardProgram.setCurrency(currency);
+            cardProgram.setAcquirerPmId(Long.valueOf(acquirerPmId));
+            cardProgram = cardProgramDao.createCardProgram(cardProgram);
+            //set acquirer card program id
+            cardProgramRequest.setCardProgramId(cardProgram.getCardProgramId());
+            cardProgramRequest.setIssuanceCardProgramId(cardProgramRequest.getCardProgramId());
+            cardProgramList.add(cardProgramRequest);
+          }
+          cardProgramResponse.setCardProgramList(cardProgramList);
+        }
+        logger.info("Exiting:: ProgramManagerServiceImpl :: searchIssuanceCardProgramByPM method: ");
+        return cardProgramResponse;
+    } catch (HttpClientException e) {
+        logger.error("ERROR:: ProgramManagerServiceImpl :: searchIssuanceCardProgramByPM method: ",e);
+        throw new ChatakAdminException(Properties.getProperty("prepaid.service.call.role.error.message"));
+    } catch (Exception e1) {
+        logger.error("ERROR:: ProgramManagerServiceImpl :: searchIssuanceCardProgramByPM method.", e1);
+    }
+    return null;
+}
+	
+  @Override
+  public List<CardProgramRequest> getUnselectedCpByPm(Long programManagerId){
+    logger.info("Entering:: ProgramManagerServiceImpl :: getUnselectedCpByPm method: ");
+    try {
+      List<CardProgramRequest> cardProgram = cardProgramDao.getUnselectedCpByPm(programManagerId);
+      logger.info("Exiting:: ProgramManagerServiceImpl :: getUnselectedCpByPm method: ");
+      return cardProgram;
+    } catch (Exception e) {
+      logger.error("ERROR:: ProgramManagerServiceImpl :: getUnselectedCpByPm method: ", e);
+    }
+    return Collections.emptyList();
+  }
+  
+  private void fetchIssuanceCardProgramByPM(
+      PartnerGroupPartnerMapRequest partnerGroupPartnerMapRequest, String currency,
+      String createdBy, String[] selectedCardProgramIds, Long acqPmId) throws ChatakAdminException {
+    logger.info("Entering:: ProgramManagerServiceImpl :: fetchIssuanceCardProgramByPM method: ");
+    try {
+      String output =
+          JsonUtil.postIssuanceRequest(partnerGroupPartnerMapRequest,
+              "/setupServices/setupService/searchCardProgramByProgramManager", String.class);
+      if (output == null) {
+        logger.info("INFO:: Json response null");
+        return;
+      }
+      CardProgramResponse cardProgramResponse = mapper.readValue(output, CardProgramResponse.class);
+      CardProgram cardProgram;
+      if (StringUtil.isListNotNullNEmpty(cardProgramResponse.getCardProgramList())) {
+        for (CardProgramRequest cardProgramRequest : cardProgramResponse.getCardProgramList()) {
+          cardProgram = new CardProgram();
+          cardProgram.setIssuanceCradProgramId(cardProgramRequest.getCardProgramId());
+          cardProgram.setCardProgramName(cardProgramRequest.getCardProgramName());
+          cardProgram.setIin(cardProgramRequest.getIin());
+          cardProgram.setIinExt(cardProgramRequest.getIinExt());
+          cardProgram.setStatus(cardProgramRequest.getStatus());
+          cardProgram.setPartnerId(cardProgramRequest.getPartnerId());
+          cardProgram.setPartnerName(cardProgramRequest.getPartnerName());
+          cardProgram.setPartnerIINCode(cardProgramRequest.getPartnerCode());
+          cardProgram.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+          cardProgram.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+          cardProgram.setCreatedBy(createdBy);
+          cardProgram.setCurrency(currency);
+          cardProgram.setAcquirerPmId(acqPmId);
+          cardProgram = cardProgramDao.createCardProgram(cardProgram);
+          mapSelectedCpToPm(selectedCardProgramIds, cardProgram, acqPmId);
+        }
+      }
+      logger.info("Exiting:: ProgramManagerServiceImpl :: fetchIssuanceCardProgramByPM method: ");
+    } catch (HttpClientException e) {
+      logger.error("ERROR:: ProgramManagerServiceImpl :: fetchIssuanceCardProgramByPM method: ", e);
+      throw new ChatakAdminException(
+          Properties.getProperty("prepaid.service.call.role.error.message"));
+    } catch (Exception e1) {
+      logger.error("ERROR:: ProgramManagerServiceImpl :: fetchIssuanceCardProgramByPM method.", e1);
+    }
+  }
+
+  private void mapSelectedCpToPm(String[] selectedCardProgramIds, CardProgram cardProgram,
+      Long acqPmId) {
+    logger.info("Entering:: ProgramManagerServiceImpl :: mapSelectedCpToPm method: ");
+    for (String selectedCardProgramId : selectedCardProgramIds) {
+      if (selectedCardProgramId.equals(String.valueOf(cardProgram.getIssuanceCradProgramId()))) {
+        PmCardProgamMapping cardProgamMapping = new PmCardProgamMapping();
+        cardProgamMapping.setCardProgramId(cardProgram.getCardProgramId());
+        cardProgamMapping.setProgramManagerId(acqPmId);
+        cardProgramDao.createCardProgramMapping(cardProgamMapping);
+      }
+    }
+    logger.info("Exiting:: ProgramManagerServiceImpl :: mapSelectedCpToPm method: ");
+  }
+  
+  @Override
+  public List<CardProgramRequest> getUnselectedCpForIndependentPm(Long programManagerId, String currency){
+    logger.info("Entering:: ProgramManagerServiceImpl :: getUnselectedCpForIndependentPm method: ");
+    try {
+      List<CardProgramRequest> cardProgram = cardProgramDao.getUnselectedCpForIndependentPm(programManagerId,currency);
+      logger.info("Exiting:: ProgramManagerServiceImpl :: getUnselectedCpForIndependentPm method: ");
+      return cardProgram;
+    } catch (Exception e) {
+      logger.error("ERROR:: ProgramManagerServiceImpl :: getUnselectedCpForIndependentPm method: ", e);
+      throw e;
+    }
+  }
 }

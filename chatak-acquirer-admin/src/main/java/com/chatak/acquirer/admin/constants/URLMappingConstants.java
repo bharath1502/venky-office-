@@ -1019,7 +1019,7 @@ public interface URLMappingConstants {
    
    String UPDATE_ISO = "updateIso";
 
-   String  GET_CARD_PROGRAM_BY_BANK_ID = "getAcquirerCardProgramDetailsByBankId";
+   String  GET_CARD_PROGRAMS_BY_CURRENCY = "getAcquirerCardProgramDetailsByCurrency";
    
    String FETCH_CARD_PROGRAM_BY_ISO = "fetchCardProgramByIso";
    
@@ -1092,5 +1092,11 @@ public interface URLMappingConstants {
    String PM_REVENUE_REPORT_PAGE = "pm-revenue-report";
    
    String PROCESS_PM_REVENUE_REPORT_PAGE = "processPmRevenueReport";
+   
+   String DOWNLOAD_PM_REVENUE_REPORT = "downloadPmRevenueReport";
+   
+   String PREPAID_PM_REPORT_PAGINATION = "getPmRevenueReportPagination";
+   
+   String GET_ISSUANCE_CARD_PROGRAMS_BY_PM_ID = "getIssuanceCardProgramsByPmId";
    
 }

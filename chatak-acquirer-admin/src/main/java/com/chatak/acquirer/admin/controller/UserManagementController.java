@@ -721,7 +721,7 @@ public class UserManagementController implements URLMappingConstants {
     return modelAndView;
   }
 
-  @RequestMapping(value = CHATAK_USER_TYPE_VALUE, method = RequestMethod.POST)
+  @RequestMapping(value = CHATAK_USER_TYPE_VALUE)
   public ModelAndView showUserTypeValue(HttpServletRequest request, HttpServletResponse response,
       @FormParam("rolesType") final String rolesType, Map model, HttpSession session) {
     logger.info("Entering:: UserManagementController:: showCreateUser method");

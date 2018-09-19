@@ -41,20 +41,13 @@ import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
-import com.chatak.pg.bean.CountryRequest;
-import com.chatak.pg.bean.CountryResponse;
 import com.chatak.pg.bean.Request;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.bean.TimeZoneRequest;
 import com.chatak.pg.bean.TimeZoneResponse;
 import com.chatak.pg.enums.ExportType;
-import com.chatak.pg.exception.PrepaidException;
-import com.chatak.pg.user.bean.BankProgramManagerMapRequest;
-import com.chatak.pg.user.bean.CardProgramMappingRequest;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
-import com.chatak.pg.user.bean.IsoRequest;
-import com.chatak.pg.user.bean.IsoResponse;
 import com.chatak.pg.user.bean.PartnerGroupPartnerMapRequest;
 import com.chatak.pg.user.bean.PartnerRequest;
 import com.chatak.pg.user.bean.PartnerResponse;
@@ -436,6 +429,7 @@ public class ProgramManagerController implements URLMappingConstants {
       return modelAndView;
     }
     try {
+      List<CardProgramRequest> unselectedCardPrograms;
       programManagerRequest.setId(programManagerId);
       setAuditData(programManagerRequest, session, "ProgramManager", "View");
       ProgramManagerResponse programManagerResponse =
@@ -445,6 +439,12 @@ public class ProgramManagerController implements URLMappingConstants {
       defaultPMValue = programManagerList.get(0).getDefaultProgramManager();
       model.put("selectedBankList", programManagerResponse.getProgramManagersList().get(0).getBankRequest());
       modelAndView.addObject("selectedCardProgramList", programManagerResponse.getProgramManagersList().get(0).getCardProgamMapping());
+      if(programManagerList.get(0).getIssuancepmid()!=null){
+        unselectedCardPrograms = programManagerService.getUnselectedCpByPm(programManagerId);        
+      }else {
+        unselectedCardPrograms = programManagerService.getUnselectedCpForIndependentPm(programManagerId, programManagerList.get(0).getAccountCurrency());
+      }
+      modelAndView.addObject("unselectedCardProgramList", unselectedCardPrograms);
       model.put("programManagerRequest", programManagerList.get(0));
       byte[] image = programManagerList.get(0).getProgramManagerLogo();
       session.setAttribute("programManagerImage",
@@ -478,6 +478,8 @@ public class ProgramManagerController implements URLMappingConstants {
       
     } catch (Exception e) {
       logger.error("ERROR:: ProgramManagerController:: showEditProgramManager method", e);
+      modelAndView = processException(request, response, model, session, e, "showEditProgramManager");
+      modelAndView.addObject(Constants.ERROR, messageSource.getMessage("chatak.general.error", null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting:: ProgramManagerController:: showEditProgramManager method");
     return modelAndView;
@@ -860,25 +862,24 @@ public class ProgramManagerController implements URLMappingConstants {
     return null;
   }
   
-  @RequestMapping(value = GET_CARD_PROGRAM_BY_BANK_ID, method = RequestMethod.GET)
-  public @ResponseBody String getAcquirerCardProgramDetailsByBankId(Map model, HttpServletRequest request,
+  @RequestMapping(value = GET_CARD_PROGRAMS_BY_CURRENCY, method = RequestMethod.GET)
+  public @ResponseBody String getCardProgramsByCurrency(Map model, HttpServletRequest request,
       HttpServletResponse response, HttpSession session) {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_CREATE_MERCHANT_PAGE);
     modelAndView.addObject(Constants.ERROR, null);
-    logger.info("Entering :: ProgramManagerController :: getAcquirerCardProgramDetailsByBankId method");
-    Long bankId =Long.parseLong(request.getParameter("bankId"));
+    logger.info("Entering :: ProgramManagerController :: getCardProgramsByCurrency");
+    String currency =request.getParameter("currency");
     try {
-    	List<CardProgramRequest> cardProgramReqList	= cardProgramServices.getCardProgramByBankId(bankId);
-
-      if (cardProgramReqList != null) {
-        return JsonUtil.convertObjectToJSON(cardProgramReqList);
+    	Response responseVal	= cardProgramServices.getCardProgramsByCurrency(currency);
+      if (responseVal != null) {
+        return JsonUtil.convertObjectToJSON(responseVal.getResponseList());
       }
     } catch (ChatakAdminException e) {
-      logger.error("ERROR:: ProgramManagerController:: getAcquirerCardProgramDetailsByBankId method", e);
+      logger.error("Error :: ProgramManagerController :: getCardProgramsByCurrency :: " + e.getMessage(), e);
       modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
-    logger.info("Exiting:: ProgramManagerController:: getAcquirerCardProgramDetailsByBankId method");
+    logger.info("Exiting :: ProgramManagerController :: getCardProgramsByCurrency");
     return null;
   }
   
@@ -933,5 +934,29 @@ public class ProgramManagerController implements URLMappingConstants {
 		logger.info("Exiting :: ProgramManagerController :: fetchTimeZone method");
 		return null;
 	}
+  
+  @RequestMapping(value = GET_ISSUANCE_CARD_PROGRAMS_BY_PM_ID, method = RequestMethod.GET)
+  public @ResponseBody String getIssuanceCardProgramsByPmId(Map model, HttpServletRequest request,
+      HttpServletResponse response, HttpSession session) {
+    logger.info("Entering :: ProgramManagerController :: getIssuanceCardProgramsByPmId method");
+    String issuancePmId = request.getParameter("issuancePmId");
+    String acquirerPmId = request.getParameter("acquirerPmId");
+    String currency = request.getParameter("currency"); 
+   List<Long> programManagerReq = new ArrayList<>();
+   programManagerReq.add(Long.parseLong(issuancePmId));
+    try {
+        PartnerGroupPartnerMapRequest partnerGroupPartnerMapRequest = new PartnerGroupPartnerMapRequest();
+        partnerGroupPartnerMapRequest.setProgramManagerId(programManagerReq);
+      CardProgramResponse cardProgramResponse = programManagerService.searchIssuanceCardProgramByPM(partnerGroupPartnerMapRequest,
+              currency, session.getAttribute(Constants.LOGIN_USER_ID).toString(), acquirerPmId);
+      if (cardProgramResponse!=null && cardProgramResponse.getCardProgramList() != null) {
+        return JsonUtil.convertObjectToJSON(cardProgramResponse);
+      }
+    } catch (Exception e) {
+      logger.error("Error :: ProgramManagerController :: getIssuanceCardProgramsByPmId method", e);
+    }
+    logger.info("Exiting :: ProgramManagerController :: getIssuanceCardProgramsByPmId method");
+    return null;
+  }
 }
 

@@ -174,7 +174,7 @@ public class SubMerchantController implements URLMappingConstants {
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
     session.setAttribute(Constants.MERCHANTS_MODEL, merchant);
-    merchant.setPageSize(Constants.MAX_ENTITIES_PAGINATION_DISPLAY_SIZE);
+    merchant.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
     merchant.setPageIndex(Constants.ONE);
     try {
       List<Option> countryList = merchantInfoService.getCountries();

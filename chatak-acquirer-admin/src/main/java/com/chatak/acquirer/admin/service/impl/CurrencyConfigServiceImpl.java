@@ -84,7 +84,7 @@ public class CurrencyConfigServiceImpl implements CurrencyConfigService,PGConsta
 		pgCurrencyConfig.setCurrencyName(currencyDTO.getCurrencyName().toUpperCase());
 		pgCurrencyConfig.setCurrencyCodeNumeric(currencyDTO.getCurrencyCodeNumeric());
 		pgCurrencyConfig.setCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha().toUpperCase());
-		pgCurrencyConfig.setCurrencyExponent(Integer.parseInt("2"));
+		pgCurrencyConfig.setCurrencyExponent(currencyDTO.getCurrencyExponent());
 		pgCurrencyConfig.setCurrencySeparatorPosition(currencyDTO.getCurrencySeparatorPosition());
 		pgCurrencyConfig.setCurrencyMinorUnit(currencyDTO.getCurrencyMinorUnit());
 		pgCurrencyConfig.setCurrencyThousandsUnit(currencyDTO.getCurrencyThousandsUnit());
@@ -107,6 +107,7 @@ public class CurrencyConfigServiceImpl implements CurrencyConfigService,PGConsta
 				currenyValue.setCurrencyName(pgCurrencyConfig.getCurrencyName());
 				currenyValue.setCurrencyCodeNumeric(pgCurrencyConfig.getCurrencyCodeNumeric());
 				currenyValue.setCurrencyCodeAlpha(pgCurrencyConfig.getCurrencyCodeAlpha());
+				currenyValue.setCurrencyExponent(pgCurrencyConfig.getCurrencyExponent());
 				if (pgCurrencyConfig.getStatus() == STATUS_SUCCESS){
 					currenyValue.setStatus(S_STATUS_ACTIVE);
         		}else if (pgCurrencyConfig.getStatus() == STATUS_PENDING) {

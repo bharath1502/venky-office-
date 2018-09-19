@@ -82,6 +82,9 @@ if ( settings.tableArray.length ) {
 	} );
 }
 
+if(this[ 0 ] == undefined || this[ 0 ] == null){
+	return;
+}
 var tableID = this[ 0 ].id;
 var tableParent = '#sortable'+ tableID;
 var trH = $tbtr.height();
@@ -153,6 +156,10 @@ function thead2align() {
 			.parent()
 				.show()
 	;
+}
+
+if(this[ 0 ] == undefined || this[ 0 ] == null) {	
+	return;
 }
 
 // #### initial align 'thead2a' and sort column, set height

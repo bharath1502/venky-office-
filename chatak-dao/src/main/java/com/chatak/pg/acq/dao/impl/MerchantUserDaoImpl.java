@@ -30,8 +30,6 @@ import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.GenericUserDTO;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.OrderSpecifier;
@@ -374,7 +372,7 @@ public PGMerchant findById(Long pgMerchantId) {
 @Override
 public List<AdminUserDTO> searchMerchantUserList() {
 	List<AdminUserDTO> userAdminListData = new ArrayList<AdminUserDTO>();
-	List<PGMerchantUsers> userAdminList = merchantUserRepository.findByPassRetryCount(Integer.parseInt("3"));
+	List<PGMerchantUsers> userAdminList = merchantUserRepository.findByPassRetryCountAndStatusNotLike(Integer.parseInt("3"), PGConstants.STATUS_DELETED);
 	AdminUserDTO userData = null;
 	if ( null != userAdminList) {
 		for (PGMerchantUsers pgMerchantUsers : userAdminList) {
@@ -401,16 +399,16 @@ private OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
 
   @Override
   public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient) {
-    LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+    logger.info("Entering :: MerchantUserDaoImpl :: saveOrUpdateApplicationClient");
 
     if(!StringUtil.isNull(applicationClient)){
         applicationClient.setActiveFrom(DateUtil.getCurrentTimestamp());
         applicationClient.setActiveTill(DateUtil.getCurrentTimestamp());
         applicationClientRepository.save(applicationClient);
-        LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Updated Application Client");
+        logger.info("Updated Application Client");
     }
 
-    LogHelper.logExit(logger, LoggerMessage.getCallerName());
+    logger.info("Exiting :: MerchantUserDaoImpl :: saveOrUpdateApplicationClient");
   }
   
 }

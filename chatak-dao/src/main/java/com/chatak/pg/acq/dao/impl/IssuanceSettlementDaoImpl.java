@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,21 +18,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pg.acq.dao.IssuanceSettlementDao;
-import com.chatak.pg.acq.dao.model.QPGTransaction;
 import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntity;
 import com.chatak.pg.acq.dao.model.settlement.PGSettlementTransaction;
 import com.chatak.pg.acq.dao.model.settlement.QPGSettlementEntity;
-import com.chatak.pg.acq.dao.model.settlement.QPGSettlementTransaction;
 import com.chatak.pg.acq.dao.repository.IssuanceSettlementEntityRepository;
 import com.chatak.pg.acq.dao.repository.IssuanceSettlementRepository;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactionEntity;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactions;
-import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.exception.PrepaidAdminException;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
-import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
@@ -79,23 +74,23 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
 	
     @Transactional(noRollbackFor=Exception.class)
 	public void deleteAllIssuanceSettlementData(String programManagerId) throws PrepaidAdminException {
-		 LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		 logger.info("Entering :: IssuanceSettlementDaoImpl :: deleteAllIssuanceSettlementData");
 		try {
 			StringBuilder sb = new StringBuilder(" DELETE FROM PG_ISS_SETTLEMENT_ENTITY  where ISS_PM_ID = :programMangerId ");
 			Query qry = entityManager.createNativeQuery(sb.toString());
 			qry.setParameter("programMangerId", Long.parseLong(programManagerId));
 			int i = qry.executeUpdate();
-			LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "deleted the data from PG_ISS_SETTLEMENT_ENTITY table sucessfully " + i);
+			logger.info("deleted the data from PG_ISS_SETTLEMENT_ENTITY table sucessfully " + i);
 		} catch (Exception e) {
 			
 			logger.error("ERROR :: IssuanceSettlementDaoImpl :: deleteAllIssuanceSettlementData method", e);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IssuanceSettlementDaoImpl :: deleteAllIssuanceSettlementData");
 	}
 
 	@Override
 	public List<IssuanceSettlementTransactionEntity> getAllMatchedTransactions(Long pmId) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IssuanceSettlementDaoImpl :: getAllMatchedTransactions");
 		List<IssuanceSettlementTransactionEntity> settlementEntityList = new ArrayList<>();
         
 		JPAQuery query = new JPAQuery(entityManager);
@@ -113,20 +108,20 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
                         QPGSettlementEntity.pGSettlementEntity.merchantAmount);
 		
 		
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "PGSettlementEntity size : " + tupleList.size());
+        logger.info("PGSettlementEntity size : " + tupleList.size());
 		
 		if(StringUtil.isListNotNullNEmpty(tupleList)) {
 		  
 		  for(Tuple tuple : tupleList) {
 		    
-		    LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Creating IssuanceSettlementTransactionEntity for MID : " + tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantId)
+		    logger.info("Creating IssuanceSettlementTransactionEntity for MID : " + tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantId)
 		        + ", with total merchant amount: " + tuple.get(QPGSettlementEntity.pGSettlementEntity.acqSaleAmount));
 		    
 		      IssuanceSettlementTransactionEntity entity = new IssuanceSettlementTransactionEntity();
 	          
 		      entity.setMerchantId(tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantId));
-              entity.setAcqSaleAmount(tuple.get(QPGSettlementEntity.pGSettlementEntity.acqSaleAmount));
-              entity.setIssSaleAmount(tuple.get(QPGSettlementEntity.pGSettlementEntity.issSaleAmount));
+              entity.setAcqSaleAmount(new BigDecimal(tuple.get(QPGSettlementEntity.pGSettlementEntity.acqSaleAmount)));
+              entity.setIssSaleAmount(new BigDecimal(tuple.get(QPGSettlementEntity.pGSettlementEntity.issSaleAmount)));
               entity.setAcqPmId(tuple.get(QPGSettlementEntity.pGSettlementEntity.acqPmId));
               entity.setIssPmId(tuple.get(QPGSettlementEntity.pGSettlementEntity.issPmId));
               entity.setBatchid(tuple.get(QPGSettlementEntity.pGSettlementEntity.batchid));
@@ -137,12 +132,12 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
               entity.setMerchantAmount(tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantAmount));
 	          
 	          List<PGSettlementTransaction>  pGSettlementTransaction = issuanceSettlementRepository.findByIssuanceSettlementEntityId(tuple.get(QPGSettlementEntity.pGSettlementEntity.id));
-	          LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Found pGSettlementTransactions size : " + pGSettlementTransaction.size());
+	          logger.info("Found pGSettlementTransactions size : " + pGSettlementTransaction.size());
 
 	          List<IssuanceSettlementTransactions> issuanceSettlementTransactions = new ArrayList<>();
 	          
 	          for(PGSettlementTransaction settlementTransaction : pGSettlementTransaction) {
-	            LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "PGSettlementTransaction for MID : " + tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantId)
+	            logger.info("PGSettlementTransaction for MID : " + tuple.get(QPGSettlementEntity.pGSettlementEntity.merchantId)
 	                + ", PG TXN ID: " + settlementTransaction.getPgTransactionId() + ", ISS Txn Id: " + settlementTransaction.getIssuerTxnID()
 	                + ", ISO amount: " + settlementTransaction.getIsoAmount());
 	            
@@ -162,15 +157,15 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
 	          settlementEntityList.add(entity);
 	        }		  
 		}
-		LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "getAllMatchedTransactions, final list size : " + settlementEntityList.size());
+		logger.info("getAllMatchedTransactions, final list size : " + settlementEntityList.size());
 		
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IssuanceSettlementDaoImpl :: getAllMatchedTransactions");
 		return settlementEntityList;
 	}
 	
 	private BooleanExpression isProgramManagerIdEq(Long pmId) {
 
-		return (pmId != null && !"".equals(pmId)) ? QPGSettlementEntity.pGSettlementEntity.acqPmId  .eq(pmId)
+		return (pmId != null) ? QPGSettlementEntity.pGSettlementEntity.acqPmId  .eq(pmId)
 				: null;
 	}
 

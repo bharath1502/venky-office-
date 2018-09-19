@@ -1,3 +1,19 @@
+var userNameRegex = /^[A-Za-z0-9]{6,16}$/;
+
+var businessNameRegx = /^[A-Za-z0-9][A-Za-z0-9. ]*$/;
+
+var firstNameRegx = /^[A-Za-z0-9@][A-Za-z0-9. ]*$/;
+
+var lastNameRegx = /^[A-Za-z0-9@][A-Za-z0-9. ]*$/;
+
+var addressRegx = /^[A-Za-z0-9,-._\/\s#]{1,60}$/;
+
+var emailIdReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+var cityRegx = /^[A-Za-z0-9\#\$\&]+(\s{0,1}[a-zA-Z0-9,])*$/;
+
+var downloadLimit = 5000;
+
 /**
 
  * System constants
@@ -779,18 +795,32 @@ function goToDashboard() {
 	window.location.href = 'home';
 }
 
-function downloadDashboardReport(curPageNumber, type, reportType, requestFrom) {
+function downloadDashboardReport(curPageNumber, type, reportType, requestFrom, totalRecords) {
 	if(reportType == 'processingTxn') {
 		get('processingTxnDownloadPageNumberId').value = curPageNumber;
 		get('processingTxnDownloadTypeId').value = type;
 		get('requestFromId1').value = requestFrom;
+		get('totalRecords').value = totalRecords;
 		setValue('pendingTotalRecords', true);
+		if($('#totalRecordsDownload').prop('checked')== true){
+			setValue('downloadAllRecords', true );
+		}
+		else{
+			setValue('downloadAllRecords', false );
+		}
 		document.forms["downloadProcessingTxnReport"].submit();
 	} else if(reportType == 'exetutedTxn') {
 		get('executedTxnDownloadPageNumberId').value = curPageNumber;
 		get('executedTxnDownloadTypeId').value = type;
 		get('requestFromId').value = requestFrom;
+		get('totalRecords').value = totalRecords;
 		setValue('executedTotalRecords', true);
+		if($('#totalRecordsDownload').prop('checked')== true){
+			setValue('downloadAllRecords', true );
+		}
+		else{
+			setValue('downloadAllRecords', false );
+		}
 		document.forms["downloadExecutedTxnReport"].submit();
 	}
 }
@@ -1003,8 +1033,11 @@ function downloadReport(curPageNumber, type, totalRecords) {
 	get('totalRecords').value = totalRecords;
 	if($('#totalRecordsDownload').prop('checked')== true){
 		setValue('downloadAllRecords', true );
-	}
-	else{
+		if (type == 'PDF') {
+			get('totalRecords').value = downloadLimit;
+			document.getElementById("sucessDiv").innerHTML = webMessages.maximumownloadLimit;
+		}
+	} else {
 		setValue('downloadAllRecords', false );
 	}
 	document.forms["downloadReport"].submit();
@@ -1022,11 +1055,17 @@ function generalZipCode()
 
 function zipCodeNotEmpty(id) {
 	var pin = getVal(id);
+	var regex = /^[A-Za-z0-9 ]+$/;
 	if (isEmpty(pin)) {
 		setError(get(id), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
 	}else if ((pin.length < 3) || (pin.length > 7)) {
+		setError(get(id), webMessages.invalidZipCode);
+		loadMsgTitleText();
+		return false;
+	}
+	else if (!regex.test(pin)) {
 		setError(get(id), webMessages.invalidZipCode);
 		loadMsgTitleText();
 		return false;

@@ -5,7 +5,8 @@ package com.chatak.pay.spring.security;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -29,7 +30,8 @@ import com.chatak.pg.acq.dao.model.PGApplicationClient;
 @Component("chatakServiceAccessUserDetailsService")
 public class ChatakServiceAccessUserDetailsService implements UserDetailsService {
 
-  private static Logger logger = Logger.getLogger(ChatakServiceAccessUserDetailsService.class); 
+  private static Logger logger = LogManager.getLogger(ChatakServiceAccessUserDetailsService.class);
+  
 
   @Autowired
   private ChatakPayService chatakPayService;

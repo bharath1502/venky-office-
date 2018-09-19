@@ -419,20 +419,18 @@ public class MerchantController implements URLMappingConstants {
         List<Option> allcurrencyLists = getAllCurrencyLists(currencyList, selectedCurrencyList);
         model.put("currencyListData", allcurrencyLists);
       }
+      Response  programManagerResponse;
       merchant.setAssociatedTo(selectedCurrencyList.getMerchant().getAssociatedTo());
       if(merchant.getAssociatedTo() != null && merchant.getAssociatedTo().equals(PGConstants.PROGRAM_MANAGER_NAME)){
-    	  Response  programManagerResponse = programManagerService.findProgramManagerNameByCurrencyAndId(getMerchantId,merchant.getLocalCurrency());
-    	  model.put("selectedCardProgramList", selectedCurrencyList.getCardProgramRequests());
+    	  programManagerResponse = programManagerService.findProgramManagerNameByCurrencyAndId(getMerchantId,merchant.getLocalCurrency());
     	  model.put("selectedEntityList", selectedCurrencyList.getProgramManagerRequests());
-    	  model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
-    	  model.put("EntityList", programManagerResponse.getResponseList());
       } else{
-    	  Response  programManagerResponse = isoService.findIsoNameByCurrencyAndId(getMerchantId, merchant.getLocalCurrency());
-    	  model.put("selectedCardProgramList", selectedCurrencyList.getCardProgramRequests());
+    	  programManagerResponse = isoService.findIsoNameByCurrencyAndId(getMerchantId, merchant.getLocalCurrency());
     	  model.put("selectedEntityList", selectedCurrencyList.getIsoRequests());
-    	  model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
-    	  model.put("EntityList", programManagerResponse.getResponseList());
       }
+      model.put("cardProgramList", selectedCurrencyList.getCardProgramRequests());
+      model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
+      model.put("EntityList", programManagerResponse.getResponseList());
       
       if (null == merchant) {
         merchant = new Merchant();

@@ -66,9 +66,9 @@
 		<property name="javaMailProperties">
 			<props>
 				<prop key="mail.smtp.auth">true</prop>
-				<prop key="mail.smtp.starttls.enable">false</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
 				<prop key="mail.smtp.quitwait">true</prop>
-				<prop key="mail.smtp.ssl.trust">${mail.smtp.host}</prop>
+				<prop key="mail.smtp.ssl.trust">true</prop>
 			</props>
 		</property>
 	</bean>

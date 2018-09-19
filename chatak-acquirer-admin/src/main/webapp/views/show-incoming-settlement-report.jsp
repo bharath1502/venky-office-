@@ -115,7 +115,12 @@
 													<label><spring:message
 															code="home.label.grossamount" /><span
 														class="required-field">*</span></label>
-													<form:input path="totalAmount" cssClass="form-control"
+													<fmt:formatNumber type="number"
+															value="${settlementDataRequest.totalAmount}"
+															pattern="<%=Constants.DOUBLE_AMOUNT_FORMAT %>"
+															var="totalAmount" />
+													<input name="totalAmount" Class="form-control"
+													    value="${totalAmount}"
 														id="totalAmount" maxlength="50" readonly="true"
 														onblur="clientValidation('companyName','company_name','pgmmgrcompanynameerrormsg')"
 														onclick="clearErrorMsg('pgmmgrcompanynameerrormsg');" />
@@ -219,8 +224,8 @@
 											<tr>
 												<td>${settlementEntity.value.batchid}</td>
 												<td>${settlementEntity.value.merchantId} </td>
-												<td>${settlementEntity.value.acqSaleAmount}</td>
-												<td>${settlementEntity.value.issSaleAmount}</td>
+												<td><fmt:formatNumber value="${settlementEntity.value.acqSaleAmount/100.0}"/></td>
+												<td><fmt:formatNumber value="${settlementEntity.value.issSaleAmount/100.0}"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>
@@ -275,7 +280,7 @@
 												<td>${acquirerUnmatchTxn.merchantId}</td>
 												<td>${acquirerUnmatchTxn.issuerTxnID}</td>
 												<td>${acquirerUnmatchTxn.pgTransactionId}</td>
-												<td>${acquirerUnmatchTxn.issSaleAmount}</td>
+												<td><fmt:formatNumber value="${acquirerUnmatchTxn.issSaleAmount/100.0}"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>
@@ -319,7 +324,7 @@
 												<td>${issuanceUnmatchTxn.issuerTxnRefNum}</td>
 												<td>${issuanceUnmatchTxn.transactionId}</td>
 												<td>${issuanceUnmatchTxn.deviceLocalTxnTime}</td>
-												<td>${issuanceUnmatchTxn.txnAmount}</td>
+												<td><fmt:formatNumber value="${issuanceUnmatchTxn.txnAmount/100.0}"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>
@@ -349,8 +354,6 @@
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/sorting.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
-	<script src="../js/tablesorter.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/bank.js"></script>
 	<script src="../js/validation.js"></script>

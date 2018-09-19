@@ -14,11 +14,11 @@ import com.chatak.pg.acq.dao.model.PGBatch;
  *
  */
 public interface BatchDao {
-	
-	public PGBatch findByProgramManagerId(Long programManagerId);
-	
+		
 	public PGBatch getBatchIdByProgramManagerId(Long programManagerId);
 	
 	public PGBatch save(PGBatch batch);
+	
+	public PGBatch findByProgramManagerIdAndStatus(Long programManagerId, String status);
 	
 }

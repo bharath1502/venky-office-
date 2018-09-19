@@ -3,7 +3,7 @@
  */
 package com.chatak.pg.model;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @Author: Girmiti Software

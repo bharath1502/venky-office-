@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -35,8 +36,6 @@ import com.chatak.pg.user.bean.IsoResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 import com.chatak.pg.util.Properties;
 @Service("isoService")
 @Transactional
@@ -52,24 +51,24 @@ public class IsoServiceImpl implements IsoService{
 	
 	@Override
 	public CardProgramResponse fetchCardProgramByPm(Long id) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: fetchCardProgramByPm");
 		CardProgramResponse response = new CardProgramResponse();
 		try{
 			response = isoServiceDao.fetchCardProgramByPm(id);
 			response.setErrorCode(PGConstants.SUCCESS);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);			
 		}catch(Exception e){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: IsoServiceImpl :: fetchCardProgramByPm : " + e.getMessage(), e);
 			response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: fetchCardProgramByPm");
 		return response;
 	}
 
 	@Override
 	public Response findISONameByAccountCurrency(String currencyId) throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: findISONameByAccountCurrency");
 		IsoResponse isoResponse = isoServiceDao.getISONameByAccountCurrency(currencyId);
 		Response response = new Response();
 		if (isoResponse != null) {
@@ -89,31 +88,31 @@ public class IsoServiceImpl implements IsoService{
 			response.setErrorCode(ActionCode.ERROR_CODE_99);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: findISONameByAccountCurrency");
 		return response;
 	}
 
 	@Override
 	public CardProgramResponse fetchCardProgramByIso(Long id,String currencyId) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: fetchCardProgramByIso");
 		CardProgramResponse response = new CardProgramResponse();
 		try{
 			response = isoServiceDao.fetchCardProgramByIso(id,currencyId);
 			response.setErrorCode(PGConstants.SUCCESS);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);			
 		}catch(Exception e){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: IsoServiceImpl :: fetchCardProgramByIso : " + e.getMessage(), e);
 			response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: fetchCardProgramByIso");
 		return response;
 	}
 	
 	@Override
 	@Transactional(rollbackFor=ChatakAdminException.class)
 	public com.chatak.pg.user.bean.Response createIso(IsoRequest isoRequest)throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: createIso");
 		CardProgramResponse response = new CardProgramResponse();
 		String accountNumber = Properties.getProperty("iso.account.series");
 		try{
@@ -146,15 +145,15 @@ public class IsoServiceImpl implements IsoService{
 			createIsoAccount(isoRequest, iso, accountNumber);
 			response.setErrorCode(PGConstants.SUCCESS);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
-			LogHelper.logExit(logger, LoggerMessage.getCallerName());
+			logger.info("Exiting :: IsoServiceImpl :: createIso");
 			return response;
 		}catch(ChatakAdminException ex){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), ex, Constants.CHATAK_ADMIN_EXCEPTION);
+		  logger.error("Error :: IsoServiceImpl :: createIso : ChatakAdminException : " + ex.getMessage(), ex);
 			response.setErrorCode(ex.getErrorCode());
 			response.setErrorMessage(ex.getErrorMessage());
 			throw new ChatakAdminException(ex.getErrorCode(),ex.getErrorMessage());
 		}catch(Exception e){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: IsoServiceImpl :: createIso : " + e.getMessage(), e);
 			response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 			throw new ChatakAdminException(Constants.ISO_CREATE_ERROR,messageSource.getMessage(Constants.ISO_CREATE_ERROR, null,LocaleContextHolder.getLocale()));
@@ -164,44 +163,42 @@ public class IsoServiceImpl implements IsoService{
 	@Override
 	public IsoResponse searchIso(IsoRequest isoRequest)
 			throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: searchIso");
 		IsoResponse isoResponse = new IsoResponse();
 		try {
 			isoResponse = isoServiceDao.searchIso(isoRequest);
 			isoResponse.setErrorCode(PGConstants.SUCCESS);
 			isoResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e,
-					Constants.EXCEPTION);
+		    logger.error("Error :: IsoServiceImpl :: searchIso : " + e.getMessage(), e);
 			isoResponse.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			isoResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 			throw new ChatakAdminException(Constants.ISO_CREATE_ERROR,
 					messageSource.getMessage(Constants.ISO_CREATE_ERROR, null,
 							LocaleContextHolder.getLocale()));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: searchIso");
 		return isoResponse;
 	}
 	
 	@Override
 	public IsoResponse getIsoById(IsoRequest isoRequest)
 			throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: getIsoById");
 		IsoResponse isoResponse = new IsoResponse();
 		try {
 			isoResponse = isoServiceDao.getIsoById(isoRequest);
 			isoResponse.setErrorCode(PGConstants.SUCCESS);
 			isoResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
 		} catch (Exception e) {
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e,
-					Constants.EXCEPTION);
+		    logger.error("Error :: IsoServiceImpl :: getIsoById : " + e.getMessage(), e);
 			isoResponse.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			isoResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 			throw new ChatakAdminException(Constants.ISO_CREATE_ERROR,
 					messageSource.getMessage(Constants.ISO_CREATE_ERROR, null,
 							LocaleContextHolder.getLocale()));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: getIsoById");
 		return isoResponse;
 	}
 
@@ -209,7 +206,7 @@ public class IsoServiceImpl implements IsoService{
 	@Transactional(rollbackFor=ChatakAdminException.class)
 	public IsoResponse updateIso(IsoRequest isoRequest)
 			throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: updateIso");
 		IsoResponse response = new IsoResponse();
 		try{
 			List<Iso> isoModel = isoServiceDao.findByIsoId(isoRequest.getId());
@@ -248,27 +245,27 @@ public class IsoServiceImpl implements IsoService{
 			response.setErrorCode(PGConstants.SUCCESS);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
 		}catch(ChatakAdminException ex){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), ex, Constants.CHATAK_ADMIN_EXCEPTION);
+		    logger.error("Error :: IsoServiceImpl :: updateIso : ChatakAdminException : " + ex.getMessage(), ex);
 			response.setErrorCode(ex.getErrorCode());
 			response.setErrorMessage(ex.getErrorMessage());
 			throw new ChatakAdminException(ex.getErrorCode(),ex.getErrorMessage());
 		}catch(DataAccessException ex){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), ex, Constants.DATA_ACCESS_EXCEPTION);
+		    logger.error("Error :: IsoServiceImpl :: updateIso : DataAccessException : " + ex.getMessage(), ex);
 			response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 			throw new ChatakAdminException(Constants.ISO_CREATE_ERROR,messageSource.getMessage(Constants.ISO_CREATE_ERROR, null,LocaleContextHolder.getLocale()));
 		}catch(Exception e){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: IsoServiceImpl :: updateIso : " + e.getMessage(), e);
 			response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 			throw new ChatakAdminException(Constants.ISO_CREATE_ERROR,messageSource.getMessage(Constants.ISO_CREATE_ERROR, null,LocaleContextHolder.getLocale()));
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: updateIso");
 		return response;
 	}
 	
 	public IsoResponse fetchCardProgramByIso(Long isoId)throws ChatakAdminException{
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: fetchCardProgramByIso");
 		IsoResponse response = new IsoResponse();
 		try{
 			List<CardProgramRequest> cardProgramList = isoServiceDao.fetchCardProgramByIso(isoId);
@@ -277,10 +274,10 @@ public class IsoServiceImpl implements IsoService{
 			}
 			response.setErrorCode(PGConstants.SUCCESS);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
-			LogHelper.logExit(logger, LoggerMessage.getCallerName());
+			logger.info("Exiting :: IsoServiceImpl :: fetchCardProgramByIso");
 			return response;
 		}catch(Exception e){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: IsoServiceImpl :: fetchCardProgramByIso : " + e.getMessage(), e);
 			response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 			throw new ChatakAdminException();
@@ -295,35 +292,36 @@ public class IsoServiceImpl implements IsoService{
 		}
 		iso.setPgIsoPmMap(isoPmMap);
 		Set<IsoCardProgramMap> isoCardProgramMap = new HashSet<>();
-		for(Long id : isoRequest.getCardProgramIds()){
-			IsoCardProgramMap pgIsoCardProgramMap = new IsoCardProgramMap();
-			pgIsoCardProgramMap.setCardProgramId(id);
-			isoCardProgramMap.add(pgIsoCardProgramMap);
-		}
+		for(Map.Entry<Long, Long> id : isoRequest.getCardProgramAndEntityId().entrySet()){
+		  IsoCardProgramMap pgIsoCardProgramMap = new IsoCardProgramMap();
+          pgIsoCardProgramMap.setCardProgramId(id.getKey());
+          pgIsoCardProgramMap.setAmbiguityPmId(id.getValue());
+          isoCardProgramMap.add(pgIsoCardProgramMap);
+      }
 		iso.setPgIsoCardProgramMap(isoCardProgramMap);
 	}
 
 	@Override
 	public IsoResponse fetchProgramManagerByIsoCurrency(Long isoId,
 			String currency) throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: fetchProgramManagerByIsoCurrency");
 		IsoResponse isoResponse = new IsoResponse();
 		try{
 			isoResponse = isoServiceDao.fetchProgramManagerByIsoCurrency(isoId, currency);	
 			isoResponse.setErrorCode(PGConstants.SUCCESS);
 			isoResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
 		}catch(Exception e){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: IsoServiceImpl :: fetchProgramManagerByIsoCurrency : " + e.getMessage(), e);
 			isoResponse.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			isoResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());		
+		logger.info("Exiting :: IsoServiceImpl :: fetchProgramManagerByIsoCurrency");		
 		return isoResponse;
 	}
 
 	@Override
 	public IsoResponse getAllIso(IsoRequest isoRequest) throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: getAllIso");
 	    try {
 	    	List<IsoRequest> isoRequests =
 	    		  isoServiceDao.getAllIso(isoRequest);
@@ -333,10 +331,10 @@ public class IsoServiceImpl implements IsoService{
 	      }
 	      isoResponse.setErrorCode(StatusConstants.STATUS_CODE_SUCCESS);
 	      isoResponse.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
-	      LogHelper.logExit(logger, LoggerMessage.getCallerName());
+	      logger.info("Exiting :: IsoServiceImpl :: getAllIso");
 	      return isoResponse;
 	    } catch (Exception e) {
-	    	LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+	    	logger.error("Error :: IsoServiceImpl :: getAllIso : " + e.getMessage(), e);
 	      throw new ChatakAdminException(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
 	          LocaleContextHolder.getLocale()), e);
 	    }
@@ -345,18 +343,18 @@ public class IsoServiceImpl implements IsoService{
 
 	@Override
 	public List<Long> findByPmId(Long pmId) throws ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: findByPmId");
 		List<Long> isoIds = new ArrayList<>();
 		List<IsoPmMap> isoPmMaps = isoServiceDao.findByPmId(pmId);
 		for(IsoPmMap isoPmMap : isoPmMaps){
 			isoIds.add(isoPmMap.getIsoId());
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: findByPmId");
 		return isoIds;
 	}
 	
 	private void createIsoAccount(IsoRequest isoRequest,Iso iso,String accountNumber){
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: createIsoAccount");
 		List<IsoAccount> isoAccountList = new ArrayList<>();
 		Long accountNum = isoServiceDao.getAccountNumberSeries(accountNumber);
 		IsoAccount isoSystemAccount = new IsoAccount();
@@ -383,11 +381,12 @@ public class IsoServiceImpl implements IsoService{
 		for(IsoAccount isoAccount : isoAccountList){
 			isoServiceDao.saveIsoAccount(isoAccount);			
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: createIsoAccount");
 	}
 
 	@Override
 	public Response findIsoNameByCurrencyAndId(Long id, String currencyId) {
+	    logger.info("Entering :: IsoServiceImpl :: findIsoNameByCurrencyAndId");
 		MerchantResponse merchantResponse = isoServiceDao.getIsoNameByCurrencyAndId(id,currencyId);
 		Response response = new Response();
 		if (merchantResponse != null && !StringUtil.isNull(merchantResponse.getIsoRequests())) {
@@ -407,38 +406,21 @@ public class IsoServiceImpl implements IsoService{
 			response.setErrorCode(ActionCode.ERROR_CODE_99);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: findIsoNameByCurrencyAndId");
 		return response;
 	}
 	
 	@Override
 	public IsoResponse changeStatus(IsoRequest isoRequest) throws  ChatakAdminException {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: changeStatus");
 		IsoResponse response = new IsoResponse();
-		try{
-		List<Iso> IsoList = isoServiceDao.findByIsoId(isoRequest.getId());
-		Iso iso = new Iso();
-		iso.setId(IsoList.get(0).getId());
-		iso.setIsoName(IsoList.get(0).getIsoName().trim());
-		iso.setBusinessEntityName(IsoList.get(0).getBusinessEntityName());
-		iso.setContactPerson(IsoList.get(0).getContactPerson());
-		iso.setPhoneNumber(IsoList.get(0).getPhoneNumber());
-		iso.setExtension(IsoList.get(0).getExtension());
-		iso.setStatus(isoRequest.getProgramManagerRequest().getStatus());
-		iso.setEmail(IsoList.get(0).getEmail());
-		iso.setIsoLogo(IsoList.get(0).getIsoLogo());
-		iso.setReason(isoRequest.getReason());
-		iso.setUpdatedBy(isoRequest.getUpdatedBy());
-		iso.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-		iso.setAddress(IsoList.get(0).getAddress());
-		iso.setCity(IsoList.get(0).getCity());
-		iso.setCountry(IsoList.get(0).getCountry());
-		iso.setState(IsoList.get(0).getState());
-		iso.setZipCode(IsoList.get(0).getZipCode());
-		 isoServiceDao.updateIso(iso);
+		try {
+		  isoServiceDao.updateISOStatusById(isoRequest.getId(), isoRequest.getReason(), isoRequest.getUpdatedBy(), 
+		      new Timestamp(System.currentTimeMillis()), isoRequest.getProgramManagerRequest().getStatus());
+		  
 		response.setErrorCode(StatusConstants.STATUS_CODE_SUCCESS);
 		response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);
-			LogHelper.logExit(logger, LoggerMessage.getCallerName());
+			logger.info("Exiting :: IsoServiceImpl :: changeStatus");
 		} catch (Exception e) {
 			throw new ChatakAdminException(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
 			          LocaleContextHolder.getLocale()), e);
@@ -449,18 +431,18 @@ public class IsoServiceImpl implements IsoService{
 
 	@Override
 	public CardProgramResponse fetchIsoCardProgramByMerchantId(Long merchantId) {
-		LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+		logger.info("Entering :: IsoServiceImpl :: fetchIsoCardProgramByMerchantId");
 		CardProgramResponse response = new CardProgramResponse();
 		try{
 			response = isoServiceDao.fetchIsoCardProgramByMerchantId(merchantId);
 			response.setErrorCode(PGConstants.SUCCESS);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_SUCCESS);			
 		}catch(Exception e){
-			LogHelper.logError(logger, LoggerMessage.getCallerName(), e, Constants.EXCEPTION);
+			logger.error("Error :: IsoServiceImpl :: fetchIsoCardProgramByMerchantId : " + e.getMessage(), e);
 			response.setErrorCode(StatusConstants.STATUS_CODE_FAILED);
 			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
 		}
-		LogHelper.logExit(logger, LoggerMessage.getCallerName());
+		logger.info("Exiting :: IsoServiceImpl :: fetchIsoCardProgramByMerchantId");
 		return response;
 	}
 	
@@ -470,8 +452,8 @@ public class IsoServiceImpl implements IsoService{
 	}
 	
 	@Override
-	public List<IsoRequest> findIsoByProgramaManagerId(Long Pmid) {
-		return isoServiceDao.findIsoByProgramaManagerId(Pmid);
+	public List<IsoRequest> findIsoByProgramaManagerId(Long pmid) {
+		return isoServiceDao.findIsoByProgramaManagerId(pmid);
 		
 	}
 	

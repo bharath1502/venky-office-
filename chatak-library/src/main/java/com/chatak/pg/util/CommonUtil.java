@@ -2,6 +2,7 @@ package com.chatak.pg.util;
 
 import static com.chatak.pg.util.Constants.HUNDRED;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -9,17 +10,26 @@ import java.math.BigInteger;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
-import org.springframework.beans.BeanUtils;
-
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.springframework.beans.BeanUtils;
 
 @SuppressWarnings("rawtypes")
 public final class CommonUtil {
   
   private static Logger logger = Logger.getLogger(CommonUtil.class);
+  
+  private static final String CARD_EXP_DATE = "expDate";
+  private static final String CARD_NUMBER = "cardNumber";
+  private static final String TRACK2 = "track2";
 
   public static boolean isNullAndEmpty(String data) {
     return (data == null || "".equals(data.trim()));
@@ -373,10 +383,10 @@ public final class CommonUtil {
     return terminalId;
   }
   
-  public static Long getIIN(String cardNumber){
+  public static String getIIN(String cardNumber){
     if(StringUtils.isValidString(cardNumber))
-      return Long.parseLong(cardNumber.substring(0, Integer.parseInt("5")));
-    return 0l;
+      return cardNumber.substring(0, Integer.parseInt("5"));
+    return "";
   }
   
   public static String getPartnerIINExt(String cardNumber) {
@@ -390,6 +400,63 @@ public final class CommonUtil {
     if(StringUtils.isValidString(cardNumber))
       return cardNumber.substring(Integer.parseInt("8"), Integer.parseInt("11"));
     return "";
+  }
+  
+  public static String maskJsonString(String json) {
+      Map<String, Object> beforeMaskMap = new HashMap<String, Object>();
+      ObjectMapper mapper = new ObjectMapper();
+      String maskedJsonString = null;
+      try {
+        // convert JSON string to Map
+        beforeMaskMap = mapper.readValue(json, new TypeReference<Map<String, Object>>(){});
+        
+        maskJsonStringValues(beforeMaskMap);
+        
+        //convert Map to JSON string
+        maskedJsonString = mapper.writeValueAsString(beforeMaskMap);
+      } catch (JsonParseException e) {
+        logger.error("Error :: CommonUtil :: maskJsonString :: JsonParseException : ", e);
+      } catch (JsonMappingException e) {
+        logger.error("Error :: CommonUtil :: maskJsonString :: JsonMappingException : ", e);
+      } catch (IOException e) {
+        logger.error("Error :: CommonUtil :: maskJsonString :: IOException : ", e);
+      } catch (Exception e) {
+        logger.error("Error :: CommonUtil :: maskJsonString : ", e);
+      }
+      return maskedJsonString;
+    }
+  
+  private static void maskJsonStringValues(Map<String, Object> beforeMaskMap) {
+    if(beforeMaskMap.containsKey("cardNum")) {
+      beforeMaskMap.put("cardNum", "***");
+    }
+    if(beforeMaskMap.containsKey("pin")) {
+      beforeMaskMap.put("pin", "***");
+    }
+    if(beforeMaskMap.containsKey(CARD_EXP_DATE)) {
+      beforeMaskMap.put(CARD_EXP_DATE, "***");
+    }
+    if(beforeMaskMap.containsKey(TRACK2)) {
+      beforeMaskMap.put(TRACK2, "***");
+    }
+    if(beforeMaskMap.containsKey("cvv")) {
+      beforeMaskMap.put("cvv", StringUtils.lastFourDigits((String)beforeMaskMap.get("pan")));
+    }
+    if(beforeMaskMap.containsKey("cardData")) {
+      HashMap<String, Object> nestedMaskMap = (HashMap<String, Object>)beforeMaskMap.get("cardData");
+      if(nestedMaskMap.containsKey(CARD_EXP_DATE)) {
+        nestedMaskMap.put(CARD_EXP_DATE, "***");
+      }
+      if(nestedMaskMap.containsKey(CARD_NUMBER)) {
+        nestedMaskMap.put(CARD_NUMBER, StringUtils.lastFourDigits((String)beforeMaskMap.get(CARD_NUMBER)));
+      }
+      if(nestedMaskMap.containsKey("cvv")) {
+        nestedMaskMap.put("cvv", "***");
+      }
+      if(nestedMaskMap.containsKey(TRACK2)) {
+        nestedMaskMap.put(TRACK2, "***");
+      }
+    }
   }
   
 }

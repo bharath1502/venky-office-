@@ -3,6 +3,7 @@
  */
 package com.chatak.pg.acq.dao.impl;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -563,7 +564,7 @@ private void statusMsgValidation(List<ReportsDTO> reportList, ReportsDTO transac
           PGConstants.DD_MM_YYYY);
     }
     JPAQuery query = new JPAQuery(entityManager);
-    List<Long> list = query.from(QPGTransaction.pGTransaction)
+    List<BigInteger> list = query.from(QPGTransaction.pGTransaction)
         .where(isMerchantId(getTransactionsListRequest.getMerchant_code()),
             isTxnId(getTransactionsListRequest.getTransactionId()),
             isProcessTxnId(getTransactionsListRequest.getProcessCode()),

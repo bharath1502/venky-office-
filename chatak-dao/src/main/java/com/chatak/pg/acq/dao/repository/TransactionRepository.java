@@ -1,5 +1,6 @@
 package com.chatak.pg.acq.dao.repository;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
-import com.chatak.pg.acq.dao.model.PGAccountTransactions;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 
 /**
@@ -18,10 +18,10 @@ import com.chatak.pg.acq.dao.model.PGTransaction;
  * @version 1.0
  */
 public interface TransactionRepository extends
-                                      JpaRepository<PGTransaction, Long>,
+                                      JpaRepository<PGTransaction, BigInteger>,
                                       QueryDslPredicateExecutor<PGTransaction> {
 
-  public List<PGTransaction> findById(Long pGTransactionId);
+  public PGTransaction findById(BigInteger pGTransactionId);
 
   public List<PGTransaction> findByTransactionType(String transactionType);
 
@@ -145,7 +145,7 @@ public interface TransactionRepository extends
   @Query("select t from PGTransaction t where t.merchantId = :merchantId and t.merchantSettlementStatus='Executed'")
   public List<PGTransaction> getExecutedTransactionsOnMerchantCode(@Param("merchantId") String merchantId);
   
-  public List<PGTransaction> findByTransactionId(String pGTransactionId);
+  public PGTransaction findByTransactionId(String pGTransactionId);
   
   @Query("select sum(tin.txnTotalAmount) from PGTransaction tin where tin.refTransactionId = :transactionId and tin.status = 0 and tin.transactionType ='refund' ")
   public Long getRefundedAmountByPGTxnId(@Param("transactionId") String transactionId);

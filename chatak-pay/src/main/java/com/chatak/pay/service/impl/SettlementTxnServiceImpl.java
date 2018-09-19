@@ -2,7 +2,8 @@ package com.chatak.pay.service.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +17,11 @@ import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.SettlementTxnResponse;
 import com.chatak.pg.util.Constants;
-import com.chatak.pg.util.LogHelper;
-import com.chatak.pg.util.LoggerMessage;
 
 @Service
 public class SettlementTxnServiceImpl implements SettlementTxnService {
 
-	private Logger logger = Logger.getLogger(SettlementTxnServiceImpl.class);
+	private static Logger logger = LogManager.getLogger(SettlementTxnServiceImpl.class);
 
 	@Autowired
 	private IssSettlementDataDao issSettlementDataDao;
@@ -35,16 +34,14 @@ public class SettlementTxnServiceImpl implements SettlementTxnService {
  
 	@Override
 	public SettlementTxnResponse saveIssSettlementData(PGIssSettlementData issSettlementData) {
-	  LogHelper.logEntry(logger, LoggerMessage.getCallerName());
+	  logger.info("Entering :: SettlementTxnServiceImpl :: saveIssSettlementData");
       SettlementTxnResponse txnResponse = new SettlementTxnResponse();
       try {
           List<ProgramManager> list = programManagerDao.findByIssuancePmid(issSettlementData.getProgramManagerId());
           if(StringUtil.isListNotNullNEmpty(list)) {
-            LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Found onboarded PM");
             
               issSettlementData.setAcqPmId(list.get(0).getId());
               
-              LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Saved PGIssSettlementData successfully");
               ProgramManagerAccount pmAccount = programManagerDao.findByProgramManagerIdAndAccountType(issSettlementData.getAcqPmId(),
                       Constants.ACCOUNT_NAME_SYSTEM);
               pmAccount.setAvailableBalance(pmAccount.getAvailableBalance() + issSettlementData.getTotalAmount().longValue());
@@ -52,16 +49,15 @@ public class SettlementTxnServiceImpl implements SettlementTxnService {
               programManagerDao.saveOrUpdateProgramManagerAccount(pmAccount);
               
           } else {
-            LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Received funds from a PM not found in issuance");
+            logger.info("Received funds from a PM not found in issuance");
           }
           issSettlementDataDao.saveIssSettlementData(issSettlementData);
-          
-          LogHelper.logInfo(logger, LoggerMessage.getCallerName(), "Saved ProgramManagerAccount successfully");
           txnResponse.setErrorCode(Constants.SUCCESS_CODE);
       } catch (Exception e) {
-          LogHelper.logError(logger, LoggerMessage.getCallerName(), e, e.getMessage());
+          logger.error("Error :: SettlementTxnServiceImpl :: saveIssSettlementData : " + e.getMessage(), e);
           txnResponse.setErrorCode(Constants.ERROR_CODE);
       }
+      logger.info("Exiting :: SettlementTxnServiceImpl :: saveIssSettlementData");
       return txnResponse;
 	}
 }

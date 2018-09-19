@@ -36,7 +36,7 @@
 	}
 	function setCardProgramId(cpId,cpName,entityId){
 		cardProgramIdList.push(cpId+'@'+entityId);
-		selectedCpId.push(cpId);
+		selectedCpId.push(parseInt(cpId));
 		cardProgramArr.push(cpName);
 	}
 	</script>
@@ -1024,7 +1024,6 @@
 						document.getElementById("associatedID").innerHTML = "Associated with ISO Name";
 						document.getElementById("userType").innerHTML = "ISO Name";
 					}
-					fetchCardProgramByMerchantId($('#getMerchantId').val());
 					validateMcc();
 					validateVirtualTerminal();
 					validateOnlineOptions();
@@ -1379,7 +1378,7 @@
 			if($('#' + selectedId).is(":checked")){
 				cardProgramIdList.push(cardProgramId+'@'+entityId);
 				cardProgramArr.push(cardProgramName);
-				selectedCpId.push(cardProgramId);
+				selectedCpId.push(parseInt(cardProgramId));
 			}else if(!($('#' + selectedId).is(":checked"))){
 				for(var i=0; i < cardProgramIdList.length; i++){
 					if(cardProgramIdList[i] != cardProgramId+'@'+entityId){
@@ -1390,7 +1389,7 @@
 				}
 				cardProgramIdList = tempCardProgramIds;	
 				cardProgramArr = tempCardProgramArr;
-					var index = selectedCpId.indexOf(cardProgramId);
+					var index = selectedCpId.indexOf(parseInt(cardProgramId));
 					if (index > -1) {
 						selectedCpId.splice(index, 1);
 					}
@@ -1418,7 +1417,7 @@
 			}
 			cardProgramIdList = tempCardProgramIds;
 			cardProgramArr = tempCardProgramName;
-			var index = selectedCpId.indexOf(cardProgramId);
+			var index = selectedCpId.indexOf(parseInt(cardProgramId));
 			if (index > -1) {
 				selectedCpId.splice(index, 1);
 			}

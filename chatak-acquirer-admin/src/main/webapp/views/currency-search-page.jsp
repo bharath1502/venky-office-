@@ -67,8 +67,8 @@
 								<!--Success and Failure Message Start-->
 								<div class="col-xs-12">
 									<div class="descriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-										<span class="red-error">&nbsp;${error }</span> <span
-											class="green-error">&nbsp;${sucess }</span>
+										<span class="red-error">&nbsp;${error }</span> 
+										<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 									</div>
 								</div>
 								<form:form action="edit-currency" name="editCurrencyForm"
@@ -114,9 +114,9 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="currency-search-page.label.currencyname" /></label>
 													<form:input cssClass="form-control" path="currencyName"
-														id="currencyName" />
+														id="currencyName" onblur="clientValidation('currencyName','firstlast_name_notmend','currencyName_Error');" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="currencyName_Error" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -135,6 +135,16 @@
 														maxlength="3" path="currencyCodeNumeric" id="currencyCodeNumeric" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="currencyCodeNumericEr" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+															code="currency-create-page.label.currencyexponent" /></label>
+													<form:input cssClass="form-control" onkeypress="return isNumberKey(event);" maxlength="1" path="currencyExponent"
+														id="currencyExponent" onblur="clientValidation('currencyExponent','amount_False','currencyExponentEr');"/>
+													<div class="discriptionErrorMsg" data-toggle="tooltip"
+														data-placement="top" title="">
+														<span id="currencyExponentEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<%-- <fieldset class="col-sm-3">
@@ -224,6 +234,8 @@
 											code="currency-search-page.label.currencyCodeAlpha" /></th>
 									<th style="width: 120px;"><spring:message
 											code="currency-search-page.label.currencycodenumeric" /></th>
+											<th style="width: 120px;"><spring:message
+											code="currency-create-page.label.currencyexponent" /></th>
 									<th style="width: 100px;"><spring:message
 											code="common.label.status" /></th>
 									<th style="width: 70px;"
@@ -239,6 +251,7 @@
 												<td><div class="feeDescDiv tbl-text-align-left">${currencyData.currencyName}</div></td>
 												<td><div class="feeDescDiv tbl-text-align-right">${currencyData.currencyCodeAlpha}</div></td>
 												<td><div class="tbl-text-align-right">${currencyData.currencyCodeNumeric}</div></td>
+												<td><div class="tbl-text-align-right">${currencyData.currencyExponent}</div></td>
 												<td class="tbl-text-align-left">${currencyData.status}</td>
 												<td style="white-space: nowrap;">
 												<c:if test="${fn:contains(existingFeatures,currencyView)}">
@@ -390,13 +403,11 @@
 	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	
 	<script src="../js/messages.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/currency.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/validation.js"></script>
-	<script src="../js/tablesorter.widgets.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {

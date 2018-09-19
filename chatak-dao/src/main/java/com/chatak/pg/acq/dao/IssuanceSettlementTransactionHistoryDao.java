@@ -3,6 +3,10 @@
  */
 package com.chatak.pg.acq.dao;
 
+import java.sql.Timestamp;
+
+import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntityHistory;
+
 /**
  * @Author: Girmiti Software
  * @Date: Jun 27, 2018
@@ -14,4 +18,6 @@ package com.chatak.pg.acq.dao;
 public interface IssuanceSettlementTransactionHistoryDao {
 
 	public void insertDataFromIssuanceSettlementTransaction();
+	
+	public PGSettlementEntityHistory findByBatchFileDateandAcqpmid(Long pmId, Timestamp date);
 }

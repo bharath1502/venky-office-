@@ -7,7 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.session.SessionInformation;
 
 import com.chatak.pg.util.Constants;
@@ -20,7 +21,7 @@ public class DateUtils {
     super();
   }
 
-  private static Logger logger = Logger.getLogger(DateUtils.class);
+  private static Logger logger = LogManager.getLogger(DateUtils.class);
 
   private static final int TWO_DIGITS = Constants.TWO;
   

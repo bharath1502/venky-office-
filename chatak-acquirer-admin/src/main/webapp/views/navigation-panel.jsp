@@ -75,11 +75,11 @@
 <spring:message code="admin.services.switch.view.feature.id" var="switchView"></spring:message>
 <spring:message code="admin.services.switch.edit.feature.id" var="switchEdit"></spring:message>
 
-<spring:message code="admin.services.ONUSBIN.feature.id" var="ONUSBIN"></spring:message>
+<%-- <spring:message code="admin.services.ONUSBIN.feature.id" var="ONUSBIN"></spring:message>
 <spring:message code="admin.services.ONUSBIN.create.feature.id" var="ONUSBINCreate"></spring:message>
 <spring:message code="admin.services.ONUSBIN.edit.feature.id" var="ONUSBINEdit"></spring:message>
 <spring:message code="admin.services.ONUSBIN.view.feature.id" var="ONUSBINView"></spring:message>
-<spring:message code="admin.services.ONUSBIN.delete.feature.id" var="ONUSBINDelete"></spring:message>
+<spring:message code="admin.services.ONUSBIN.delete.feature.id" var="ONUSBINDelete"></spring:message> --%>
 
 <spring:message code="admin.services.BlackListedCard.feature.id" var="BlackListedCard"></spring:message>
 <spring:message code="admin.services.BlackListedCard.create.feature.id" var="BlackListedCardCreate"></spring:message>
@@ -87,22 +87,22 @@
 <%-- <spring:message code="admin.services.BlackListedCard.view.feature.id" var="BlackListedCardView"></spring:message>
  --%>
 
-<spring:message code="admin.services.paymentScheme.feature.id" var="paymentScheme"></spring:message>
+<%-- <spring:message code="admin.services.paymentScheme.feature.id" var="paymentScheme"></spring:message>
 <spring:message code="admin.services.paymentScheme.create.feature.id" var="paymentSchemeCreate"></spring:message>
 <spring:message code="admin.services.paymentScheme.edit.feature.id" var="paymentSchemeEdit"></spring:message>
 <spring:message code="admin.services.paymentScheme.view.feature.id" var="paymentSchemeView"></spring:message>
-
+ --%>
 <%-- <spring:message code="admin.services.merchantCategoryCode.feature.id" var="merchantCategoryCode"></spring:message>
 <spring:message code="admin.services.merchantCategoryCode.create.feature.id" var="merchantCategoryCodeCreate"></spring:message>
 <spring:message code="admin.services.merchantCategoryCode.view.feature.id" var="merchantCategoryCodeView"></spring:message>
 <spring:message code="admin.services.merchantCategoryCode.edit.feature.id" var="merchantCategoryCodeEdit"></spring:message>
 <spring:message code="admin.services.merchantCategoryCode.delete.feature.id" var="merchantCategoryCodeDelete"></spring:message> --%>
 
-<spring:message code="admin.services.caPublicKeys.feature.id" var="caPublicKeys"></spring:message>
+<%-- <spring:message code="admin.services.caPublicKeys.feature.id" var="caPublicKeys"></spring:message>
 <spring:message code="admin.services.caPublicKeys.create.feature.id" var="caPublicKeysCreate"></spring:message>
 <spring:message code="admin.services.caPublicKeys.edit.feature.id" var="caPublicKeysEdit"></spring:message>
 <spring:message code="admin.services.caPublicKeys.view.feature.id" var="caPublicKeysView"></spring:message>
-<spring:message code="admin.services.caPublicKeys.delete.feature.id" var="caPublicKeysDelete"></spring:message>
+<spring:message code="admin.services.caPublicKeys.delete.feature.id" var="caPublicKeysDelete"></spring:message> --%>
 
 <spring:message code="admin.services.currency.feature.id" var="currency"></spring:message>
 <spring:message code="admin.services.currency.create.feature.id" var="currencyCreate"></spring:message>
@@ -311,21 +311,21 @@
 					<c:if test="${fn:contains(existingFeatures,switchInfo)}">
 						<li style="text-align:left;"><a href="switch-search"><spring:message code="header.label.switchinformation"/></a></li>
 					</c:if>
-					<c:if test="${fn:contains(existingFeatures,ONUSBIN)}">
+					<%-- <c:if test="${fn:contains(existingFeatures,ONUSBIN)}">
 						<li style="text-align:left;"><a href="bin-search-show"><spring:message code="bin.label.onus"/></a></li>
-					</c:if>
+					</c:if> --%>
 					<c:if test="${fn:contains(existingFeatures,BlackListedCard)}">
 						<li style="text-align:left;"><a href="black-listed-card-search"><spring:message code="header.label.blacklistedcard"/></a></li>
 					</c:if>
-					<c:if test="${fn:contains(existingFeatures,paymentScheme)}">
+					<%-- <c:if test="${fn:contains(existingFeatures,paymentScheme)}">
 						<li style="text-align:left;"><a href="payment-scheme-search-urlpage"><spring:message code="header.label.paymentscheme"/></a></li>
-					</c:if>
+					</c:if> --%>
 					<%-- <c:if test="${fn:contains(existingFeatures,merchantCategoryCode)}">
 						<li style="text-align:left;"><a href="merchant-category-code-search"><spring:message code="header.label.merchantcategorycode"/></a></li>
 					</c:if> --%>
-					<c:if test="${fn:contains(existingFeatures,caPublicKeys)}">
+					<%-- <c:if test="${fn:contains(existingFeatures,caPublicKeys)}">
 						<li style="text-align:left;"><a href="show-ca-public-keys-search-page"><spring:message code="header.label.capublickeys"/></a></li>
-					</c:if>
+					</c:if> --%>
 					<c:if test="${fn:contains(existingFeatures,currency)}">
 						<li style="text-align:left;"><a href="show-currency-search"><spring:message code="currency-search-page.label.currency"/></a></li>
 					</c:if>
@@ -438,11 +438,11 @@
 							href="showSystemOverviewReports"><spring:message
 									code="reports.label.overviewandbalancesheet" /></a></li>
 					</c:if>
-					<c:if test="${fn:contains(existingFeatures, pendingTransactions)}">
+					<%-- <c:if test="${fn:contains(existingFeatures, pendingTransactions)}">
 						<li style="text-align: left;"><a
 							href="showGlobalSysPendingTransReports"><spring:message
 									code="reports.label.pendingtransactions" /></a></li>
-					</c:if>
+					</c:if> --%>
 					<c:if test="${fn:contains(existingFeatures, transactionsReport)}">
 						<li style="text-align: left;"><a href="transactions-search"><spring:message
 									code="reports.label.transactionsreports" /></a></li>
@@ -553,6 +553,7 @@
 <script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
 <script src="../js/jquery.cookie.js"></script>
+<script src="../js/common-lib.js"></script>
 <script src="../js/messages.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js"></script> 
 <script>

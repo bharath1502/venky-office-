@@ -20,6 +20,7 @@
 							value="<spring:message code="common.label.cancel"/>">
 					</div>
 				</div>
+				<script src="../js/jquery.popupoverlay.js"></script>
 				<script>
 				$('#deletePopup').popup("hide");
 				$(document).ready(function() {

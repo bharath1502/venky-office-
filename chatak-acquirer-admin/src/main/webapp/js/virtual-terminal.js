@@ -180,9 +180,11 @@ function doAdd() {
 
 	var total = parseFloat(subTot) + parseFloat(tipAmt) + parseFloat(taxAmt)
 			+ parseFloat(shipAmp);
-
-	get('totalAmtDiv').value = parseFloat(total).toFixed(2);
-
+	if (parseFloat(total).toFixed(2) == 'NaN') {
+		get('totalAmtDiv').value = '';
+	} else {
+		get('totalAmtDiv').value = parseFloat(total).toFixed(2);
+	}
 }
 
 function doRefundAdd() {
@@ -190,8 +192,11 @@ function doRefundAdd() {
 	var subTot = get('subTotalDiv').value ? get('subTotalDiv').value : 0;
 	var feeAmp = get('feeAmountDiv').value ? get('feeAmountDiv').value : 0;
 	var total = parseFloat(subTot) + parseFloat(feeAmp);
-	get('totalAmtDiv').value = parseFloat(total).toFixed(2);
-
+	if (parseFloat(total).toFixed(2) == 'NaN') {
+		get('totalAmtDiv').value = '';
+	} else {
+		get('totalAmtDiv').value = parseFloat(total).toFixed(2);
+	}
 }
 
 function doAddAdjust() {
@@ -272,7 +277,7 @@ function validCardNumber(id,divId) {
 		setDiv(divId, webMessages.virtualTerminalCardNumber);
 		loadMsgTitleText();
 		return false;
-	} else if (!isDigit(val) || len < 16 || len > 19) {
+	} else if (!isDigit(val) || len != 19) {
 		setDiv(divId, webMessages.virtualTerminalNumericUpto19);
 		loadMsgTitleText();
 		return false;
@@ -322,8 +327,8 @@ function validCardHolderName() {
 		setDiv("cardHolderNameErrorDiv", webMessages.virtualTerminalCardHolderName);
 		loadMsgTitleText();
 		return false;
-	} else if (isDigit(val)) {
-		setDiv("cardHolderNameErrorDiv", webMessages.virtualTerminalAlphabetic);
+	} else if (!isCharacter(val)) {
+		setDiv("cardHolderNameErrorDiv", webMessages.alphaNumericsOnly);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -350,23 +355,27 @@ function validAmount(id,divId) {
 }
 
 function validStreet() {
-	var val =getVal("streetDiv");
+	var val = getVal("streetDiv");
+	var regex = /^[A-Za-z0-9,-._\/\s#]{1,60}$/;
 	console.log(val);
-	if(val===null){
+	if (val === null) {
 		setDiv("streetErrorDiv", webMessages.virtualTerminalStreet);
 		loadMsgTitleText();
 		return false;
 	}
 	if (isEmpty(val)) {
-	setDiv("streetErrorDiv", webMessages.virtualTerminalStreet);
-	loadMsgTitleText();
+		setDiv("streetErrorDiv", webMessages.virtualTerminalStreet);
+		loadMsgTitleText();
+		return false;
+	}else if (!regex.test(val)) {
+		setDiv("streetErrorDiv", webMessages.invalidStreet);
+		loadMsgTitleText();
 		return false;
 	} else {
-	setDiv("streetErrorDiv", "");
+		setDiv("streetErrorDiv", "");
 		return true;
 	}
 }
-
 function validZipcode() {
 	var val =getVal("zipcodeDiv");
 	var len = val.length;
@@ -402,7 +411,7 @@ function validCity() {
 		loadMsgTitleText();
 		return false;
 	} else if (regex.test(val) == false) {
-		setDiv("cityErrorDiv", webMessages.virtualTerminalValidData);
+		setDiv("cityErrorDiv", webMessages.invalidCity);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -423,38 +432,7 @@ function validateAuth() {
 }
 
 function resetAuth(monthfield, yearfield){	
-	get('merchantIdDiv').value = "";
-	get('cardNumberDiv').value = "";
-	get('cv2Div').value = "";
-	get('cardHolderNameDiv').value = "";
-	get('subTotalDiv').value = "";
-	get('taxAmtDiv').value = "";
-	get('tipAmountDiv').value = "";
-	get('shippingAmtDiv').value = "";
-	get('totalAmtDiv').value = "";
-	get('streetDiv').value = "";
-	get('cityDiv').value = "";
-	get('stateDiv').value = "";
-	get('zipcodeDiv').value = "";
-	get('invoiceNumberDiv').value = "";
-	get('descriptionDiv').value = "";
-	
-	setDiv("cardNumberErrorDiv", "");
-	setDiv("cv2ErrorDiv", "");
-	setDiv("cardHolderNameErrorDiv", "");
-	setDiv("subTotalErrorDiv", "");
-	setDiv("totalAmtErrorDiv", "");
-	setDiv("streetErrorDiv", "");
-	setDiv("cityErrorDiv", "");
-	setDiv("zipcodeErrorDiv", "");
-	setDiv("invoiceNumberErrorDiv", "");
-	setDiv("errorDescDiv","");
-	setDiv("responseDiv","");
-	setDiv("stateErrorDiv","");
-	setDiv("descriptionErrorDiv","");
-	setDiv("feeAmountErrorDiv","");
-	setDiv("merchantIdErrorDiv","");
-	resetDate(monthfield, yearfield);
+	window.location.href = 'virtual-terminal-sale';
 }
 
 function validatePreAuth() {
@@ -577,7 +555,7 @@ function validState() {
 	loadMsgTitleText();
 		return false;
 	} else if (regex.test(val) == false) {
-	setDiv("stateErrorDiv", webMessages.virtualTerminalValidData);
+	setDiv("stateErrorDiv", webMessages.invalidState);
 	loadMsgTitleText();
 		return false;
 	} else {
@@ -822,3 +800,15 @@ var monthtext = [ '01', '02', '03', '04', '05', '06', '07', '08', '09',
   			.getFullYear(), true, true) //select today's year
   }
   
+
+  function searchValidationForTransactions(){
+		if(!clientValidation('transactionId','bank_Code','transactionIdEr')
+				| !clientValidation('processCode','mobile_optional','processCodeEr')
+				| !clientValidation('fromAmtRange','amount_False','fromAmtRangeEr')
+				| !clientValidation('toAmtRange','amount_False','toAmtRangeEr')
+				| !clientValidation('merchantCode','merchant_ID','merchantCodeError')
+				| !clientValidation('merchantName','companyname_not_mandatory','merchantNameEr')){
+			return false;
+		}
+		return true;
+	}

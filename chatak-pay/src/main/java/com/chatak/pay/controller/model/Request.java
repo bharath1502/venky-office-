@@ -5,7 +5,7 @@ package com.chatak.pay.controller.model;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.ShareModeEnum;

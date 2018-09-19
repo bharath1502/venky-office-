@@ -263,6 +263,7 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
 	  session.setAttribute(Constants.PROCESSING_LIST_SIZE, listSize);
 	  modelAndView.addObject(Constants.PROCESSING_TXN_LIST, transactionList);
 	  session.setAttribute(Constants.PROCESSING_TXN_LIST, transactionList);
+      modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_TOTAL_RECORDS_PAGE_NUM, processingTxnList.getTotalResultCount());
 	} else {
 	  modelAndView.addObject(Constants.PROCESSING_LIST_SIZE, 0);
 	  session.setAttribute(Constants.PROCESSING_LIST_SIZE, 0);
@@ -282,12 +283,14 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
 	  session.setAttribute(Constants.EXECUTED_LIST_SIZE, listSize);
 	  modelAndView.addObject(Constants.EXECUTED_TXN_LIST, transactionList);
 	  session.setAttribute(Constants.EXECUTED_TXN_LIST, transactionList);
+      modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_TOTAL_RECORDS_PAGE_NUM, executedTxnList.getTotalResultCount());
 	} else {
 	  modelAndView.addObject(Constants.EXECUTED_LIST_SIZE, 0);
 	  session.setAttribute(Constants.EXECUTED_LIST_SIZE, 0);
 	  modelAndView.addObject(Constants.EXECUTED_TXN_LIST, transactionList);
 	  session.setAttribute(Constants.EXECUTED_TXN_LIST, transactionList);
 	}
+    modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_LIST_PAGE_NUMBER, Constants.ONE);
 	return transactionList;
 }
 

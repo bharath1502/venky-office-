@@ -68,8 +68,8 @@
 								<!--Success and Failure Message Start-->
 								<div class="col-xs-12">
 									<div class="descriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-										<span class="red-error">&nbsp;${error }</span> <span
-											class="green-error">&nbsp;${sucess }</span>
+										<span class="red-error">&nbsp;${error }</span> 
+										<span id="sucessDiv" class="green-error">&nbsp;${sucess }</span>
 									</div>
 								</div>
 
@@ -107,7 +107,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="blacklist.label.cardnumber"/></label>
 														<form:input cssClass="form-control" path="cardNumber"
-															id="cardNumber" maxlength="19" onblur="this.value=this.value.trim()"  onkeypress="return numbersonly(this,event)" />
+															id="cardNumber" maxlength="19" onblur="this.value=this.value.trim();clientValidation('cardNumber','card_Number_search','cardhNumberEr')"  onkeypress="return numbersonly(this,event)" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="cardhNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -143,7 +143,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" value='<spring:message code="common.label.search"/>' class="form-control button pull-right"
-													onclick="return trimUserData()"> <input type="button"
+													onclick="return validateSearchCardNumber(); trimUserData()"> <input type="button"
 													class="form-control button pull-right" value='<spring:message code="common.label.reset"/>'
 													onclick="goToBlackListedCardSearch()">
 											</div>
@@ -339,7 +339,7 @@
 	<script src="../js/utils.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
-	
+	<script src="../js/validation.js" type="text/javascript"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js" type="text/javascript"></script>
 	<script src="../js/sortable.js"></script>

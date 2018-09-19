@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.chatak.crypto.dukpt.DUKPTUtil;
@@ -50,6 +50,7 @@ import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.crypto.ChatakEncryptionHandler;
 import com.chatak.switches.sb.util.ProcessorConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * << Add Comments Here >>
@@ -60,7 +61,7 @@ import com.chatak.switches.sb.util.ProcessorConfig;
  */
 public abstract class BaseController {
 
-  private Logger logger = Logger.getLogger(BaseController.class);
+  private static Logger logger = LogManager.getLogger(BaseController.class.getName());
   
   private static ObjectMapper mapper=new ObjectMapper();
 
@@ -120,10 +121,9 @@ public abstract class BaseController {
 
     logger
         .info("validateProcessRequest :: origin channel: " + transactionRequest.getOriginChannel());
-   
+
     PGMerchant pgMerchant = null;
-    pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
-    /*if (transactionRequest.getOriginChannel() != null
+    if (transactionRequest.getOriginChannel() != null
         && (transactionRequest.getOriginChannel().equals(OriginalChannelEnum.ADMIN_WEB.value())
             || transactionRequest.getOriginChannel()
                 .equals(OriginalChannelEnum.MERCHANT_WEB.value()))) {
@@ -134,15 +134,22 @@ public abstract class BaseController {
       logger.info("validateProcessRequest :: origin channel: mPOS");
 
       // Sale from mPOS
-      TSMRequest request = new TSMRequest();
-      request.setMerchantCode(transactionRequest.getMerchantCode());
-      request.setTid(transactionRequest.getTerminalId());
-
-      String output = (String) JsonUtil.sendToTSM(String.class, request,
-              Properties.getProperty("chatak-tsm.service.fetch.merchant.tid"));
-      TSMResponse tsmResponse =mapper.readValue(output, TSMResponse.class);
-      pgMerchant = getMerchantOnCode(transactionRequest, pgMerchant, tsmResponse);
-    }*/
+      String mock = Properties.getProperty("tms.mock");
+      logger.info(">>>>>>> Issuance Mock Flag: " + mock);
+      if ("true".equals(mock)) {
+    	  pgMerchant = getMerchantOnCode(transactionRequest, pgMerchant, null);
+      } else {
+    	  
+        TSMRequest request = new TSMRequest();
+        request.setMerchantCode(transactionRequest.getMerchantCode());
+        request.setTid(transactionRequest.getTerminalId());
+  
+        String output = (String) JsonUtil.sendToTSM(String.class, request,
+                Properties.getProperty("chatak-tsm.service.fetch.merchant.tid"));
+        TSMResponse tsmResponse =mapper.readValue(output, TSMResponse.class);
+        pgMerchant = getMerchantOnCode(transactionRequest, pgMerchant, tsmResponse);
+      }
+    }
 
     if (null != pgMerchant) {
 
@@ -163,7 +170,7 @@ public abstract class BaseController {
         case SALE:
         case AUTH:
         case SPLIT_ACCEPT:
-          validateSALEOrAUTHRequest(transactionRequest);
+          validateSALEOrAUTHRequest(transactionRequest, pgMerchant);
           break;
         case VOID:
         case REFUND_VOID:
@@ -192,17 +199,26 @@ public abstract class BaseController {
 
   private PGMerchant getMerchantOnCode(TransactionRequest transactionRequest, PGMerchant pgMerchant,
       TSMResponse tsmResponse) throws InvalidRequestException {
-    if (tsmResponse.getErrorCode() != null && tsmResponse.getErrorCode().equals("0")
-        && tsmResponse.getErrorMessage() != null
-        && tsmResponse.getErrorMessage().equalsIgnoreCase("success")) {
-      pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
-      logger.info("validateProcessRequest :: validated mPOS");
 
-    } else {
-      logger.info("Invalid Merchant/Terminal ID: " + transactionRequest.getMerchantCode());
-      throw new InvalidRequestException(ChatakPayErrorCode.TXN_0114.name(),
-          ChatakPayErrorCode.TXN_0114.value());
-    }
+	  String mock = Properties.getProperty("tms.mock");
+      logger.info(">>>>>>> Issuance Mock Flag: "+mock);
+      if ("true".equals(mock)) {
+    	  pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
+    	  
+      } else {
+			if (tsmResponse.getErrorCode() != null && tsmResponse.getErrorCode().equals("0")
+					&& tsmResponse.getErrorMessage() != null
+					&& tsmResponse.getErrorMessage().equalsIgnoreCase("success")) {
+				pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
+				logger.info("validateProcessRequest :: validated mPOS");
+
+			} else {
+				logger.info("Invalid Merchant/Terminal ID: " + transactionRequest.getMerchantCode());
+				throw new InvalidRequestException(ChatakPayErrorCode.TXN_0114.name(),
+						ChatakPayErrorCode.TXN_0114.value());
+			}
+      }
+	  
     return pgMerchant;
   }
 
@@ -215,7 +231,7 @@ public abstract class BaseController {
  * @throws IllegalAccessException 
  * @throws InstantiationException 
    */
-  private void validateSALEOrAUTHRequest(TransactionRequest transactionRequest)
+  private void validateSALEOrAUTHRequest(TransactionRequest transactionRequest, PGMerchant pgMerchant)
       throws ChatakPayException, InvalidRequestException, InstantiationException, IllegalAccessException {
     logger.info("Entering :: validateSALEOrAUTHRequest");
     
@@ -258,7 +274,7 @@ public abstract class BaseController {
       }
     }
     logger.info("Entering :: validateSALEOrAUTHRequest :: proceeding to validate card data");
-    validateCardData(transactionRequest);
+    validateCardData(transactionRequest, pgMerchant);
 
     cardPaymentProcessor.duplicateInvoice(transactionRequest.getMerchantCode(),
         transactionRequest.getTerminalId(), transactionRequest.getInvoiceNumber());//duplicate invoice check
@@ -346,7 +362,7 @@ public abstract class BaseController {
  * @throws IllegalAccessException 
  * @throws InstantiationException 
    */
-  private void validateCardData(TransactionRequest transactionRequest)
+  private void validateCardData(TransactionRequest transactionRequest, PGMerchant pgMerchant)
       throws InvalidRequestException, InstantiationException, IllegalAccessException {
     logger.info("Entering :: validateCardData");
     CardData cardData = transactionRequest.getCardData();
@@ -373,7 +389,7 @@ public abstract class BaseController {
         case CARD_TAP:
         case QR_SALE:
         // CradProgram check
-          binService.validateCardProgram(cardData.getCardNumber(), transactionRequest); 	
+          binService.validateCardProgram(cardData.getCardNumber(), transactionRequest, pgMerchant); 	
           isValidCard(cardData);
           isValidExpDate(cardData);
           validateCardType(transactionRequest, cardData);

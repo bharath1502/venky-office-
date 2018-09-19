@@ -28,6 +28,8 @@ public class LoginDetails implements Serializable {
   private String loginIpAddress;
   
   private String currentLoginTime;
+  
+  private String timeZoneRegion;
 
   public String getCurrentLoginTime() {
     return currentLoginTime;
@@ -88,6 +90,14 @@ public class LoginDetails implements Serializable {
    */
   public void setjSession(String jSession) {
     this.jSession = jSession;
+  }
+
+  public String getTimeZoneRegion() {
+	return timeZoneRegion;
+  }
+
+  public void setTimeZoneRegion(String timeZoneRegion) {
+	this.timeZoneRegion = timeZoneRegion;
   }
 
 }

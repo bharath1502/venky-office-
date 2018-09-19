@@ -429,13 +429,15 @@ function validateCreateMerchantStep5() {
 
 function validateAddress1() {
 	var address1 = get('address1').value.trim();
-	/* var addRegx = /^[A-Za-z0-9\#\$\&\,]+(\s{0,1}[a-zA-Z0-9,])*$/; */
+	 var addRegx = /^[A-Za-z0-9,-._\/\s#]{1,60}$/; 
 	if (isEmpty(address1)) {
 		setError(get('address1'), webMessages.pleasenteraddress1);
 		loadMsgTitleText();
 		return false;
-	} else if (address1.length < 5) {
+	}  else if (address1.length < 5) {
 		setError(get('address1'), webMessages.invalidaddress1length);
+	}else if (!addRegx.test(address1)) {
+		setError(get('address1'), webMessages.address_should_contains_message);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -563,7 +565,7 @@ function validateMerchantCode() {
 
 function validateBusinessName() {
 	var businessName = get('businessName').value.trim();
-	var spaceRegx = /^[A-Za-z0-9@][A-Za-z0-9!#$%^&*'()+\=\[\]{};:"\\|,.<>\/? ]*$/;
+	var spaceRegx = /^[A-Za-z0-9][A-Za-z0-9. ]*$/;
 	if (isEmpty(businessName)) {
 		setError(get('businessName'), webMessages.pleasentercompanyname);
 		loadMsgTitleText();
@@ -581,7 +583,7 @@ function validateBusinessName() {
 
 function validateFirstName() {
 	var firstName = get('firstName').value.trim();
-	var spaceRegx = /^[A-Za-z0-9@][A-Za-z0-9!#$%^&*'()+\=\[\]{};:"\\|,.<>\/? ]*$/;
+	var spaceRegx = /^[A-Za-z0-9@][A-Za-z0-9. ]*$/;
 	if (isEmpty(firstName)) {
 		setError(get('firstName'), webMessages.pleasenterfirstname);
 		loadMsgTitleText();
@@ -599,7 +601,7 @@ function validateFirstName() {
 
 function validateLastName() {
 	var lastName = get('lastName').value.trim();
-	var spaceRegx = /^[A-Za-z0-9@][A-Za-z0-9!#$%^&*'()+\=\[\]{};:"\\|,.<>\/? ]*$/;
+	var spaceRegx = /^[A-Za-z0-9@][A-Za-z0-9. ]*$/;
 	if (isEmpty(lastName)) {
 		setError(get('lastName'), webMessages.pleasenterlastname);
 		loadMsgTitleText();
@@ -1101,21 +1103,18 @@ function validateCheckBox() {
 }
 
 function vlalidateUserName() {
-	var reg = /^[A-Za-z0-9]{8,16}$/;
 	var userName = get('userName').value.trim();
-
 	if (isEmpty(userName)) {
 		setError(get('userName'), webMessages.pleasenterusername);
 		loadMsgTitleText();
 		document.getElementById('userNamegreenEr').innerHTML = "";
 		return false;
-	} else if (reg.test(userName) == false) {
+	} else if (userNameRegex.test(userName) == false) {
 		setError(get('userName'), webMessages.cancontainalphanumerics);
 		loadMsgTitleText();
 		document.getElementById('userNamegreenEr').innerHTML = "";
 		return false;
 	} else {
-
 		doAjaxFetchUsernameAvailable();
 		if (usernameFlag == true) {
 			return true;
@@ -1316,48 +1315,7 @@ function doAjaxFetchMailIdAvailable(isMailUnique) {
 }
 
 function resetBasicInfo() {
-	
-	get('businessName').value = "";
-	setError(get('businessName'), '');
-	get('firstName').value = "";
-	setError(get('firstName'), '');
-	get('lastName').value = "";
-	setError(get('lastName'), '');
-	get('phone').value = "";
-	setError(get('phone'), '');
-	get('fax').value = "";
-	setError(get('fax'), '');
-	get('emailId').value = "";
-	setError(get('emailId'), '');
-	get('address1').value = "";
-	setError(get('address1'), '');
-	get('country').value = "";
-	setError(get('country'), '');
-	get('address2').value = "";
-	setError(get('address2'), '');
-	get('state').value = "";
-	setError(get('state'), '');
-	get('pin').value = "";
-	setError(get('pin'), '');
-	get('appMode').value = "";
-	setError(get('appMode'), '');
-	get('city').value = "";
-	setError(get('city'), '');
-	get('businessURL').value = "";
-	setError(get('businessURL'), '');
-	get('userName').value = "";
-	setError(get('userName'), '');
-	get('lookingFor').value = "";
-	setError(get('lookingFor'), '');
-	get('businessType').value = "";
-	setError(get('businessType'), '');
-	get('parentMerchantId').value = "";
-	setError(get('parentMerchantId'), '');
-	get('partnerId').value = "";
-	setError(get('partnerId'), '');
-	get('programManagerName').value = "";
-	setError(get('programManagerName'), '');
-	get('dummyParentMerchantId').value = "";
+	window.location.href = 'sub-merchant-create';
 }
 
 function resetBasicInfoSignUp() {
@@ -2537,4 +2495,34 @@ function getPartnerName(merchantId) {
 
 function openCreateCancelConfirmationPopup() {
 	$('#my_popup1').popup("show");
+}
+
+function searchValidationForMerchant(){
+	if(!clientValidation('subMerchantCode','merchant_codes','subMerchantCodeError')
+			| !clientValidation('businessName','company_name_aphhanumeric_space_dot_NM','businessNameError')
+			| !clientValidation('firstName','company_name_aphhanumeric_space_dot_NM','firstNameError')
+			| !clientValidation('lastName','company_name_aphhanumeric_space_dot_NM','lastNameError')
+			| !clientValidation('emailId','email_id','emailIdError')
+			| !clientValidation('phone','mobile_optional','phoneError')
+			| !clientValidation('city','name_account','cityError')){
+		return false;
+	}
+	return true;
+}
+
+function createValidationForMerchant(){
+	if(!clientValidation('fax','fax','faxEr')
+			| !clientValidation('address2','address2','address2Er')){
+		return false;
+	}
+	return true;
+}
+
+function createValidationStep2(){
+	if(!clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv')
+			| !clientValidation('bankAddress2', 'bank_address2','bankAddress2ErrorDiv')
+			| !clientValidation('bankCity', 'bank_city_id','bankCityErrorDiv')){
+		return false;
+	}
+	return true;
 }

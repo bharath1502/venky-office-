@@ -139,7 +139,7 @@ public interface TransactionRepository extends
   public List<PGTransaction> findByMerchantIdAndTerminalIdAndInvoiceNumberAndTxnAmountAndPan(String merchantId,
                                                                            String terminalId,
                                                                            String invoiceNumber,Long txnAmount,String pan);
-  @Query("select t from PGTransaction t where t.merchantId=:merchantId )")
+  @Query("select t from PGTransaction t where t.merchantId=:merchantId ")
   public List<PGTransaction> getAllTransactionsOnMerchantCode(@Param("merchantId") String merchantId);
   
   @Query("select t from PGTransaction t where t.merchantId = :merchantId and t.merchantSettlementStatus='Executed'")

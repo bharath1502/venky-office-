@@ -11,6 +11,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -19,11 +22,6 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-
-import jxl.Workbook;
-import jxl.write.Label;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
 
 /**
  *
@@ -51,35 +49,33 @@ private static Logger logger = Logger.getLogger(FileExportUtil.class);
     String filename = "Requests Batch Report" + dateString + ".xls";
     response.setHeader("Content-Disposition", "attachment;filename=" + filename);
     try {
-      WritableWorkbook w = Workbook.createWorkbook(response.getOutputStream());
-      WritableSheet s = w.createSheet(messageSource.getMessage("chatak.report.batch.sheetName",
-          null, LocaleContextHolder.getLocale()), 0);
+    	HSSFWorkbook wb = new HSSFWorkbook();
+    	HSSFSheet sheet = wb.createSheet(messageSource.getMessage("chatak.report.batch.sheetName",
+    	          null, LocaleContextHolder.getLocale()));
 
       int j = 0;
+      Row dataRow = sheet.createRow(j);
       for (PGTransfers transfers : transfersList) {
         int i = 0;
         if (transfersIds.indexOf(transfers.getPgTransfersId()) != -1) {
-          s.addCell(new Label(i++, j, "" + ((transfers.getMerchantId() != null)
-              ? merchantNameMap.get(transfers.getMerchantId() + "") : " ") + ""));
-          s.addCell(new Label(i++, j,
-              "" + (getEFTDetails(transfers.getFromAccount())) + ""));
-          s.addCell(new Label(i++, j,
-              "" + (getEFTDetails(transfers.getToAccount())) + ""));
-          s.addCell(new Label(i++, j,
-              "" + ((transfers.getAmount() != null)
+          dataRow.createCell(i++).setCellValue( "" + ((transfers.getMerchantId() != null)
+              ? merchantNameMap.get(transfers.getMerchantId() + "") : " ") + "");
+          dataRow.createCell(i++).setCellValue("" + (getEFTDetails(transfers.getFromAccount())) + "");
+          dataRow.createCell(i++).setCellValue("" + (getEFTDetails(transfers.getToAccount())) + "");
+
+          dataRow.createCell(i++).setCellValue("" + ((transfers.getAmount() != null)
                   ? PGConstants.DOLLAR_SYMBOL + (CommonUtil.getDoubleAmount(transfers.getAmount()))
-                  : " ") + ""));
-          s.addCell(new Label(i++, j, "" + (getEFTDetails(transfers.getBankRoutingNumber())) + ""));
-          s.addCell(new Label(i++, j,
-              "" + ((transfers.getCreatedDate() != null) ? (DateUtil
+                  : " ") + "");
+          dataRow.createCell(i++).setCellValue( "" + (getEFTDetails(transfers.getBankRoutingNumber())) + "");
+          dataRow.createCell(i++).setCellValue("" + ((transfers.getCreatedDate() != null) ? (DateUtil
                   .toDateStringFormat(transfers.getCreatedDate(), DateUtil.VIEW_DATE_TIME_FORMAT))
-                  : " ") + ""));
-          s.addCell(new Label(i, j, "" + ("Checking Debit") + ""));
+                  : " ") + "");
+          dataRow.createCell(i++).setCellValue( "" + ("Checking Debit") + "");
           j = j + 1;
         }
       }
-      w.write();
-      w.close();
+      wb.write(response.getOutputStream());
+      wb.close();
     } catch (Exception e) {
       logger.error("ERROR :: FileExportUtil ::downloadEFTRequestsXlBatch ", e);
     }

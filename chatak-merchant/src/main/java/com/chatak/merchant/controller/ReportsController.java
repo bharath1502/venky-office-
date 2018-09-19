@@ -56,8 +56,6 @@ import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 
-import jxl.write.WriteException;
-
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Controller
 public class ReportsController implements URLMappingConstants {
@@ -596,7 +594,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 
   private void processDownloadReport(HttpServletResponse response, final String downloadType,
       final boolean downloadAllRecords, GetTransactionsListRequest transactionRequest,
-      TransactionListResponse transactionResponse, List<AccountTransactionDTO> processingTxnList) throws WriteException, IOException {
+      TransactionListResponse transactionResponse, List<AccountTransactionDTO> processingTxnList) throws  IOException {
     if (downloadAllRecords) {
       processingTxnList = fetchProcessingTxnList(transactionRequest, transactionResponse,
     processingTxnList);
@@ -703,7 +701,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 
   private void processDownloadReport(HttpServletResponse response, final String downloadType,
       final boolean downloadAllRecords, List<AccountTransactionDTO> executedTxnsList,
-      GetTransactionsListRequest transaction, TransactionListResponse transactionResponse, Integer totalRecords) throws WriteException, IOException {
+      GetTransactionsListRequest transaction, TransactionListResponse transactionResponse, Integer totalRecords) throws IOException {
     if (downloadAllRecords) {
     	transaction.setPageIndex(Constants.ONE);
 	    transaction.setPageSize(totalRecords);

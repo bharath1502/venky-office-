@@ -26,9 +26,6 @@ import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.Properties;
 
-import jxl.write.NumberFormats;
-import jxl.write.WritableCellFormat;
-
 /**
  *
  * << Add Comments Here >>
@@ -394,8 +391,4 @@ public final class StringUtil {
     return (input == null);
   }
   
-  public static jxl.write.Number getAmountInFloat(int i, int j, Double amount) {
-    WritableCellFormat floatFormat = new WritableCellFormat(NumberFormats.FLOAT);
-    return new jxl.write.Number(i, j, ((amount != null) ? amount : 0d), floatFormat);
-  }
 }

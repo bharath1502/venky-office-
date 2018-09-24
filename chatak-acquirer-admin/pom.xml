@@ -10,7 +10,7 @@
 	<properties>
 		<jdk.version>1.8</jdk.version>
 		<servlet.version>4.0.1</servlet.version>
-		<spring.version>4.1.1.RELEASE</spring.version>
+		<spring.version>4.3.18.RELEASE</spring.version>
 		<spring-security-version>3.2.5.RELEASE</spring-security-version>
 		<junit.version>4.12</junit.version>
     	<jcl-over-slf4j.version>1.7.25</jcl-over-slf4j.version>
@@ -198,8 +198,8 @@
 
 <dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.1.Final</version>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<version>1.0.2.Final</version>
 		</dependency>
 
 		<dependency>
@@ -211,12 +211,12 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.0.1.Final</version>
+			<version>5.3.6.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.0.1.Final</version>
+			<version>5.3.6.Final</version>
 		</dependency>
 
 		<dependency>

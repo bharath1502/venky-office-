@@ -11,7 +11,7 @@
 
 	<properties>
 		<jdk.version>1.8</jdk.version>
-		<spring.version>4.3.18.RELEASE</spring.version>
+		<spring.version>4.3.19.RELEASE</spring.version>
 		<release-version>1.3.2-SNAPSHOT</release-version>
 	</properties>
 
@@ -220,12 +220,12 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-web</artifactId>
-				<version>3.0.2.RELEASE</version>
+				<version>3.2.10.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-config</artifactId>
-				<version>3.0.2.RELEASE</version>
+				<version>3.2.10.RELEASE</version>
 			</dependency>
 			<dependency>
 			<groupId>org.apache.geronimo.javamail</groupId>
@@ -240,7 +240,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-aop</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>${spring.version}</version>
 			</dependency>
 			
 			<dependency>
@@ -251,7 +251,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context-support</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
@@ -267,7 +267,7 @@
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-test</artifactId>
-		    <version>3.2.0.RELEASE</version>
+		    <version>${spring.version}</version>
 		</dependency>
 
 			

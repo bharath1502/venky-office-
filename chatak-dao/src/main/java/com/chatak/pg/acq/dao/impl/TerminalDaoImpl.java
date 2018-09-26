@@ -4,16 +4,13 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.util.CollectionUtils;
 import com.chatak.pg.acq.dao.TerminalDao;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTerminal;

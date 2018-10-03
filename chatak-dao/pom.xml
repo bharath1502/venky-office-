@@ -228,6 +228,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.12</version>
         </dependency>
+
+	<dependency>
+		<groupId>com.google.protobuf</groupId>
+		<artifactId>protobuf-java</artifactId>
+		<version>3.6.1</version>
+	</dependency>
 		
 		<!-- pg-library dependencies -->
 		<dependency>

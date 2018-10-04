@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -615,7 +615,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
         	logger.info("Invalid Access Token..");
         	logger.info("UserName in JSON Request : "
               + customerUserName + " UserName in Authentication : " + getCustomerUserName());
-          throw new HttpClientException("403", HttpStatus.FORBIDDEN_403);
+          throw new HttpClientException("403",HttpStatus.SC_FORBIDDEN);
         }
       }
 

@@ -121,11 +121,13 @@
 			<artifactId>spring-aop</artifactId>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.apache.geronimo.javamail</groupId>
-			<artifactId>geronimo-javamail_1.4_mail</artifactId>
-			<version>1.8.4</version>
-		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-activation_1.1_spec</artifactId>
@@ -227,11 +229,7 @@
 				<artifactId>spring-security-config</artifactId>
 				<version>3.2.10.RELEASE</version>
 			</dependency>
-			<dependency>
-			<groupId>org.apache.geronimo.javamail</groupId>
-			<artifactId>geronimo-javamail_1.4_mail</artifactId>
-			<version>1.8.4</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-activation_1.1_spec</artifactId>

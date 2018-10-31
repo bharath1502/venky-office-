@@ -27,10 +27,6 @@ public class JacksonObjectMapperBuilder {
 			String value = (String) prop.get(key);
 			Class<?> targetClass = Class.forName(key);
 			Class<?> mixInClass = Class.forName(value);
-			/*objMapper.getSerializationConfig().addMixInAnnotations(targetClass,
-					mixInClass);
-			objMapper.getDeserializationConfig().addMixInAnnotations(
-					targetClass, mixInClass);*/
 			objMapper.addMixIn(targetClass, mixInClass);
 		}
 		return objMapper;

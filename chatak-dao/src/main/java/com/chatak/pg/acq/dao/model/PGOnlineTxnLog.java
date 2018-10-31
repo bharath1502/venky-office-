@@ -21,8 +21,7 @@ public class PGOnlineTxnLog implements java.io.Serializable {
   @Id
   /*@SequenceGenerator(name = "SEQ_PG_ONLINE_TXN_LOG_ID", sequenceName = "SEQ_PG_ONLINE_TXN_LOG")
   @GeneratedValue(generator = "SEQ_PG_ONLINE_TXN_LOG_ID")*/
-  //@GeneratedValue(strategy = GenerationType.AUTO)
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "ID")
   private Long id;
 

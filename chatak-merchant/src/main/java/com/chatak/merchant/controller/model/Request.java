@@ -6,7 +6,7 @@ package com.chatak.merchant.controller.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Model class to hold basic details for every request

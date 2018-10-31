@@ -997,4 +997,8 @@ public class Constants {
   
   public static final String TIMEZONE_DATE_FORMAT = "dd-MM-yyyy HH:mm:ss z";
   
+  public static final String SETTLEMENT_STATUS = "Settled";
+  
+  public static final String SALE = "sale";
+  
 }

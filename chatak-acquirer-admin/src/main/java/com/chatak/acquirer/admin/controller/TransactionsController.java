@@ -28,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.exception.ChatakPayException;
 import com.chatak.acquirer.admin.service.RestPaymentService;
@@ -148,11 +149,11 @@ public class TransactionsController implements URLMappingConstants {
     session.setAttribute(Constants.TRANSACTIONS_REQ_OBJ_MODEL, transaction);
     List<Transaction> transactionList = new ArrayList<>();
     try {
-
+    	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       session.removeAttribute(PGConstants.BULK_SETTLEMENT_LIST_OBJ);
       session.removeAttribute(PGConstants.BULK_SETTLEMENT_LIST);
       GetTransactionsListResponse transactionResponse =
-          transactionService.searchTransactions(transaction);
+          transactionService.searchTransactions(transaction, loginResponse.getEntityId());
       session.setAttribute(Constants.TRANSACTIONS_REPORT, transactionResponse);
       if (transactionResponse.getTransactionList() != null
           && !CollectionUtils.isEmpty(transactionResponse.getTransactionList())) {
@@ -196,7 +197,7 @@ public class TransactionsController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE);
     try {
-
+    	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       String requestObject = request.getParameter("requestObject");
       String[] removedTxns = request.getParameterValues("removedTxns");
       SettlementActionDTOList actionDTOList = new SettlementActionDTOList();
@@ -210,7 +211,7 @@ public class TransactionsController implements URLMappingConstants {
       transaction.setPageSize(Constants.MAX_TRANSACTION_ENTITY_DISPLAY_SIZE);
 
       GetTransactionsListResponse transactionsList =
-          transactionService.searchTransactions(transaction);
+          transactionService.searchTransactions(transaction , loginResponse.getEntityId());
       session.setAttribute(Constants.TRANSACTIONS_REPORT, transactionsList);
 
       if (transactionsList != null
@@ -245,6 +246,7 @@ public class TransactionsController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE);
     GetTransactionsListRequest transaction = new GetTransactionsListRequest();
     String jsonRequest = null;
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     try {
       if (null != downloadReportObject) {
         jsonRequest = "{\"actionDTOs\":[" + downloadReportObject + "]}";
@@ -262,7 +264,7 @@ public class TransactionsController implements URLMappingConstants {
       transactionList = setTransactionList(totalRecords, downloadAllRecords, transactionList);
       
       GetTransactionsListResponse transactionResponse =
-          transactionService.searchTransactions(transactionList);
+          transactionService.searchTransactions(transactionList, loginResponse.getEntityId());
       session.setAttribute(Constants.ALL_TRANSACTIONS_MODEL,
           transactionResponse.getTransactionList());
       List<Transaction> list = transactionResponse.getTransactionList();

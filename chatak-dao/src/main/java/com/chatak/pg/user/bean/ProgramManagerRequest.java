@@ -120,8 +120,40 @@ public class ProgramManagerRequest extends SearchRequest {
 	private String schedulerRunTime;
 	
 	private String pmSystemConvertedTime;
+	
+	private Long entityId;
+	
+	private String loginuserType;
 
-	/**
+	 /**
+    * @return the entityId
+    */
+   public Long getEntityId() {
+     return entityId;
+   }
+
+   /**
+    * @param entityId the entityId to set
+    */
+   public void setEntityId(Long entityId) {
+     this.entityId = entityId;
+  }
+ 
+   /**
+    * @return the loginuserType
+    */
+   public String getLoginuserType() {
+     return loginuserType;
+   }
+
+   /**
+    * @param loginuserType the loginuserType to set
+    */
+   public void setLoginuserType(String loginuserType) {
+     this.loginuserType = loginuserType;
+   }
+
+  /**
 	 * @return the issuancepmid
 	 */
 	public Long getIssuancepmid() {

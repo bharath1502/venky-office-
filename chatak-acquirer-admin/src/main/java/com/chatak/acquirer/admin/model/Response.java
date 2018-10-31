@@ -5,7 +5,8 @@ package com.chatak.acquirer.admin.model;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 /**
  * Model class basically holds all response

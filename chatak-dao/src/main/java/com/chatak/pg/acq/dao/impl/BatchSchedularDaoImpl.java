@@ -97,18 +97,30 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
             limit = pageSize;
         } 
         StringBuilder dailyFundingReportBuilder = new StringBuilder();
-        dailyFundingReportBuilder.append(" select distinct pgfr.BATCH_ID, pgfr.MERCHANT_NAME, pgfr.MERCHANT_CODE, pgfr.SUB_MERCHANT_CODE, ");
-        dailyFundingReportBuilder.append(" pgfr.CURRENCY, pgfr.SUB_MERCHANT_NAME, pgfr.BANK_ACCOUNT_NUMBER, pgfr.BANK_ROUTING_NUMBER,");
-        dailyFundingReportBuilder.append(" pgfr.NET_FUNDING_AMOUNT, pgfr.FEE_BILLED_AMOUNT, pgfr.FUNDING_AMOUNT, pgfr.CREATED_DATE, pgm.MERCHANT_CODE as merchantcode, pgm.ID, pgmem.ENTITY_ID, pgmem.MERCHANT_ID ");  
-        dailyFundingReportBuilder.append(" from PG_FUNDING_REPORT pgfr ");
-        dailyFundingReportBuilder.append(" join PG_MERCHANT pgm on pgm.MERCHANT_CODE=pgfr.MERCHANT_CODE ");
-        dailyFundingReportBuilder.append(" join PG_MERCHANT_ENTITY_MAPPING pgmem on pgmem.MERCHANT_ID=pgm.ID ");
-        dailyFundingReportBuilder.append(" where (:entityId is null or pgmem.ENTITY_ID=:entityId) ");
-        dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE >= :startDate ");
-        dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE <= :endDate  ");
-        dailyFundingReportBuilder.append(" ORDER BY pgfr.CREATED_DATE DESC LIMIT :offset, :limit");
+        if(reportRequest.getId() != null) {
+        	dailyFundingReportBuilder.append(" select pgfr.BATCH_ID, pgfr.MERCHANT_NAME, pgfr.MERCHANT_CODE, pgfr.SUB_MERCHANT_CODE, ");
+        	dailyFundingReportBuilder.append(" pgfr.CURRENCY, pgfr.SUB_MERCHANT_NAME, pgfr.BANK_ACCOUNT_NUMBER, pgfr.BANK_ROUTING_NUMBER,");
+        	dailyFundingReportBuilder.append(" pgfr.NET_FUNDING_AMOUNT, pgfr.FEE_BILLED_AMOUNT, pgfr.FUNDING_AMOUNT, pgfr.CREATED_DATE, pgm.MERCHANT_CODE as merchantcode, pgm.ID, pgmem.ENTITY_ID, pgmem.MERCHANT_ID ");  
+        	dailyFundingReportBuilder.append(" from PG_FUNDING_REPORT pgfr ");
+        	dailyFundingReportBuilder.append(" join PG_MERCHANT pgm on pgm.MERCHANT_CODE=pgfr.MERCHANT_CODE ");
+        	dailyFundingReportBuilder.append(" join PG_MERCHANT_ENTITY_MAPPING pgmem on pgmem.MERCHANT_ID=pgm.ID ");
+        	dailyFundingReportBuilder.append(" where (:entityId is null or pgmem.ENTITY_ID=:entityId) ");
+        	dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE >= :startDate ");
+        	dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE <= :endDate  ");
+        	dailyFundingReportBuilder.append(" ORDER BY pgfr.CREATED_DATE DESC LIMIT :offset, :limit");
+        } else {
+        	dailyFundingReportBuilder.append(" select pgfr.BATCH_ID, pgfr.MERCHANT_NAME, pgfr.MERCHANT_CODE, pgfr.SUB_MERCHANT_CODE, ");
+        	dailyFundingReportBuilder.append(" pgfr.CURRENCY, pgfr.SUB_MERCHANT_NAME, pgfr.BANK_ACCOUNT_NUMBER, pgfr.BANK_ROUTING_NUMBER,");
+        	dailyFundingReportBuilder.append(" pgfr.NET_FUNDING_AMOUNT, pgfr.FEE_BILLED_AMOUNT, pgfr.FUNDING_AMOUNT, pgfr.CREATED_DATE ");  
+        	dailyFundingReportBuilder.append(" from PG_FUNDING_REPORT pgfr ");
+        	dailyFundingReportBuilder.append(" where pgfr.CREATED_DATE >= :startDate ");
+        	dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE <= :endDate  ");
+        	dailyFundingReportBuilder.append(" ORDER BY pgfr.CREATED_DATE DESC LIMIT :offset, :limit");
+        }
 		Query merchantFeeReportParam = entityManager.createNativeQuery(dailyFundingReportBuilder.toString());
-		merchantFeeReportParam.setParameter("entityId", reportRequest.getId());
+		if(reportRequest.getId() != null) {
+			merchantFeeReportParam.setParameter("entityId", reportRequest.getId());
+	    }
 		merchantFeeReportParam.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
 		merchantFeeReportParam.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.DD_MM_YYYY));
 		merchantFeeReportParam.setParameter("offset", offset);
@@ -151,15 +163,22 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
   
   public int getTotalNumberOfRecords(GetDailyFundingReportRequest reportRequest) {
     StringBuilder dailyFundingReportBuilder = new StringBuilder();
-    dailyFundingReportBuilder.append(" select distinct pgfr.BATCH_ID, pgfr.MERCHANT_NAME, pgfr.MERCHANT_CODE, pgfr.SUB_MERCHANT_CODE, ");
-    dailyFundingReportBuilder.append(" pgfr.CURRENCY, pgfr.SUB_MERCHANT_NAME, pgfr.BANK_ACCOUNT_NUMBER, pgfr.BANK_ROUTING_NUMBER,");
-    dailyFundingReportBuilder.append(" pgfr.NET_FUNDING_AMOUNT, pgfr.FEE_BILLED_AMOUNT, pgfr.FUNDING_AMOUNT, pgfr.CREATED_DATE, pgm.MERCHANT_CODE as merchantcode ,pgm.ID, pgmem.ENTITY_ID, pgmem.MERCHANT_ID ");  
-    dailyFundingReportBuilder.append(" from PG_FUNDING_REPORT pgfr ");
-    dailyFundingReportBuilder.append(" join PG_MERCHANT pgm on pgm.MERCHANT_CODE=pgfr.MERCHANT_CODE ");
-    dailyFundingReportBuilder.append(" join PG_MERCHANT_ENTITY_MAPPING pgmem on pgmem.MERCHANT_ID=pgm.ID ");
-    dailyFundingReportBuilder.append(" where (:entityId is null or pgmem.ENTITY_ID=:entityId) ");
-    dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE >= :startDate ");
-    dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE <= :endDate ");
+    if(reportRequest.getId() != null) {
+    	dailyFundingReportBuilder.append(" select pgfr.BATCH_ID, pgfr.MERCHANT_NAME, pgfr.MERCHANT_CODE, pgfr.SUB_MERCHANT_CODE, ");
+    	dailyFundingReportBuilder.append(" pgfr.CURRENCY, pgfr.SUB_MERCHANT_NAME, pgfr.BANK_ACCOUNT_NUMBER, pgfr.BANK_ROUTING_NUMBER,");
+    	dailyFundingReportBuilder.append(" pgfr.NET_FUNDING_AMOUNT, pgfr.FEE_BILLED_AMOUNT, pgfr.FUNDING_AMOUNT, pgfr.CREATED_DATE, pgm.MERCHANT_CODE as merchantcode ,pgm.ID, pgmem.ENTITY_ID, pgmem.MERCHANT_ID ");  
+    	dailyFundingReportBuilder.append(" from PG_FUNDING_REPORT pgfr ");
+    	dailyFundingReportBuilder.append(" join PG_MERCHANT pgm on pgm.MERCHANT_CODE=pgfr.MERCHANT_CODE ");
+    	dailyFundingReportBuilder.append(" join PG_MERCHANT_ENTITY_MAPPING pgmem on pgmem.MERCHANT_ID=pgm.ID ");
+    	dailyFundingReportBuilder.append(" where (:entityId is null or pgmem.ENTITY_ID=:entityId) ");
+    	dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE >= :startDate ");
+    	dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE <= :endDate ");
+    } else {
+    	dailyFundingReportBuilder.append(" select pgfr.ID, pgfr.CREATED_DATE ");
+    	dailyFundingReportBuilder.append(" from PG_FUNDING_REPORT pgfr ");
+    	dailyFundingReportBuilder.append(" where pgfr.CREATED_DATE >= :startDate ");
+    	dailyFundingReportBuilder.append(" and pgfr.CREATED_DATE <= :endDate  ");
+    }
 	Query dailyFundingReportList = entityManager.createNativeQuery(dailyFundingReportBuilder.toString());
 	dailyFundingReportList.setParameter("entityId", reportRequest.getId());
 	dailyFundingReportList.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
@@ -392,7 +411,7 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
                   .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
               isValidDate(startDate, endDate))
           .offset(offset).limit(limit).orderBy(orderByTxnDateDesc())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -437,7 +456,7 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
   }
 
   private String getSettlementReportTransactionsExisting(Transaction transactionResp, Tuple tuple) {
-    transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.transactionId));
+    transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.id).toString());
     transactionResp.setTransactionAmount(
         (StringUtils.amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))));
     transactionResp.setTransactionDate(DateUtil.toDateStringFormat(
@@ -626,7 +645,7 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
                   .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
                   isBatchID(transaction.getBatchID()))
           .offset(offset).limit(limit).orderBy(orderByCreatedDate())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,

@@ -29,8 +29,8 @@ import com.chatak.pg.acq.dao.model.QCardProgram;
 import com.chatak.pg.acq.dao.model.QIso;
 import com.chatak.pg.acq.dao.model.QIsoCardProgramMap;
 import com.chatak.pg.acq.dao.model.QIsoPmMap;
-import com.chatak.pg.acq.dao.model.QPGMerchantCardProgramMap;
-import com.chatak.pg.acq.dao.model.QPmCardProgamMapping;
+import com.chatak.pg.acq.dao.model.QPGMerchant;
+import com.chatak.pg.acq.dao.model.QPGMerchantEntityMap;
 import com.chatak.pg.acq.dao.model.QProgramManager;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.IsoAccountRepository;
@@ -38,6 +38,7 @@ import com.chatak.pg.acq.dao.repository.IsoCardProgramMapRepository;
 import com.chatak.pg.acq.dao.repository.IsoPmMapRepository;
 import com.chatak.pg.acq.dao.repository.IsoRepository;
 import com.chatak.pg.acq.dao.repository.ProgramManagerRepository;
+import com.chatak.pg.bean.Response;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
@@ -265,7 +266,8 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 						isStatus(isoRequest.getProgramManagerRequest()
 								.getStatus()),
 						isIsoId(isoRequest.getId()),
-						isIsoIds(isoRequest.getIds()))
+						isIsoIds(isoRequest.getIds()),
+						isIsoEmailLike(isoRequest.getProgramManagerRequest().getContactEmail()))
 				.offset(offset)
 				.limit(limit)
 				.orderBy(orderByIdDesc())
@@ -275,7 +277,7 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 						QIso.iso.city, QIso.iso.contactPerson,
 						QIso.iso.country, QIso.iso.state,
 						QIso.iso.createdDate, QIso.iso.phoneNumber,
-						QIso.iso.status, QIso.iso.currency);
+						QIso.iso.status, QIso.iso.currency,QIso.iso.email);
 
 		IsoRequest isoDTO = null;
 		ProgramManagerRequest programManagerRequest = null;
@@ -298,6 +300,7 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 			isoDTO.setCity(tuple.get(QIso.iso.city));
 			isoDTO.setCountry(tuple.get(QIso.iso.country));
 			isoDTO.setState(tuple.get(QIso.iso.state));
+			programManagerRequest.setContactEmail(tuple.get(QIso.iso.email));
 			isoDTO.setProgramManagerRequest(programManagerRequest);
 			isoRequests.add(isoDTO);
 		}
@@ -326,6 +329,12 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 	  private OrderSpecifier<Long> orderByIdDesc() {
 		    return QIso.iso.id.desc();
 		  }
+	  
+	  private BooleanExpression isIsoEmailLike(String contactEmail) {
+        return (StringUtil.isNullAndEmpty(contactEmail) ? null
+            : QIso.iso.email.toUpperCase()
+                .like("%" + contactEmail.toUpperCase().replace("*", "") + "%"));
+      }
 
 	/**
 	 * @param isoAccount
@@ -644,13 +653,38 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 		return response;
 	}
 	
+	@Override
+	public IsoResponse getIsoNameByProgramManagerId(Long pmId) {
+		IsoResponse isoResponse = new IsoResponse();
+		List<IsoRequest> list;
+		StringBuilder query = new StringBuilder(" SELECT  pi.ID, pi.ISO_NAME ").append(" FROM PG_ISO pi ")
+				.append(" join PG_PM_ISO_MAPPING pm on pi.ID=pm.ISO_ID ").append(" where pm.PM_ID=:pmId ");
+		Query qry = entityManager.createNativeQuery(query.toString());
+		qry.setParameter("pmId", pmId);
+		List<Object> isObjects = qry.getResultList();
+		list = new ArrayList<>();
+		IsoRequest isoRequest;
+		if (StringUtil.isListNotNullNEmpty(isObjects)) {
+			Iterator<Object> itr = isObjects.iterator();
+			while (itr.hasNext()) {
+				Object[] object = (Object[]) itr.next();
+				isoRequest = new IsoRequest();
+				isoRequest.setId(((BigInteger) object[0]).longValue());
+				isoRequest.setIsoName(object[1].toString());
+				list.add(isoRequest);
+			}
+			isoResponse.setIsoRequest(list);
+		}
+		return isoResponse;
+	}
+	
 	private Integer getTotalNumberOfRecords(IsoRequest isoRequest) {
 		JPAQuery query = new JPAQuery(entityManager);
 		List<Long> iso = query.from(QIso.iso)
 				.where(isIsoNameLike(isoRequest.getIsoName().trim()),
 						isBusinessEntityNameLike(isoRequest.getProgramManagerRequest().getBusinessName()),
 						isStatus(isoRequest.getProgramManagerRequest().getStatus()), isIsoId(isoRequest.getId()),
-						isIsoIds(isoRequest.getIds()))
+						isIsoIds(isoRequest.getIds()), isIsoEmailLike(isoRequest.getProgramManagerRequest().getContactEmail()))
 				.list(QIso.iso.id);
 		return (StringUtil.isListNotNullNEmpty(iso) ? iso.size() : 0);
 	}
@@ -864,4 +898,33 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
     public int updateISOStatusById(Long isoId, String reason, String updatedBy, Timestamp updatedDate, String status)  {
         return isoRepository.updateISOStatusById(isoId, reason, updatedBy, updatedDate, status);
     }
+
+	/**
+	 * @param pmId
+	 * @return
+	 */
+	@Override
+	public List<Response> findIsoNameAndIdByEntityId(Long pmId) {
+		List<Response> responses = new ArrayList<>();
+		StringBuilder query = new StringBuilder(
+				" select distinct pgiso.ID,pgiso.ISO_NAME from PG_PM_ISO_MAPPING pgisomp ")
+				.append(" join PG_ISO pgiso on pgiso.ID=pgisomp.ISO_ID ")
+				.append(" where pgisomp.ISO_ID not in (select id from PG_ISO pgis where pgis.ID in ")
+				.append("(select ENTITY_ID from PG_MERCHANT_ENTITY_MAPPING )")
+				.append("  ) and pgisomp.PM_ID=:entityId ");
+		Query qry = entityManager.createNativeQuery(query.toString());
+		qry.setParameter("entityId", pmId);
+		List<Object> list = qry.getResultList();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			Iterator<Object> itr = list.iterator();
+			while (itr.hasNext()) {
+				Object[] object = (Object[]) itr.next();
+				Response response = new Response();
+				response.setIsoId(((BigInteger) object[0]).longValue());
+				response.setIsoName(object[1].toString());
+				responses.add(response);
+			}
+		}
+		return responses;
+	}
 }

@@ -2,9 +2,12 @@ package com.chatak.acquirer.admin.controller.model;
 
 import java.util.List;
 import com.chatak.acquirer.admin.model.Response;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 
 /**
  * REST API model class to hold response login result
@@ -15,6 +18,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
  * @Version: 1.0
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value=Include.NON_NULL)
 public class LoginResponse extends Response {
   /**
    * 

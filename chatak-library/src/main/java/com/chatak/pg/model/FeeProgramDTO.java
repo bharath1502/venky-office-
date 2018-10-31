@@ -46,6 +46,8 @@ public class FeeProgramDTO extends SearchRequest {
   private double isoShare;
   
   private String cardProgramName;
+  
+  private Long entityId;
 
   /**
    * @return the feeProgramId
@@ -310,6 +312,14 @@ public class FeeProgramDTO extends SearchRequest {
    */
   public void setCardProgramName(String cardProgramName) {
     this.cardProgramName = cardProgramName;
+  }
+
+  public Long getEntityId() {
+    return entityId;
+  }
+
+  public void setEntityId(Long entityId) {
+    this.entityId = entityId;
   }
 
 }

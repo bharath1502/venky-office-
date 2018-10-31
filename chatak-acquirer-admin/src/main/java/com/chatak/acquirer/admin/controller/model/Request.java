@@ -5,7 +5,7 @@ package com.chatak.acquirer.admin.controller.model;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Model class to hold basic details for every request

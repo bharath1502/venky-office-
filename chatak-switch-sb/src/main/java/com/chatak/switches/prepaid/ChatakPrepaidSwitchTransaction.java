@@ -30,7 +30,7 @@ public class ChatakPrepaidSwitchTransaction implements SwitchTransaction {
   
   private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TransactionService.class);
 
-  private final static String SWITCH_NAME = "Chatak Prepaid";
+  private final static String SWITCH_NAME = "ClosedLoopChatak";
   
   private String hostIp;
   private Integer port;

@@ -83,7 +83,7 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
     log.debug("TransactionDaoImpl | getTransactionToVoid | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist = transactionRepository.findByVoidTransactionType(merchantId,
-        terminalId, txnId, "sale", "refund");
+        terminalId, new BigInteger(txnId), "sale", "refund");
     transaction = getPGTransaction(pgTxnlist);
     log.debug("TransactionDaoImpl | getTransactionToVoid | Exiting");
     return transaction;
@@ -119,7 +119,7 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
         "TransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist = transactionRepository
-        .findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(transactionId,
+        .findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(new BigInteger(transactionId),
             issuerTxnRefNum, merchantId, terminalId);
     transaction = getPGTransaction(pgTxnlist);
     log.debug(

@@ -214,11 +214,11 @@ public class PaymentSchemeDaoImpl implements PaymentSchemeDao {
 				paymentScheme1.setContactName(tuple.get(QPGPaymentScheme.pGPaymentScheme.contactName));
 				paymentScheme1.setContactPhone(tuple.get(QPGPaymentScheme.pGPaymentScheme.contactPhone));
 				paymentScheme1.setId(tuple.get(QPGPaymentScheme.pGPaymentScheme.id));
-				if (paymentScheme1.getStatus().equals("0")) {
+				if (paymentScheme1.getStatus().equals(0)) {
 					paymentScheme1.setStatus(PGConstants.STATUS_ACTIVE);
-				} else if (paymentScheme1.getStatus().equals("1")) {
+				} else if (paymentScheme1.getStatus().equals(1)) {
 					paymentScheme1.setStatus(PGConstants.STATUS_PENDING);
-				} else if (paymentScheme1.getStatus().equals("2")) {
+				} else if (paymentScheme1.getStatus().equals(2)) {
 					paymentScheme1.setStatus(PGConstants.STATUS_SUSPENDED);
 				}
 				searchList.add(paymentScheme1);

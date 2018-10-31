@@ -16,13 +16,9 @@ import org.springframework.stereotype.Repository;
 import com.chatak.pg.acq.dao.IssSettlementDataDao;
 import com.chatak.pg.acq.dao.model.PGIssSettlementData;
 import com.chatak.pg.acq.dao.model.QPGIssSettlementData;
-import com.chatak.pg.acq.dao.model.QPGMerchant;
-import com.chatak.pg.acq.dao.model.QPGTransaction;
 import com.chatak.pg.acq.dao.repository.IssSettlementDataRepository;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
-import com.chatak.pg.util.CommonUtil;
-import com.chatak.pg.util.DateUtil;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
@@ -78,17 +74,15 @@ public class IssSettlementDataDaoImpl implements IssSettlementDataDao {
 	
 	@Override
 	public List<PGIssSettlementData> getIssSettlementData(Long programManagerId, Timestamp batchDate) {
+		if (programManagerId == null || programManagerId == 0l) {
+			return null;
+		}
 		List<PGIssSettlementData> listOfIssSettlementData = new ArrayList<>();
 		PGIssSettlementData issSettlementData = null;
-		Timestamp startDate = null;
-		Timestamp endDate = null;
-		startDate = DateUtil.getStartDayTimestamp(DateUtil.toDateStringFormat(batchDate, PGConstants.DATE_FORMAT),
-				PGConstants.DATE_FORMAT);
-		endDate = DateUtil.getEndDayTimestamp(DateUtil.toDateStringFormat(batchDate, PGConstants.DATE_FORMAT),
-				PGConstants.DATE_FORMAT);
 		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> tupleList = query.distinct().from(QPGIssSettlementData.pGIssSettlementData)
-				.where(isPmIdEq(programManagerId).and(isValidDate(startDate, endDate)))
+				.where(isPmIdEq(programManagerId)
+						.and(isBatchDate(batchDate)))
 				.list(QPGIssSettlementData.pGIssSettlementData.acqPmId,
 						QPGIssSettlementData.pGIssSettlementData.batchDate,
 						QPGIssSettlementData.pGIssSettlementData.programManagerId,
@@ -120,14 +114,8 @@ public class IssSettlementDataDaoImpl implements IssSettlementDataDao {
 	private BooleanExpression isPmIdEq(Long programManagerId) {
 		return (programManagerId != 0l) ? QPGIssSettlementData.pGIssSettlementData.acqPmId.eq(programManagerId) : null;
 	}
-
-	private BooleanExpression isValidDate(Timestamp fromDate, Timestamp toDate) {
-		if ((fromDate != null && toDate == null)) {
-			return QPGIssSettlementData.pGIssSettlementData.batchDate.gt(fromDate);
-		} else if ((fromDate == null && toDate != null)) {
-			return QPGIssSettlementData.pGIssSettlementData.batchDate.lt(toDate);
-		} else if ((fromDate == null))
-			return null;
-		return QPGIssSettlementData.pGIssSettlementData.batchDate.between(fromDate, toDate);
+	
+	private BooleanExpression isBatchDate(Timestamp batchDate) {
+		return (batchDate != null) ? QPGIssSettlementData.pGIssSettlementData.batchDate.eq(batchDate) : null;
 	}
 }

@@ -5,9 +5,13 @@ import java.util.List;
 
 import com.chatak.pg.model.AgentDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @SuppressWarnings("rawtypes")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value=Include.NON_NULL)
 public class Response implements Serializable {
 
   /**
@@ -66,6 +70,36 @@ public class Response implements Serializable {
   private String deviceTimeZoneOffset;
   
   private String deviceTimeZoneRegion;
+  
+  private Long id;
+  
+  private String isoName;
+  
+  private Long isoId;
+  
+  public String getIsoName() {
+    return isoName;
+  }
+
+  public void setIsoName(String isoName) {
+    this.isoName = isoName;
+  }
+
+  public Long getIsoId() {
+    return isoId;
+  }
+
+  public void setIsoId(Long isoId) {
+    this.isoId = isoId;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public List<AgentDTO> getAgentDTOlist() {
     return agentDTOlist;

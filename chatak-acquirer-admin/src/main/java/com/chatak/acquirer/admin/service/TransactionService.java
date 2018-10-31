@@ -34,11 +34,11 @@ public interface TransactionService {
 	 * @return
 	 * @throws ChatakAdminException
 	 */
-	public GetTransactionsListResponse searchTransactions(GetTransactionsListRequest getTransactionsListRequest) throws ChatakAdminException;
+	public GetTransactionsListResponse searchTransactions(GetTransactionsListRequest getTransactionsListRequest , Long entityId) throws ChatakAdminException;
 	
 	public GetTransactionsListResponse searchTransactionsBySettlementStatus(GetTransactionsListRequest getTransactionsListRequest) throws ChatakAdminException;
 	
-	public GetTransactionsListResponse getAllTransactions(GetTransactionsListRequest getTransactionsListRequest) throws ChatakAdminException;
+	public GetTransactionsListResponse getAllTransactions(GetTransactionsListRequest getTransactionsListRequest ,  Long entityID) throws ChatakAdminException;
 	
 	public List<ReportsDTO> getAllAccountsExecutedTransactions();
 	
@@ -74,5 +74,7 @@ public interface TransactionService {
 	public TransactionPopUpDataDto fetchTransactionDetails(String accountTransactionId);
 	
 	public String getPartialRefundBalance(String accountTransactionId,String merchantCode);
+	
+	public GetTransactionsListResponse searchAccountTransactionsForEntityId(GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType);
 	
 }

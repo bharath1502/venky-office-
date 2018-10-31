@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -60,6 +60,7 @@ import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * << Add Comments Here >>

@@ -91,12 +91,21 @@
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+		<property name="jpaProperties">
+          <props>
+            <prop key="hibernate.id.new_generator_mappings">false</prop>
+          </props>
+        </property>
 		<!-- spring based scanning for entity classes -->
 		<property name="packagesToScan" value="com.chatak.pg.acq.dao" />
 	</bean>
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	<bean id="objMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperBuilder">
+		
 	</bean>
 
 </beans>

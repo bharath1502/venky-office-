@@ -2,7 +2,7 @@ package com.chatak.merchant.controller.model;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * REST API model class to hold response login result

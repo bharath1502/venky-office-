@@ -5,6 +5,11 @@ package com.chatak.pg.user.bean;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * @Author: Girmiti Software
  * @Date: May 10, 2018

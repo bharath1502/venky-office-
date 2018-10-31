@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -36,7 +35,6 @@ import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGFeeProgram;
-import com.chatak.pg.acq.dao.model.PGLegalEntity;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantBank;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
@@ -58,6 +56,7 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class MerchantValidateServiceImpl implements MerchantValidateService, PGConstants {

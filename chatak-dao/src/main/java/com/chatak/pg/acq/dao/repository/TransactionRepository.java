@@ -31,10 +31,10 @@ public interface TransactionRepository extends
                                                                                                       String txnType,
                                                                                                       String authId);
 
-  @Query("select t from PGTransaction t where t.merchantId = :merchantId and t.terminalId = :terminalId and t.transactionId = :txnId and (t.transactionType = :saleTxnType or t.transactionType = :refundTxnType) and t.status='0' and t.transactionId not in(select tin.refTransactionId from PGTransaction tin where tin.refTransactionId=:txnId and tin.transactionType='void' and tin.status='0') ")
+  @Query("select t from PGTransaction t where t.merchantId = :merchantId and t.terminalId = :terminalId and t.id = :id and (t.transactionType = :saleTxnType or t.transactionType = :refundTxnType) and t.status='0' and t.id not in(select tin.refTransactionId from PGTransaction tin where tin.refTransactionId=:id and tin.transactionType='void' and tin.status='0') ")
   public List<PGTransaction> findByVoidTransactionType(@Param("merchantId") String merchantId,
                                                        @Param("terminalId") String terminalId,
-                                                       @Param("txnId") String txnId,
+                                                       @Param("id") BigInteger id,
                                                        @Param("saleTxnType") String saleTxnType,
                                                        @Param("refundTxnType") String refundTxnType);
 
@@ -68,9 +68,9 @@ public interface TransactionRepository extends
                                                                                     String pan,
                                                                                     String invoiceNumber);
 
-  public List<PGTransaction> findByMerchantIdAndTerminalIdAndTransactionIdAndTransactionType(String merchantId,
+  public List<PGTransaction> findByMerchantIdAndTerminalIdAndIdAndTransactionType(String merchantId,
                                                                                              String terminalId,
-                                                                                             String txnId,
+                                                                                             BigInteger txnId,
                                                                                              String txnType);
 
   @Query("select t from PGTransaction t where t.merchantId = :merchantId and t.terminalId = :terminalId and t.transactionId = :txnId and t.transactionType = :saleTxnType ")
@@ -80,8 +80,8 @@ public interface TransactionRepository extends
                                                        @Param("saleTxnType") String saleTxnType);
 
   //@Query("select t from PGTransaction t where t.transactionId = :transactionId and t.issuerTxnRefNum = :issuerTxnRefNum and t.terminalId=:terminalId and t.merchantId=:merchantId and t.status = 0 and t.merchantSettlementStatus='Pending' and t.transactionId not in (select tin.refTransactionId from PGTransaction tin where tin.refTransactionId = :transactionId and tin.status = 0 and tin.transactionType = 'void')")
-  @Query("select t from PGTransaction t where t.transactionId = :transactionId and t.issuerTxnRefNum = :issuerTxnRefNum and t.terminalId=:terminalId and t.merchantId=:merchantId and t.status = 0 and t.transactionId not in (select tin.refTransactionId from PGTransaction tin where tin.refTransactionId = :transactionId and tin.status = 0 and tin.transactionType = 'void')")
-  public List<PGTransaction> findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(@Param("transactionId") String transactionId,
+  @Query("select t from PGTransaction t where t.id = :id and t.issuerTxnRefNum = :issuerTxnRefNum and t.terminalId=:terminalId and t.merchantId=:merchantId and t.status = 0 and t.id not in (select tin.refTransactionId from PGTransaction tin where tin.refTransactionId = :id and tin.status = 0 and tin.transactionType = 'void')")
+  public List<PGTransaction> findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(@Param("id") BigInteger id,
                                                                                                     @Param("issuerTxnRefNum") String issuerTxnRefNum,
                                                                                                     @Param("merchantId") String merchantId,
                                                                                                     @Param("terminalId") String terminalId);
@@ -92,8 +92,8 @@ public interface TransactionRepository extends
                                                                                                        @Param("merchantId") String merchantId,
                                                                                                        @Param("terminalId") String terminalId);
 
-  @Query("select t from PGTransaction t where t.transactionId = :transactionId and t.issuerTxnRefNum = :issuerTxnRefNum and t.merchantId=:merchantId and t.status = 0 and t.transactionType ='sale' and t.transactionId not in (select tin.refTransactionId from PGTransaction tin where tin.refTransactionId = :transactionId and tin.status = 0 and (tin.transactionType ='void') )")
-  public List<PGTransaction> findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId(@Param("transactionId") String transactionId,
+  @Query("select t from PGTransaction t where t.id = :id and t.issuerTxnRefNum = :issuerTxnRefNum and t.merchantId=:merchantId and t.status = 0 and t.transactionType ='sale' and t.id not in (select tin.refTransactionId from PGTransaction tin where tin.refTransactionId = :id and tin.status = 0 and (tin.transactionType ='void') )")
+  public List<PGTransaction> findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId(@Param("id") BigInteger id,
                                                                                                       @Param("issuerTxnRefNum") String issuerTxnRefNum,
                                                                                                       @Param("merchantId") String merchantId);
 
@@ -139,7 +139,7 @@ public interface TransactionRepository extends
   public List<PGTransaction> findByMerchantIdAndTerminalIdAndInvoiceNumberAndTxnAmountAndPan(String merchantId,
                                                                            String terminalId,
                                                                            String invoiceNumber,Long txnAmount,String pan);
-  @Query("select t from PGTransaction t where t.merchantId=:merchantId ")
+  @Query("select t from PGTransaction t where t.merchantId=:merchantId")
   public List<PGTransaction> getAllTransactionsOnMerchantCode(@Param("merchantId") String merchantId);
   
   @Query("select t from PGTransaction t where t.merchantId = :merchantId and t.merchantSettlementStatus='Executed'")
@@ -147,8 +147,8 @@ public interface TransactionRepository extends
   
   public PGTransaction findByTransactionId(String pGTransactionId);
   
-  @Query("select sum(tin.txnTotalAmount) from PGTransaction tin where tin.refTransactionId = :transactionId and tin.status = 0 and tin.transactionType ='refund' ")
-  public Long getRefundedAmountByPGTxnId(@Param("transactionId") String transactionId);
+  @Query("select sum(tin.txnTotalAmount) from PGTransaction tin where tin.refTransactionId = :id and tin.status = 0 and tin.transactionType ='refund' ")
+  public Long getRefundedAmountByPGTxnId(@Param("id") String id);
   
   public List<PGTransaction> findByMerchantIdAndTerminalIdAndTransactionIdAndStatusAndMerchantSettlementStatusInAndRefundStatusNotLike(String merchantId,
           String terminalId,
@@ -157,7 +157,7 @@ public interface TransactionRepository extends
           List<String> merchantSettlementStatus,
           Integer refundStatus);
   
-  public List<PGTransaction> findByMerchantIdAndTransactionId(String merchantId, String txnId);
+  public List<PGTransaction> findByMerchantIdAndId(String merchantId, BigInteger id);
   
   @Query("select sum(t.merchantFeeAmount) from PGTransaction t where t.merchantId=:merchantId")
   public Long getMerchantFeeByMerchantId(@Param("merchantId") String merchantId);

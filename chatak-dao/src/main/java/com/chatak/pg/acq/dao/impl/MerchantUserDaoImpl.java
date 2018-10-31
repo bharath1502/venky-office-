@@ -3,10 +3,12 @@ package com.chatak.pg.acq.dao.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +30,10 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.GenericUserDTO;
+import com.chatak.pg.user.bean.GetMerchantListResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
+import com.chatak.pg.util.StringUtils;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.OrderSpecifier;
@@ -119,6 +123,16 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
   @Override
   public PGMerchantUsers findByUserName(String userName) throws DataAccessException {
     return merchantUserRepository.findByUserNameAndStatusNotLike(userName,PGConstants.STATUS_DELETED);
+  }
+  
+  /**
+   * @param userName
+   * @return
+   * @throws DataAccessException
+   */
+  @Override
+  public PGMerchantUsers getMerchantUserByStatus(String userName) throws DataAccessException {
+    return merchantUserRepository.findByUserNameAndStatusLike(userName,PGConstants.STATUS_ACTIVE);
   }
 
   /**
@@ -266,6 +280,111 @@ private int getTotalNumberOfRecords(GenericUserDTO userTo) {
 
 	return (adminuserList != null && !adminuserList.isEmpty() ? adminuserList
 			.size() : 0);
+}
+
+  @Override
+  public List<GenericUserDTO> searchMerchantUsersForPM(GenericUserDTO userTo, Long entityId) {
+    logger.info("MerchantDaoImpl | searchMerchantUsersForPM | Entering");
+    GetMerchantListResponse getMerchantListResponse = new GetMerchantListResponse();
+    List<GenericUserDTO> merchantList = new ArrayList<>();
+    int startIndex = 0;
+    int endIndex = 0;
+    Integer totalRecords = userTo.getNoOfRecords();
+
+    if (userTo.getPageIndex() == null || userTo.getPageIndex() == 1) {
+      totalRecords = getTotalNumberOfMerchantRecordsForPM(userTo, entityId);
+      userTo.setNoOfRecords(totalRecords);
+    }
+    getMerchantListResponse.setNoOfRecords(totalRecords);
+    if (userTo.getPageIndex() == null && userTo.getPageSize() == null) {
+      startIndex = 0;
+    } else {
+      startIndex = (userTo.getPageIndex() - 1) * userTo.getPageSize();
+      endIndex = userTo.getPageSize() + startIndex;
+    }
+    int resultIndex = endIndex - startIndex;
+    StringBuilder query = new StringBuilder(
+        "SELECT * FROM ( SELECT PGMU.USER_ROLE_TYPE, PGUR.ROLE_NAME, PGMU.USER_NAME, PGMU.FIRST_NAME, PGMU.LAST_NAME, PGMU.EMAIL, PGMU.STATUS, PGMU.PHONE, PM.MERCHANT_CODE, PGMU.CREATED_DATE, PGMU.UPDATED_DATE, PGMU.ID, PM.BUSINESS_NAME ")
+            .append(" FROM PG_MERCHANT_USERS AS PGMU left JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGMU.PG_MERCHANT_ID = PMEM.MERCHANT_ID "
+                + "left JOIN PG_USER_ROLES PGUR ON PGUR.ROLE_ID = PGMU.USER_ROLE_ID left JOIN PG_MERCHANT PM ON PM.ID = PMEM.MERCHANT_ID where PMEM.ENTITY_ID =:entityId")
+            .append(" union ")
+            .append(" SELECT PGMU.USER_ROLE_TYPE, PGUR.ROLE_NAME, PGMU.USER_NAME, PGMU.FIRST_NAME, PGMU.LAST_NAME, PGMU.EMAIL, PGMU.STATUS, PGMU.PHONE, PM.MERCHANT_CODE, PGMU.CREATED_DATE, PGMU.UPDATED_DATE, PGMU.ID, PM.BUSINESS_NAME ")
+            .append(" FROM PG_MERCHANT AS PM left JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PM.ID = PMEM.MERCHANT_ID "
+                + "left JOIN PG_PM_ISO_MAPPING AS PMIM ON PMEM.ENTITY_ID = PMIM.ISO_ID left JOIN PG_MERCHANT_USERS PGMU ON PGMU.PG_MERCHANT_ID = PMEM.MERCHANT_ID left JOIN PG_USER_ROLES PGUR ON PGUR.ROLE_ID = PGMU.USER_ROLE_ID WHERE PMIM.PM_ID =:entityId ");
+    query.append(" )a where 1=1  ");
+    merchantFilterParameters(userTo, query);
+    query.append("  ORDER BY a.CREATED_DATE DESC");
+    query.append("  limit :startIndex,:resultSize");
+    Query qry = entityManager.createNativeQuery(query.toString());
+    qry.setParameter("startIndex", startIndex);
+    qry.setParameter("resultSize", resultIndex);
+    qry.setParameter("entityId", entityId);
+    List<Object> cardProgramResponse = qry.getResultList();
+    GenericUserDTO request = null;
+    if (StringUtil.isListNotNullNEmpty(cardProgramResponse)) {
+      Iterator<Object> itr = cardProgramResponse.iterator();
+      while (itr.hasNext()) {
+        Object[] object = (Object[]) itr.next();
+        request = new GenericUserDTO();
+        request.setUserType(object[0].toString());
+        request.setUserRoleName(object[1].toString());
+        request.setUserName((object[2].toString()));
+        request.setFirstName(object[3].toString());
+        request.setLastName(object[4].toString());
+        request.setEmail(String.valueOf(object[5]));
+        request.setStatus(Integer.valueOf(object[6].toString()));
+        request.setPhone(object[7].toString());
+        request.setMerchantCode(object[8].toString());
+        request.setCreatedDate((Timestamp)(object[9]));
+        request.setUpdatedDate((Timestamp)(object[10]));
+        request.setAdminUserId(Long.valueOf(object[11].toString()));
+        request.setMerchantName(object[12].toString());
+        merchantList.add(request);
+      }
+    }
+    logger.info("MerchantDaoImpl | getMerchantlist | Exiting");
+    return merchantList;
+  }
+
+  private void merchantFilterParameters(GenericUserDTO userTo, StringBuilder query) {
+    if (!StringUtils.isNullAndEmpty(userTo.getFirstName())) {
+      query.append(" and (a.FIRST_NAME= '" + userTo.getFirstName() + "' )");
+    }
+    if (!StringUtils.isNullAndEmpty(userTo.getLastName())) {
+      query.append(" and (a.LAST_NAME= '" + userTo.getLastName() + "' )");
+    }
+    if (!StringUtils.isNullAndEmpty(userTo.getEmail())) {
+      query.append(" and (a.EMAIL= '" + userTo.getEmail() + "' )");
+    }
+    if (!StringUtils.isNullAndEmpty(userTo.getPhone())) {
+      query.append(" and (a.PHONE= '" + userTo.getPhone() + "' )");
+    }
+    if (!StringUtils.isNullAndEmpty(userTo.getStatus())) {
+      query.append(" and (a.STATUS= '" + userTo.getStatus() + "' )");
+    }
+    if (!StringUtils.isNullAndEmpty(userTo.getMerchantCode())) {
+      query.append(" and ( a.MERCHANT_CODE= '" + userTo.getMerchantCode() + "' ) ");
+    }
+  }
+
+private int getTotalNumberOfMerchantRecordsForPM(GenericUserDTO userTo, Long entityId) {
+  StringBuilder query = new StringBuilder("SELECT * FROM ( SELECT PGUR.ROLE_NAME, PGMU.USER_NAME, PGMU.FIRST_NAME, ")
+      .append( "PGMU.LAST_NAME, PGMU.EMAIL, PGMU.STATUS, PGMU.CREATED_DATE, PGMU.PHONE, PGMU.ID, PGMU.USER_ROLE_TYPE, PM.MERCHANT_CODE ")
+      .append(" FROM PG_MERCHANT_USERS AS PGMU left JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGMU.PG_MERCHANT_ID = PMEM.MERCHANT_ID ")
+      .append(" left JOIN PG_USER_ROLES PGUR ON PGUR.ROLE_ID = PGMU.USER_ROLE_ID left JOIN PG_MERCHANT PM ON PM.ID = PMEM.MERCHANT_ID where PMEM.ENTITY_ID =:entityId")
+      .append(" union ")
+      .append(" SELECT PGUR.ROLE_NAME, PGMU.USER_NAME, PGMU.FIRST_NAME, PGMU.LAST_NAME, PGMU.EMAIL, PGMU.STATUS, PGMU.CREATED_DATE, PGMU.PHONE, PGMU.ID, PGMU.USER_ROLE_TYPE, PM.MERCHANT_CODE ")
+      .append(" FROM PG_MERCHANT AS PM left JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PM.ID = PMEM.MERCHANT_ID ")
+      .append(" left JOIN PG_PM_ISO_MAPPING AS PMIM ON PMEM.ENTITY_ID = PMIM.ISO_ID left JOIN PG_MERCHANT_USERS PGMU ON PGMU.PG_MERCHANT_ID = PMEM.MERCHANT_ID ")
+      .append(" left JOIN PG_USER_ROLES PGUR ON PGUR.ROLE_ID = PGMU.USER_ROLE_ID WHERE PMIM.PM_ID=:entityId");
+      query.append(" )a where 1=1  ");
+  merchantFilterParameters(userTo, query);
+  query.append("  ORDER BY a.CREATED_DATE DESC");
+
+  Query qry = entityManager.createNativeQuery(query.toString());
+  qry.setParameter("entityId", entityId);
+  List<Object> cardProgramResponse = qry.getResultList();
+  return (StringUtils.isListNotNullNEmpty(cardProgramResponse) ? cardProgramResponse.size() : 0);
 }
 
 private BooleanExpression isUserIdEq(Long userid) {

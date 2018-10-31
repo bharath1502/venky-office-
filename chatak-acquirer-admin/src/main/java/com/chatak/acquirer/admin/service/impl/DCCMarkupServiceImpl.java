@@ -1,7 +1,6 @@
 package com.chatak.acquirer.admin.service.impl;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
@@ -13,6 +12,7 @@ import com.chatak.pg.bean.MerchantNameResponse;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.util.Constants;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class DCCMarkupServiceImpl implements DCCMarkupService{

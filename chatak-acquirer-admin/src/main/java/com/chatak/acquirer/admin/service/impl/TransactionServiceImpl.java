@@ -82,11 +82,11 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public GetTransactionsListResponse searchTransactions(
-      GetTransactionsListRequest getTransactionsListRequest) throws ChatakAdminException {
+      GetTransactionsListRequest getTransactionsListRequest , Long entityId) throws ChatakAdminException {
     logger.info("Entering :: TransactionServiceImpl :: searchTransactions method");
     GetTransactionsListResponse response = new GetTransactionsListResponse();
     try {
-      List<Transaction> transactions = transactionDao.getTransactions(getTransactionsListRequest);
+      List<Transaction> transactions = transactionDao.getTransactions(getTransactionsListRequest , entityId);
 
       if (transactions != null) {
         response.setTransactionList(transactions);
@@ -136,11 +136,11 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public GetTransactionsListResponse getAllTransactions(
-      GetTransactionsListRequest getTransactionsListRequest) throws ChatakAdminException {
+      GetTransactionsListRequest getTransactionsListRequest, Long entityID) throws ChatakAdminException {
     logger.info("Entering :: TransactionServiceImpl :: getAllTransactions method");
     GetTransactionsListResponse response = new GetTransactionsListResponse();
     try {
-      List<Transaction> transactions = transactionDao.getTransactions(getTransactionsListRequest);
+      List<Transaction> transactions = transactionDao.getTransactions(getTransactionsListRequest,entityID);
       List<PGTransaction> pgTransactions = transactionDao.getAllTransactions();
       if (pgTransactions != null) {
         transactions = new ArrayList<>(pgTransactions.size());
@@ -690,5 +690,10 @@ public class TransactionServiceImpl implements TransactionService {
       }
     }
     return null;
+  }
+  @Override
+  public GetTransactionsListResponse searchAccountTransactionsForEntityId(GetTransactionsListRequest getTransactionsListRequest,
+		  Long entityId, String userType) {
+	  return accountTransactionsDao.searchAccountTransactionsForEntityId(getTransactionsListRequest, entityId, userType);
   }
 }

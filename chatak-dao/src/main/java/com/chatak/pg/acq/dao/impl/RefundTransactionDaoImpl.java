@@ -13,8 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
@@ -44,6 +43,8 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
@@ -83,7 +84,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
   @Override
   public Integer getRefundStatus(String pgTransactionId) {
     PGTransaction pgTransaction =
-        transactionRepository.findByTransactionId(pgTransactionId);
+        transactionRepository.findById(new BigInteger(pgTransactionId));
     return pgTransaction.getRefundStatus();
   }
 
@@ -105,7 +106,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
     String pgTransactionId =
         accountTransactionsDao.getSaleAccountTransactionId(accountTransactionId, merchantCode);
     if (null != pgTransactionId) {
-    	return transactionRepository.findByTransactionId(pgTransactionId);
+    	return transactionRepository.findById(new BigInteger(pgTransactionId));
     }
     return null;
   }
@@ -118,7 +119,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist =
         transactionRepository.findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId(
-            transactionId, issuerTxnRefNum, merchantId);
+           new BigInteger(transactionId), issuerTxnRefNum, merchantId);
     transaction = getPGTransaction(pgTxnlist);
     log.debug(
         "TransactionDaoImpl | findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId | Exiting");
@@ -206,10 +207,10 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
     JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tupleList =
         query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant)
-            .where(QPGTransaction.pGTransaction.transactionId.eq(pgTransactionId)
+            .where(QPGTransaction.pGTransaction.id.eq(new BigInteger(pgTransactionId))
                 .and(QPGTransaction.pGTransaction.merchantId
                     .eq(QPGMerchant.pGMerchant.merchantCode)))
-        .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+        .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
             QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
             QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
             QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -264,8 +265,8 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
         ? tuple.get(QPGTransaction.pGTransaction.transactionType) : ""));
     txnDto.setAuth_id((tuple.get(QPGTransaction.pGTransaction.authId) != null)
         ? tuple.get(QPGTransaction.pGTransaction.authId) : "");
-    txnDto.setTransactionId(((tuple.get(QPGTransaction.pGTransaction.transactionId) != null)
-        ? tuple.get(QPGTransaction.pGTransaction.transactionId) : ""));
+    txnDto.setTransactionId(((tuple.get(QPGTransaction.pGTransaction.id) != null)
+        ? tuple.get(QPGTransaction.pGTransaction.id).toString() : ""));
     txnDto
         .setRef_transaction_id(((tuple.get(QPGTransaction.pGTransaction.refTransactionId) != null)
             ? tuple.get(QPGTransaction.pGTransaction.refTransactionId) : "N/A"));
@@ -382,7 +383,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
               isValidDate(startDate, endDate),
               toGetCurrentDayTxns(getTransactionsListRequest.isToGetCurrentDayTxns()))
           .offset(offset).limit(limit).distinct().orderBy(orderByCreatedDateDesc())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -426,7 +427,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
   }
 
   private void subMerchantTupleList(Tuple tuple, Transaction transactionResp) {
-    transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.transactionId));
+    transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.id).toString());
     transactionResp.setTransactionAmount((StringUtils.amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))));
     transactionResp.setTxn_total_amount(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount).doubleValue()/Integer.parseInt("100"));
     transactionResp.setTransactionDate(DateUtil.toDateStringFormat(

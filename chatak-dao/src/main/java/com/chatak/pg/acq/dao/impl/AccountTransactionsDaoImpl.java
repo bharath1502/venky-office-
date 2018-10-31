@@ -15,7 +15,6 @@ import javax.persistence.PersistenceContext;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.chatak.pg.acq.dao.AccountTransactionsDao;
@@ -238,7 +237,7 @@ public class AccountTransactionsDaoImpl implements AccountTransactionsDao {
                     .and(QPGTransaction.pGTransaction.merchantSettlementStatus.in(
                         getSettlementStatusList(getTransactionsListRequest.getSettlementStatus())))
                     .and(QPGAccountTransactions.pGAccountTransactions.pgTransactionId
-                        .eq(QPGTransaction.pGTransaction.transactionId))
+                        .eq(QPGTransaction.pGTransaction.id.stringValue()))
                     .and(QPGAccountTransactions.pGAccountTransactions.transactionCode
                         .in(getTransactionsListRequest.getTransactionCodeList()))
                     .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
@@ -394,7 +393,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
                     .and(QPGTransaction.pGTransaction.merchantSettlementStatus.in(
                         getSettlementStatusList(getTransactionsListRequest.getSettlementStatus())))
                     .and(QPGAccountTransactions.pGAccountTransactions.pgTransactionId
-                        .eq(QPGTransaction.pGTransaction.transactionId))
+                        .eq(QPGTransaction.pGTransaction.id.stringValue()))
                     .and(QPGAccountTransactions.pGAccountTransactions.transactionCode
                         .in(getTransactionsListRequest.getTransactionCodeList()))
                     .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
@@ -726,6 +725,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
     if (status.equals(PGConstants.PG_SETTLEMENT_EXECUTED)) {
       list.add(PGConstants.PG_SETTLEMENT_EXECUTED);
       list.add(PGConstants.PG_TXN_REFUNDED);
+      list.add(Constants.SETTLEMENT_STATUS);
       return list;
     } else {
       list.add(status);
@@ -741,4 +741,293 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
     }
     return QPGAccountTransactions.pGAccountTransactions.createdDate.between(fromDate, toDate);
   }
+
+/**
+ * @param getTransactionsListRequest
+ * @param entityId
+ * @return
+ */
+  @Override
+  public GetTransactionsListResponse searchAccountTransactionsForEntityId(GetTransactionsListRequest getTransactionsListRequest,
+		  Long entityId, String userType) {
+	  log.info("Entering ::AccountTransactionsDaoImpl ::searchAccountTransactionsForEntityId");
+	  int limit = 0;
+	  int offset = 0;
+	  Timestamp fromDate = DateUtil.getStartDayTimestamp(getTransactionsListRequest.getFrom_date(),
+			  PGConstants.DD_MM_YYYY);
+	  Timestamp toDate = DateUtil.getEndDayTimestamp(getTransactionsListRequest.getTo_date(),
+			  PGConstants.DD_MM_YYYY);
+	  AccountTransactionDTO accountTransactionDTO = null;
+	  GetTransactionsListResponse getTransactionsListResponse = null;
+	  List<AccountTransactionDTO> accountTransactionDTOs = null;
+	  try {
+		  Integer totalRecords = getTransactionsListRequest.getNoOfRecords();
+
+		  if (getTransactionsListRequest.getPageIndex() == null
+				  || getTransactionsListRequest.getPageIndex().intValue() == 1) {
+			  totalRecords = getTotalNumberOfRecordsOnSearchForEntity(getTransactionsListRequest, entityId, userType);
+			  getTransactionsListRequest.setNoOfRecords(totalRecords);
+		  }
+		  getTransactionsListRequest.setNoOfRecords(totalRecords);
+		  if (getTransactionsListRequest.getPageIndex() == null
+				  || getTransactionsListRequest.getPageSize() == null) {
+			  offset = 0;
+			  limit = Constants.MAX_PAGE_SIZE;
+		  } else {
+			  offset = (getTransactionsListRequest.getPageIndex() - 1)
+					  * getTransactionsListRequest.getPageSize();
+			  limit = getTransactionsListRequest.getPageSize();
+		  }
+		  List<Tuple> tupleList = null;
+		  JPAQuery query = new JPAQuery(entityManager);
+		  if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
+				  && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
+				  && getTransactionsListRequest.getAcqChannel() == "web") {
+			  tupleList = query.from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
+					  .where(
+							  QPGAccountTransactions.pGAccountTransactions.merchantCode
+							  .eq(QPGAccount.pGAccount.entityId),
+							  QPGAccountTransactions.pGAccountTransactions.transactionCode
+							  .in(getTransactionsListRequest.getTransactionCodeList())
+							  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+									  AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
+							  isEntityId(userType, entityId),
+							  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+							  isMerchantCode(getTransactionsListRequest.getMerchant_code()),
+							  isDateLike(fromDate, toDate))
+					  .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
+					  .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+							  QPGAccountTransactions.pGAccountTransactions.processedTime,
+							  QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
+							  QPGAccountTransactions.pGAccountTransactions.transactionType,
+							  QPGAccountTransactions.pGAccountTransactions.description,
+							  QPGAccountTransactions.pGAccountTransactions.debit,
+							  QPGAccountTransactions.pGAccountTransactions.merchantCode,
+							  QPGAccountTransactions.pGAccountTransactions.transactionCode,
+							  QPGAccountTransactions.pGAccountTransactions.credit,
+							  QPGAccountTransactions.pGAccountTransactions.currentBalance,
+							  QPGAccountTransactions.pGAccountTransactions.status,
+							  QPGAccountTransactions.pGAccountTransactions.id,
+							  QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
+							  QPGAccount.pGAccount.currency,
+							  QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
+							  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
+		  } else {
+			  tupleList = query
+					  .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount,
+							  QPGTransaction.pGTransaction)
+					  .where(
+							  QPGAccountTransactions.pGAccountTransactions.merchantCode
+							  .eq(QPGAccount.pGAccount.entityId)
+							  .and(QPGTransaction.pGTransaction.merchantSettlementStatus.in(
+									  getSettlementStatusList(getTransactionsListRequest.getSettlementStatus())))
+							  .and(QPGAccountTransactions.pGAccountTransactions.pgTransactionId
+									  .eq(QPGTransaction.pGTransaction.id.stringValue()))
+							  .and(QPGAccountTransactions.pGAccountTransactions.transactionCode
+									  .in(getTransactionsListRequest.getTransactionCodeList()))
+							  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+									  PGConstants.TXN_TYPE_VOID, PGConstants.TXN_TYPE_REFUND,
+									  PGConstants.TXN_TYPE_SALE))
+							  .and(QPGAccountTransactions.pGAccountTransactions.status.in(
+									  getSettlementStatusList(getTransactionsListRequest.getSettlementStatus()))),
+							  isEntityId(userType, entityId),
+							  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+							  isValidDate(fromDate, toDate),
+							  isMerchantCode(getTransactionsListRequest.getMerchant_code()))
+					  .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
+					  .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+							  QPGAccountTransactions.pGAccountTransactions.processedTime,
+							  QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
+							  QPGAccountTransactions.pGAccountTransactions.transactionType,
+							  QPGAccountTransactions.pGAccountTransactions.description,
+							  QPGAccountTransactions.pGAccountTransactions.debit,
+							  QPGAccountTransactions.pGAccountTransactions.merchantCode,
+							  QPGAccountTransactions.pGAccountTransactions.transactionCode,
+							  QPGAccountTransactions.pGAccountTransactions.credit,
+							  QPGAccountTransactions.pGAccountTransactions.currentBalance,
+							  QPGAccountTransactions.pGAccountTransactions.status,
+							  QPGAccountTransactions.pGAccountTransactions.id,
+							  QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
+							  QPGAccount.pGAccount.currency,QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
+							  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
+		  }
+		  if (!CollectionUtils.isEmpty(tupleList)) {
+			  getTransactionsListResponse = validateListAndSetAccountTransactionDTO(totalRecords, tupleList);
+		  }
+	  } catch (Exception e) {
+		  log.info("ERROR ::AccountTransactionsDaoImpl :: searchAccountTransactionsForEntityId " + e);
+	  }
+	  return getTransactionsListResponse;
+  }
+  
+  private Integer getTotalNumberOfRecordsOnSearchForEntity(
+		  GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType) {
+	  log.info("Entering ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearchForEntity ");
+	  try {
+		  if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
+				  && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
+				  && getTransactionsListRequest.getAcqChannel() == "web") {
+			  JPAQuery query = new JPAQuery(entityManager);
+			  List<Long> list = query.from(QPGAccountTransactions.pGAccountTransactions,QPGAccount.pGAccount)
+					  .where(
+							  QPGAccountTransactions.pGAccountTransactions.merchantCode.eq(QPGAccount.pGAccount.entityId),
+							  QPGAccountTransactions.pGAccountTransactions.transactionCode
+							  .in(getTransactionsListRequest.getTransactionCodeList())
+							  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+									  AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
+							  isEntityId(userType, entityId),
+							  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+							  isMerchantCode(getTransactionsListRequest.getMerchant_code()))
+					  .orderBy(orderByCreatedDateDescVirtualAcc())
+					  .list(QPGAccountTransactions.pGAccountTransactions.id);
+			  log.info("Exiting ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearch ");
+			  return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
+		  } else {
+			  JPAQuery query = new JPAQuery(entityManager);
+			  List<Long> list = query
+					  .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount,
+							  QPGTransaction.pGTransaction)
+					  .where(
+							  QPGAccountTransactions.pGAccountTransactions.merchantCode
+							  .eq(QPGAccount.pGAccount.entityId)
+							  .and(QPGTransaction.pGTransaction.merchantSettlementStatus.in(
+									  getSettlementStatusList(getTransactionsListRequest.getSettlementStatus())))
+							  .and(QPGAccountTransactions.pGAccountTransactions.pgTransactionId
+									  .eq(QPGTransaction.pGTransaction.id.stringValue()))
+							  .and(QPGAccountTransactions.pGAccountTransactions.transactionCode
+									  .in(getTransactionsListRequest.getTransactionCodeList()))
+							  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+									  PGConstants.TXN_TYPE_VOID, PGConstants.TXN_TYPE_REFUND,
+									  PGConstants.TXN_TYPE_SALE))
+							  .and(QPGAccountTransactions.pGAccountTransactions.status.in(
+									  getSettlementStatusList(getTransactionsListRequest.getSettlementStatus()))),
+							  isEntityId(userType, entityId),
+							  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+							  isMerchantCode(getTransactionsListRequest.getMerchant_code()))
+					  .orderBy(orderByCreatedDateDescVirtualAcc())
+					  .list(QPGAccountTransactions.pGAccountTransactions.id);
+			  log.info("Exiting ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearchForEntity ");
+			  return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
+		  }
+	  } catch (Exception e) {
+		  log.error("ERROR ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearchForEntity " + e);
+	  }
+	  return 0;
+  }
+
+  @Override
+  public GetTransactionsListResponse searchManualAccountTransactionsForEntityId(
+		  GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType) {
+	  log.info("Entering ::AccountTransactionsDaoImpl :: searchManulAccountTransactionsForEntityId");
+	  int offset = 0;
+	  int limit = 0;
+	  Timestamp fromDate = DateUtil.getStartDayTimestamp(getTransactionsListRequest.getFrom_date(),
+			  PGConstants.DD_MM_YYYY);
+	  Timestamp toDate = DateUtil.getEndDayTimestamp(getTransactionsListRequest.getTo_date(),
+			  PGConstants.DD_MM_YYYY);
+	  GetTransactionsListResponse getTransactionsListResponse = null;
+	  AccountTransactionDTO accountTransactionDTO = null;
+	  List<AccountTransactionDTO> accountTransactionDTOs = null;
+	  Integer totalRecords = getTransactionsListRequest.getNoOfRecords();
+
+	  if (getTransactionsListRequest.getPageIndex() == null
+			  || getTransactionsListRequest.getPageIndex().intValue() == 1) {
+		  totalRecords = getTotalNumberOfRecordsOnManualSearchForEntityId(getTransactionsListRequest, entityId, userType);
+		  getTransactionsListRequest.setNoOfRecords(totalRecords);
+	  }
+	  getTransactionsListRequest.setNoOfRecords(totalRecords);
+	  if (getTransactionsListRequest.getPageIndex() == null
+			  || getTransactionsListRequest.getPageSize() == null) {
+		  offset = 0;
+		  limit = Constants.MAX_PAGE_SIZE;
+	  } else {
+		  offset = (getTransactionsListRequest.getPageIndex() - 1)
+				  * getTransactionsListRequest.getPageSize();
+		  limit = getTransactionsListRequest.getPageSize();
+	  }
+
+	  List<String> merchantCode = new ArrayList<>();
+	  if (!StringUtil.isNullAndEmpty(getTransactionsListRequest.getMerchant_code())) {
+		  String[] merchant = getTransactionsListRequest.getMerchant_code().split("\\|");
+		  merchantCode = Arrays.asList(merchant);
+	  }
+
+	  JPAQuery query = new JPAQuery(entityManager);
+	  List<Tuple> tupleList = query
+			  .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
+			  .where(
+					  QPGAccountTransactions.pGAccountTransactions.merchantCode
+					  .eq(QPGAccount.pGAccount.entityId),
+					  QPGAccountTransactions.pGAccountTransactions.transactionCode
+					  .in(getTransactionsListRequest.getTransactionCodeList())
+					  .and(QPGAccountTransactions.pGAccountTransactions.merchantCode.in(merchantCode))
+					  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+							  AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
+					  isEntityId(userType, entityId),
+					  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+					  isValidDate(fromDate, toDate))
+			  .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
+			  .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+					  QPGAccountTransactions.pGAccountTransactions.processedTime,
+					  QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
+					  QPGAccountTransactions.pGAccountTransactions.transactionType,
+					  QPGAccountTransactions.pGAccountTransactions.description,
+					  QPGAccountTransactions.pGAccountTransactions.debit,
+					  QPGAccountTransactions.pGAccountTransactions.merchantCode,
+					  QPGAccountTransactions.pGAccountTransactions.transactionCode,
+					  QPGAccountTransactions.pGAccountTransactions.credit,
+					  QPGAccountTransactions.pGAccountTransactions.currentBalance,
+					  QPGAccountTransactions.pGAccountTransactions.status,
+					  QPGAccountTransactions.pGAccountTransactions.id,
+					  QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
+					  QPGAccount.pGAccount.currency,
+					  QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
+					  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
+
+	  if (!CollectionUtils.isEmpty(tupleList)) {
+		  getTransactionsListResponse = validateListAndSetAccountTransactionDTO(totalRecords, tupleList);
+	  }
+	  return getTransactionsListResponse;
+  }
+  
+  private Integer getTotalNumberOfRecordsOnManualSearchForEntityId(
+		  GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType) {
+	  log.info("Entering :: AccountTransactionsDaoImpl :: getTotalNumberOfRecordsOnManulSearchForEntityId ");
+
+	  if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
+			  && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
+			  && getTransactionsListRequest.getAcqChannel().equalsIgnoreCase("web")) {
+		  List<String> merchantCode = new ArrayList<>();
+		  if (!StringUtil.isNullEmpty(getTransactionsListRequest.getMerchant_code())) {
+			  String[] merchant = getTransactionsListRequest.getMerchant_code().split("\\|");
+			  merchantCode = Arrays.asList(merchant);
+		  }
+
+		  JPAQuery query = new JPAQuery(entityManager);
+		  List<Long> list =
+				  query.from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
+				  .where(QPGAccountTransactions.pGAccountTransactions.merchantCode
+						  .eq(QPGAccount.pGAccount.entityId),
+						  QPGAccountTransactions.pGAccountTransactions.transactionCode
+						  .in(getTransactionsListRequest.getTransactionCodeList())
+						  .and(QPGAccountTransactions.pGAccountTransactions.merchantCode.in(merchantCode))
+						  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+								  AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
+						  isEntityId(userType, entityId),
+						  isStatusLike(getTransactionsListRequest.getSettlementStatus()))
+				  .orderBy(orderByCreatedDateDescVirtualAcc())
+				  .list(QPGAccountTransactions.pGAccountTransactions.id);
+		  log.info("Exiting :: AccountTransactionsDaoImpl :: getTotalNumberOfRecordsOnManulSearchForEntityId ");
+		  return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
+	  }
+	  return 0;
+  }
+  
+	private BooleanExpression isEntityId(String userType, Long entityId) {
+		if (Constants.PM_USER_TYPE.equalsIgnoreCase(userType)) {
+			return QPGTransaction.pGTransaction.pmId.eq(entityId);
+		} else {
+			return QPGTransaction.pGTransaction.isoId.eq(entityId);
+		}
+	}
 }

@@ -20,6 +20,9 @@ public interface MerchantUserRepository extends
 
   @Query("select t from PGMerchantUsers t where t.userName=:userName and t.status <> :status")
   public PGMerchantUsers findByUserNameAndStatusNotLike(@Param("userName") String userName, @Param("status") Integer status);
+  
+  @Query("select t from PGMerchantUsers t where t.userName=:userName and t.status = :status")
+  public PGMerchantUsers findByUserNameAndStatusLike(@Param("userName") String userName, @Param("status") Integer status);
 
   public PGMerchantUsers findByIdAndEmailToken(Long id, String emailToken);
   

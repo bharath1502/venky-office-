@@ -149,6 +149,7 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
 	              issuanceSettlementTxns.setPgTransactionId(settlementTransaction.getPgTransactionId());
 	              issuanceSettlementTxns.setTerminalId(settlementTransaction.getTerminalId());
 	              issuanceSettlementTxns.setTxnDate(settlementTransaction.getTxnDate());
+	              issuanceSettlementTxns.setTxnType(settlementTransaction.getTransactionType());
 	              
 	              issuanceSettlementTransactions.add(issuanceSettlementTxns);           
 	          }

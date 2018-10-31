@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOUtil;
@@ -77,6 +76,7 @@ import com.chatak.pg.util.StringUtils;
 import com.chatak.switches.enums.TransactionType;
 import com.chatak.switches.sb.exception.ServiceException;
 import com.chatak.switches.sb.util.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * << Add Comments Here >>

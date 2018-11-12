@@ -84,7 +84,7 @@
 						<div class="row margin0">
 							<div class="col-sm-12">
 								<!-- Page Form Start -->
-								<form:form action="createTerminal" commandName="terminal"
+								<form:form action="createTerminal" modelAttribute="terminal"
 									name="terminal">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">

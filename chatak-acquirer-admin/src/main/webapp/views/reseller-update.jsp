@@ -75,7 +75,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updateReseller" commandName="resellerData" name="resellerData">
+								<form:form action="updateReseller" modelAttribute="resellerData" name="resellerData">
 							    <input type="hidden" name="CSRFToken" value="${tokenval}">
 								<form:hidden path="resellerId"/>
 									<div class="col-sm-12 paddingT20">

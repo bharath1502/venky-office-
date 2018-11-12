@@ -56,7 +56,7 @@
 							</div>
 							<!--Success and Failure Message End-->
 							<!-- Page Form Start -->
-							<form:form commandName="virtualTeminalVoid" action="processTransactionVoid" id="txnForm" method="post">
+							<form:form modelAttribute="virtualTeminalVoid" action="processTransactionVoid" id="txnForm" method="post">
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12" id="hideAllFields">
 									<div class="row">

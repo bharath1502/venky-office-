@@ -62,7 +62,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="process-manual-debit" commandName="accountBalance" method="post">
+								<form:form action="process-manual-debit" modelAttribute="accountBalance" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<form:hidden id="availableBal" path="availableBalance"/>
 								<form:hidden id="currentBal" path="currentBalance"/>

@@ -94,7 +94,7 @@
 					<%-- <form action="editMerchant" name="editMercahntForm" method="post">
 						<input type="hidden" id="getMerchantId" name="getMerchantId" />
 					</form> --%>
-					<form:form action="process-eft-dash-board-settlement-action" commandName="litleEFTDTO" name="processAction" method="post">
+					<form:form action="process-eft-dash-board-settlement-action" modelAttribute="litleEFTDTO" name="processAction" method="post">
 						<form:hidden path="merchantCode" id="merchantId" />
 						<form:hidden path="transactionId" id="transactionId" />
 						<form:hidden path="amount" id="amount" />

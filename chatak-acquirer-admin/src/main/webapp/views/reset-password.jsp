@@ -61,7 +61,7 @@
 							<!--Success and Failure Message End-->
 							<!-- Page Form Start -->
 							<form:form action="password-reset"
-								commandName="resetPasswordData" method="post">
+								modelAttribute="resetPasswordData" method="post">
 							 <input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12 login-elements-holder">
 

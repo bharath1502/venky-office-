@@ -46,14 +46,14 @@
 								class="green-error">&nbsp;${sucess} </span>
 						</div>
 					<span>
-					<form:form action="searchMerchant" commandName="merchant" name="searchMerchant" method="post">
+					<form:form action="searchMerchant" modelAttribute="merchant" name="searchMerchant" method="post">
 							<form:hidden path="status" id="merchantStatus"/> 
 					</form:form>
-					<form:form action="sub-merchant-search" commandName="merchant" name="searchSubMerchant" method="post">
+					<form:form action="sub-merchant-search" modelAttribute="merchant" name="searchSubMerchant" method="post">
 							<form:hidden path="status" id="subMerchantStatus"/> 
 					</form:form>
 					<form:form action="searchTransactionBySettlementStatus"
-						commandName="transaction" name="transaction">
+						modelAttribute="transaction" name="transaction">
 						<form:hidden path="settlementStatus" id="settlementStatus" />
 					</form:form>
 					

@@ -77,7 +77,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="bank-update" commandName="bank" name="bank" method="post">
+								<form:form action="bank-update" modelAttribute="bank" name="bank" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

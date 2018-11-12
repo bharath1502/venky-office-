@@ -68,7 +68,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="merchant-account-edit" commandName="merchant"
+								<form:form action="merchant-account-edit" modelAttribute="merchant"
 									name="merchant" id="merchantAccountCreate">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">

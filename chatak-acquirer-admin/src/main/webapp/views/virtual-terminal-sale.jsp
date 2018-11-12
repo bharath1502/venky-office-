@@ -140,7 +140,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="do-virtual-terminal-sale"
-									commandName="virtualTeminalSale" id="txnForm">
+									modelAttribute="virtualTeminalSale" id="txnForm">
 									<input type="hidden" id="timeZoneOffset" name="timeZoneOffset"/>
 									<input type="hidden" id="timeZoneRegion" name="timeZoneRegion"/>
 									<input type="hidden" name="CSRFToken" value="${tokenval}">

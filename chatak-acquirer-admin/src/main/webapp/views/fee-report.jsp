@@ -89,7 +89,7 @@
 							<!-- Content Block End -->
 						<!-- Search Table Block Start -->
 						
-						<form:form action="processFeeReport" commandName="feeReportRequest" method="post">
+						<form:form action="processFeeReport" modelAttribute="feeReportRequest" method="post">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 												
 												<fieldset class="col-sm-3">

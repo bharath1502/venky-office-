@@ -119,7 +119,7 @@
 										<input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form>
 								<form:form action="process-settlement-action"
-									commandName="settlementDto" name="processAction" method="post">
+									modelAttribute="settlementDto" name="processAction" method="post">
 									<form:hidden path="merchantId" id="merchantId" />
 									<form:hidden path="terminalId" id="terminalId" />
 									<form:hidden path="txnId" id="txnId" />
@@ -131,7 +131,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="searchTransaction" commandName="transaction"
+								<form:form action="searchTransaction" modelAttribute="transaction"
 									name="transaction">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">

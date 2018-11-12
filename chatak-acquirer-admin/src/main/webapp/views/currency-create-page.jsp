@@ -80,7 +80,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createcurrency" commandName="currencyDTO"
+								<form:form action="createcurrency" modelAttribute="currencyDTO"
 									name="currencyDTO">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">

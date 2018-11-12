@@ -76,7 +76,7 @@
 							<!-- Content Block End -->
 						<!-- Search Table Block Start -->
 						
-						<form:form action="processMerchantRevenueReport" commandName="feeReportRequest" method="post">
+						<form:form action="processMerchantRevenueReport" modelAttribute="feeReportRequest" method="post">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 												<c:if test="${feeReportRequest.getEntityType() eq 'ISO' || feeReportRequest.getEntityType() eq 'Program Manager'}">
 												<fieldset class="col-md-3 col-sm-6">

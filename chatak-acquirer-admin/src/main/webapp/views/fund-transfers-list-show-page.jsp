@@ -91,7 +91,7 @@
 							</div>
 						</div>
 					</div>
-					<form:form action="process-transfer-action" commandName="fundTransferActionModel" name="fundTransferActionModel" method="post">
+					<form:form action="process-transfer-action" modelAttribute="fundTransferActionModel" name="fundTransferActionModel" method="post">
 						<form:hidden path="pgTransfersId" id="pgTransfersId" />
 						<form:hidden path="action" id="action" />
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
@@ -107,7 +107,7 @@
 					</form>
 					
 					<form:form action="process-dash-board-settlement-action"
-						commandName="settlementDto" name="processAction" method="post">
+						modelAttribute="settlementDto" name="processAction" method="post">
 						<form:hidden path="merchantId" id="merchantId" />
 						<form:hidden path="terminalId" id="terminalId" />
 						<form:hidden path="txnId" id="txnId" />

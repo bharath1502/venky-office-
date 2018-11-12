@@ -69,7 +69,7 @@
 									</div>
 								</div>
 								<!--Success and Failure Message End-->
-								<form:form action="updateBin" commandName="binDTO" name="binDTO" method="post">
+								<form:form action="updateBin" modelAttribute="binDTO" name="binDTO" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

@@ -64,7 +64,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<div id="my_popup" class="locatioin-list-popup">
-								<form:form action="addNewAdvancedFraud" commandName="advancedFraudDTO" method="post" name="advancedFraud" id="advancedFraud">
+								<form:form action="addNewAdvancedFraud" modelAttribute="advancedFraudDTO" method="post" name="advancedFraud" id="advancedFraud">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<!-- Fraud Information Pop Up Box Information Start -->
 										<span class="glyphicon glyphicon-remove"

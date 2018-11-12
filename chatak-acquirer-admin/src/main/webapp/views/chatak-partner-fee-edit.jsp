@@ -66,7 +66,7 @@
 									</div>
 								</div>
 								<!-- Page Form Start -->
-								<form:form action="processChatakPartnerFeeEdit" commandName="partnerFeeCodeDTO" method="post">
+								<form:form action="processChatakPartnerFeeEdit" modelAttribute="partnerFeeCodeDTO" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<form:hidden path="merchantCode"/>
 									<div class="col-sm-12">

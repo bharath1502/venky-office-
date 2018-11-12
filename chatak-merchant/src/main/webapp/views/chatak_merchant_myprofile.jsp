@@ -48,7 +48,7 @@
 					<div class="col-xs-12 content-wrapper">
 
 
-						<form:form commandName="merchantProfile"
+						<form:form modelAttribute="merchantProfile"
 							action="chatak_merchant_myprofile_edit" method="post">
 							<!--  -->
 							<!-- modelAttribute="userProfileRequest" -->

@@ -115,7 +115,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="sub-merchant-search" commandName="merchant"
+								<form:form action="sub-merchant-search" modelAttribute="merchant"
 									name="merchant">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">

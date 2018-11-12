@@ -71,7 +71,7 @@
 								
 		
 							</div>
-							<form:form commandName="dccMarkup" name="dccMarkup">
+							<form:form modelAttribute="dccMarkup" name="dccMarkup">
 								<div class="col-sm-12">
 									<div class="row">
 										<label class="col-sm-2"><spring:message code="merchant-details-account-create.label.merchantname"/></label>

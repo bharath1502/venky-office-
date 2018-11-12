@@ -140,7 +140,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updateMerchant" commandName="merchant"
+								<form:form action="updateMerchant" modelAttribute="merchant"
 									name="merchant">
 									<input type="hidden" id="currencyCode" name="currencyCode">
 									<input type="hidden" id="cardProgramIds" name="cardProgramIds">

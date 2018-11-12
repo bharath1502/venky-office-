@@ -196,7 +196,7 @@
 					<!-- Contracts Popup Box Information Start -->
 					<div id="my_popup2" class="locatioin-list-popup">
 						<form:form action="showContractAddOrUpdatePage"
-							commandName="recurringContractInfoDTO" method="post">
+							modelAttribute="recurringContractInfoDTO" method="post">
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 							<span class="glyphicon glyphicon-remove" onclick="closePopup2()"></span>
 							<fieldset class="col-sm-12 padding0">

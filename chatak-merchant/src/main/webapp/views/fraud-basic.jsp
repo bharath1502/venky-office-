@@ -65,7 +65,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="create-fraud" commandName="fraudDTO">
+								<form:form action="create-fraud" modelAttribute="fraudDTO">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

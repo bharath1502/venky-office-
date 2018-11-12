@@ -136,7 +136,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="merchant-search" commandName="merchant" name="merchant">
+								<form:form action="merchant-search" modelAttribute="merchant" name="merchant">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

@@ -71,7 +71,7 @@
 							<input type="hidden" id="totalRecordsId" name="totalRecords" />
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
-						<form:form action="showGlobalManualTransferReport" commandName="getTransactionsListRequest" method="post">
+						<form:form action="showGlobalManualTransferReport" modelAttribute="getTransactionsListRequest" method="post">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.manualtransactions.selectdaterange.fromdate" /><span class="required-field">*</span></label>

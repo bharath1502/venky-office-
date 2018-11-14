@@ -40,7 +40,7 @@
 								class="green-error">&nbsp;${sucess} </span>
 						</div>
 						<span> <form:form action="getTransfersByStatus"
-						commandName="transferListRequest" name="transferListRequest">
+						modelAttribute="transferListRequest" name="transferListRequest">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="status" id="statusId" />
 						<form:hidden path="transferMode" id="transferMode" />

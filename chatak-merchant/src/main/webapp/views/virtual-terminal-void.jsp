@@ -84,7 +84,7 @@
 							</div>
 							<!--Success and Failure Message End-->
 							<!-- Page Form Start -->
-							<form:form commandName="virtualTeminalVoid"
+							<form:form modelAttribute="virtualTeminalVoid"
 								action="do-virtual-terminal-void" id="txnForm">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12" id="hideAllFields">

@@ -98,7 +98,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<div id="my_popup" class="locatioin-list-popup">
-								<form:form action="addNewPaymentInfo" commandName="recurringPaymentInfoDTO" method="post" name="recurringPayment" id="recurringPayment">
+								<form:form action="addNewPaymentInfo" modelAttribute="recurringPaymentInfoDTO" method="post" name="recurringPayment" id="recurringPayment">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<form:hidden path="expDt" id ="expDt"/>
 									<form:hidden path="recurringCustomerInfoId"/>

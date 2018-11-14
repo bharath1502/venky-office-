@@ -96,7 +96,7 @@
 							</div>
 						</div>
 						<!-- Page Menu End -->
-						<form:form action="updateRecurringContractInfo" commandName="recurringContractInfoDTO" name="recurringContractInfoDTO" method="post" >
+						<form:form action="updateRecurringContractInfo" modelAttribute="recurringContractInfoDTO" name="recurringContractInfoDTO" method="post" >
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="recurringpaymentInfoId"/>
 									<div class="col-sm-12 paddingT20">

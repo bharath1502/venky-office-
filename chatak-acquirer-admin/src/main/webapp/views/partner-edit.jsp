@@ -64,7 +64,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updatePartner" commandName="partnerRequest"
+								<form:form action="updatePartner" modelAttribute="partnerRequest"
 									method="post" enctype="multipart/form-data"
 									onsubmit="buttonDisabled()">
 									<input type="hidden" id="partnerId" name="partnerId"

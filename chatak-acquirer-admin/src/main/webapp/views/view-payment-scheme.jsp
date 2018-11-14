@@ -70,7 +70,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updatePaymentScheme" commandName="paymentScheme" name="paymentScheme" method="post">
+								<form:form action="updatePaymentScheme" modelAttribute="paymentScheme" name="paymentScheme" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

@@ -80,7 +80,7 @@
 						<input type="hidden" id="getMerchantId" name="getMerchantId" />
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
-					<form:form action="process-dash-board-settlement-action" commandName="settlementDto" name="processAction" method="post">
+					<form:form action="process-dash-board-settlement-action" modelAttribute="settlementDto" name="processAction" method="post">
 						<form:hidden path="merchantId" id="merchantId" />
 						<form:hidden path="terminalId" id="terminalId" />
 						<form:hidden path="txnId" id="txnId" />

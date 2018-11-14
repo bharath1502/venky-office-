@@ -111,7 +111,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createSubMerchant" commandName="subMerchant" name="subMerchant">
+								<form:form action="createSubMerchant" modelAttribute="subMerchant" name="subMerchant">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

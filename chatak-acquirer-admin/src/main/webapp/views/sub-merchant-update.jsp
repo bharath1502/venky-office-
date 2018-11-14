@@ -114,7 +114,7 @@
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 								</form:form>
 								<!-- Page Form Start -->
-								<form:form action="updateSubMerchant" commandName="merchant"
+								<form:form action="updateSubMerchant" modelAttribute="merchant"
 									name="merchant">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">

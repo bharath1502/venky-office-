@@ -110,7 +110,7 @@
 							<!--Success and Failure Message End-->
 							<!-- Page Form Start -->
 							<form:form action="do-virtual-terminal-preAuth"
-								commandName="virtualTerminalPreAuth" id="txnForm">
+								modelAttribute="virtualTerminalPreAuth" id="txnForm">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12">
 									<div class="row">

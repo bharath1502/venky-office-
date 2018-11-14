@@ -101,7 +101,7 @@
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 						<!-- Page Menu End -->
-						<form:form action="createRecurringContractInfo" commandName="recurringContractInfoDTO" name="recurringContractInfoDTO" method="post" >
+						<form:form action="createRecurringContractInfo" modelAttribute="recurringContractInfoDTO" name="recurringContractInfoDTO" method="post" >
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="recurringpaymentInfoId"/>
 									<div class="col-sm-12 paddingT20">

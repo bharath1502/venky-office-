@@ -70,7 +70,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="searchTerminal" commandName="terminal"  name="terminal" id="terminal">
+								<form:form action="searchTerminal" modelAttribute="terminal"  name="terminal" id="terminal">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">	
 									<div class="col-sm-12">
 										<div class="row">

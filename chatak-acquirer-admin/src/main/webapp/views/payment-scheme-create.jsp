@@ -77,7 +77,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createPaymentScheme" commandName="paymentScheme" name="paymentScheme">
+								<form:form action="createPaymentScheme" modelAttribute="paymentScheme" name="paymentScheme">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

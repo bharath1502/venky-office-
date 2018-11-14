@@ -113,7 +113,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="processMerchantSignUP"
-									commandName="merchantSignUpRequest" method="post">
+									modelAttribute="merchantSignUpRequest" method="post">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

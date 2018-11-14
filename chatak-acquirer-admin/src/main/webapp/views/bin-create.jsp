@@ -74,7 +74,7 @@
 									</div>
 								</div>
 								<!--Success and Failure Message End-->
-								<form:form action="bin-save-update" commandName="binDTO" name="binDTO">
+								<form:form action="bin-save-update" modelAttribute="binDTO" name="binDTO">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

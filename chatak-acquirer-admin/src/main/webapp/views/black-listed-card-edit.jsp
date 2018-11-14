@@ -71,7 +71,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updateBlackListedCard" commandName="blackListedCard" name="blackListedCard">
+								<form:form action="updateBlackListedCard" modelAttribute="blackListedCard" name="blackListedCard">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

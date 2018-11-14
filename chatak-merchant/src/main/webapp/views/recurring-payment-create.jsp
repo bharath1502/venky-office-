@@ -100,7 +100,7 @@
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form>
 						<!-- Page Menu End -->
-						<form:form action="createRecurringPaymentInfo" commandName="recurringPaymentInfoDTO" name="recurringPaymentInfoDTO" method="post">
+						<form:form action="createRecurringPaymentInfo" modelAttribute="recurringPaymentInfoDTO" name="recurringPaymentInfoDTO" method="post">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="expDt" id ="expDt"/>
 						<form:hidden path="recurringCustomerInfoId"/>

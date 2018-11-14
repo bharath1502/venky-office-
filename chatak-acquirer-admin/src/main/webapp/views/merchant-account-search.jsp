@@ -104,7 +104,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="merchant-account-search" commandName="merchantAccountSearchDto" name="merchantAccountSearchDto">
+								<form:form action="merchant-account-search" modelAttribute="merchantAccountSearchDto" name="merchantAccountSearchDto">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

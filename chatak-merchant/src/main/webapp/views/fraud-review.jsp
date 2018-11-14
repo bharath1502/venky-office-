@@ -92,7 +92,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="fraud-review" commandName="merchantAccountSearchDto" name="merchantAccountSearchDto">
+								<form:form action="fraud-review" modelAttribute="merchantAccountSearchDto" name="merchantAccountSearchDto">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

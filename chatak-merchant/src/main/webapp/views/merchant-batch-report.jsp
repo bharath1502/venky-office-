@@ -89,7 +89,7 @@
 								</form>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="getBatchReport" commandName="batchReport"
+								<form:form action="getBatchReport" modelAttribute="batchReport"
 									name="batchReport">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">

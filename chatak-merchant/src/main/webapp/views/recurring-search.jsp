@@ -95,7 +95,7 @@
 								</form>
 									
 									<form action="recurring-search" name="resubmitForm" method="get"></form>	
-								<form:form action="recurringSearch" commandName="recurring" name="recurring" method="post">
+								<form:form action="recurringSearch" modelAttribute="recurring" name="recurring" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

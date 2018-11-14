@@ -90,7 +90,7 @@
 								</form>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="getDailyFundingReport" commandName="dailyFundingReport"
+								<form:form action="getDailyFundingReport" modelAttribute="dailyFundingReport"
 									name="dailyFundingReport">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">

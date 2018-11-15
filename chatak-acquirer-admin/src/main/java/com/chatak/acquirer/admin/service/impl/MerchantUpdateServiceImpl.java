@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -59,6 +58,7 @@ import com.chatak.pg.user.bean.IsoRequest;
 import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
+import com.chatak.pg.util.Constants;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -730,5 +730,17 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 			merchantRespObj.setStatus(S_STATUS_SUSPENDED);
 		}
 		return merchantRespObj;
+	}
+
+	@Override
+	public List<Merchant> getPmMerchantByEntityIdandEntityType(Long entityId, String entityType) {
+		List<Merchant> merchants = new ArrayList<>();
+		List<PGMerchant> merchant = merchantUpdateDao.getPmMerchantByEntityIdandEntityType(entityId, entityType);
+		if (StringUtil.isListNotNullNEmpty(merchant)) {
+			for (PGMerchant merch : merchant) {
+				merchants = addMerchantsList(merchants, merch);
+			}
+		}
+		return merchants;
 	}
 }

@@ -139,7 +139,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.fromdate" /></label>
 													<div class="input-group focus-field">
 														<form:input path="from_date" id="fromDate"
-															cssClass="form-control effectiveDate" />
+															cssClass="form-control effectiveDate" onkeypress="return numbersonly(this,event)" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -151,7 +151,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.todate" /></label>
 													<div class="input-group focus-field">
 														<form:input path="to_date"
-															cssClass="form-control effectiveDate" id="toDate" />
+															cssClass="form-control effectiveDate" id="toDate" onkeypress="return numbersonly(this,event)" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>

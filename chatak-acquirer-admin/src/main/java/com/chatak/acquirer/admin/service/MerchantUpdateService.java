@@ -59,5 +59,7 @@ public interface MerchantUpdateService {
   public Response getAgentNames(String currencyAlpha);
   
   public List<Long> findByEntityIdAndEntitytype(List<Long> entityIds, String entityType);
+  
+  public List<Merchant> getPmMerchantByEntityIdandEntityType(Long entityId, String entityType);
 
 }

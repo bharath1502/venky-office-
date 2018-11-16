@@ -27,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.controller.model.SettlementDataRequest;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
@@ -130,10 +131,16 @@ public class DashboardController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_HOME);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
     String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute("loginResponse");
+    List<Merchant> merchants = new ArrayList<>();
     if ("admin".equalsIgnoreCase(userType)) {
       modelAndView = showLoginCondition(session, modelAndView, existingFeature, userType);
     }
-    List<Merchant> merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+    if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.ADMIN)) {
+        merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+	} else if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+		merchants = merchantUpdateService.getPmMerchantByEntityIdandEntityType(loginResponse.getEntityId(), loginResponse.getUserType());
+	}
     setMerchantSubList(modelAndView, merchants);
     GetTransactionsListRequest transaction = new GetTransactionsListRequest();
     TransactionResponse transactionResponse = new TransactionResponse();
@@ -273,7 +280,9 @@ public class DashboardController implements URLMappingConstants {
     }
     modelAndView.addObject("processorNames", processorNames);
     model.put("merchant", merchant);
-    session.setAttribute("parentMerchantId", merchant.getParentMerchantId());
+    if(merchant != null) {
+    	session.setAttribute("parentMerchantId", merchant.getParentMerchantId());
+    }
     logger.info("EXITING :: MerchantController :: showViewSubMerchant");
     return modelAndView;
   }
@@ -379,6 +388,16 @@ private void validateMerchant(Map model, Merchant merchant) {
     return modelAndView;
 
   }
+  
+	@RequestMapping(value = CHATAK_ADMIN_UNBLOCK_USERS_SEARCH, method = RequestMethod.GET)
+	public ModelAndView searchAdminUserGetMethod(HttpServletRequest request, HttpServletResponse response, Map model,
+			HttpSession session, GenericUserDTO userDataDto, BindingResult bindingResult) {
+		logger.info("Entering :: DashboardController :: searchAdminUser method");
+		ModelAndView modelAndView = showUnblockUsers(request, model, session, userDataDto);
+		logger.info("Exit :: DashboardController :: searchAdminUser method");
+		return modelAndView;
+
+	}
 
   @RequestMapping(value = CHATAK_ADMIN_DO_UNBLOCK_USERS, method = RequestMethod.POST)
   public ModelAndView unblockUser(HttpServletRequest request, HttpServletResponse response,
@@ -467,23 +486,33 @@ private void validateMerchant(Map model, Merchant merchant) {
 			HttpSession session, @FormParam("totalRecords") final Integer totalRecords) {
 		logger.info("Entering:: DashboardController:: showAllPendingSettlementDetails method");
 		ModelAndView modelAndView = new ModelAndView(SHOW_ALL_PENDING_SETTLEMENT_DATA);
-		List<PGIssSettlementData> list = issSettlementDataDao.getAllPendingPM();
-		List<PGIssSettlementData> settlementData = new ArrayList<>();
+		List<PGIssSettlementData> list = null;
+		 LoginResponse loginResponse = (LoginResponse) session.getAttribute("loginResponse");
+		if(loginResponse != null && loginResponse.getUserType().equals(PGConstants.ADMIN)){
+		     list = issSettlementDataDao.getAllPendingPM();
+		} else if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+			list = issSettlementDataDao.findByProgramManagerIdByStatus(loginResponse.getEntityId(), PGConstants.S_STATUS_PENDING);
+		}
+		processIssSettlementData(session, modelAndView, list);
+		logger.info("EXITING :: DashboardController :: showAllPendingSettlementDetails");
+		return modelAndView;
+	}
+	
+	private void processIssSettlementData(HttpSession session, ModelAndView modelAndView,
+			List<PGIssSettlementData> list) {
+		List<SettlementDataRequest> settlementData = new ArrayList<>();
 		if (StringUtil.isListNotNullNEmpty(list)) {
 			for (PGIssSettlementData data : list) {
-				PGIssSettlementData issSettlementData = new PGIssSettlementData();
-				issSettlementData.setProgramManagerId(Long.valueOf(data.getAcqPmId()));
-				issSettlementData.setProgramManagerName(data.getProgramManagerName());
-				issSettlementData.setBatchDate(data.getBatchDate());
-				issSettlementData.setTotalAmount(data.getTotalAmount());
-				issSettlementData.setTotalTxnCount(data.getTotalTxnCount());
-				settlementData.add(issSettlementData);
+				SettlementDataRequest settlementDataRequest = new SettlementDataRequest();
+				//settlementDataRequest.setProgramManagerId(Long.valueOf(data.getAcqPmId()));
+				settlementDataRequest.setProgramManagerName(data.getProgramManagerName());
+				settlementDataRequest.setBatchDate(data.getBatchDate());
+				settlementDataRequest.setTotalAmount(new BigDecimal(data.getTotalAmount()).divide(PGConstants.BIG_DECIMAL_HUNDRED));
+				settlementDataRequest.setTotalTxnCount(data.getTotalTxnCount());
+				settlementData.add(settlementDataRequest);
 			}
 			modelAndView.addObject("settlementDataList", settlementData);
 			session.setAttribute("totalRecords", settlementData.size());
-
 		}
-		logger.info("EXITING :: DashboardController :: showAllPendingSettlementDetails");
-		return modelAndView;
 	}
 }

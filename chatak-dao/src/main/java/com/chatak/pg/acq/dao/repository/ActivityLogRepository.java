@@ -1,9 +1,9 @@
 package com.chatak.pg.acq.dao.repository;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGActivityLog;
 
@@ -16,8 +16,8 @@ import com.chatak.pg.acq.dao.model.PGActivityLog;
  */
 public interface ActivityLogRepository extends
                                       JpaRepository<PGActivityLog, Long>,
-                                      QueryDslPredicateExecutor<PGActivityLog> {
+                                      QuerydslPredicateExecutor<PGActivityLog> {
 
-  public List<PGActivityLog> findById(Long pGActivitLogId);
+  public Optional<PGActivityLog> findById(Long pGActivitLogId);
 
 }

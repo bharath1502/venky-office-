@@ -3,8 +3,10 @@
  */
 package com.chatak.pg.acq.dao.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGEntityFeature;
 
@@ -16,8 +18,8 @@ import com.chatak.pg.acq.dao.model.PGEntityFeature;
  * @Comments: 
  *
  */
-public interface EntityFeatureRepository extends JpaRepository<PGEntityFeature, Long>,QueryDslPredicateExecutor<PGEntityFeature> {
+public interface EntityFeatureRepository extends JpaRepository<PGEntityFeature, Long>,QuerydslPredicateExecutor<PGEntityFeature> {
 	
-	public PGEntityFeature findById(Long entityFeatureId);
+	public Optional<PGEntityFeature> findById(Long entityFeatureId);
 
 }

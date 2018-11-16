@@ -6,7 +6,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.sql.Timestamp;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntityHistory;
 
@@ -18,7 +18,7 @@ import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntityHistory;
  * @Comments: 
  *
  */
-public interface IssuanceSettlementHistoryRepository extends JpaRepository<PGSettlementEntityHistory, Long>,QueryDslPredicateExecutor<PGSettlementEntityHistory>{
+public interface IssuanceSettlementHistoryRepository extends JpaRepository<PGSettlementEntityHistory, Long>,QuerydslPredicateExecutor<PGSettlementEntityHistory>{
         
 	
 	 public PGSettlementEntityHistory findByAcqPmIdAndBatchFileDate(Long programManagerId, Timestamp batchDate);

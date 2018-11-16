@@ -4,10 +4,11 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.PGBINRange;
@@ -19,7 +20,7 @@ import com.chatak.pg.acq.dao.model.PGBINRange;
  * @Version: 1.0
  * @Comments:
  */
-public interface BINRepository extends JpaRepository<PGBINRange, Long>, QueryDslPredicateExecutor<PGBINRange> {
+public interface BINRepository extends JpaRepository<PGBINRange, Long>, QuerydslPredicateExecutor<PGBINRange> {
   @Query("select t from PGBINRange t where t.status=0")
   public List<PGBINRange> getAllActiveBins();
 
@@ -28,7 +29,7 @@ public interface BINRepository extends JpaRepository<PGBINRange, Long>, QueryDsl
   @Query("select t from PGBINRange t where t.bin=:bin and t.status=0")
   public List<PGBINRange> findByActiveBin( @Param("bin") Long bin);
   
-  public PGBINRange findById(Long binId);
+  public Optional<PGBINRange> findById(Long binId);
   
   public PGBINRange findByBin(Long bin);  
   

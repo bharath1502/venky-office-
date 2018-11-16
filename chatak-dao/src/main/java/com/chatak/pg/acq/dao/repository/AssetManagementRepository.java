@@ -1,13 +1,14 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGPosDevice;
 
-public interface AssetManagementRepository extends JpaRepository<PGPosDevice,Long>,QueryDslPredicateExecutor<PGPosDevice> {
+public interface AssetManagementRepository extends JpaRepository<PGPosDevice,Long>,QuerydslPredicateExecutor<PGPosDevice> {
 	
 	public List<PGPosDevice> findByDeviceSerialNoIgnoreCase(String deviceSerialNo);
 
@@ -15,7 +16,7 @@ public interface AssetManagementRepository extends JpaRepository<PGPosDevice,Lon
 	 * @param deviceSerialNo
 	 * @return
 	 */
-	public PGPosDevice findById(Long Id);
+	public Optional<PGPosDevice> findById(Long Id);
     
 	
 }

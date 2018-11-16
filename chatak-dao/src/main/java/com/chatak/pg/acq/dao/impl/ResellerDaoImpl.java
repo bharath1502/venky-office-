@@ -30,10 +30,10 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * Class provides implementation of API's required for Merchandise application,
@@ -175,8 +175,13 @@ public class ResellerDaoImpl implements ResellerDao, PGConstants {
         offset = (serachReseller.getPageIndex() - 1) * serachReseller.getPageSize();
         limit = serachReseller.getPageSize();
       }
-      JPAQuery query = new JPAQuery(entityManager);
+      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
       List<Tuple> tupleList = query.from(QPGReseller.pGReseller)
+    	  .select(QPGReseller.pGReseller.resellerName, QPGReseller.pGReseller.contactName,
+              QPGReseller.pGReseller.emailId, QPGReseller.pGReseller.phone,
+              QPGReseller.pGReseller.accountNumber, QPGReseller.pGReseller.accountBalance,
+              QPGReseller.pGReseller.city, QPGReseller.pGReseller.country,
+              QPGReseller.pGReseller.status, QPGReseller.pGReseller.resellerId)
           .where(isResellerNameLike(serachReseller.getResellerName()),
               isCityLike(serachReseller.getCity()), isCountryEq(serachReseller.getCountry()),
               isEmailLike(serachReseller.getEmailId()),
@@ -184,11 +189,7 @@ public class ResellerDaoImpl implements ResellerDao, PGConstants {
               isContactNameLike(serachReseller.getContactName()),
               isStatusEq(serachReseller.getStatus()), isPhoneLike(serachReseller.getPhone()))
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .list(QPGReseller.pGReseller.resellerName, QPGReseller.pGReseller.contactName,
-              QPGReseller.pGReseller.emailId, QPGReseller.pGReseller.phone,
-              QPGReseller.pGReseller.accountNumber, QPGReseller.pGReseller.accountBalance,
-              QPGReseller.pGReseller.city, QPGReseller.pGReseller.country,
-              QPGReseller.pGReseller.status, QPGReseller.pGReseller.resellerId);
+          .fetch();
       if (!CollectionUtils.isEmpty(tupleList)) {
         resellerList = new ArrayList<>();
         PGReseller reseller = null;
@@ -233,15 +234,16 @@ public class ResellerDaoImpl implements ResellerDao, PGConstants {
   }
 
   public Integer getTotalNumberOfResellerRecords(GetResellerListRequest serachReseller) {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
     List<Long> list = query.from(QPGReseller.pGReseller)
+    	.select(QPGReseller.pGReseller.resellerId)
         .where(isResellerNameLike(serachReseller.getResellerName()),
             isCityLike(serachReseller.getCity()), isCountryEq(serachReseller.getCountry()),
             isEmailLike(serachReseller.getEmailId()),
             isAccountNumberEq(serachReseller.getAccountNumber()),
             isContactNameLike(serachReseller.getContactName()),
             isPhoneLike(serachReseller.getPhone()), isStatusEq(serachReseller.getStatus()))
-        .list(QPGReseller.pGReseller.resellerId);
+        .fetch();
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
@@ -376,10 +378,11 @@ public class ResellerDaoImpl implements ResellerDao, PGConstants {
   @Override
   public List<PGReseller> getResellerData() {
     List<PGReseller> pgReseller = null;
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> tupleList = query.from(QPGReseller.pGReseller)
+    	.select(QPGReseller.pGReseller.resellerId, QPGReseller.pGReseller.resellerName)
         .where(QPGReseller.pGReseller.status.eq(0)).orderBy(orderByCreatedDateDesc())
-        .list(QPGReseller.pGReseller.resellerId, QPGReseller.pGReseller.resellerName);
+        .fetch();
     if (!CollectionUtils.isEmpty(tupleList)) {
       pgReseller = new ArrayList<>();
       PGReseller reseller = null;

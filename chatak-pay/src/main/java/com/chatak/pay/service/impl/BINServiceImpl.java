@@ -44,7 +44,7 @@ public class BINServiceImpl implements BINService {
 		com.chatak.pg.model.TransactionRequest transactionData = com.chatak.pg.util.CommonUtil
 				.copyBeanProperties(transactionRequest, com.chatak.pg.model.TransactionRequest.class);
 		if (pgMerchant.getMerchantType().equals(PGConstants.SUB_MERCHANT)) {
-			PGMerchant merchant = merchantRepository.findById(pgMerchant.getParentMerchantId());
+			PGMerchant merchant = merchantRepository.findById(pgMerchant.getParentMerchantId()).orElse(null);
 			if (merchant == null || !merchant.getStatus().equals(PGConstants.STATUS_ACTIVE)) {
 				throw new InvalidRequestException(ChatakPayErrorCode.TXN_0007.name(),
 						ChatakPayErrorCode.TXN_0007.value());

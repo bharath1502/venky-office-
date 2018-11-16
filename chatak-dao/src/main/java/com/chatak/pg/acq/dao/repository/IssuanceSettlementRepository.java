@@ -6,7 +6,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.settlement.PGSettlementTransaction;
 
@@ -19,7 +19,7 @@ import com.chatak.pg.acq.dao.model.settlement.PGSettlementTransaction;
  *
  */
 public interface IssuanceSettlementRepository
-		extends JpaRepository<PGSettlementTransaction, Long>, QueryDslPredicateExecutor<PGSettlementTransaction> {
+		extends JpaRepository<PGSettlementTransaction, Long>, QuerydslPredicateExecutor<PGSettlementTransaction> {
 
 
   public List<PGSettlementTransaction> findByIssuanceSettlementEntityId(Long issuanceSettlementEntityId);

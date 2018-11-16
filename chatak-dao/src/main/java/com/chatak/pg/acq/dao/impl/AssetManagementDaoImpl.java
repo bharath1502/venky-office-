@@ -17,9 +17,9 @@ import com.chatak.pg.model.PosDeviceDTO;
 import com.chatak.pg.user.bean.DeleteAssetResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Repository("assetManagementDao")
 public class AssetManagementDaoImpl implements AssetManagementDao {
@@ -55,9 +55,10 @@ public class AssetManagementDaoImpl implements AssetManagementDao {
 			offset = (pageIndex - 1) * pageSize;
 			limit = pageSize;
 		}
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<PGPosDevice> query = new JPAQuery<PGPosDevice>(entityManager);
 		QPGPosDevice qDevice = QPGPosDevice.pGPosDevice;
 		List<PGPosDevice> list = query.from(qDevice)
+										.select(qDevice)
 				                        .where(isDeviceSerialNoLike(deviceTO.getDeviceSerialNo()),
 				                        		isDeviceMakeEq(deviceTO.getDeviceMake()),
 				                        		isDeviceTypeEq(deviceTO.getDeviceType()),
@@ -65,19 +66,20 @@ public class AssetManagementDaoImpl implements AssetManagementDao {
 								               isStatusEq(deviceTO.getStatus()))
 								       .offset(offset)
 						               .limit(limit).orderBy(orderByDeviceIdDesc())
-						               .list(qDevice);
+						               .fetch();
 		return list;
 	}
 	
 	private int getTotalNumberOfRecords(PosDeviceDTO deviceTO) {
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> list = query.from(QPGPosDevice.pGPosDevice)
+				 .select(QPGPosDevice.pGPosDevice.id)
 				 .where(isDeviceSerialNoLike(deviceTO.getDeviceSerialNo()),
                  		isDeviceMakeEq(deviceTO.getDeviceMake()),
                  		isDeviceTypeEq(deviceTO.getDeviceType()),
                  		isDeviceModelEq(deviceTO.getDeviceModel()),
 			               isStatusEq(deviceTO.getStatus()))
-						.list(QPGPosDevice.pGPosDevice.id);
+						.fetch();
 		return (StringUtil.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
 
@@ -107,7 +109,7 @@ public class AssetManagementDaoImpl implements AssetManagementDao {
 	
 	@Override
 	public PGPosDevice findByDeviceId(Long deviceId) {
-		return assetManagementRepository.findOne(deviceId);
+		return assetManagementRepository.findById(deviceId).orElse(null);
 	}
 
 	@Override
@@ -122,7 +124,7 @@ public class AssetManagementDaoImpl implements AssetManagementDao {
 	@Override
 	  public DeleteAssetResponse deleteAssetDevice(Long id) {
 	  DeleteAssetResponse deleteAssetResponse = new DeleteAssetResponse();
-	  PGPosDevice posDeviceDb = assetManagementRepository.findById(id);
+	  PGPosDevice posDeviceDb = assetManagementRepository.findById(id).orElse(null);
 	  if(null != posDeviceDb) {
 
 		  posDeviceDb.setStatus("Deleted");

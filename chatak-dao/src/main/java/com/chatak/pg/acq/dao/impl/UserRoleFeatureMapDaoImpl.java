@@ -53,7 +53,7 @@ public class UserRoleFeatureMapDaoImpl implements UserRoleFeatureMapDao {
   public void deleteRoleFeatureMapping(Long userRoleId) {
     List<PGRolesFeatureMapping> pgRoleFeatureMapping =
         rolesFeatureMappingRepository.findByRoleId(userRoleId);
-    rolesFeatureMappingRepository.delete(pgRoleFeatureMapping);
+    rolesFeatureMappingRepository.deleteAll(pgRoleFeatureMapping);
   }
 
 }

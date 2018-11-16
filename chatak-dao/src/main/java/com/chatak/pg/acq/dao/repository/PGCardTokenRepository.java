@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGCardTokenDetails;
 
@@ -19,7 +19,7 @@ import com.chatak.pg.acq.dao.model.PGCardTokenDetails;
  * @date Apr 29, 2015 9:12:37 PM
  * @version 1.0
  */
-public interface PGCardTokenRepository extends JpaRepository<PGCardTokenDetails,Long>,QueryDslPredicateExecutor<PGCardTokenDetails> {
+public interface PGCardTokenRepository extends JpaRepository<PGCardTokenDetails,Long>,QuerydslPredicateExecutor<PGCardTokenDetails> {
 
   public PGCardTokenDetails findByToken(String token) throws DataAccessException;
   

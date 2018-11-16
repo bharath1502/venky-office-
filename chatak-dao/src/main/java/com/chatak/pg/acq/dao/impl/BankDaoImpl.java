@@ -45,10 +45,10 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -294,9 +294,12 @@ public class BankDaoImpl implements BankDao {
 				limit = bankRequest.getPageSize();
 			}
 
-			JPAQuery query = new JPAQuery(entityManager);
+			JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 			List<Tuple> tupleList = query
 					.from(QPGBank.pGBank)
+					.select(QPGBank.pGBank.bankName,
+							QPGBank.pGBank.bankCode,
+							QPGBank.pGBank.contactPersonEmail, QPGBank.pGBank.status,QPGBank.pGBank.currencyId)
 					.where(isBankNameLike(bankRequest.getBankName()),
 							isBankCodeLike(bankRequest.getBankCode()),
 							isEmailAddressLike(bankRequest.getContactPersonEmail()),
@@ -304,9 +307,7 @@ public class BankDaoImpl implements BankDao {
 					.offset(offset)
 					.limit(limit)
 					.orderBy(orderByCreatedDateDesc())
-					.list(QPGBank.pGBank.bankName,
-							QPGBank.pGBank.bankCode,
-							QPGBank.pGBank.contactPersonEmail, QPGBank.pGBank.status,QPGBank.pGBank.currencyId);
+					.fetch();
 			if (!CollectionUtils.isEmpty(tupleList)) {
 				pgBankList = new ArrayList<PGBank>();
 				PGBank pgBank = null;
@@ -416,14 +417,15 @@ public class BankDaoImpl implements BankDao {
 	}
 
 	private int getTotalNumberOfBankRecords(BankRequest bankRequest) {
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> list = query
 				.from(QPGBank.pGBank)
+				.select(QPGBank.pGBank.id)
 				.where(isBankNameLike(bankRequest.getBankName()),
 						isBankCodeLike(bankRequest.getBankCode()),
 						isEmailAddressLike(bankRequest.getContactPersonEmail()),
 						isStatusEq(bankRequest.getStatus()),isBankStatusNotEq())
-				.list(QPGBank.pGBank.id);
+				.fetch();
 
 		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
@@ -432,13 +434,12 @@ public class BankDaoImpl implements BankDao {
 	public List<PGBank> getBankData() {
 		
 			List<PGBank> pgBank = null;
-			  JPAQuery query = new JPAQuery(entityManager);
+			  JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 			  List<Tuple> tupleList = query.from(QPGBank.pGBank).
+					  select(QPGBank.pGBank.id,QPGBank.pGBank.bankName).
 					  where(QPGBank.pGBank.status.like("Active")).
 							  orderBy(orderByCreatedDateDesc()).
-							  list(QPGBank.pGBank.id,
-									  QPGBank.pGBank.bankName
-									  );
+							  fetch();
 			  if(!CollectionUtils.isEmpty(tupleList)) {
 				  pgBank = new ArrayList<PGBank>();
 				  PGBank bank = null;
@@ -456,12 +457,12 @@ public class BankDaoImpl implements BankDao {
 	public  List<PGBankCurrencyMapping> getCurrencyByBankId(Long bankId) {
 		List<PGBankCurrencyMapping> pgMapping = null;
 		
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 		  List<Tuple> tupleList = query.from(QPGBankCurrencyMapping.pGBankCurrencyMapping).
+				  select(QPGBankCurrencyMapping.pGBankCurrencyMapping.id,QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha).
 				  where(QPGBankCurrencyMapping.pGBankCurrencyMapping.status.eq(0), QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId.eq(bankId)).
 				  orderBy(QPGBankCurrencyMapping.pGBankCurrencyMapping.createdDate.desc()).
-				  list(QPGBankCurrencyMapping.pGBankCurrencyMapping.id,
-						  QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha);
+				  fetch();
 		
 		  if(!CollectionUtils.isEmpty(tupleList)) {
 			  pgMapping = new ArrayList<PGBankCurrencyMapping>();
@@ -486,7 +487,7 @@ public class BankDaoImpl implements BankDao {
 	 */
 	@Override
 	public PGCurrencyConfig getCurrencyAlpha(Long currencyId) {
-		PGCurrencyConfig pgCurrencyConfig = bankCurrencyConfigRepository.findById(currencyId);
+		PGCurrencyConfig pgCurrencyConfig = bankCurrencyConfigRepository.findById(currencyId).orElse(null);
 		if(pgCurrencyConfig!=null){
 			return pgCurrencyConfig;
 		}

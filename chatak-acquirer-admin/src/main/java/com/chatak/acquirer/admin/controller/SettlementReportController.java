@@ -819,7 +819,7 @@ public class SettlementReportController implements URLMappingConstants {
 				for (Map.Entry<Long, EntityMappedTransactions> entry : isoTotalRevenue.entrySet()) {
 					Long isoId = entry.getKey();
 					
-					Iso isodetails = isoService.findIsoByIsoId(isoId).get(0);
+					Iso isodetails = isoService.findIsoByIsoId(isoId);
 					
 					IsoSettlementDetails details = new IsoSettlementDetails();
 					

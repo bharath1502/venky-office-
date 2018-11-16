@@ -40,7 +40,7 @@ public interface IsoService {
 
 	public CardProgramResponse fetchIsoCardProgramByMerchantId(Long merchantId);
 
-	public List<Iso> findIsoByIsoId(Long isoId);
+	public Iso findIsoByIsoId(Long isoId);
 
 	public List<IsoRequest> findIsoByProgramaManagerId(Long Pmid);
 

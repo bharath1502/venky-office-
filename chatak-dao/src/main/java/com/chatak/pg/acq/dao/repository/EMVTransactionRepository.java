@@ -1,9 +1,10 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGEMVTransaction;
 
@@ -16,9 +17,9 @@ import com.chatak.pg.acq.dao.model.PGEMVTransaction;
  */
 public interface EMVTransactionRepository extends
                                          JpaRepository<PGEMVTransaction, Long>,
-                                         QueryDslPredicateExecutor<PGEMVTransaction> {
+                                         QuerydslPredicateExecutor<PGEMVTransaction> {
 
-  public List<PGEMVTransaction> findById(Long pGEmvTransactionId);
+  public Optional<PGEMVTransaction> findById(Long pGEmvTransactionId);
 
   public List<PGEMVTransaction> findByPgTransactionId(Long pgTransactionId);
 

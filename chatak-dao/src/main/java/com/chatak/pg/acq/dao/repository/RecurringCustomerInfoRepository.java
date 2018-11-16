@@ -3,7 +3,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.RecurringCustomerInfo;
 
@@ -16,7 +16,7 @@ import com.chatak.pg.acq.dao.model.RecurringCustomerInfo;
  */
 public interface RecurringCustomerInfoRepository extends
                                       JpaRepository<RecurringCustomerInfo, Long>,
-                                      QueryDslPredicateExecutor<RecurringCustomerInfo> {
+                                      QuerydslPredicateExecutor<RecurringCustomerInfo> {
   
   public RecurringCustomerInfo findByCustomerId(String customerId);
   

@@ -28,11 +28,11 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.JPASubQuery;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -125,14 +125,15 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 				offset = (request.getPageIndex() - 1) * request.getPageSize();
 				limit = request.getPageSize();
 			}
-			JPAQuery query = new JPAQuery(entityManager);
+			JPAQuery<PGTransfers> query = new JPAQuery<PGTransfers>(entityManager);
 			transferList = query
 					.from(QPGTransfers.pGTransfers)
+					.select(QPGTransfers.pGTransfers)
 					.where(isTransferStatus(request.getStatus()),
 							isTransferMode(request.getTransferMode()))
 					.offset(offset).limit(limit)
 					.orderBy(orderByCreatedDateDesc())
-					.list(QPGTransfers.pGTransfers);
+					.fetch();
 
 		} catch (Exception e) {
 			log.error("MerchantDaoImpl | getMerchantlist | Exception "+ e);
@@ -172,12 +173,13 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 					Constants.MM_DD_YYYY);
 		}
 
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> list = query
 				.from(QPGTransfers.pGTransfers)
+				.select(QPGTransfers.pGTransfers.pgTransfersId)
 				.where(isTransferStatus(request.getStatus()),
 						isTransferMode(request.getTransferMode()))
-				.list(QPGTransfers.pGTransfers.pgTransfersId);
+				.fetch();
 
 		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
@@ -195,14 +197,10 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 	      }
 		
 		List<ReportsDTO> reportsList = new ArrayList<ReportsDTO>();
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 		List<Tuple> list = query
 				.from(QPGTransfers.pGTransfers, QPGMerchant.pGMerchant)
-				.where(QPGMerchant.pGMerchant.merchantCode.eq(QPGTransfers.pGTransfers.merchantId
-						.stringValue()),QPGTransfers.pGTransfers.status.eq(PGConstants.PG_SETTLEMENT_EXECUTED),
-						isTransferMode(request.getTransferMode()),
-						isValidDate(startDate, endDate))
-				.list(QPGTransfers.pGTransfers.createdDate,
+				.select(QPGTransfers.pGTransfers.createdDate,
 						QPGTransfers.pGTransfers.accountType,
 						QPGTransfers.pGTransfers.fromAccount,
 						QPGTransfers.pGTransfers.pgTransfersId,
@@ -210,7 +208,12 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 						QPGTransfers.pGTransfers.amount,
 						QPGMerchant.pGMerchant.userName,
 						QPGMerchant.pGMerchant.businessName,
-						QPGMerchant.pGMerchant);
+						QPGMerchant.pGMerchant)
+				.where(QPGMerchant.pGMerchant.merchantCode.eq(QPGTransfers.pGTransfers.merchantId
+						.stringValue()),QPGTransfers.pGTransfers.status.eq(PGConstants.PG_SETTLEMENT_EXECUTED),
+						isTransferMode(request.getTransferMode()),
+						isValidDate(startDate, endDate))
+				.fetch();
 
 		if (StringUtils.isListNotNullNEmpty(list)) {
 			for (Tuple t : list) {
@@ -247,20 +250,14 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 	      }
 		
 		List<ReportsDTO> reportsList = new ArrayList<ReportsDTO>();
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 		QPGMerchant p=new QPGMerchant("p");
 		QPGMerchant pp=new QPGMerchant("pp");
 		QPGMerchant s=new QPGMerchant("s");
 		QPGTransfers qpt=new QPGTransfers("qpt");
 		List<Tuple> list = query.distinct()
 				.from(QPGTransfers.pGTransfers,p)
-				.where(p.merchantCode.eq(QPGTransfers.pGTransfers.merchantId
-						.stringValue()),QPGTransfers.pGTransfers.status.eq(PGConstants.PG_SETTLEMENT_EXECUTED),
-						isMerchantCode(request.getMerchantCode()),
-						isTransferMode(request.getTransferMode()),
-						isValidDate(startDate, endDate)
-						)
-				.list(QPGTransfers.pGTransfers.createdDate,
+				.select(QPGTransfers.pGTransfers.createdDate,
 						QPGTransfers.pGTransfers.accountType,
 						QPGTransfers.pGTransfers.fromAccount,
 						QPGTransfers.pGTransfers.pgTransfersId,
@@ -270,7 +267,14 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 						p.businessName,
 						p.parentMerchantId,
 						p.merchantCode,
-						p.id);
+						p.id)
+				.where(p.merchantCode.eq(QPGTransfers.pGTransfers.merchantId
+						.stringValue()),QPGTransfers.pGTransfers.status.eq(PGConstants.PG_SETTLEMENT_EXECUTED),
+						isMerchantCode(request.getMerchantCode()),
+						isTransferMode(request.getTransferMode()),
+						isValidDate(startDate, endDate)
+						)
+				.fetch();
 
 		if (StringUtils.isListNotNullNEmpty(list)) {
 			for (Tuple t : list) {
@@ -295,13 +299,7 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 		}
 		List<Tuple> list1 = query.distinct()
 				.from(qpt,s,pp)
-				.where(s.merchantCode.eq(qpt.merchantId
-						.stringValue()),qpt.status.eq(PGConstants.PG_SETTLEMENT_EXECUTED),
-						(s.parentMerchantId.in(new JPASubQuery().from(pp).where(pp.merchantCode.eq(request.getMerchantCode())).list(pp.id))),
-						isTransferMode(request.getTransferMode()),
-						isValidDate(startDate, endDate)
-						)
-				.list(qpt.createdDate,
+				.select(qpt.createdDate,
 						qpt.accountType,
 						qpt.fromAccount,
 						qpt.pgTransfersId,
@@ -311,7 +309,14 @@ public class PGTransfersDaoImpl implements PGTransfersDao {
 						s.businessName,
 						s.parentMerchantId,
 						s.merchantCode,
-						s.id);
+						s.id)
+				.where(s.merchantCode.eq(qpt.merchantId
+						.stringValue()),qpt.status.eq(PGConstants.PG_SETTLEMENT_EXECUTED),
+						(s.parentMerchantId.in(JPAExpressions.selectFrom(pp).where(pp.merchantCode.eq(request.getMerchantCode())).select(pp.id))),
+						isTransferMode(request.getTransferMode()),
+						isValidDate(startDate, endDate)
+						)
+				.fetch();
 
 		if (StringUtils.isListNotNullNEmpty(list1)) {
 			validateTupleList(reportsList, s, qpt, list1);

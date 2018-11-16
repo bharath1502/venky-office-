@@ -79,7 +79,7 @@ public class VirtualTerminalController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_VIRTUAL_TERMINAL_SALE_PAGE);
     Long userid = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
-    PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid);
+    PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid).orElse(null);
     modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, new VirtualTerminalSaleDTO());
     model.put("pgmerchantconfig", pgmerchantconfig);
 
@@ -137,7 +137,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           modelAndView.addObject(Constants.ERROR, transactionResponse.getErrorMessage());
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, terminalSaleDTO);
           Long userid = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
-          PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid);
+          PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid).orElse(null);
           model.put("pgmerchantconfig", pgmerchantconfig);
         }
       } catch (ChatakPayException ae) {

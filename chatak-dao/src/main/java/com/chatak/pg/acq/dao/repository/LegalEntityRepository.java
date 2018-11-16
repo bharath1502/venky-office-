@@ -6,7 +6,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGLegalEntity;
 
@@ -19,7 +19,7 @@ import com.chatak.pg.acq.dao.model.PGLegalEntity;
  */
 public interface LegalEntityRepository extends
                                        JpaRepository<PGLegalEntity, Long>,
-                                       QueryDslPredicateExecutor<PGLegalEntity> {
+                                       QuerydslPredicateExecutor<PGLegalEntity> {
   public List<PGLegalEntity> findByMerchantId(Long merchantId);
   
 

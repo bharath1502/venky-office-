@@ -1,11 +1,11 @@
 package com.chatak.pg.acq.dao.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGFraudBasic;
 
-public interface FraudBasicRepository extends JpaRepository<PGFraudBasic,Long>,QueryDslPredicateExecutor<PGFraudBasic>{
+public interface FraudBasicRepository extends JpaRepository<PGFraudBasic,Long>,QuerydslPredicateExecutor<PGFraudBasic>{
 
 	public PGFraudBasic findByMerchantId(Long merchantId);
 	

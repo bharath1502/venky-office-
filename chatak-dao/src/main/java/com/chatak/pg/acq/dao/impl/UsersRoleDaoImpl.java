@@ -16,10 +16,10 @@ import com.chatak.pg.acq.dao.repository.UsersRoleRepository;
 import com.chatak.pg.model.UserRolesDTO;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Repository("usersRoleDao")
 public class UsersRoleDaoImpl implements UsersRoleDao {
@@ -55,10 +55,14 @@ public class UsersRoleDaoImpl implements UsersRoleDao {
 			limit = pageSize;
 		}
 
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 		QPGUserRoles pgUserRoles = QPGUserRoles.pGUserRoles;
 		List<Tuple> dataList = query
 				.from(pgUserRoles)
+				.select(QPGUserRoles.pGUserRoles.roleId,
+						QPGUserRoles.pGUserRoles.roleName,
+						QPGUserRoles.pGUserRoles.roleType,
+						QPGUserRoles.pGUserRoles.status)
 				.where(isRoleName(userRolesDTO.getRoleName()),
 						isRoleType(userRolesDTO.getRoleType()),
                isStatus(userRolesDTO.getStatus()),
@@ -67,10 +71,7 @@ public class UsersRoleDaoImpl implements UsersRoleDao {
 				.offset(offset)
 				.limit(limit)
 				.orderBy(orderByRoleIdDesc())
-				.list(QPGUserRoles.pGUserRoles.roleId,
-						QPGUserRoles.pGUserRoles.roleName,
-						QPGUserRoles.pGUserRoles.roleType,
-						QPGUserRoles.pGUserRoles.status);
+				.fetch();
 		UserRolesDTO userData = null;
 		for (Tuple tuple : dataList) {
 			userData = new UserRolesDTO();
@@ -106,11 +107,11 @@ public class UsersRoleDaoImpl implements UsersRoleDao {
 
 
 	private int getTotalNumberOfRecords(UserRolesDTO userRolesDTO) {
-		JPAQuery query = new JPAQuery(entityManager);
-		List<PGUserRoles> roleList = query.from(QPGUserRoles.pGUserRoles)
+		JPAQuery<PGUserRoles> query = new JPAQuery<PGUserRoles>(entityManager);
+		List<PGUserRoles> roleList = query.from(QPGUserRoles.pGUserRoles).select(QPGUserRoles.pGUserRoles)
 				.where(isRoleName(userRolesDTO.getRoleName()),
 						isRoleType(userRolesDTO.getRoleType()),
-						isStatus(userRolesDTO.getStatus()),isStatusNotEq()).list(QPGUserRoles.pGUserRoles);
+						isStatus(userRolesDTO.getStatus()),isStatusNotEq()).fetch();
 
 		return (roleList != null && !roleList.isEmpty() ? roleList.size() : 0);
 	}

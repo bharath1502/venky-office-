@@ -18,7 +18,6 @@ import com.chatak.pg.acq.dao.repository.TimeZoneRepository;
 import com.chatak.pg.bean.CountryRequest;
 import com.chatak.pg.bean.StateRequest;
 import com.chatak.pg.bean.TimeZoneRequest;
-import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.util.CommonUtil;
 
 @Repository("countryDao")
@@ -66,9 +65,9 @@ public class CountryDaoImpl implements CountryDao {
 	public CountryRequest findCountryByID(Long countryId) throws DataAccessException {
 		CountryRequest countryRequest = null;
 		try {
-			List<PGCountry> countryList = countryRepository.findById(countryId);
-			if (countryList!=null && !countryList.isEmpty()) {
-				countryRequest = CommonUtil.copyBeanProperties(countryList.get(0), CountryRequest.class);
+			PGCountry country = countryRepository.findById(countryId).orElse(null);
+			if (country!=null) {
+				countryRequest = CommonUtil.copyBeanProperties(country, CountryRequest.class);
 			}
 		} catch (Exception e) {
 			logger.error("Error in retrieving the country for country id " + countryId, e);
@@ -81,9 +80,9 @@ public class CountryDaoImpl implements CountryDao {
 	public StateRequest findStateByID(Long stateId) throws DataAccessException {
 		StateRequest stateRequest = null;
 		try {
-			List<PGState> stateList = stateRepository.findById(stateId);
-			if (stateList!=null && !stateList.isEmpty()) {
-				stateRequest = CommonUtil.copyBeanProperties(stateList.get(0), StateRequest.class);
+			PGState state = stateRepository.findById(stateId).orElse(null);
+			if (state!=null) {
+				stateRequest = CommonUtil.copyBeanProperties(state, StateRequest.class);
 			}
 		} catch (Exception e) {
 			logger.error("Error in retrieving the state for state id " + stateId, e);
@@ -105,11 +104,11 @@ public class CountryDaoImpl implements CountryDao {
   
   @Override
   public CountryRequest getPmCountryById(Long countryId) throws DataAccessException {
-	  List<PGCountry> pgCountry =countryRepository.findById(countryId);
+   PGCountry pgCountry =countryRepository.findById(countryId).orElse(null);
    CountryRequest countryRequest=new CountryRequest();
    if(pgCountry!=null) {
-    countryRequest.setId(pgCountry.get(0).getId());
-    countryRequest.setName(pgCountry.get(0).getName());
+    countryRequest.setId(pgCountry.getId());
+    countryRequest.setName(pgCountry.getName());
   }
   return countryRequest;
   }
@@ -132,9 +131,9 @@ public class CountryDaoImpl implements CountryDao {
 	public TimeZoneRequest findTimeZoneByID(Long timeZoneId) throws DataAccessException{
 		TimeZoneRequest timeZoneRequest = null;
 		try {
-			List<TimeZone> timeZoneList = timeZoneRepository.findById(timeZoneId);
-			if (StringUtil.isListNotNullNEmpty(timeZoneList)) {
-				timeZoneRequest = CommonUtil.copyBeanProperties(timeZoneList.get(0), TimeZoneRequest.class);
+			TimeZone timeZone =  timeZoneRepository.findById(timeZoneId).orElse(null);
+			if (timeZone!=null) {
+				timeZoneRequest = CommonUtil.copyBeanProperties(timeZone, TimeZoneRequest.class);
 			}
 		} catch (Exception e) {
 			logger.error("Error in retrieving the timeZone for timeZone id " + timeZoneId, e);

@@ -42,8 +42,8 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -295,12 +295,9 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
           * getTransactionsListRequest.getPageSize();
       limit = getTransactionsListRequest.getPageSize();
     }
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> tupleList = query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant)
-        .where(isMerchantSettlementStatus(getTransactionsListRequest.getSettlementStatus()),
-            QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode))
-        .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-        .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+    	.select(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
             QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
             QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
             QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -314,7 +311,11 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
             QPGTransaction.pGTransaction.authId, QPGTransaction.pGTransaction.invoiceNumber,
             QPGTransaction.pGTransaction.acqTxnMode, QPGTransaction.pGTransaction.txnTotalAmount,
             QPGTransaction.pGTransaction.processor, QPGTransaction.pGTransaction.refTransactionId,
-            QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.merchantType);
+            QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.merchantType)
+        .where(isMerchantSettlementStatus(getTransactionsListRequest.getSettlementStatus()),
+            QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode))
+        .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
+        .fetch();
             return tupleList;
   }
 
@@ -340,11 +341,12 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
 
   private Integer getTotalNumberOfRecordsOnSettlementStatus(
       GetTransactionsListRequest getTransactionsListRequest) {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<BigInteger> query = new JPAQuery<BigInteger>(entityManager);
     List<BigInteger> list = query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant)
+    	.select(QPGTransaction.pGTransaction.id)
         .where(isMerchantSettlementStatus(getTransactionsListRequest.getSettlementStatus()),
             QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode))
-        .list(QPGTransaction.pGTransaction.id);
+        .fetch();
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
@@ -456,9 +458,25 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
         endDate = DateUtil.getEndDayTimestamp(getTransactionsListRequest.getTo_date(),
             PGConstants.DD_MM_YYYY);
       }
-      JPAQuery query = new JPAQuery(entityManager);
+      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
       List<Tuple> tupleList =
           query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount)
+          		.select(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+          				QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
+          				QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
+          				QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
+          				QPGTransaction.pGTransaction.feeAmount,
+          				QPGTransaction.pGTransaction.merchantFeeAmount,
+          				QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
+          				QPGTransaction.pGTransaction.merchantSettlementStatus,
+          				QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.posEntryMode,
+          				QPGTransaction.pGTransaction.acqChannel, QPGTransaction.pGTransaction.cardHolderName,
+          				QPGTransaction.pGTransaction.updatedDate, QPGTransaction.pGTransaction.authId,
+          				QPGTransaction.pGTransaction.txnTotalAmount, QPGTransaction.pGTransaction.acqTxnMode,
+          				QPGTransaction.pGTransaction.invoiceNumber, QPGTransaction.pGTransaction.processor,
+          				QPGTransaction.pGTransaction.txnMode, QPGMerchant.pGMerchant.firstName,
+          				QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.entityType,
+          				QPGTransaction.pGTransaction.refTransactionId)
               .where(isMerchantId(getTransactionsListRequest.getMerchant_code()),
                   isTxnId(getTransactionsListRequest.getTransactionId()),
                   isProcessTxnId(getTransactionsListRequest.getProcessCode()),
@@ -474,22 +492,7 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
               QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
               isMerchantNameLike(getTransactionsListRequest.getMerchantName()),
               isValidDate(startDate, endDate)).orderBy(orderByCreatedDateDesc())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
-              QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
-              QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
-              QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
-              QPGTransaction.pGTransaction.feeAmount,
-              QPGTransaction.pGTransaction.merchantFeeAmount,
-              QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
-              QPGTransaction.pGTransaction.merchantSettlementStatus,
-              QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.posEntryMode,
-              QPGTransaction.pGTransaction.acqChannel, QPGTransaction.pGTransaction.cardHolderName,
-              QPGTransaction.pGTransaction.updatedDate, QPGTransaction.pGTransaction.authId,
-              QPGTransaction.pGTransaction.txnTotalAmount, QPGTransaction.pGTransaction.acqTxnMode,
-              QPGTransaction.pGTransaction.invoiceNumber, QPGTransaction.pGTransaction.processor,
-              QPGTransaction.pGTransaction.txnMode, QPGMerchant.pGMerchant.firstName,
-              QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.entityType,
-              QPGTransaction.pGTransaction.refTransactionId);
+          .fetch();
       if (!CollectionUtils.isEmpty(tupleList)) {
         transactions = validateTupleList(tupleList);
       }

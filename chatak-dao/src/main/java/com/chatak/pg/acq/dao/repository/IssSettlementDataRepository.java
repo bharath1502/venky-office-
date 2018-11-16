@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGIssSettlementData;
 
@@ -19,7 +19,7 @@ import com.chatak.pg.acq.dao.model.PGIssSettlementData;
  * @Comments: 
  *
  */
-public interface IssSettlementDataRepository extends JpaRepository<PGIssSettlementData, Long>,QueryDslPredicateExecutor<PGIssSettlementData> {
+public interface IssSettlementDataRepository extends JpaRepository<PGIssSettlementData, Long>,QuerydslPredicateExecutor<PGIssSettlementData> {
 	
 	List<PGIssSettlementData> findByAcqPmId(Long acqPmId);
 	

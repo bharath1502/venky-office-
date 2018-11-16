@@ -27,9 +27,9 @@ import com.chatak.pg.bean.settlement.IssuanceSettlementTransactionEntity;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactions;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.exception.PrepaidAdminException;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -93,11 +93,10 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
 		logger.info("Entering :: IssuanceSettlementDaoImpl :: getAllMatchedTransactions");
 		List<IssuanceSettlementTransactionEntity> settlementEntityList = new ArrayList<>();
         
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
         List<Tuple> tupleList = query
                 .from(QPGSettlementEntity.pGSettlementEntity)
-				.where(isProgramManagerIdEq(pmId), QPGSettlementEntity.pGSettlementEntity.batchid.isNotNull())
-                .list(QPGSettlementEntity.pGSettlementEntity.id,QPGSettlementEntity.pGSettlementEntity.merchantId,
+                .select(QPGSettlementEntity.pGSettlementEntity.id,QPGSettlementEntity.pGSettlementEntity.merchantId,
                         QPGSettlementEntity.pGSettlementEntity.acqSaleAmount,
                         QPGSettlementEntity.pGSettlementEntity.issSaleAmount,
                         QPGSettlementEntity.pGSettlementEntity.acqPmId, QPGSettlementEntity.pGSettlementEntity.issPmId,
@@ -105,7 +104,9 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
                         QPGSettlementEntity.pGSettlementEntity.batchFileDate,
                         QPGSettlementEntity.pGSettlementEntity.batchFileProcessedDate,
                         QPGSettlementEntity.pGSettlementEntity.status, QPGSettlementEntity.pGSettlementEntity.pmAmount,
-                        QPGSettlementEntity.pGSettlementEntity.merchantAmount);
+                        QPGSettlementEntity.pGSettlementEntity.merchantAmount)
+				.where(isProgramManagerIdEq(pmId), QPGSettlementEntity.pGSettlementEntity.batchid.isNotNull())
+                .fetch();
 		
 		
         logger.info("PGSettlementEntity size : " + tupleList.size());

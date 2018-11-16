@@ -41,7 +41,7 @@ public class AcquirerFeeValueDaoImpl implements AcquirerFeeValueDao {
 
   @Override
   public void removeAcquirerFeeValues(List<PGAcquirerFeeValue> acquirerFeeValuesDaoDetails) {
-    acquirerFeeValueRepository.delete(acquirerFeeValuesDaoDetails);
+    acquirerFeeValueRepository.deleteAll(acquirerFeeValuesDaoDetails);
     
   }
 

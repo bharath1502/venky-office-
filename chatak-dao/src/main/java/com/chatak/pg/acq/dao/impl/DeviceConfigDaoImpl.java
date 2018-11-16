@@ -20,10 +20,10 @@ import com.chatak.pg.acq.dao.repository.DeviceRepository;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.PosDeviceDTO;
 import com.chatak.pg.util.Constants;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -66,16 +66,16 @@ public class DeviceConfigDaoImpl implements DeviceConfigDao{
 			limit = pageSize;
 			offset = (pageIndex - 1) * pageSize;
 		}
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Device> query = new JPAQuery<Device>(entityManager);
 		QDevice qDevice = QDevice.device;
-		List<Device> list = query.from(qDevice)
+		List<Device> list = query.from(qDevice).select(qDevice)
 				                        .where(isDeviceMakeEq(deviceTO.getDeviceMake()),
 				                        		isDeviceTypeEq(deviceTO.getDeviceType()),
 				                        		isDeviceModelEq(deviceTO.getDeviceModel()),
 								               isStatusEq(deviceTO.getDeviceStatus()))
 								       .offset(offset)
 						               .limit(limit).orderBy(orderByDeviceIdDesc())
-						               .list(qDevice);
+						               .fetch();
 		return list;
 	}
 
@@ -84,13 +84,13 @@ public class DeviceConfigDaoImpl implements DeviceConfigDao{
 	 * @return
 	 */
 	private Integer getTotalNumberOfRecords(PosDeviceDTO deviceTO) {
-		JPAQuery query = new JPAQuery(entityManager);
-		List<Long> list = query.from(QDevice.device)
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+		List<Long> list = query.from(QDevice.device).select(QDevice.device.id)
 				 .where(isDeviceMakeEq(deviceTO.getDeviceMake()),
                  		isDeviceTypeEq(deviceTO.getDeviceType()),
                  		isDeviceModelEq(deviceTO.getDeviceModel()),
                  		isStatusEq(deviceTO.getDeviceStatus()))
-						.list(QDevice.device.id);
+						.fetch();
 		return (StringUtil.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
 	
@@ -125,7 +125,7 @@ public class DeviceConfigDaoImpl implements DeviceConfigDao{
 	
 	@Override
 	public Device findByDeviceId(Long deviceId) {
-		return deviceRepository.findOne(deviceId);
+		return deviceRepository.findById(deviceId).orElse(null);
 	}
 
 	/**
@@ -134,14 +134,15 @@ public class DeviceConfigDaoImpl implements DeviceConfigDao{
 	@Override
 	public List<PosDeviceDTO> getDeviceData() {
 		List<PosDeviceDTO> deviceData = null;
-		  JPAQuery query = new JPAQuery(entityManager);
+		  JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 		  List<Tuple> tupleList = query.from(QDevice.device).
+				  select(QDevice.device.id,
+						  QDevice.device.deviceMake,
+						  QDevice.device.deviceModel,
+						  QDevice.device.deviceType).
 				  where(QDevice.device.deviceStatus.eq(0)).
 						  orderBy(orderByDeviceIdDesc()).
-						  list(QDevice.device.id,
-								  QDevice.device.deviceMake,
-								  QDevice.device.deviceModel,
-								  QDevice.device.deviceType);
+						  fetch();
 		  if(!CollectionUtils.isEmpty(tupleList)) {
 			  deviceData = new ArrayList<PosDeviceDTO>();
 			  PosDeviceDTO device = null;

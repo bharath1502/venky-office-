@@ -6,13 +6,13 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.PartnerAccount;
 
 public interface PartnerAccountRepository
-    extends JpaRepository<PartnerAccount, Long>, QueryDslPredicateExecutor<PartnerAccount> {
+    extends JpaRepository<PartnerAccount, Long>, QuerydslPredicateExecutor<PartnerAccount> {
 
   public List<PartnerAccount> findByPartnerIdAndAccountType(Long partnerId, String accountType);
 

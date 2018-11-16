@@ -586,10 +586,10 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 			merchant.setEntityId(entityMap.getEntityId());
 			isoRequest = new IsoRequest();
 			merchant.setAssociatedTo(entityMap.getEntitytype());
-			Iso list = isoServiceDao.findByIsoId(merchant.getEntityId());
-				if (list!=null) {
-					isoRequest.setIsoName(list.getIsoName());
-					isoRequest.setId(list.getId());
+			Iso iso = isoServiceDao.findByIsoId(merchant.getEntityId());
+				if (iso!=null) {
+					isoRequest.setIsoName(iso.getIsoName());
+					isoRequest.setId(iso.getId());
 					isoRequests.add(isoRequest);
 				}
 			}

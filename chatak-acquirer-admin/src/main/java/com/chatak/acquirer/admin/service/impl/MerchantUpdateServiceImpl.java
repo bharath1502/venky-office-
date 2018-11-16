@@ -21,6 +21,7 @@ import com.chatak.acquirer.admin.model.MerchantSearchResponse;
 import com.chatak.acquirer.admin.service.MerchantUpdateService;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
+import com.chatak.license.util.n;
 import com.chatak.mailsender.service.MailServiceManagement;
 import com.chatak.pg.acq.dao.CardProgramDao;
 import com.chatak.pg.acq.dao.CountryDao;
@@ -586,10 +587,10 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 			merchant.setEntityId(entityMap.getEntityId());
 			isoRequest = new IsoRequest();
 			merchant.setAssociatedTo(entityMap.getEntitytype());
-			List<Iso> list = isoServiceDao.findByIsoId(merchant.getEntityId());
-				if (StringUtil.isListNotNullNEmpty(list)) {
-					isoRequest.setIsoName(list.get(0).getIsoName());
-					isoRequest.setId(list.get(0).getId());
+			Iso list = isoServiceDao.findByIsoId(merchant.getEntityId());
+				if (list!=null) {
+					isoRequest.setIsoName(list.getIsoName());
+					isoRequest.setId(list.getId());
 					isoRequests.add(isoRequest);
 				}
 			}

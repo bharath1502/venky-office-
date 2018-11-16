@@ -31,10 +31,10 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * << Add Comments Here >>
@@ -113,7 +113,7 @@ public class TerminalDaoImpl implements TerminalDao {
     logger.info("TerminalDaoImpl | addTerminal | Entering");
     AddTerminalResponse terminalResponse = new AddTerminalResponse();
     try {
-      PGMerchant pgMerchant = merchantRepository.findById(terminalRequest.getMerchantId());
+      PGMerchant pgMerchant = merchantRepository.findById(terminalRequest.getMerchantId()).orElse(null);
       if (pgMerchant == null) {
         terminalResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
         terminalResponse.setErrorMessage(PGConstants.INVALID_MERCHANT_ID);
@@ -171,7 +171,7 @@ public class TerminalDaoImpl implements TerminalDao {
     logger.info("TerminalDaoImpl | updateTerminal | Entering");
     UpdateTerminalResponse terminalResponse = new UpdateTerminalResponse();
     try {
-      PGMerchant pgMerchant = merchantRepository.findById(terminalRequest.getMerchantId());
+      PGMerchant pgMerchant = merchantRepository.findById(terminalRequest.getMerchantId()).orElse(null);
       if (pgMerchant == null) {
         terminalResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
         terminalResponse.setErrorMessage(PGConstants.INVALID_MERCHANT_ID);
@@ -290,13 +290,14 @@ public class TerminalDaoImpl implements TerminalDao {
         limit = searchTerminalRequest.getPageSize();
       }
 
-      JPAQuery query = new JPAQuery(entityManager);
+      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
       List<Tuple> tupleList = query.from(QPGTerminal.pGTerminal)
+    	  .select(QPGTerminal.pGTerminal.terminalId, QPGTerminal.pGTerminal.status,
+              QPGTerminal.pGTerminal.id, QPGTerminal.pGTerminal.merchantId)
           .where(isTerminalCodeEq(searchTerminalRequest.getTerminalId()),
               isStatusEq(searchTerminalRequest.getStatus()))
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .list(QPGTerminal.pGTerminal.terminalId, QPGTerminal.pGTerminal.status,
-              QPGTerminal.pGTerminal.id, QPGTerminal.pGTerminal.merchantId);
+          .fetch();
       if (!CollectionUtils.isEmpty(tupleList)) {
         terminalList = new ArrayList<>();
         PGTerminal terminal = null;
@@ -329,11 +330,12 @@ public class TerminalDaoImpl implements TerminalDao {
 
   private int getTotalNumberOfRecords(GetTerminalListRequest searchTerminalRequest) {
 
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
     List<Long> list = query.from(QPGTerminal.pGTerminal)
+    	.select(QPGTerminal.pGTerminal.id)
         .where(isTerminalCodeEq(searchTerminalRequest.getTerminalId()),
             isStatusEq(searchTerminalRequest.getStatus()))
-        .list(QPGTerminal.pGTerminal.id);
+        .fetch();
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
 

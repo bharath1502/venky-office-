@@ -27,9 +27,9 @@ import com.chatak.pg.acq.dao.repository.UserRoleDaoRepository;
 import com.chatak.pg.constants.Status;
 import com.chatak.pg.model.RoleDTO;
 import com.chatak.pg.util.Constants;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Repository("userRoleDao")
 public class UserRoleDaoImpl extends JdbcDaoSupport implements UserRoleDao {
@@ -137,11 +137,11 @@ public class UserRoleDaoImpl extends JdbcDaoSupport implements UserRoleDao {
       limit = pageSize;
     }
 
-    JPAQuery query = new JPAQuery(entityManager);
-    List<UserRole> roleList = query.from(QUserRole.userRole)
+    JPAQuery<UserRole> query = new JPAQuery<UserRole>(entityManager);
+    List<UserRole> roleList = query.from(QUserRole.userRole).select(QUserRole.userRole)
         .where(isUserRoleIdEq(userRole.getUserRoleId()), isUserRoleNameEq(userRole.getRoleName()),
             isUserRoleStatusEq(userRole.getStatus()), isUserRoleTypeEq(userRole.getRoleType()))
-        .offset(offset).limit(limit).orderBy(orderByRoleIdAsc()).list(QUserRole.userRole);
+        .offset(offset).limit(limit).orderBy(orderByRoleIdAsc()).fetch();
     return roleList;
 
   }
@@ -175,11 +175,11 @@ public class UserRoleDaoImpl extends JdbcDaoSupport implements UserRoleDao {
 
   public Integer getTotalNumberOfRecords(RoleDTO userRole) throws DataAccessException {
 
-    JPAQuery query = new JPAQuery(entityManager);
-    List<UserRole> roleList = query.from(QUserRole.userRole)
+    JPAQuery<UserRole> query = new JPAQuery<UserRole>(entityManager);
+    List<UserRole> roleList = query.from(QUserRole.userRole).select(QUserRole.userRole)
         .where(isUserRoleIdEq(userRole.getUserRoleId()), isUserRoleNameEq(userRole.getRoleName()),
             isUserRoleStatusEq(userRole.getStatus()), isUserRoleTypeEq(userRole.getRoleType()))
-        .list(QUserRole.userRole);
+        .fetch();
     return (roleList != null && !roleList.isEmpty()) ? roleList.size() : 0;
   }
 
@@ -207,11 +207,11 @@ public class UserRoleDaoImpl extends JdbcDaoSupport implements UserRoleDao {
 
   @Override
   public List<UserRole> findByRoleType(String roleType, String status) throws DataAccessException {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<UserRole> query = new JPAQuery<UserRole>(entityManager);
     List<UserRole> roleList = new ArrayList<>();
     try {
-      roleList = query.from(QUserRole.userRole)
-          .where(isUserRoleStatusEq(status), isUserRoleTypeEq(roleType)).list(QUserRole.userRole);
+      roleList = query.from(QUserRole.userRole).select(QUserRole.userRole)
+          .where(isUserRoleStatusEq(status), isUserRoleTypeEq(roleType)).fetch();
     } catch (Exception e) {
 
 

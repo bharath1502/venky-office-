@@ -46,12 +46,12 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
-import com.mysema.query.types.path.NumberPath;
-import com.mysema.query.types.path.StringPath;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringPath;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -234,7 +234,7 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
    */
   @Override
   public PGMerchant getMerchantCodeAndCompanyName(Long userid) {
-    return merchantRepository.findById(userid);
+    return merchantRepository.findById(userid).orElse(null);
   }
 
   /**
@@ -274,9 +274,9 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
         limit = reportRequest.getPageSize();
       }
 
-      JPAQuery query = new JPAQuery(entityManager);
+      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
       
-      StringPath type = new StringPath("");
+      StringPath type = Expressions.stringPath("");
       if (userType.equals("Merchant")) {
         type = QPGFundingReport.pGFundingReport.merchantCode;
       } else if (userType.equals("SubMerchant")) {
@@ -284,21 +284,22 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
       }
       
       List<Tuple> tupleList = query.from(QPGFundingReport.pGFundingReport, QPGMerchant.pGMerchant)
+    	  .select(QPGFundingReport.pGFundingReport.id, QPGFundingReport.pGFundingReport.batchId,
+                  QPGFundingReport.pGFundingReport.merchantCode,
+                  QPGFundingReport.pGFundingReport.merchantName,
+                  QPGFundingReport.pGFundingReport.subMerchantCode,
+                  QPGFundingReport.pGFundingReport.subMerchantName,
+                  QPGFundingReport.pGFundingReport.currency,
+                  QPGFundingReport.pGFundingReport.bankAccountNumber,
+                  QPGFundingReport.pGFundingReport.bankRoutingNumber,
+                  QPGFundingReport.pGFundingReport.fundingAmount,
+                  QPGFundingReport.pGFundingReport.feeBilledAmount,
+                  QPGFundingReport.pGFundingReport.netFundingAmount,
+                  QPGFundingReport.pGFundingReport.createdDate)
           .where(fetchBetween(startDate, endDate), isMerchatsListLike(merchantList),
               type.eq(QPGMerchant.pGMerchant.merchantCode))
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDsc())
-          .list(QPGFundingReport.pGFundingReport.id, QPGFundingReport.pGFundingReport.batchId,
-              QPGFundingReport.pGFundingReport.merchantCode,
-              QPGFundingReport.pGFundingReport.merchantName,
-              QPGFundingReport.pGFundingReport.subMerchantCode,
-              QPGFundingReport.pGFundingReport.subMerchantName,
-              QPGFundingReport.pGFundingReport.currency,
-              QPGFundingReport.pGFundingReport.bankAccountNumber,
-              QPGFundingReport.pGFundingReport.bankRoutingNumber,
-              QPGFundingReport.pGFundingReport.fundingAmount,
-              QPGFundingReport.pGFundingReport.feeBilledAmount,
-              QPGFundingReport.pGFundingReport.netFundingAmount,
-              QPGFundingReport.pGFundingReport.createdDate);
+          .fetch();
       if (!CollectionUtils.isEmpty(tupleList)) {
         DailyFundingReport report = null;
         for (Tuple tuple : tupleList) {
@@ -331,8 +332,8 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
   
   public int getMerchantTotalNumberOfRecords(Timestamp fromDate, Timestamp toDate,
       List<String> merchantList, String userType) {
-    JPAQuery query = new JPAQuery(entityManager);
-    StringPath type = new StringPath("");
+    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    StringPath type = Expressions.stringPath("");
     if (userType.equals("Merchant")) {
       type = QPGFundingReport.pGFundingReport.merchantCode;
     } else if (userType.equals("SubMerchant")) {
@@ -340,9 +341,10 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
     }
     List<Long> list =
         query.from(QPGFundingReport.pGFundingReport, QPGMerchant.pGMerchant)
+        .select(QPGFundingReport.pGFundingReport.id)
         .where(fetchBetween(fromDate, toDate), isMerchatsListLike(merchantList),
             type.eq(QPGMerchant.pGMerchant.merchantCode))
-        .list(QPGFundingReport.pGFundingReport.id);
+        .fetch();
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
 
@@ -391,27 +393,11 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
         endDate =
             DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
       }
-      JPAQuery query = new JPAQuery(entityManager);
+      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
       List<Tuple> tupleList = query.distinct()
           .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
               QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
-          .where(
-              isMerchantId(batchReportRequest.getMerchantCode(),
-                  batchReportRequest.getSubMerchantCode()),
-              isMerchatsListLike(merchantList),
-              QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
-              QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
-              QPGTransaction.pGTransaction.merchantSettlementStatus
-              .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED),
-              QPGAccount.pGAccount.currency.eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
-              QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
-                  .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
-                  QPGMerchant.pGMerchant.merchantCode.eq(QPGTransaction.pGTransaction.merchantId),
-              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
-                  .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
-              isValidDate(startDate, endDate))
-          .offset(offset).limit(limit).orderBy(orderByTxnDateDesc())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
+          .select(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -432,7 +418,24 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
               QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
               QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.batchDate,
               QPGTransaction.pGTransaction.deviceLocalTxnTime,
-              QPGTransaction.pGTransaction.timeZoneOffset);
+              QPGTransaction.pGTransaction.timeZoneOffset)
+          .where(
+              isMerchantId(batchReportRequest.getMerchantCode(),
+                  batchReportRequest.getSubMerchantCode()),
+              isMerchatsListLike(merchantList),
+              QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
+              QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
+              QPGTransaction.pGTransaction.merchantSettlementStatus
+              .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED),
+              QPGAccount.pGAccount.currency.eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+              QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
+                  .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
+                  QPGMerchant.pGMerchant.merchantCode.eq(QPGTransaction.pGTransaction.merchantId),
+              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
+                  .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+              isValidDate(startDate, endDate))
+          .offset(offset).limit(limit).orderBy(orderByTxnDateDesc())
+          .fetch();
       if (!CollectionUtils.isEmpty(tupleList)) {
         transactions = new ArrayList<>();
         Transaction transactionResp = null;
@@ -522,26 +525,11 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
     if (!CommonUtil.isNullAndEmpty(batchReportRequest.getToDate())) {
       endDate = DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
     }
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> list = query.distinct()
         .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
             QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
-        .where(
-            isMerchantId(batchReportRequest.getMerchantCode(),
-                batchReportRequest.getSubMerchantCode()),
-            isMerchatsListLike(merchantList),
-            QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
-            QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
-            QPGTransaction.pGTransaction.merchantSettlementStatus
-            .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED),
-            QPGAccount.pGAccount.currency.eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
-            QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
-                .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
-                QPGMerchant.pGMerchant.merchantCode.eq(QPGTransaction.pGTransaction.merchantId),
-            QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
-                .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
-            isValidDate(startDate, endDate))
-        .orderBy(orderByTxnDateDesc()).list(QPGTransaction.pGTransaction.merchantId,
+        .select(QPGTransaction.pGTransaction.merchantId,
             QPGTransaction.pGTransaction.transactionId,
             QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
             QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
@@ -561,7 +549,23 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
             QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
             QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
             QPGTransaction.pGTransaction.deviceLocalTxnTime,
-            QPGTransaction.pGTransaction.timeZoneOffset);
+            QPGTransaction.pGTransaction.timeZoneOffset)
+        .where(
+            isMerchantId(batchReportRequest.getMerchantCode(),
+                batchReportRequest.getSubMerchantCode()),
+            isMerchatsListLike(merchantList),
+            QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
+            QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
+            QPGTransaction.pGTransaction.merchantSettlementStatus
+            .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED),
+            QPGAccount.pGAccount.currency.eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+            QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
+                .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
+                QPGMerchant.pGMerchant.merchantCode.eq(QPGTransaction.pGTransaction.merchantId),
+            QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
+                .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+            isValidDate(startDate, endDate))
+        .orderBy(orderByTxnDateDesc()).fetch();
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
@@ -631,21 +635,11 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
             * transaction.getPageSize();
         limit = transaction.getPageSize();
       }
-      JPAQuery query = new JPAQuery(entityManager);
+      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
       List<Tuple> tupleList = query
           .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
               QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
-          .where(isMerchantIdLike(transaction.getMerchant_code()), 
-              QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
-              QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
-              QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
-                  .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
-              QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
-              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
-                  .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
-                  isBatchID(transaction.getBatchID()))
-          .offset(offset).limit(limit).orderBy(orderByCreatedDate())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
+          .select(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -666,7 +660,18 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
               QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
               QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.userName,
               QPGTransaction.pGTransaction.deviceLocalTxnTime,
-              QPGTransaction.pGTransaction.timeZoneOffset);
+              QPGTransaction.pGTransaction.timeZoneOffset)
+          .where(isMerchantIdLike(transaction.getMerchant_code()), 
+              QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
+              QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
+              QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
+                  .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
+              QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
+              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
+                  .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+                  isBatchID(transaction.getBatchID()))
+          .offset(offset).limit(limit).orderBy(orderByCreatedDate())
+          .fetch();
       if (!CollectionUtils.isEmpty(tupleList)) {
         transactions = new ArrayList<>();
         Transaction transactionResp = null;
@@ -705,10 +710,12 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
   }
 
   private Integer getNumberOfRecords(GetTransactionsListRequest transaction) {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> list = query
         .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
             QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
+        .select(QPGTransaction.pGTransaction.merchantId,
+            QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha)
         .where(isMerchantIdLike(transaction.getMerchant_code()),
             QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
             QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
@@ -718,8 +725,7 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
             QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
                 .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
                 isBatchID(transaction.getBatchID()))
-        .orderBy(orderByCreatedDate()).list(QPGTransaction.pGTransaction.merchantId,
-            QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha);
+        .orderBy(orderByCreatedDate()).fetch();
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   } 

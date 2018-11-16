@@ -3,12 +3,12 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.RecurringContractInfo;
 
 /**
- * DAO Repository class to process Activity Log
+ * DAO Repository class to process Activity Log	
  *
  * @author Girmiti Software
  * @date 26-Feb-2014 12:33:27 pm
@@ -16,12 +16,12 @@ import com.chatak.pg.acq.dao.model.RecurringContractInfo;
  */
 public interface RecurringContractInfoRepository extends
                                       JpaRepository<RecurringContractInfo, Long>,
-                                      QueryDslPredicateExecutor<RecurringContractInfo> {
+                                      QuerydslPredicateExecutor<RecurringContractInfo> {
 	
 	public List<RecurringContractInfo> findByRecurringPaymentInfoId(Long paymentInfoId);
 	
 	
-	public RecurringContractInfo findByRecurringContractInfoId(Long contractInfoId, String status);
+	public RecurringContractInfo findByRecurringContractInfoIdAndStatus(Long contractInfoId, String status);
 	
 
 }

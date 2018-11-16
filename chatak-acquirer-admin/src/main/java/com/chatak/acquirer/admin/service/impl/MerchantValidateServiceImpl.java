@@ -522,7 +522,7 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
   private Merchant getMerchantOtherDetails(Merchant merchant, PGMerchant pgMerchant) {
     if (pgMerchant.getParentMerchantId() != null) {
       merchant.setParentMerchantId(Long.valueOf(
-          merchantRepository.findById(pgMerchant.getParentMerchantId()).getMerchantCode()));
+          merchantRepository.findById(pgMerchant.getParentMerchantId()).orElse(null).getMerchantCode()));
     }
     merchant.setAllowAdvancedFraudFilter(null != pgMerchant.getAllowAdvancedFraudFilter()
         && pgMerchant.getAllowAdvancedFraudFilter() == 1 ? true : false);

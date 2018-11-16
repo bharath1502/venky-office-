@@ -23,10 +23,10 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.CAPublicKeysDTO;
 import com.chatak.pg.util.Constants;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -71,10 +71,18 @@ public class CAPublicKeysDaoImpl implements CAPublicKeysDao {
 					* caPublicKeysDTO.getPageSize();
 			limit = caPublicKeysDTO.getPageSize();
 		}
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 
 		List<Tuple> tuplePublicKeyList = query
 				.from(QPGCaPublicKeys.pGCaPublicKeys)
+				.select(QPGCaPublicKeys.pGCaPublicKeys.publicKeyName,
+						QPGCaPublicKeys.pGCaPublicKeys.publicKeyIndex,
+						QPGCaPublicKeys.pGCaPublicKeys.publicKeyModulus,
+						QPGCaPublicKeys.pGCaPublicKeys.publicKeyExponent,
+						QPGCaPublicKeys.pGCaPublicKeys.rId,
+						QPGCaPublicKeys.pGCaPublicKeys.expiryDate,
+						QPGCaPublicKeys.pGCaPublicKeys.status,
+						QPGCaPublicKeys.pGCaPublicKeys.publicKeyId)
 				.where(isCAPublicKeyName(caPublicKeysDTO.getPublicKeyName()),
 						isRID(caPublicKeysDTO.getRid()),
 						isPublicKeyIndex(caPublicKeysDTO.getPublicKeyIndex()),
@@ -88,14 +96,7 @@ public class CAPublicKeysDaoImpl implements CAPublicKeysDao {
 				.offset(offset)
 				.limit(limit)
 				.orderBy(orderByCAPublicKeysIdDsc())
-				.list(QPGCaPublicKeys.pGCaPublicKeys.publicKeyName,
-						QPGCaPublicKeys.pGCaPublicKeys.publicKeyIndex,
-						QPGCaPublicKeys.pGCaPublicKeys.publicKeyModulus,
-						QPGCaPublicKeys.pGCaPublicKeys.publicKeyExponent,
-						QPGCaPublicKeys.pGCaPublicKeys.rId,
-						QPGCaPublicKeys.pGCaPublicKeys.expiryDate,
-						QPGCaPublicKeys.pGCaPublicKeys.status,
-						QPGCaPublicKeys.pGCaPublicKeys.publicKeyId);
+				.fetch();
 		if (!CollectionUtils.isEmpty(tuplePublicKeyList)) {
 			for (Tuple tuple : tuplePublicKeyList) {
 				CAPublicKeysDTO cAPublicKeysDTOs = new CAPublicKeysDTO();
@@ -122,9 +123,10 @@ public class CAPublicKeysDaoImpl implements CAPublicKeysDao {
 	}
 
 	private int getTotalNumberOfRecords(CAPublicKeysDTO caPublicKeysDTO) {
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> tuplePublicKeyList = query
 				.from(QPGCaPublicKeys.pGCaPublicKeys)
+				.select(QPGCaPublicKeys.pGCaPublicKeys.publicKeyId)
 				.where(isCAPublicKeyName(caPublicKeysDTO.getPublicKeyName()),
 						isStatusEq(caPublicKeysDTO.getStatus()),
 						isExpiryDate(caPublicKeysDTO.getExpiryDate()),
@@ -135,7 +137,7 @@ public class CAPublicKeysDaoImpl implements CAPublicKeysDao {
 						isStatusNotEq(),
 						isPublicKeyExponent(caPublicKeysDTO
 								.getPublicKeyExponent()))
-				.list(QPGCaPublicKeys.pGCaPublicKeys.publicKeyId);
+				.fetch();
 
 		return (StringUtil.isListNotNullNEmpty(tuplePublicKeyList) ? tuplePublicKeyList
 				.size() : 0);

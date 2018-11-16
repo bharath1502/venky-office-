@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,10 +31,10 @@ import com.chatak.pg.user.bean.MerchantCategoryCodeRequest;
 import com.chatak.pg.user.bean.MerchantCategoryCodeResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -125,20 +126,21 @@ public class MerchantCategoryCodeDaoImpl implements MerchantCategoryCodeDao {
 						* mccRequest.getPageSize();
 				limit = mccRequest.getPageSize();
 			}
-			JPAQuery query = new JPAQuery(entityManager);
+			JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 			List<Tuple> tupleList = query
 					.from(QPGMerchantCategoryCode.pGMerchantCategoryCode)
+					.select(QPGMerchantCategoryCode.pGMerchantCategoryCode.id,
+							QPGMerchantCategoryCode.pGMerchantCategoryCode.merchantCategoryCode,
+							QPGMerchantCategoryCode.pGMerchantCategoryCode.selectedTcc,
+							QPGMerchantCategoryCode.pGMerchantCategoryCode.description,
+							QPGMerchantCategoryCode.pGMerchantCategoryCode.status)
 					.where(isMCCLike(mccRequest.getMerchantCategoryCode()),
 							isStatusEq(mccRequest.getStatus()),
 							isMCCStatusNotEq())
 					.offset(offset)
 					.limit(limit)
 					.orderBy(orderByCreatedDateDesc())
-					.list(QPGMerchantCategoryCode.pGMerchantCategoryCode.id,
-							QPGMerchantCategoryCode.pGMerchantCategoryCode.merchantCategoryCode,
-							QPGMerchantCategoryCode.pGMerchantCategoryCode.selectedTcc,
-							QPGMerchantCategoryCode.pGMerchantCategoryCode.description,
-							QPGMerchantCategoryCode.pGMerchantCategoryCode.status);
+					.fetch();
 			if (!CollectionUtils.isEmpty(tupleList)) {
 				pgMCCList = new ArrayList<PGMerchantCategoryCode>();
 				PGMerchantCategoryCode pgMCC = null;
@@ -193,7 +195,7 @@ public class MerchantCategoryCodeDaoImpl implements MerchantCategoryCodeDao {
 	 * @throws DataAccessException
 	 */
 	@Override
-	public PGMerchantCategoryCode findById(Long id) throws DataAccessException {
+	public Optional<PGMerchantCategoryCode> findById(Long id) throws DataAccessException {
 		return mccRepository.findById(id);
 	}
 
@@ -208,7 +210,7 @@ public class MerchantCategoryCodeDaoImpl implements MerchantCategoryCodeDao {
 		PGMerchantCategoryCode pgMCCId = null;
 		PGMerchantCategoryCode pgMCC = null;
 		MerchantCategoryCodeResponse mccResponse = new MerchantCategoryCodeResponse();
-		pgMCCId = mccRepository.findById(mccRequest.getId());
+		pgMCCId = mccRepository.findById(mccRequest.getId()).orElse(null);
 		if (null != pgMCCId) {
 			pgMCC = mccRepository.findByMerchantCategoryCode(mccRequest.getMerchantCategoryCode());
 			if (null != pgMCC && pgMCC.getMerchantCategoryCode().equals(pgMCCId.getMerchantCategoryCode())) {
@@ -251,13 +253,14 @@ public class MerchantCategoryCodeDaoImpl implements MerchantCategoryCodeDao {
 
 	private int getTotalNumberOfMCCRecords(
 			MerchantCategoryCodeRequest mccRequest) {
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> list = query
 				.from(QPGMerchantCategoryCode.pGMerchantCategoryCode)
+				.select(QPGMerchantCategoryCode.pGMerchantCategoryCode.id)
 				.where(isMCCLike(mccRequest.getMerchantCategoryCode()),
 						isStatusEq(mccRequest.getStatus()),
 						isMCCStatusNotEq())
-				.list(QPGMerchantCategoryCode.pGMerchantCategoryCode.id);
+				.fetch();
 
 		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	}

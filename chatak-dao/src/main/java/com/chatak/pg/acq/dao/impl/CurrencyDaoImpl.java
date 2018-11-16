@@ -65,7 +65,7 @@ public class CurrencyDaoImpl implements CurrencyDao {
 	@Override
 	public void deleteCurrencyMap(String merchantCode) {
 		List<PGMerchantCurrencyMapping> pgMerchantCurrencyMapping = currencyCodeMappingRepository.findByMerchantCode(merchantCode);
-	    currencyCodeMappingRepository.delete(pgMerchantCurrencyMapping);
+	    currencyCodeMappingRepository.deleteAll(pgMerchantCurrencyMapping);
 	}
 
 	/**

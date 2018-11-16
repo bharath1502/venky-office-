@@ -34,10 +34,10 @@ import com.chatak.pg.user.bean.GetMerchantListResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Repository("merchantUserDao")
 public class MerchantUserDaoImpl implements MerchantUserDao {
@@ -86,8 +86,8 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
 		
 		List<PGMerchant> merchantList = null;
 		try {
-			JPAQuery query = new JPAQuery(entityManager);
-			List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant).where(isMerchantUserEq( pgMerchantId)).list(QPGMerchant.pGMerchant.id,QPGMerchant.pGMerchant.parentMerchantId, QPGMerchant.pGMerchant.merchantCode);
+			JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+			List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant).select(QPGMerchant.pGMerchant.id,QPGMerchant.pGMerchant.parentMerchantId, QPGMerchant.pGMerchant.merchantCode).where(isMerchantUserEq( pgMerchantId)).fetch();
 			
 			if (!CollectionUtils.isEmpty(tupleList)) {
 				merchantList = new ArrayList<PGMerchant>();
@@ -111,7 +111,7 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
 	}
 	
 	private BooleanExpression isMerchantUserEq(Long pgMerchantId) { 
-		PGMerchantUsers merchantUsers = merchantUserRepository.findById(pgMerchantId);
+		PGMerchantUsers merchantUsers = merchantUserRepository.findById(pgMerchantId).orElse(null);
 		return pgMerchantId != null ? QPGMerchant.pGMerchant.pgMerchantUsers.contains(merchantUsers) : null;
 	}
 
@@ -142,7 +142,7 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
    */
   @Override
   public PGMerchantUsers findByMerchantUserId(Long userId) throws DataAccessException {
-    return merchantUserRepository.findById(userId);
+    return merchantUserRepository.findById(userId).orElse(null);
   }
 
   /**
@@ -203,9 +203,22 @@ public List<GenericUserDTO> searchMerchantUsers(GenericUserDTO userTo) {
 		limit = pageSize;
 	}
 
-	JPAQuery query = new JPAQuery(entityManager);
+	JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 	List<Tuple> dataList = query
 			.from(QPGMerchantUsers.pGMerchantUsers, QPGUserRoles.pGUserRoles, QPGMerchant.pGMerchant)
+			.select(QPGMerchantUsers.pGMerchantUsers.id,
+					QPGMerchantUsers.pGMerchantUsers.status,
+					QPGMerchantUsers.pGMerchantUsers.userName,
+					QPGMerchantUsers.pGMerchantUsers.email,
+					QPGUserRoles.pGUserRoles.roleName,
+					QPGMerchantUsers.pGMerchantUsers.firstName,
+					QPGMerchantUsers.pGMerchantUsers.lastName,
+					QPGMerchantUsers.pGMerchantUsers.phone,
+					QPGMerchantUsers.pGMerchantUsers.userRoleType,
+					QPGMerchantUsers.pGMerchantUsers.createdDate,
+					QPGMerchant.pGMerchant.merchantCode,
+					QPGMerchant.pGMerchant.businessName,
+					QPGMerchantUsers.pGMerchantUsers.updatedDate)
 			.where(isUserIdEq(userTo.getAdminUserId()),
 					isLastNameEq(userTo.getLastName()),
 					isFirstNameEq(userTo.getFirstName()),
@@ -223,19 +236,7 @@ public List<GenericUserDTO> searchMerchantUsers(GenericUserDTO userTo) {
 			.offset(offset)
 			.limit(limit)
 			.orderBy(orderByCreatedDateDesc())
-			.list(QPGMerchantUsers.pGMerchantUsers.id,
-					QPGMerchantUsers.pGMerchantUsers.status,
-					QPGMerchantUsers.pGMerchantUsers.userName,
-					QPGMerchantUsers.pGMerchantUsers.email,
-					QPGUserRoles.pGUserRoles.roleName,
-					QPGMerchantUsers.pGMerchantUsers.firstName,
-					QPGMerchantUsers.pGMerchantUsers.lastName,
-					QPGMerchantUsers.pGMerchantUsers.phone,
-					QPGMerchantUsers.pGMerchantUsers.userRoleType,
-					QPGMerchantUsers.pGMerchantUsers.createdDate,
-					QPGMerchant.pGMerchant.merchantCode,
-					QPGMerchant.pGMerchant.businessName,
-					QPGMerchantUsers.pGMerchantUsers.updatedDate);
+			.fetch();
 	GenericUserDTO merchantUserDto = null;
 	for (Tuple data : dataList) {
 		merchantUserDto = new GenericUserDTO();
@@ -259,9 +260,10 @@ public List<GenericUserDTO> searchMerchantUsers(GenericUserDTO userTo) {
 
 }
 private int getTotalNumberOfRecords(GenericUserDTO userTo) {
-	JPAQuery query = new JPAQuery(entityManager);
+	JPAQuery<PGMerchantUsers> query = new JPAQuery<PGMerchantUsers>(entityManager);
 	List<PGMerchantUsers> adminuserList = query
 			.from(QPGMerchantUsers.pGMerchantUsers, QPGUserRoles.pGUserRoles, QPGMerchant.pGMerchant)
+			.select(QPGMerchantUsers.pGMerchantUsers)
 			.where(isUserIdEq(userTo.getAdminUserId()),
 					isLastNameEq(userTo.getLastName()),
 					isFirstNameEq(userTo.getFirstName()),
@@ -276,7 +278,7 @@ private int getTotalNumberOfRecords(GenericUserDTO userTo) {
 					QPGMerchant.pGMerchant.id.eq(QPGMerchantUsers.pGMerchantUsers.pgMerchantId),
 					QPGMerchantUsers.pGMerchantUsers.userRoleId
 							.eq(QPGUserRoles.pGUserRoles.roleId))
-			.orderBy(orderByUserIdDesc()).list(QPGMerchantUsers.pGMerchantUsers);
+			.orderBy(orderByUserIdDesc()).fetch();
 
 	return (adminuserList != null && !adminuserList.isEmpty() ? adminuserList
 			.size() : 0);
@@ -482,7 +484,7 @@ public List<Long> getRoleListMerchant() {
  */
 @Override
 public PGMerchant findById(Long pgMerchantId) {
-	return merchantRepository.findById(pgMerchantId);
+	return merchantRepository.findById(pgMerchantId).orElse(null);
 }
 
 /**

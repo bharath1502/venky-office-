@@ -39,10 +39,10 @@ import com.chatak.pg.model.FeeProgramDTO;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Repository("feeProgramDao")
 public class FeeProgramDaoImpl implements FeeProgramDao {
@@ -91,7 +91,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   public List<PGFeeProgramValue> createFeeProgramValue(
       List<PGFeeProgramValue> feeProgramValueDaoDetails) throws DataAccessException {
 
-    return feeProgramValueRepository.save(feeProgramValueDaoDetails);
+    return feeProgramValueRepository.saveAll(feeProgramValueDaoDetails);
   }
 
 
@@ -115,14 +115,15 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
       offset = (feeProgramDTO.getPageIndex() - 1) * feeProgramDTO.getPageSize();
       limit = feeProgramDTO.getPageSize();
     }
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     QPGFeeProgram qfeecode = QPGFeeProgram.pGFeeProgram;
     List<Tuple> tupleCardList = query.from(qfeecode)
+    	.select(qfeecode.feeProgramName, qfeecode.status, qfeecode.feeProgramId, qfeecode.processor)
         .where(isFeeProgramName(feeProgramDTO.getFeeProgramName()),
             isStatusEq(feeProgramDTO.getStatus()), isProcessorEq(feeProgramDTO.getProcessor()),
             isFeeProgramId(feeProgramDTO.getFeeProgramId()), isStatusNotEq())
         .offset(offset).limit(limit).orderBy(orderByFeeProgramIdDsc())
-        .list(qfeecode.feeProgramName, qfeecode.status, qfeecode.feeProgramId, qfeecode.processor);
+        .fetch();
     for (Tuple tuple : tupleCardList) {
       FeeProgramDTO feeProgram = new FeeProgramDTO();
       feeProgram.setFeeProgramName(tuple.get(qfeecode.feeProgramName));
@@ -152,15 +153,16 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
       offset = (feeProgramDTO.getPageIndex() - 1) * feeProgramDTO.getPageSize();
       limit = feeProgramDTO.getPageSize();
     }
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> tupleCardList = query.from(QPGFeeProgram.pGFeeProgram,QPmCardProgamMapping.pmCardProgamMapping)
+    	.select(QPGFeeProgram.pGFeeProgram.feeProgramName, QPGFeeProgram.pGFeeProgram.status, QPGFeeProgram.pGFeeProgram.feeProgramId)
         .where(QPmCardProgamMapping.pmCardProgamMapping.programManagerId.eq(feeProgramDTO.getEntityId()),
             QPmCardProgamMapping.pmCardProgamMapping.cardProgramId.eq(QPGFeeProgram.pGFeeProgram.cardProgramId),
            isFeeProgramName(feeProgramDTO.getFeeProgramName()),
             isStatusEq(feeProgramDTO.getStatus()), 
             isFeeProgramId(feeProgramDTO.getFeeProgramId()))
         .offset(offset).limit(limit).orderBy(orderByFeeProgramIdDsc())
-        .list(QPGFeeProgram.pGFeeProgram.feeProgramName, QPGFeeProgram.pGFeeProgram.status, QPGFeeProgram.pGFeeProgram.feeProgramId);
+        .fetch();
     for (Tuple tuple : tupleCardList) {
       FeeProgramDTO feeProgram = new FeeProgramDTO();
       feeProgram.setFeeProgramName(tuple.get(QPGFeeProgram.pGFeeProgram.feeProgramName));
@@ -201,23 +203,23 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   }
 
   private int getTotalNumberOfRecords(FeeProgramDTO feeProgramDTO) {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
     QPGFeeProgram qfeecode = QPGFeeProgram.pGFeeProgram;
     List<Long> tupleCardList =
-        query.from(qfeecode).where(isFeeProgramName(feeProgramDTO.getFeeProgramName()),
-            isStatusEq(feeProgramDTO.getStatus()), isStatusNotEq()).list(qfeecode.feeProgramId);
+        query.from(qfeecode).select(qfeecode.feeProgramId).where(isFeeProgramName(feeProgramDTO.getFeeProgramName()),
+            isStatusEq(feeProgramDTO.getStatus()), isStatusNotEq()).fetch();
 
     return (StringUtil.isListNotNullNEmpty(tupleCardList) ? tupleCardList.size() : 0);
   }
   
   private int getTotalNumberOfRecordsForPM(FeeProgramDTO feeProgramDTO) {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
     List<Long> tupleCardList =
-        query.from(QPGFeeProgram.pGFeeProgram,QPmCardProgamMapping.pmCardProgamMapping).where(QPmCardProgamMapping.pmCardProgamMapping.programManagerId.eq(feeProgramDTO.getEntityId()),
+        query.from(QPGFeeProgram.pGFeeProgram,QPmCardProgamMapping.pmCardProgamMapping).select(QPGFeeProgram.pGFeeProgram.feeProgramId).where(QPmCardProgamMapping.pmCardProgamMapping.programManagerId.eq(feeProgramDTO.getEntityId()),
             QPmCardProgamMapping.pmCardProgamMapping.cardProgramId.eq(QPGFeeProgram.pGFeeProgram.cardProgramId),
            isFeeProgramName(feeProgramDTO.getFeeProgramName()),
             isStatusEq(feeProgramDTO.getStatus()), 
-            isFeeProgramId(feeProgramDTO.getFeeProgramId())).list(QPGFeeProgram.pGFeeProgram.feeProgramId);
+            isFeeProgramId(feeProgramDTO.getFeeProgramId())).fetch();
 
     return (StringUtil.isListNotNullNEmpty(tupleCardList) ? tupleCardList.size() : 0);
   }
@@ -245,7 +247,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   @Override
   public void removeFeeProgram(List<PGFeeProgramValue> feeProgramValueDaoDetails)
       throws DataAccessException {
-    feeProgramValueRepository.delete(feeProgramValueDaoDetails);
+    feeProgramValueRepository.deleteAll(feeProgramValueDaoDetails);
 
   }
 
@@ -253,11 +255,12 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   public List<PGAcquirerFeeValue> getAcquirerFeeValueByMerchantIdAndCardType(String merchantId,
       String cardType) throws DataAccessException {
 
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<PGAcquirerFeeValue> query = new JPAQuery<PGAcquirerFeeValue>(entityManager);
     List<PGAcquirerFeeValue> tupleCardList =
         query.distinct()
             .from(QPGFeeProgram.pGFeeProgram, QPGAcquirerFeeValue.pGAcquirerFeeValue,
                 QPGMerchant.pGMerchant, QPGMerchantConfig.pGMerchantConfig)
+            .select(QPGAcquirerFeeValue.pGAcquirerFeeValue)
             .where(
                 isStatusEq(
                     Constants.ACTIVE),
@@ -271,7 +274,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
                                     .eq(QPGAcquirerFeeValue.pGAcquirerFeeValue.feeProgramId)
                                     .and(QPGAcquirerFeeValue.pGAcquirerFeeValue.cardType
                                         .eq(cardType))))))
-        .list(QPGAcquirerFeeValue.pGAcquirerFeeValue);
+        .fetch();
     if (CommonUtil.isListNotNullAndEmpty(tupleCardList)) {
       return tupleCardList;
     }
@@ -326,7 +329,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   private Response deleteFee(List<PGFeeProgram> pgFeeProgram, Response response) {
     pgFeeProgram.get(0).setStatus(PGConstants.S_STATUS_DELETED);
     pgFeeProgram.get(0).setUpdatedDate(DateUtil.getCurrentTimestamp());
-    feeProgramRepository.save(pgFeeProgram);
+    feeProgramRepository.saveAll(pgFeeProgram);
     response.setErrorCode(ActionErrorCode.ERROR_CODE_F2);
     response
         .setErrorMessage(messageSource.getMessage("fee.program.delete.success", null, LocaleContextHolder.getLocale()));
@@ -334,9 +337,9 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   }
 
   private List<PGMerchant> findByMerchantConfigIdAndStatusNotLike(Long pgId, Integer status) {
-    JPAQuery query = new JPAQuery(entityManager);
-    List<PGMerchant> pgMerchant = query.from(QPGMerchant.pGMerchant)
-        .where(isFeePgId(pgId), isStatusNEq(status)).list(QPGMerchant.pGMerchant);
+    JPAQuery<PGMerchant> query = new JPAQuery<PGMerchant>(entityManager);
+    List<PGMerchant> pgMerchant = query.from(QPGMerchant.pGMerchant).select(QPGMerchant.pGMerchant)
+        .where(isFeePgId(pgId), isStatusNEq(status)).fetch();
     return pgMerchant;
   }
 

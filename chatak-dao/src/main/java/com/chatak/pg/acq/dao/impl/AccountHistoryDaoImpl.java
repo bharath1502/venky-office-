@@ -20,10 +20,10 @@ import com.chatak.pg.acq.dao.model.QPGAccountHistory;
 import com.chatak.pg.acq.dao.repository.AccountHistoryRepository;
 import com.chatak.pg.user.bean.MerchantAccountHistory;
 import com.chatak.pg.util.Constants;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -86,21 +86,22 @@ public List<PGAccountHistory> SearchAccountHistory(MerchantAccountHistory mercha
 		limit = pageSize;
 	}
 
-	JPAQuery query = new JPAQuery(entityManager);
+	JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 	List<Tuple> dataList = query
 			.from(QPGAccountHistory.pGAccountHistory)
-			.where(isaccountNum(merchantAccountHistory.getAccountNum()))
-			.offset(offset)
-			.limit(limit)
-			.orderBy(orderByUpdatedDateDesc())
-			.list(QPGAccountHistory.pGAccountHistory.accountNum,
+			.select(QPGAccountHistory.pGAccountHistory.accountNum,
 					QPGAccountHistory.pGAccountHistory.currency,
 					QPGAccountHistory.pGAccountHistory.availableBalance,
 					QPGAccountHistory.pGAccountHistory.status,
 					QPGAccountHistory.pGAccountHistory.currentBalance,
 					QPGAccountHistory.pGAccountHistory.feeBalance,
 					QPGAccountHistory.pGAccountHistory.paymentMethod,
-					QPGAccountHistory.pGAccountHistory.updatedDate);
+					QPGAccountHistory.pGAccountHistory.updatedDate)
+			.where(isaccountNum(merchantAccountHistory.getAccountNum()))
+			.offset(offset)
+			.limit(limit)
+			.orderBy(orderByUpdatedDateDesc())
+			.fetch();
 	PGAccountHistory accounthistory = null;
 	for (Tuple data : dataList) {
 		accounthistory = new PGAccountHistory();
@@ -119,11 +120,12 @@ public List<PGAccountHistory> SearchAccountHistory(MerchantAccountHistory mercha
 }
 
 private int getTotalNumberOfRecords(MerchantAccountHistory merchantAccountHistory) {
-	JPAQuery query = new JPAQuery(entityManager);
+	JPAQuery<PGAccountHistory> query = new JPAQuery<PGAccountHistory>(entityManager);
 	List<PGAccountHistory> accountList = query
+			.select(QPGAccountHistory.pGAccountHistory)
 			.from(QPGAccountHistory.pGAccountHistory)
 			.where(isaccountNum(merchantAccountHistory.getAccountNum()))
-			.orderBy(orderByUpdatedDateDesc()).list(QPGAccountHistory.pGAccountHistory);
+			.orderBy(orderByUpdatedDateDesc()).fetch();
 
 	return (accountList != null && !accountList.isEmpty() ? accountList
 			.size() : 0);

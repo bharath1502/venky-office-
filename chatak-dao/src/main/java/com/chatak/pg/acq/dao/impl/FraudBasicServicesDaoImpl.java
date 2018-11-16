@@ -33,7 +33,7 @@ public class FraudBasicServicesDaoImpl implements FraudBasicServicesDao {
 
 	@Override
 	public PGFraudBasic findByFraudBasicId(Long id) throws DataAccessException {
-		return fraudBasicRepository.findOne(id);
+		return fraudBasicRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class FraudBasicServicesDaoImpl implements FraudBasicServicesDao {
 	 */
 	@Override
 	public PGMerchantUsers findById(Long id) throws DataAccessException {
-		return merchantUserRepository.findById(id);
+		return merchantUserRepository.findById(id).orElse(null);
 	}
 
 }

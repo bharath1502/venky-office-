@@ -33,10 +33,10 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Repository("recurringServicesDao")
 public class RecurringServicesDaoImpl implements RecurringServicesDao{
@@ -63,7 +63,7 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 	@Override
 	public RecurringCustomerInfo findByRecurringCustomerInfoId(Long id)
 			throws DataAccessException {
-		return recurringCustomerInfoRepository.findOne(id);
+		return recurringCustomerInfoRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 	@Override
 	public RecurringPaymentInfo findByRecurringPaymentInfoId(Long id)
 			throws DataAccessException {
-		return recurringPaymentInfoRepository.findOne(id);
+		return recurringPaymentInfoRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 	@Override
 	public RecurringContractInfo findByRecurringContractInfoId(Long id)
 			throws DataAccessException {
-		return recurringContractInfoRepository.findOne(id);
+		return recurringContractInfoRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -114,8 +114,9 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 			limit = pageSize;
 		}
 
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<RecurringCustomerInfo> query = new JPAQuery<RecurringCustomerInfo>(entityManager);
 		List<RecurringCustomerInfo> infoList = query.from(QRecurringCustomerInfo.recurringCustomerInfo)
+				.select(QRecurringCustomerInfo.recurringCustomerInfo)
 				.where(isMerchantIdEq(recurringCustomerInfoDTO.getMerchantId()),
 						isCustomerIdEq(recurringCustomerInfoDTO.getCustomerId()),
 						isFirstNameEq(recurringCustomerInfoDTO.getFirstName()),
@@ -128,7 +129,7 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 						.offset(offset)
 						.limit(limit)
 						.orderBy(orderByCustomerInfoIdDesc())
-						.list(QRecurringCustomerInfo.recurringCustomerInfo);
+						.fetch();
 		if(StringUtil.isListNotNullNEmpty(infoList)){
 			custInfoList = CommonUtil.copyListBeanProperty(infoList, RecurringCustomerInfoDTO.class);
 		}
@@ -212,21 +213,20 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 			limit = pageSize;
 		}
 
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 		List<Tuple> dataList = query.from(QRecurringPaymentInfo.recurringPaymentInfo,QRecurringCustomerInfo.recurringCustomerInfo)
+				.select(QRecurringPaymentInfo.recurringPaymentInfo.recurringPaymentInfoId,
+						QRecurringPaymentInfo.recurringPaymentInfo.recurringCustomerInfoId,
+						QRecurringPaymentInfo.recurringPaymentInfo.cardNumber,
+						QRecurringPaymentInfo.recurringPaymentInfo.expDt,
+						QRecurringPaymentInfo.recurringPaymentInfo.nameOnCard,
+						QRecurringPaymentInfo.recurringPaymentInfo.status)
 				.where(QRecurringPaymentInfo.recurringPaymentInfo.recurringCustomerInfoId.eq(
 						recurringPaymentInfoDTO.getRecurringCustomerInfoId()),
 						QRecurringPaymentInfo.recurringPaymentInfo.recurringCustomerInfoId.eq(
 								QRecurringCustomerInfo.recurringCustomerInfo.recurringCustInfoId))
 								.offset(offset)
-								.limit(limit).orderBy(orderByPaymentInfoIdDesc()).list(
-										QRecurringPaymentInfo.recurringPaymentInfo.recurringPaymentInfoId,
-										QRecurringPaymentInfo.recurringPaymentInfo.recurringCustomerInfoId,
-										QRecurringPaymentInfo.recurringPaymentInfo.cardNumber,
-										QRecurringPaymentInfo.recurringPaymentInfo.expDt,
-										QRecurringPaymentInfo.recurringPaymentInfo.nameOnCard,
-										QRecurringPaymentInfo.recurringPaymentInfo.status
-										);
+								.limit(limit).orderBy(orderByPaymentInfoIdDesc()).fetch();
 		for (Tuple tuple : dataList) {
 			paymentInfoDTO = new RecurringPaymentInfoDTO();
 			paymentInfoDTO.setRecurringPaymentInfoId(tuple.get(QRecurringPaymentInfo.recurringPaymentInfo.recurringPaymentInfoId));
@@ -259,14 +259,14 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 	 * @return
 	 */
 	private Integer getPaymentInfoTotalRecords(RecurringPaymentInfoDTO recurringPaymentInfoDTO){
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> dataList = query.from(QRecurringPaymentInfo.recurringPaymentInfo,QRecurringCustomerInfo.recurringCustomerInfo)
+				.select(QRecurringPaymentInfo.recurringPaymentInfo.recurringPaymentInfoId)
 				.where(QRecurringPaymentInfo.recurringPaymentInfo.recurringCustomerInfoId.eq(
 						recurringPaymentInfoDTO.getRecurringCustomerInfoId()),
 						QRecurringPaymentInfo.recurringPaymentInfo.recurringCustomerInfoId.eq(
 								QRecurringCustomerInfo.recurringCustomerInfo.recurringCustInfoId))
-								.orderBy(orderByPaymentInfoIdDesc()).list(
-										QRecurringPaymentInfo.recurringPaymentInfo.recurringPaymentInfoId);
+								.orderBy(orderByPaymentInfoIdDesc()).fetch();
 		return (StringUtil.isListNotNullNEmpty(dataList) ? dataList.size() : 0);
 	}
 	
@@ -276,9 +276,10 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 	 * @return
 	 */
 	private Integer getContractInfoTotalRecords(RecurringContractInfoDTO recurringContractInfoDTO){
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> dataList = query.from(QRecurringContractInfo.recurringContractInfo,
 				QRecurringPaymentInfo.recurringPaymentInfo,QRecurringCustomerInfo.recurringCustomerInfo)
+				.select(QRecurringContractInfo.recurringContractInfo.recurringContractInfoId)
 				.where(
 						QRecurringCustomerInfo.recurringCustomerInfo.recurringCustInfoId.eq(recurringContractInfoDTO.getRecurringCustInfoId()),
 						isContractId(recurringContractInfoDTO.getRecurringContractInfoId()),
@@ -287,8 +288,7 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 								QRecurringContractInfo.recurringContractInfo.recurringPaymentInfoId.eq(
 										QRecurringPaymentInfo.recurringPaymentInfo.recurringPaymentInfoId))
 										.orderBy(orderByContractInfoIdAsc())
-										.list(QRecurringContractInfo.recurringContractInfo.recurringContractInfoId
-												);
+										.fetch();
 		return (StringUtil.isListNotNullNEmpty(dataList) ? dataList.size() : 0);
 	}
 	
@@ -297,8 +297,9 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 	 * @return
 	 */
 	private Integer getCustomerInfoTotalRecords(RecurringCustomerInfoDTO recurringCustomerInfoDTO) {
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> dataList = query.from(QRecurringCustomerInfo.recurringCustomerInfo)
+				.select(QRecurringCustomerInfo.recurringCustomerInfo.recurringCustInfoId)
 				.where(isMerchantIdEq(recurringCustomerInfoDTO.getMerchantId()),
 						isCustomerIdEq(recurringCustomerInfoDTO.getCustomerId()),
 						isFirstNameEq(recurringCustomerInfoDTO.getFirstName()),
@@ -308,7 +309,7 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 						isCityEq(recurringCustomerInfoDTO.getCity()),
 						isBusinessNameEq(recurringCustomerInfoDTO.getBusinessName()),
 						isStatusEq(recurringCustomerInfoDTO.getStatus())
-						).orderBy(orderByCustomerInfoIdDesc()).list(QRecurringCustomerInfo.recurringCustomerInfo.recurringCustInfoId);
+						).orderBy(orderByCustomerInfoIdDesc()).fetch();
 		return (StringUtil.isListNotNullNEmpty(dataList) ? dataList.size() : 0);
 	}
 	
@@ -366,9 +367,30 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 			limit = pageSize;
 		}
 
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 		List<Tuple> dataList = query.from(QRecurringContractInfo.recurringContractInfo,
 				QRecurringPaymentInfo.recurringPaymentInfo,QRecurringCustomerInfo.recurringCustomerInfo)
+				.select(QRecurringContractInfo.recurringContractInfo.contractId,
+						QRecurringContractInfo.recurringContractInfo.contractAmount,
+						QRecurringContractInfo.recurringContractInfo.contractName,
+						QRecurringContractInfo.recurringContractInfo.startDate,
+						QRecurringContractInfo.recurringContractInfo.endDate,
+						QRecurringContractInfo.recurringContractInfo.tax,
+						QRecurringContractInfo.recurringContractInfo.status,
+						QRecurringContractInfo.recurringContractInfo.transactionApprovedEmail,
+						QRecurringContractInfo.recurringContractInfo.transactionDeclinedEmail,
+						QRecurringContractInfo.recurringContractInfo.contractExecution,
+						QRecurringPaymentInfo.recurringPaymentInfo.nameOnCard,
+						QRecurringContractInfo.recurringContractInfo.recurringContractInfoId,
+						QRecurringContractInfo.recurringContractInfo.recurringPaymentInfoId,
+						QRecurringContractInfo.recurringContractInfo.status,
+						QRecurringContractInfo.recurringContractInfo.startDate,
+						QRecurringContractInfo.recurringContractInfo.endDate,
+						QRecurringContractInfo.recurringContractInfo.contractAmount,
+						QRecurringContractInfo.recurringContractInfo.tax,
+						QRecurringCustomerInfo.recurringCustomerInfo.recurringCustInfoId,
+						QRecurringContractInfo.recurringContractInfo.lastBillDate,
+						QRecurringContractInfo.recurringContractInfo.contractExecutionReprocess)
 				.where(
 						QRecurringCustomerInfo.recurringCustomerInfo.recurringCustInfoId.eq(recurringContractInfoDTO.getRecurringCustInfoId()),
 						isContractId(recurringContractInfoDTO.getRecurringContractInfoId()),
@@ -378,29 +400,7 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 										QRecurringPaymentInfo.recurringPaymentInfo.recurringPaymentInfoId))
 										.offset(offset)
 										.limit(limit).orderBy(orderByContractInfoIdAsc()).
-										list(QRecurringContractInfo.recurringContractInfo.contractId,
-												QRecurringContractInfo.recurringContractInfo.contractAmount,
-												QRecurringContractInfo.recurringContractInfo.contractName,
-												QRecurringContractInfo.recurringContractInfo.startDate,
-												QRecurringContractInfo.recurringContractInfo.endDate,
-												QRecurringContractInfo.recurringContractInfo.tax,
-												QRecurringContractInfo.recurringContractInfo.status,
-												QRecurringContractInfo.recurringContractInfo.transactionApprovedEmail,
-												QRecurringContractInfo.recurringContractInfo.transactionDeclinedEmail,
-												QRecurringContractInfo.recurringContractInfo.contractExecution,
-												QRecurringPaymentInfo.recurringPaymentInfo.nameOnCard,
-												QRecurringContractInfo.recurringContractInfo.recurringContractInfoId,
-												QRecurringContractInfo.recurringContractInfo.recurringPaymentInfoId,
-												QRecurringContractInfo.recurringContractInfo.status,
-												QRecurringContractInfo.recurringContractInfo.startDate,
-												QRecurringContractInfo.recurringContractInfo.endDate,
-												QRecurringContractInfo.recurringContractInfo.contractAmount,
-												QRecurringContractInfo.recurringContractInfo.tax,
-												QRecurringCustomerInfo.recurringCustomerInfo.recurringCustInfoId,
-												QRecurringContractInfo.recurringContractInfo.lastBillDate,
-												QRecurringContractInfo.recurringContractInfo.contractExecutionReprocess
-												
-												);
+										fetch();
 		for (Tuple tuple : dataList) {
 			contractInfoDTO = new RecurringContractInfoDTO();
 			contractInfoDTO.setContractAmount(tuple.get(QRecurringContractInfo.recurringContractInfo.contractAmount));
@@ -442,26 +442,27 @@ public class RecurringServicesDaoImpl implements RecurringServicesDao{
 
 		RecurringContractInfoDTO contractInfoDTO = new RecurringContractInfoDTO();
 		
-		JPAQuery query = new JPAQuery(entityManager);
-		List<Tuple> data = query.from(QRecurringContractInfo.recurringContractInfo,QRecurringPaymentInfo.recurringPaymentInfo).where(QRecurringContractInfo.recurringContractInfo.recurringContractInfoId.eq(contractInfoId),
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		List<Tuple> data = query.from(QRecurringContractInfo.recurringContractInfo,QRecurringPaymentInfo.recurringPaymentInfo)
+				.select(QRecurringContractInfo.recurringContractInfo.contractId,
+						QRecurringContractInfo.recurringContractInfo.contractAmount,
+						QRecurringContractInfo.recurringContractInfo.contractName,
+						QRecurringContractInfo.recurringContractInfo.startDate,
+						QRecurringContractInfo.recurringContractInfo.endDate,
+						QRecurringContractInfo.recurringContractInfo.tax,
+						QRecurringContractInfo.recurringContractInfo.status,
+						QRecurringContractInfo.recurringContractInfo.transactionApprovedEmail,
+						QRecurringContractInfo.recurringContractInfo.transactionDeclinedEmail,
+						QRecurringContractInfo.recurringContractInfo.contractExecution,
+						QRecurringContractInfo.recurringContractInfo.recurringContractInfoId,
+						QRecurringContractInfo.recurringContractInfo.recurringPaymentInfoId,
+						QRecurringPaymentInfo.recurringPaymentInfo.nameOnCard,
+						QRecurringContractInfo.recurringContractInfo.lastBillDate,
+						QRecurringContractInfo.recurringContractInfo.contractExecutionReprocess)
+				.where(QRecurringContractInfo.recurringContractInfo.recurringContractInfoId.eq(contractInfoId),
 																	   	QRecurringContractInfo.recurringContractInfo.status.eq(status))
 																	   	.orderBy(orderByContractInfoIdAsc()).
-																		list(QRecurringContractInfo.recurringContractInfo.contractId,
-																				QRecurringContractInfo.recurringContractInfo.contractAmount,
-																				QRecurringContractInfo.recurringContractInfo.contractName,
-																				QRecurringContractInfo.recurringContractInfo.startDate,
-																				QRecurringContractInfo.recurringContractInfo.endDate,
-																				QRecurringContractInfo.recurringContractInfo.tax,
-																				QRecurringContractInfo.recurringContractInfo.status,
-																				QRecurringContractInfo.recurringContractInfo.transactionApprovedEmail,
-																				QRecurringContractInfo.recurringContractInfo.transactionDeclinedEmail,
-																				QRecurringContractInfo.recurringContractInfo.contractExecution,
-																				QRecurringContractInfo.recurringContractInfo.recurringContractInfoId,
-																				QRecurringContractInfo.recurringContractInfo.recurringPaymentInfoId,
-																				QRecurringPaymentInfo.recurringPaymentInfo.nameOnCard,
-																				QRecurringContractInfo.recurringContractInfo.lastBillDate,
-																				QRecurringContractInfo.recurringContractInfo.contractExecutionReprocess
-																		);
+																		fetch();
 		for(Tuple tuple : data) {
 			contractInfoDTO.setContractId(tuple.get(QRecurringContractInfo.recurringContractInfo.contractId));
 			contractInfoDTO.setContractAmount(tuple.get(QRecurringContractInfo.recurringContractInfo.contractAmount));

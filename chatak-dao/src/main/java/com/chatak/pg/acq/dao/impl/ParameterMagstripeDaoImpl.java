@@ -15,9 +15,9 @@ import com.chatak.pg.acq.dao.repository.ParameterMagstripeRepository;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.ParameterMagstripeDTO;
 import com.chatak.pg.util.Constants;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Repository("parameterMagstripeDao")
 public class ParameterMagstripeDaoImpl implements ParameterMagstripeDao {
@@ -53,27 +53,28 @@ public class ParameterMagstripeDaoImpl implements ParameterMagstripeDao {
 			offset = (pageIndex - 1) * pageSize;
 			limit = pageSize;
 		}
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<PGParameterMagstripe> query = new JPAQuery<PGParameterMagstripe>(entityManager);
 		QPGParameterMagstripe qpgParameterMagstripe = QPGParameterMagstripe.pGParameterMagstripe;
-		List<PGParameterMagstripe> list = query.from(qpgParameterMagstripe)
+		List<PGParameterMagstripe> list = query.from(qpgParameterMagstripe).select(qpgParameterMagstripe)
 				                        .where(isMagstripeNameLike(parameterMagstripeTO.getMagstripeName()),
 				                        		isPinLengthLike(parameterMagstripeTO.getPanLength()),
 				                        		cardRangeCheck(parameterMagstripeTO.getCardRangeLow(), parameterMagstripeTO.getCardRangeHigh()),
 								               isStatusEq(parameterMagstripeTO.getStatus()))
 								       .offset(offset)
 						               .limit(limit).orderBy(orderByMagstripeIdDesc())
-						               .list(qpgParameterMagstripe);
+						               .fetch();
 		return list;
 	}
 	
 	private int getTotalNumberOfRecords(ParameterMagstripeDTO parameterMagstripeTO) {
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> list = query.from(QPGParameterMagstripe.pGParameterMagstripe)
+				 .select(QPGParameterMagstripe.pGParameterMagstripe.magstripeId)
 				 .where(isMagstripeNameLike(parameterMagstripeTO.getMagstripeName()),
 						 isPinLengthLike(parameterMagstripeTO.getPanLength()),
 						 cardRangeCheck(parameterMagstripeTO.getCardRangeLow(), parameterMagstripeTO.getCardRangeHigh()),
 			               isStatusEq(parameterMagstripeTO.getStatus()))
-						.list(QPGParameterMagstripe.pGParameterMagstripe.magstripeId);
+						.fetch();
 		return (StringUtil.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
 	
@@ -99,7 +100,7 @@ public class ParameterMagstripeDaoImpl implements ParameterMagstripeDao {
 	}
 	@Override
 	public PGParameterMagstripe findByMagstripeId(Long magstripeId) {
-		return parameterMagstripeRepository.findOne(magstripeId);
+		return parameterMagstripeRepository.findById(magstripeId).orElse(null);
 	}
 
 	@Override

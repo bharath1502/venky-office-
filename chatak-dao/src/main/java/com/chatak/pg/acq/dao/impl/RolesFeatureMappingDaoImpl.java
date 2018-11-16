@@ -24,8 +24,8 @@ import com.chatak.pg.acq.dao.repository.SubFeatureRepository;
 import com.chatak.pg.model.FeatureDTO;
 import com.chatak.pg.model.UserRolesDTO;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @SuppressWarnings("unchecked")
 @Repository("rolesFeatureMappingDao")
@@ -116,9 +116,9 @@ public class RolesFeatureMappingDaoImpl implements RolesFeatureMappingDao {
   public List<PGRolesFeatureMapping> getAdminRoleFeaturesList(FeatureDTO featureDTO) {
 
     String roleType = featureDTO.getRoleType();
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<PGRolesFeatureMapping> query = new JPAQuery<PGRolesFeatureMapping>(entityManager);
     QPGRolesFeatureMapping qRolesFeatures = QPGRolesFeatureMapping.pGRolesFeatureMapping;
-    return query.from(qRolesFeatures).where(isRoleLevel(roleType)).list(qRolesFeatures);
+    return query.from(qRolesFeatures).select(qRolesFeatures).where(isRoleLevel(roleType)).fetch();
   }
 
   private BooleanExpression isRoleLevel(String roleLevel) {

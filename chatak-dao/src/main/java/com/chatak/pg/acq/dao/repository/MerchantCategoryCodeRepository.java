@@ -3,8 +3,10 @@
  */
 package com.chatak.pg.acq.dao.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGMerchantCategoryCode;
 
@@ -18,9 +20,9 @@ import com.chatak.pg.acq.dao.model.PGMerchantCategoryCode;
  */
 public interface MerchantCategoryCodeRepository extends
 		JpaRepository<PGMerchantCategoryCode, Long>,
-		QueryDslPredicateExecutor<PGMerchantCategoryCode> {
+		QuerydslPredicateExecutor<PGMerchantCategoryCode> {
 
 	public PGMerchantCategoryCode findByMerchantCategoryCode(String mcc);
 	
-	public PGMerchantCategoryCode findById(Long id);
+	public Optional<PGMerchantCategoryCode> findById(Long id);
 }

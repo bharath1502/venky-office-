@@ -274,7 +274,7 @@ public class FeeReportController implements URLMappingConstants {
 		try {
 
 			if (userType.equals(Constants.ISO_USER_TYPE)) {
-				Iso iso = isoService.findIsoByIsoId(Long.valueOf(session.getId())).get(0);
+				Iso iso = isoService.findIsoByIsoId(Long.valueOf(session.getId()));
 				feeReportRequest.setIsoId(iso.getId());
 				iso.getIsoName();
 				feeReportRequest.setIsoName(iso.getIsoName());
@@ -389,7 +389,7 @@ public class FeeReportController implements URLMappingConstants {
 				if(!StringUtil.isNull(transactionResponse) && !StringUtil.isNull(transactionResponse.getSettlementEntity().get(0).getIsoId())) {
 				    logger.info("ISO ID : " + transactionResponse.getSettlementEntity().get(0).getIsoId().toString());
 					Long isoId = transactionResponse.getSettlementEntity().get(0).getIsoId();
-					Iso iso = isoService.findIsoByIsoId(isoId).get(0);
+					Iso iso = isoService.findIsoByIsoId(isoId);
 					map.put("ISO :", iso.getIsoName());
 				}
                 
@@ -489,7 +489,7 @@ public class FeeReportController implements URLMappingConstants {
 		try {
 
 			if (userType.equals(Constants.ISO_USER_TYPE)) {
-				Iso iso = isoService.findIsoByIsoId(Long.valueOf(session.getId())).get(0);
+				Iso iso = isoService.findIsoByIsoId(Long.valueOf(session.getId()));
 				feeReportRequest.setIsoId(iso.getId());
 				iso.getIsoName();
 				feeReportRequest.setIsoName(iso.getIsoName());

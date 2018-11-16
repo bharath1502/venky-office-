@@ -66,10 +66,10 @@ import com.chatak.pg.user.bean.UpdateTerminalResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * Class provides implementation of API's required for Merchandise application,
@@ -302,14 +302,15 @@ public class MerchantDaoImpl implements MerchantDao {
   }
 
   public int getTotalNumberOfBalanceRecords() {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> infoList = query.from(QPGMerchant.pGMerchant, QPGAccount.pGAccount)
-        .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGAccount.pGAccount.entityId))
-        .orderBy(orderByCreatedDateDesc()).list(QPGMerchant.pGMerchant.userName,
+    	.select(QPGMerchant.pGMerchant.userName,
             QPGMerchant.pGMerchant.businessName, QPGAccount.pGAccount.createdDate,
             QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.entityType,
             QPGMerchant.pGMerchant.localCurrency, QPGAccount.pGAccount.availableBalance,
-            QPGAccount.pGAccount.currentBalance, QPGAccount.pGAccount.status);
+            QPGAccount.pGAccount.currentBalance, QPGAccount.pGAccount.status)
+        .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGAccount.pGAccount.entityId))
+        .orderBy(orderByCreatedDateDesc()).fetch();
     return (StringUtils.isListNotNullNEmpty(infoList) ? infoList.size() : 0);
   }
 
@@ -317,15 +318,16 @@ public class MerchantDaoImpl implements MerchantDao {
   public List<ReportsDTO> getAccountTransferList() {
     List<ReportsDTO> reportList = null;
     ReportsDTO transferReport = null;
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> infoList =
         query.from(QPGTransfers.pGTransfers, QPGMerchant.pGMerchant)
-            .where(QPGMerchant.pGMerchant.merchantCode
-                .eq(QPGTransfers.pGTransfers.merchantId.toString()))
-            .orderBy().list(QPGTransfers.pGTransfers.fromAccount,
+        	.select(QPGTransfers.pGTransfers.fromAccount,
                 QPGMerchant.pGMerchant.businessName, QPGTransfers.pGTransfers.updatedDate,
                 QPGTransfers.pGTransfers.txnDescription, QPGMerchant.pGMerchant.userName,
-                QPGTransfers.pGTransfers.pgTransfersId, QPGTransfers.pGTransfers.amount);
+                QPGTransfers.pGTransfers.pgTransfersId, QPGTransfers.pGTransfers.amount)
+            .where(QPGMerchant.pGMerchant.merchantCode
+                .eq(QPGTransfers.pGTransfers.merchantId.toString()))
+            .orderBy().fetch();
     if (StringUtil.isListNotNullNEmpty(infoList)) {
       reportList = new ArrayList<>();
       for (Tuple tuple : infoList) {
@@ -436,11 +438,12 @@ public class MerchantDaoImpl implements MerchantDao {
 
   @Override
   public List<String> getExistingAgentList(String partnerId) {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<String> query = new JPAQuery<String>(entityManager);
     return query.distinct().from(QPGMerchant.pGMerchant)
+    	.select(QPGMerchant.pGMerchant.agentId)
         .where(QPGMerchant.pGMerchant.agentId.isNotNull()
             .and(QPGMerchant.pGMerchant.status.ne(PGConstants.STATUS_DELETED)))
-        .list(QPGMerchant.pGMerchant.agentId);
+        .fetch();
   }
 
   /**
@@ -506,10 +509,11 @@ public class MerchantDaoImpl implements MerchantDao {
    */
   @Override
   public Map<String, String> getAllMerchantMap() {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     Map<String, String> merchantMap = new HashMap<>();
     List<Tuple> tupleList = query.distinct().from(QPGMerchant.pGMerchant)
-        .list(QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.businessName);
+    	.select(QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.businessName)
+        .fetch();
     if (StringUtil.isListNotNullNEmpty(tupleList)) {
       for (Tuple tuple : tupleList) {
         merchantMap.put(tuple.get(QPGMerchant.pGMerchant.merchantCode),
@@ -584,15 +588,16 @@ public class MerchantDaoImpl implements MerchantDao {
       limit = merchant.getPageSize();
     }
 
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant)
+    	.select(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.status,
+            QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId)
         .where(QPGMerchant.pGMerchant.merchantType.eq(merchant.getMerchantType()),
             isBusinessNameLike(merchant.getBusinessName()),
             isMerchantCodeEq(merchant.getMerchantCode()),
             isSubMerchantCodeEq(merchant.getMerchantCode()))
         .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-        .list(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.status,
-            QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId);
+        .fetch();
     if (!CollectionUtils.isEmpty(tupleList)) {
       merchantList = new ArrayList<>();
       PGMerchant pgMerchant = null;
@@ -609,13 +614,13 @@ public class MerchantDaoImpl implements MerchantDao {
   }
 
   private Integer getTotalMerchantsForAccountDetails(Merchant merchant) {
-    JPAQuery query = new JPAQuery(entityManager);
-    List<Long> list = query.from(QPGMerchant.pGMerchant)
+    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    List<Long> list = query.from(QPGMerchant.pGMerchant).select(QPGMerchant.pGMerchant.id)
         .where(QPGMerchant.pGMerchant.merchantType.eq(merchant.getMerchantType()),
             isBusinessNameLike(merchant.getBusinessName()),
             isMerchantCodeEq(merchant.getMerchantCode()),
             isSubMerchantCodeEq(merchant.getMerchantCode()))
-        .list(QPGMerchant.pGMerchant.id);
+        .fetch();
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
 
@@ -625,7 +630,7 @@ public class MerchantDaoImpl implements MerchantDao {
   @Override
   public void getMerchantConfigDetailsForAccountCreate(Merchant merchant) {
     PGMerchantConfig pgMerchantConfig =
-        merchantConfigRepositrory.findById(merchant.getMerchantConfigId());
+        merchantConfigRepositrory.findById(merchant.getMerchantConfigId()).orElse(null);
     if (null != pgMerchantConfig) {
       merchant.setFeeProgram(pgMerchantConfig.getFeeProgram());
       merchant.setProcessor(pgMerchantConfig.getProcessor());

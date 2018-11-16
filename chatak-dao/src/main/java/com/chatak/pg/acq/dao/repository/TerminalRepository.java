@@ -3,7 +3,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGTerminal;
 
@@ -14,7 +14,7 @@ import com.chatak.pg.acq.dao.model.PGTerminal;
  * @date 08-Dec-2014 12:33:27 pm
  * @version 1.0
  */
-public interface TerminalRepository extends JpaRepository<PGTerminal, Long>, QueryDslPredicateExecutor<PGTerminal> {
+public interface TerminalRepository extends JpaRepository<PGTerminal, Long>, QuerydslPredicateExecutor<PGTerminal> {
 
   public List<PGTerminal> findByTerminalIdAndMerchantId(Long terminalId, Long merchantId);
 

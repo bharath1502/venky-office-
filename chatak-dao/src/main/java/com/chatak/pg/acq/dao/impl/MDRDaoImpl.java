@@ -20,9 +20,9 @@ import com.chatak.pg.acq.dao.repository.MDRRepository;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.DynamicMDRDTO;
 import com.chatak.pg.util.Constants;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -82,7 +82,7 @@ public class MDRDaoImpl implements MDRDao{
 	public DynamicMDRDTO findById(Long getMDRId) {
 		logger.info("MDRDaoImpl | findById | Entering");
 		DynamicMDRDTO dynamicMDRDTO = new DynamicMDRDTO();
-		PGDynamicMDR pgDynamicMDR = mdrRepository.findById(getMDRId);
+		PGDynamicMDR pgDynamicMDR = mdrRepository.findById(getMDRId).orElse(null);
 		if(pgDynamicMDR != null){
 			dynamicMDRDTO.setId(pgDynamicMDR.getId());
 			dynamicMDRDTO.setBinNumber(pgDynamicMDR.getBinNumber());
@@ -117,11 +117,12 @@ public class MDRDaoImpl implements MDRDao{
         limit = dynamicMDRDTO.getPageSize();
       }
 		
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<PGDynamicMDR> query = new JPAQuery<PGDynamicMDR>(entityManager);
 		QPGDynamicMDR qpgDynamicMDR = QPGDynamicMDR.pGDynamicMDR;
          
           List<PGDynamicMDR> list = query
 				.from(qpgDynamicMDR)
+				.select(qpgDynamicMDR)
 				.where(isBinNumber(dynamicMDRDTO.getBinNumber()),
 						isPaymentScheme(dynamicMDRDTO.getPaymentSchemeName()),
 						isBankName(dynamicMDRDTO.getBankName()),
@@ -132,7 +133,7 @@ public class MDRDaoImpl implements MDRDao{
 						.offset(offset)
 			            .limit(limit)
 			            .orderBy(orderByDeviceIdDesc())
-				       .list(qpgDynamicMDR);
+				       .fetch();
           logger.info("MDRDaoImpl | searchDynamicMDR | Exiting");
 		return list;
 		
@@ -140,8 +141,9 @@ public class MDRDaoImpl implements MDRDao{
 	
 	private int getTotalNumberOfRecords(DynamicMDRDTO dynamicMDRDTO) {
 		logger.info("MDRDaoImpl | getTotalNumberOfRecords | Entering");
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
 		List<Long> list = query.from(QPGDynamicMDR.pGDynamicMDR)
+				 .select(QPGDynamicMDR.pGDynamicMDR.id)
 				 .where(isBinNumber(dynamicMDRDTO.getBinNumber()),
 							isPaymentScheme(dynamicMDRDTO.getPaymentSchemeName()),
 							isBankName(dynamicMDRDTO.getBankName()),
@@ -149,7 +151,7 @@ public class MDRDaoImpl implements MDRDao{
 							isProductType(dynamicMDRDTO.getProductType()),
 							isTransactionType(dynamicMDRDTO.getTransactionType()),
 							isSlab(dynamicMDRDTO.getSlab()))
-						.list(QPGDynamicMDR.pGDynamicMDR.id);
+						.fetch();
 		logger.info("MDRDaoImpl | getTotalNumberOfRecords | Exiting");
 		return (StringUtil.isListNotNullNEmpty(list) ? list.size() : 0);
 	}

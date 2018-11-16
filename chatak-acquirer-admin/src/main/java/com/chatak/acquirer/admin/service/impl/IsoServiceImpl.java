@@ -209,8 +209,8 @@ public class IsoServiceImpl implements IsoService{
 		logger.info("Entering :: IsoServiceImpl :: updateIso");
 		IsoResponse response = new IsoResponse();
 		try{
-			List<Iso> isoModel = isoServiceDao.findByIsoId(isoRequest.getId());
-			if(!(isoModel.get(0).getIsoName().equals(isoRequest.getIsoName()))){
+			Iso isoModel = isoServiceDao.findByIsoId(isoRequest.getId());
+			if(!(isoModel.getIsoName().equals(isoRequest.getIsoName()))){
 				List<Iso> existingName = isoServiceDao.findByIsoName(isoRequest.getIsoName());
 				if(StringUtil.isListNotNullNEmpty(existingName)){
 					throw new ChatakAdminException(Constants.ISO_NAME_ALREADY_EXIST,messageSource.getMessage(Constants.ISO_NAME_ALREADY_EXIST, null, LocaleContextHolder.getLocale()));	
@@ -226,9 +226,9 @@ public class IsoServiceImpl implements IsoService{
 			iso.setContactPerson(isoRequest.getProgramManagerRequest().getContactName());
 			iso.setPhoneNumber(isoRequest.getProgramManagerRequest().getContactPhone());
 			iso.setExtension(isoRequest.getProgramManagerRequest().getExtension());
-			iso.setStatus(isoModel.get(0).getStatus());
+			iso.setStatus(isoModel.getStatus());
 			iso.setEmail(isoRequest.getProgramManagerRequest().getContactEmail());
-			iso.setIsoLogo(isoModel.get(0).getIsoLogo());
+			iso.setIsoLogo(isoModel.getIsoLogo());
 			iso.setAddress(isoRequest.getAddress());
 			iso.setCountry(isoRequest.getCountry());
 			iso.setState(isoRequest.getState());
@@ -447,7 +447,7 @@ public class IsoServiceImpl implements IsoService{
 	}
 	
 	@Override
-	public List<Iso> findIsoByIsoId(Long isoId) {
+	public Iso findIsoByIsoId(Long isoId) {
 		return isoServiceDao.findByIsoId(isoId);
 	}
 	

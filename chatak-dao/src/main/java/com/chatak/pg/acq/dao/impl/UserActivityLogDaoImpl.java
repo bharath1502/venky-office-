@@ -21,8 +21,8 @@ import com.chatak.pg.acq.dao.repository.UserActivityLogRepository;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.AccessLogsDTO;
 import com.chatak.pg.util.DateUtil;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -57,10 +57,11 @@ public class UserActivityLogDaoImpl implements UserActivityLogDao {
 	public List<AccessLogsDTO> getAllPgUserActivityLogs()
 			throws DataAccessException {
 		List<AccessLogsDTO> logsList = null;
-		JPAQuery query = new JPAQuery(entityManager);
+		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
 		List<Tuple> infoList = query.distinct().from(QPGUserActivityLog.pGUserActivityLog,QPGAdminUser.pGAdminUser)
+				.select(QPGAdminUser.pGAdminUser.email,QPGUserActivityLog.pGUserActivityLog.activityDate,QPGUserActivityLog.pGUserActivityLog.ipAddress)
 				.where(QPGUserActivityLog.pGUserActivityLog.userId.eq(QPGAdminUser.pGAdminUser.adminUserId.stringValue()))
-				.orderBy(QPGUserActivityLog.pGUserActivityLog.activityDate.desc()).list(QPGAdminUser.pGAdminUser.email,QPGUserActivityLog.pGUserActivityLog.activityDate,QPGUserActivityLog.pGUserActivityLog.ipAddress);
+				.orderBy(QPGUserActivityLog.pGUserActivityLog.activityDate.desc()).fetch();
 		if (StringUtil.isListNotNullNEmpty(infoList)) {
 			logsList = new ArrayList<AccessLogsDTO>();
 			for (Tuple tuple : infoList) {

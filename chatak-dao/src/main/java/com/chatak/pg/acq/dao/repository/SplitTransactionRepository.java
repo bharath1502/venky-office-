@@ -6,7 +6,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGSplitTransaction;
 
@@ -19,7 +19,7 @@ import com.chatak.pg.acq.dao.model.PGSplitTransaction;
  *
  */
 public interface SplitTransactionRepository extends JpaRepository<PGSplitTransaction, Long>,
-QueryDslPredicateExecutor<PGSplitTransaction>{
+QuerydslPredicateExecutor<PGSplitTransaction>{
   
   public List<PGSplitTransaction> findByMerchantIdAndPgRefTransactionIdAndSplitAmount( String merchantId, String pgRefTransactionId,Long splitAmount);
   public List<PGSplitTransaction> findByMerchantIdAndPgRefTransactionId( String merchantId, String pgRefTransactionId);

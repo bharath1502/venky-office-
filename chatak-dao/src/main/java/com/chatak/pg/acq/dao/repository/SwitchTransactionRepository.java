@@ -1,9 +1,10 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGSwitchTransaction;
 
@@ -16,7 +17,7 @@ import com.chatak.pg.acq.dao.model.PGSwitchTransaction;
  */
 public interface SwitchTransactionRepository extends
                                       JpaRepository<PGSwitchTransaction, Long>,
-                                      QueryDslPredicateExecutor<PGSwitchTransaction> {
+                                      QuerydslPredicateExecutor<PGSwitchTransaction> {
 
-  public List<PGSwitchTransaction> findById(Long id);
+  public Optional<PGSwitchTransaction> findById(Long id);
 }

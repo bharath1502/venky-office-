@@ -32,10 +32,10 @@ import com.chatak.pg.acq.dao.repository.TerminalDeviceManagementRepository;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.TerminalDeviceManagementDTO;
 import com.chatak.pg.util.Constants;
-import com.mysema.query.Tuple;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 
 
 @Repository("mobileDeviceManagementDao")
@@ -144,10 +144,17 @@ public class TerminalDeviceManagementDaoImpl implements TerminalDeviceManagement
     }
     List<TerminalDeviceManagementDTO> mobileDeviceList =
         new ArrayList<>();
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
     List<Tuple> tupleList = query
         .from(QPGTerminalDeviceMangement.pGTerminalDeviceMangement, QPGPosDevice.pGPosDevice,
             QPGMerchantTerminal.pGMerchantTerminal, QPGMerchant.pGMerchant)
+        .select(QPGTerminalDeviceMangement.pGTerminalDeviceMangement.deviceManagementId,
+            QPGTerminalDeviceMangement.pGTerminalDeviceMangement.imeiNo,
+            QPGTerminalDeviceMangement.pGTerminalDeviceMangement.deviceId,
+            QPGMerchant.pGMerchant.merchantCode, QPGMerchantTerminal.pGMerchantTerminal.merchantId,
+            QPGMerchantTerminal.pGMerchantTerminal.terminalId,
+            QPGTerminalDeviceMangement.pGTerminalDeviceMangement.status,
+            QPGPosDevice.pGPosDevice.deviceSerialNo)
         .where(isDeviceSerialNo(mobileDeviceManagementTO.getDeviceSerialNo()),
             isImeiNo(mobileDeviceManagementTO.getImeiNo()),
             isMerchantId(mobileDeviceManagementTO.getMerchantId()),
@@ -163,15 +170,7 @@ public class TerminalDeviceManagementDaoImpl implements TerminalDeviceManagement
                 .eq(QPGTerminalDeviceMangement.pGTerminalDeviceMangement.pgMerchantTerminal.id),
             QPGMerchantTerminal.pGMerchantTerminal.merchantId.eq(QPGMerchant.pGMerchant.id))
         .offset(offset).limit(limit).orderBy(orderByDeviceIdDesc())
-        .list(QPGTerminalDeviceMangement.pGTerminalDeviceMangement.deviceManagementId,
-            QPGTerminalDeviceMangement.pGTerminalDeviceMangement.imeiNo,
-            QPGTerminalDeviceMangement.pGTerminalDeviceMangement.deviceId,
-            QPGMerchant.pGMerchant.merchantCode, QPGMerchantTerminal.pGMerchantTerminal.merchantId,
-            QPGMerchantTerminal.pGMerchantTerminal.terminalId,
-            QPGTerminalDeviceMangement.pGTerminalDeviceMangement.status,
-            QPGPosDevice.pGPosDevice.deviceSerialNo
-
-    );
+        .fetch();
 
 
     for (Tuple tuple : tupleList) {
@@ -235,10 +234,11 @@ public class TerminalDeviceManagementDaoImpl implements TerminalDeviceManagement
 
   private int getTotalNumberOfRecords(TerminalDeviceManagementDTO mobileDeviceManagementTO)
       {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
     List<Long> mobileDeviceInformationList = query
         .from(QPGTerminalDeviceMangement.pGTerminalDeviceMangement, QPGPosDevice.pGPosDevice,
             QPGMerchantTerminal.pGMerchantTerminal)
+        .select(QPGTerminalDeviceMangement.pGTerminalDeviceMangement.deviceManagementId)
         .where(isDeviceSerialNo(mobileDeviceManagementTO.getDeviceSerialNo()),
             isImeiNo(mobileDeviceManagementTO.getImeiNo()),
             isMerchantId(mobileDeviceManagementTO.getMerchantId()),
@@ -248,7 +248,7 @@ public class TerminalDeviceManagementDaoImpl implements TerminalDeviceManagement
                 .eq(QPGPosDevice.pGPosDevice.id),
             QPGMerchantTerminal.pGMerchantTerminal.id
                 .eq(QPGTerminalDeviceMangement.pGTerminalDeviceMangement.pgMerchantTerminal.id))
-        .list(QPGTerminalDeviceMangement.pGTerminalDeviceMangement.deviceManagementId);
+        .fetch();
     return (StringUtil.isListNotNullNEmpty(mobileDeviceInformationList)
         ? mobileDeviceInformationList.size() : 0);
   }
@@ -268,22 +268,22 @@ public class TerminalDeviceManagementDaoImpl implements TerminalDeviceManagement
 
   @Override
   public PGAid findByApplicationId(Long applicationId) {
-    return applicationIdDetailsRepository.findOne(applicationId);
+    return applicationIdDetailsRepository.findById(applicationId).orElse(null);
   }
 
   @Override
   public PGMagneticStripeParameters findByMagneticStripeId(Long magneticStripeId) {
-    return magneticStripeCradParametersRepository.findOne(magneticStripeId);
+    return magneticStripeCradParametersRepository.findById(magneticStripeId).orElse(null);
   }
 
   @Override
   public PGCaPublicKeys findByPublicKeyId(Long publicKeyId) {
-    return cAPublicKeysRepository.findOne(publicKeyId);
+    return cAPublicKeysRepository.findById(publicKeyId).orElse(null);
   }
 
   @Override
   public PGActionCodeParameters findByActioncodeId(Long actioncodeId) {
-    return actionCodeParametersRepository.findOne(actioncodeId);
+    return actionCodeParametersRepository.findById(actioncodeId).orElse(null);
   }
 
   @Override
@@ -334,14 +334,15 @@ public class TerminalDeviceManagementDaoImpl implements TerminalDeviceManagement
 
   @Override
   public PGTerminalDeviceMangement findByMerchantTerminalId(String terminalId) {
-    JPAQuery query = new JPAQuery(entityManager);
+    JPAQuery<PGTerminalDeviceMangement> query = new JPAQuery<PGTerminalDeviceMangement>(entityManager);
     List<PGTerminalDeviceMangement> list = query
         .from(QPGTerminalDeviceMangement.pGTerminalDeviceMangement,
             QPGMerchantTerminal.pGMerchantTerminal)
+        .select(QPGTerminalDeviceMangement.pGTerminalDeviceMangement)
         .where(isTerminalId(terminalId),
             QPGMerchantTerminal.pGMerchantTerminal.id
                 .eq(QPGTerminalDeviceMangement.pGTerminalDeviceMangement.pgMerchantTerminal.id))
-        .list(QPGTerminalDeviceMangement.pGTerminalDeviceMangement);
+        .fetch();
     return StringUtil.isListNotNullNEmpty(list) ? list.get(0) : null;
   }
 

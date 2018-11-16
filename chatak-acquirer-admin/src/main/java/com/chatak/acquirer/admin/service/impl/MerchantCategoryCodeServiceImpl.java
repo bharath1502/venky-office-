@@ -104,7 +104,7 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
   public MerchantCategoryCode getMCCDetails(Long id) throws ChatakAdminException {
     logger.info("Entering:: MerchantCategoryCodeServiceImpl:: getMCCDetails method");
     MerchantCategoryCode merchantCategoryCode = new MerchantCategoryCode();
-    PGMerchantCategoryCode pgMCC = mccDao.findById(id);
+    PGMerchantCategoryCode pgMCC = mccDao.findById(id).orElse(null);
     if (null != pgMCC) {
       merchantCategoryCode.setId(pgMCC.getId());
       merchantCategoryCode.setMcc(pgMCC.getMerchantCategoryCode());
@@ -160,7 +160,7 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
     try {
       if (null != merchantCategoryCode) {
         PGMerchantCategoryCode pgMerchantCategoryCode =
-            mccDao.findById(merchantCategoryCode.getId());
+            mccDao.findById(merchantCategoryCode.getId()).orElse(null);
         pgMerchantCategoryCode.setStatus(merchantCategoryCode.getStatus());
         pgMerchantCategoryCode.setReason(merchantCategoryCode.getReason());
         mccDao.createOrUpdateMerchantCategoryCode(pgMerchantCategoryCode);
@@ -193,7 +193,7 @@ public class MerchantCategoryCodeServiceImpl implements MerchantCategoryCodeServ
   public MerchantCategoryCodeResponse deleteMcc(Long id) throws ChatakAdminException {
     MerchantCategoryCodeResponse mccs = new MerchantCategoryCodeResponse();
     try {
-      PGMerchantCategoryCode merchantCategoryCode = mccDao.findById(id);
+      PGMerchantCategoryCode merchantCategoryCode = mccDao.findById(id).orElse(null);
       List<PGMerchant> merchant =
           merchantUpdateDao.findByMcc(merchantCategoryCode.getMerchantCategoryCode());
       if (StringUtil.isListNotNullNEmpty(merchant)) {

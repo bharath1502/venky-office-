@@ -27,8 +27,8 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.OrderSpecifier;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * << Add Comments Here >>
@@ -142,8 +142,8 @@ public class FeeCodeDaoImpl implements FeeCodeDao {
         limit = partnerFeeCodeDTO.getPageSize();
       }
 
-      JPAQuery query = new JPAQuery(entityManager);
-      List<PGPartnerFeeCode> pgPartnerFeeCodeList = query.from(QPGPartnerFeeCode.pGPartnerFeeCode).offset(offset).limit(limit).orderBy(orderById()).list(QPGPartnerFeeCode.pGPartnerFeeCode);
+      JPAQuery<PGPartnerFeeCode> query = new JPAQuery<PGPartnerFeeCode>(entityManager);
+      List<PGPartnerFeeCode> pgPartnerFeeCodeList = query.from(QPGPartnerFeeCode.pGPartnerFeeCode).select(QPGPartnerFeeCode.pGPartnerFeeCode).offset(offset).limit(limit).orderBy(orderById()).fetch();
         List<PartnerFeeCodeDTO> partnerFeeCodeDTOList = new ArrayList<PartnerFeeCodeDTO>();
         if(CommonUtil.isListNotNullAndEmpty(pgPartnerFeeCodeList)) {
           for(PGPartnerFeeCode pgPartnerFeeCode : pgPartnerFeeCodeList) {
@@ -168,8 +168,8 @@ public class FeeCodeDaoImpl implements FeeCodeDao {
   }
 
   private int getTotalNumberOfRecords() {
-    JPAQuery query = new JPAQuery(entityManager);
-    List<Long> list = query.from(QPGPartnerFeeCode.pGPartnerFeeCode).list(QPGPartnerFeeCode.pGPartnerFeeCode.partnerFeeCodeId);
+    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    List<Long> list = query.from(QPGPartnerFeeCode.pGPartnerFeeCode).select(QPGPartnerFeeCode.pGPartnerFeeCode.partnerFeeCodeId).fetch();
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }

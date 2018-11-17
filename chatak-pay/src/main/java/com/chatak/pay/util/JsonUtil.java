@@ -358,7 +358,7 @@ public class JsonUtil {
 
       String tokenEndpointUrl =
           Properties.getProperty("chatak.pay.token.url").trim().replace("$", applicationClient.getAppClientId().trim()).
-          replace("#", applicationClient.getAppClientAccess().trim());
+          replace("#", applicationClient.getAppAuthPass().trim());
       logger.info("URL :: " + PAYGATE_SERVICE_URL + tokenEndpointUrl);
       OAuthToken apiResponse= null;
       try {

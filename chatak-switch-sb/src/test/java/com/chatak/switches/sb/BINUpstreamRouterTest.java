@@ -2,11 +2,14 @@ package com.chatak.switches.sb;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import com.chatak.pg.util.Properties;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BINUpstreamRouterTest {
@@ -18,11 +21,18 @@ public class BINUpstreamRouterTest {
 	BINUpstreamRouter bINUpstreamRouter = new BINUpstreamRouter();
 
 	BINUpstreamRouter bINUpstreamRouter1 = new BINUpstreamRouter(binList);
-
-	@Test
-	public void testIsOnUsBIN() {
-		bINUpstreamRouter.isOnUsBIN("5432");
+	
+	@Before
+	public void init() {
+	  java.util.Properties propsExportedLocal = new java.util.Properties();
+	  propsExportedLocal.setProperty("max.download.limit", "12");
+	  Properties.mergeProperties(propsExportedLocal);
 	}
+	
+    @Test
+    public void testIsOnUsBIN() {
+      bINUpstreamRouter.isOnUsBIN("5432");
+    }
 
 	@Test
 	public void testIsOnUsBINIf() {

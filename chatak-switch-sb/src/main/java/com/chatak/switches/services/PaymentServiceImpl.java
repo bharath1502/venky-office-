@@ -1,7 +1,6 @@
 package com.chatak.switches.services;
 
 import java.sql.Timestamp;
-import java.util.Base64;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -45,7 +44,6 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ProcessorType;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
-import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.RandomGenerator;
 import com.chatak.pg.util.StringUtils;
 import com.chatak.switches.jpos.SwitchISOPackager;
@@ -80,7 +78,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
     try {
 		SwitchISOPackager.getChatakGenericPackager();
 	} catch (ISOException e) {
-		e.printStackTrace();
+		log.error("ERROR::PaymentServiceImpl::PaymentServiceImpl method", e);
 	}
     
   }
@@ -95,7 +93,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg = switchTransaction.financial(getISOMsg(authRequest,
           MessageTypeCode.AUTHORIZATION_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, txnRefNum));
 
@@ -146,7 +144,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg = switchTransaction.financial(getISOMsg(captureRequest,
           MessageTypeCode.OFFLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, txnRefNum));
 
@@ -214,30 +212,9 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(), pgSwitch.getPrimarySwitchPort());
       
-   ISOMsg switchISOMsg = switchTransaction.financial(getISOMsg(purchaseRequest,
-   MessageTypeCode.ONLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, purchaseRequest.getTransactionId() != null ? 
+    ISOMsg switchISOMsg = switchTransaction.financial(getISOMsg(purchaseRequest,
+    MessageTypeCode.ONLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, purchaseRequest.getTransactionId() != null ? 
         purchaseRequest.getTransactionId() : txnRefNum));
-      
-      // PERF >> START Used REST instead of socket
-      /*ISOMsg isoMsg = getISOMsg(purchaseRequest,
-              MessageTypeCode.ONLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, purchaseRequest.getTransactionId() != null ? 
-                  purchaseRequest.getTransactionId() : txnRefNum);
-      
-      isoMsg.setPackager(SwitchISOPackager.getChatakGenericPackager());
-      byte[] b = isoMsg.pack();
-      String encoded = Base64.getEncoder().encodeToString(b);
-      
-      TransactionRequest request = new TransactionRequest();
-      request.setRequest(encoded);
-      
-      Response base64Response = JsonUtil.sendToProcessor(Response.class, request, Properties.getProperty("processor.rest.service.endpoint"));
-      
-      log.info(" Processor base64Response : " + base64Response.getErrorMessage());
-      
-      byte[] decoded = Base64.getDecoder().decode(base64Response.getErrorMessage().getBytes());
-      
-      ISOMsg switchISOMsg = SwitchISOPackager.unpackRequest(decoded);*/
-      // PERF >> END Used REST instead of socket
       
       String switchResponseCode =
           switchISOMsg.getValue(Constants.THIRTYNINE) != null ? (String) switchISOMsg.getValue(Constants.THIRTYNINE) : null;
@@ -331,7 +308,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg = switchTransaction.authAdvice(
           getISOMsg(adjustmentRequest, MessageTypeCode.OFFLINE_REQUEST, "021010", txnRefNum));
 
@@ -385,11 +362,14 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
           e);
       adjustmentResponse.setErrorCode(e.getMessage());
       adjustmentResponse.setErrorMessage(ActionCode.getInstance().getMessage(e.getMessage()));
-
+      if(pgSwitchTransaction != null){
       pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
+      }
       switchTransactionDao.createTransaction(pgSwitchTransaction);
 
+      if(pgTransaction!=null){
       pgTransaction.setStatus(PGConstants.STATUS_FAILED);
+      }
       voidTransactionDao.createTransaction(pgTransaction);
 
     } catch (DataAccessException e) {
@@ -432,7 +412,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg =
           switchTransaction.reversal(getISOMsg(voidRequest, MessageTypeCode.ONLINE_REQUEST,
               MessageTypeCode.PROC_CODE_VOID, voidRequest.getIssuerTxnRefNum()));
@@ -483,7 +463,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+         pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg = switchTransaction
           .reversalAdvice(getISOMsg(reversalRequest, MessageTypeCode.REVERSAL_ADVICE_REQUEST,
               MessageTypeCode.PROC_CODE_VOID_SAV, reversalRequest.getIssuerTxnRefNum()));
@@ -498,7 +478,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
         reversalResponse.setUpStreamStatus(switchResponseCode.equals(PGConstants.SUCCESS)
             ? PGConstants.STATUS_SUCCESS : PGConstants.STATUS_FAILED);
       }
-      if (reversalResponse.getUpStreamStatus().equals(PGConstants.SUCCESS)) {
+      if (reversalResponse.getUpStreamStatus().equals(Integer.parseInt(PGConstants.SUCCESS))) {
         reversalResponse.setUpStreamAuthCode(authId);
         if (switchISOMsg.getValue(Integer.parseInt("37")) != null)
           reversalResponse.setUpStreamTxnRefNum(((String) switchISOMsg.getValue(Integer.parseInt("37"))).trim());
@@ -532,10 +512,10 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg =
           switchTransaction.financial(getISOMsg(refundRequest, MessageTypeCode.ONLINE_REQUEST,
-              MessageTypeCode.PROC_CODE_REFUND_SAV, refundRequest.getIssuerTxnRefNum()));
+              MessageTypeCode.PROC_CODE_REFUND_SAV, refundRequest.getTransactionId()));
 
       String switchResponseCode =
           switchISOMsg.getValue(Integer.parseInt("39")) != null ? (String) switchISOMsg.getValue(Integer.parseInt("39")) : null;
@@ -587,8 +567,8 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
-      balanceEnquiryIsoMsg = getBalanceEnquiryISOMsg(balanceEnquiryRequest, balanceEnquiryRequest.getIsoMsg());
+         pgSwitch.getPrimarySwitchPort());
+      balanceEnquiryIsoMsg = getBalanceEnquiryISOMsg(balanceEnquiryRequest);
       ISOMsg switchISOMsg = switchTransaction.authAdvice(balanceEnquiryIsoMsg);
       String switchResponseCode =
           switchISOMsg.getValue(Integer.parseInt("39")) != null ? (String) switchISOMsg.getValue(Integer.parseInt("39")) : null;
@@ -645,7 +625,7 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       isoMsg = getISOMsg(cashWithdrawalRequest.getIsoMsg());
       ISOMsg switchISOMsg = switchTransaction.financial(isoMsg);
 
@@ -701,7 +681,7 @@ private void isoMessageValidation(CashWithdrawalResponse cashWithdrawalResponse,
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       isoMsg = getISOMsg(cashBackRequest.getIsoMsg());
       validateISOMsg(cashBackResponse, isoMsg, switchTransaction);
     } catch (Exception e) {
@@ -776,7 +756,7 @@ private void validateISOMsg(CashBackResponse cashBackResponse, ISOMsg isoMsg, Sw
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg = switchTransaction.financialAdvice(getISOMsg(captureRequest,
           MessageTypeCode.OFFLINE_REQUEST, MessageTypeCode.PROC_CODE_AUTH_SAV, txnRefNum));
 
@@ -925,7 +905,7 @@ private void validateISOMsg(CashBackResponse cashBackResponse, ISOMsg isoMsg, Sw
         SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
         PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
         switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-            Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+            pgSwitch.getPrimarySwitchPort());
         ISOMsg switchISOMsg = switchTransaction.network(getNetworkIsoMsg("0800",
             networkRequest.getNetworkManagementCode(), "49149", txnRefNum));// 071 sign on as acq 072 sign off as acq 371 acq echo test
         String switchResponseCode =

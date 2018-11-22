@@ -259,11 +259,10 @@ public class SubMerchantValidateController implements URLMappingConstants {
     try {
       options = merchantInfoService.getFeeProgramNames();
       modelAndView.addObject("feeprogramnames", options);
-      session.setAttribute("feeprogramnames", options);
-      session.setAttribute("updateMerchantId", session.getAttribute("updateMerchantId"));
+      session.setAttribute("feeprogramnames", new ArrayList(options));
       List<Option> countryList = merchantInfoService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
       processorNames = merchantInfoService.getProcessorNames();
       modelAndView.addObject("processorNames", processorNames);
       modelAndView.addObject(Constants.MERCHANT_SIGN_UP_REQUEST, new Merchant());
@@ -308,7 +307,7 @@ public class SubMerchantValidateController implements URLMappingConstants {
       modelAndView = new ModelAndView(SHOW_CHATAK_MERCHANT_SIGNUP);
       List<Option> countryList = merchantInfoService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
       modelAndView.addObject(Constants.MERCHANT_SIGN_UP_REQUEST, merchant);
       session.setAttribute(Constants.ERROR, "Error signing up ,please try again");
       return modelAndView;
@@ -317,7 +316,7 @@ public class SubMerchantValidateController implements URLMappingConstants {
       modelAndView = new ModelAndView(SHOW_CHATAK_MERCHANT_SIGNUP);
       List<Option> countryList = merchantInfoService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
       modelAndView.addObject(Constants.MERCHANT_SIGN_UP_REQUEST, merchant);
       session.setAttribute(Constants.ERROR, "Error signing up ,please try again");
       return modelAndView;

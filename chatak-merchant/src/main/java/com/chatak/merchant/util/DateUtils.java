@@ -1,20 +1,16 @@
 package com.chatak.merchant.util;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.session.SessionInformation;
 
-import com.chatak.merchant.controller.model.LoginDetails;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
@@ -517,11 +513,4 @@ public class DateUtils {
     return convertedTime;
   }
 
-  public static String getFormatLastLoginTime(LoginDetails loginDetails) throws ParseException {
-	 Date today = new Date();
-	 DateFormat df = new SimpleDateFormat(Constants.TIMEZONE_DATE_FORMAT);
-	 df.setTimeZone(TimeZone.getTimeZone(loginDetails.getTimeZoneRegion()));
-	return df.format(today);
-  }
-  
 }

@@ -58,7 +58,7 @@ public class MerchantProfileServiceImpl implements MerchantProfileService {
       throws ChatakMerchantException {
 
     PGMerchant pgMerchant =
-        merchantProfileDao.getMerchantById(Long.valueOf(merchantProfile.getId()));
+        merchantProfileDao.getMerchantById(merchantProfile.getId());
     PGAccount pgAccount = merchantProfileDao.getPgAccount(pgMerchant.getMerchantCode());
 
     if (pgAccount != null) {

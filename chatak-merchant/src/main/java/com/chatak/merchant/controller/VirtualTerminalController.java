@@ -25,6 +25,7 @@ import com.chatak.merchant.exception.ChatakPayException;
 import com.chatak.merchant.model.GetMerchantDetailsResponse;
 import com.chatak.merchant.model.TransactionResponse;
 import com.chatak.merchant.model.VirtualTerminalAdjustmentResponse;
+import com.chatak.merchant.service.LoginService;
 import com.chatak.merchant.service.RestPaymentService;
 import com.chatak.pg.acq.dao.model.PGMerchantConfig;
 import com.chatak.pg.acq.dao.repository.MerchantConfigRepositrory;
@@ -61,6 +62,9 @@ public class VirtualTerminalController implements URLMappingConstants {
   @Autowired
   private MerchantConfigRepositrory merchantConfigRepositrory;
 
+  @Autowired
+  LoginService loginService;
+  
   /**
    * Method get the Virtual terminal Sale page
    * 
@@ -79,7 +83,7 @@ public class VirtualTerminalController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_VIRTUAL_TERMINAL_SALE_PAGE);
     Long userid = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
-    PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid).orElse(null);
+    PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid);
     modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, new VirtualTerminalSaleDTO());
     model.put("pgmerchantconfig", pgmerchantconfig);
 
@@ -107,6 +111,12 @@ public class VirtualTerminalController implements URLMappingConstants {
 
     Long merchantId = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_VIRTUAL_TERMINAL_SALE_PAGE);
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     if (null != merchantId) {
       try {
         terminalSaleDTO.setUserName((String) session.getAttribute(CHATAK_ADMIN_USER_NAME));
@@ -137,7 +147,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           modelAndView.addObject(Constants.ERROR, transactionResponse.getErrorMessage());
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, terminalSaleDTO);
           Long userid = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
-          PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid).orElse(null);
+          PGMerchantConfig pgmerchantconfig = merchantConfigRepositrory.findById(userid);
           model.put("pgmerchantconfig", pgmerchantconfig);
         }
       } catch (ChatakPayException ae) {
@@ -234,8 +244,7 @@ public class VirtualTerminalController implements URLMappingConstants {
         virtualTerminalPreAuthDTO.setExpDate(virtualTerminalPreAuthDTO.getYear().substring(Constants.TWO)
             + virtualTerminalPreAuthDTO.getMonth());
         TransactionResponse preAuthResponse = paymentService.doPreAuth(virtualTerminalPreAuthDTO);
-        if (preAuthResponse != null
-            && preAuthResponse.getErrorCode().equals(Constants.SUCCESS_CODE)) {
+        if (isRefundSuccess(preAuthResponse)) {
           model.put(Constants.TXN_REF_NUM, preAuthResponse);
           model.put(Constants.REF_FLAG, true);
           virtualTerminalPreAuthDTO.setSuccessDiv(true);
@@ -417,7 +426,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           return modelAndView;
         }
         TransactionResponse response2 = paymentService.doVoid(virtualTerminalVoidDTO);
-        if (response2 != null && response2.getErrorCode().equals(Constants.SUCCESS_CODE)) {
+        if (isRefundSuccess(response2)) {
           model.put(Constants.TXN_REF_NUM, response2);
           model.put(Constants.REF_FLAG, true);
           modelAndView.addObject(Constants.SUCESS, response2.getErrorMessage());
@@ -489,6 +498,12 @@ public class VirtualTerminalController implements URLMappingConstants {
 
     logger.info("Entering :: VirtualTerminalController :: processRefund method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_VIRTUAL_TERMINAL_REFUND_PAGE);
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     Long merchantId = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
     if (null != merchantId) {
       try {
@@ -504,8 +519,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           return modelAndView;
         }
         TransactionResponse refundResponse = paymentService.doRefund(virtualTerminalRefundDTO);
-        if (refundResponse != null
-            && refundResponse.getErrorCode().equals(Constants.SUCCESS_CODE)) {
+        if (isRefundSuccess(refundResponse)) {
           refundResponse.setTotalTxnAmount(virtualTerminalRefundDTO.getTxnAmount());
           model.put(Constants.TXN_REF_NUM, refundResponse);
           model.put(Constants.REF_FLAG, true);
@@ -539,6 +553,10 @@ public class VirtualTerminalController implements URLMappingConstants {
       }
       return modelAndView;
     }
+  }
+
+  private boolean isRefundSuccess(TransactionResponse refundResponse) {
+    return refundResponse != null && refundResponse.getErrorCode().equals(Constants.SUCCESS_CODE);
   }
 
   @RequestMapping(value = CHATAK_MERCHANT_VIRTUAL_TERMINAL_REFUND_PROCESS,
@@ -608,8 +626,7 @@ public class VirtualTerminalController implements URLMappingConstants {
         }
         TransactionResponse captureResponse =
             paymentService.doPreAuthCapture(virtualTerminalCaptureDTO);
-        if (captureResponse != null
-            && captureResponse.getErrorCode().equals(Constants.SUCCESS_CODE)) {
+        if (isRefundSuccess(captureResponse)) {
           model.put(Constants.TXN_REF_NUM, captureResponse);
           model.put(Constants.REF_FLAG, true);
           modelAndView.addObject(Constants.SUCESS, captureResponse.getErrorMessage());

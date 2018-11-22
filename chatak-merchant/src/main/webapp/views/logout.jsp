@@ -1,6 +1,7 @@
 <!doctype html>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page import="com.chatak.merchant.constants.StatusConstants"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
 <meta charset="ISO-8859-1">
@@ -17,7 +18,12 @@
         </header>
         <article> 
         <div id="loginContainer" class="col-xs-12 content-wrapper login-page-content">
+   		<c:if test="${not empty error}">
+        	<label class="font-style-text">${error} <a href="login"><spring:message code="badRequestError.label.clickheretologinagain"/></a></label>
+   	 	</c:if>
+    	<c:if test="${empty error}">
         	<label class="font-style-text"> <spring:message code="logout.label.youhavesuccessfullyloggedout"/> <a href="login"><spring:message code="badRequestError.label.clickheretologinagain"/></a></label>
+        </c:if>
         </div>
         </article>
         <jsp:include page="footer.jsp"/>

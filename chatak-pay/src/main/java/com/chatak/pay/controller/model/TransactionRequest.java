@@ -3,7 +3,9 @@ package com.chatak.pay.controller.model;
 import java.io.Serializable;
 
 import com.chatak.pg.bean.CardTokenData;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionRequest extends Request implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -59,8 +61,10 @@ public class TransactionRequest extends Request implements Serializable {
   private String timeZoneOffset;
   
   private String timeZoneRegion;
-  
-	public String getCurrencyCode() {
+
+  private String deviceSerial;
+
+  public String getCurrencyCode() {
 		return currencyCode;
 	}
 
@@ -408,5 +412,13 @@ public String getTimeZoneRegion() {
 public void setTimeZoneRegion(String timeZoneRegion) {
   this.timeZoneRegion = timeZoneRegion;
 }
+
+  public String getDeviceSerial() {
+    return deviceSerial;
+  }
+
+  public void setDeviceSerial(String deviceSerial) {
+    this.deviceSerial = deviceSerial;
+  }
 
 }

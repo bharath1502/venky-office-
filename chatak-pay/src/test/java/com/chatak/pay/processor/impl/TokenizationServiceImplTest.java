@@ -29,23 +29,15 @@ public class TokenizationServiceImplTest {
 	@Before
 	public void pro() {
 		java.util.Properties properties = new java.util.Properties();
+		properties.setProperty("max.download.limit", "12");
+        properties.setProperty("thread.pool.size", "500");
+        properties.setProperty("thread.max.per.route", "500");
 		properties.setProperty("chatak-pay.accVerificationResults", "2");
 		properties.setProperty("chatak-pay.accCardHolderDataLen", "1");
 		properties.setProperty("chatak-pay.idvPerformed", "3");
 		properties.setProperty("chatak-pay.tokenDeviceInfolen", "6");
 		properties.setProperty("chatak-pay.serviceEndPointTokenize", "8");
 		Properties.mergeProperties(properties);
-	}
-
-	@Test
-	public void testTokenize() throws ChatakPayException {
-		CardDetails cardDetails = new CardDetails();
-		TokenizeResponse response = new TokenizeResponse();
-		cardDetails.setNumber("46565");
-		cardDetails.setExpMonthYear("5462");
-		cardDetails.setType(MethodOfPaymentTypeEnum.AX);
-		response.setPaymentToken("456");
-		tokenizationServiceImpl.tokenize(cardDetails);
 	}
 
 	@Test
@@ -60,14 +52,6 @@ public class TokenizationServiceImplTest {
 		Mockito.when(tokenDao.findByEmailAndCardLastFourAndCardType(Matchers.anyString(), Matchers.anyString(),
 				Matchers.anyString())).thenReturn(tokenExists);
 		tokenizationServiceImpl.tokenize(cardDetails);
-	}
-
-	@Test
-	public void testDeTokenize() throws ChatakPayException {
-		PGCardTokenDetails pgCardTokenDetails = new PGCardTokenDetails();
-		pgCardTokenDetails.setTokenExpDate("12/08/1991");
-		Mockito.when(tokenDao.getPgCardTokenDetails(Matchers.anyString())).thenReturn(pgCardTokenDetails);
-		tokenizationServiceImpl.deTokenize("123");
 	}
 
 	@Test

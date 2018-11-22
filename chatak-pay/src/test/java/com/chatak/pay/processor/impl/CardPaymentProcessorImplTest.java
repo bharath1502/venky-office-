@@ -15,7 +15,6 @@ import org.springframework.context.MessageSource;
 import com.chatak.pay.controller.model.CardDetails;
 import com.chatak.pay.controller.model.PaymentDetails;
 import com.chatak.pay.exception.ChatakPayException;
-import com.chatak.pay.exception.InvalidRequestException;
 import com.chatak.pg.acq.dao.AccountDao;
 import com.chatak.pg.acq.dao.MerchantTerminalDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
@@ -25,10 +24,10 @@ import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
-import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
-import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
+import com.chatak.pg.acq.dao.repository.MerchantRepository;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.switches.enums.TransactionType;
 import com.litle.sdk.generate.CountryTypeEnum;
 
@@ -65,6 +64,11 @@ public class CardPaymentProcessorImplTest {
 	@Mock
 	VoidTransactionDao voidTransactionDao;
 
+	@Mock
+	private MerchantRepository merchantRepository;
+
+	@Mock
+	PGMerchant pgMerchant;
 	@Test
 	public void testValidMerchant() {
 		PGMerchant pgMerchant = new PGMerchant();
@@ -74,20 +78,7 @@ public class CardPaymentProcessorImplTest {
 	}
 
 	@Test
-	public void testValidMerchantException() {
-		Mockito.when(merchantUpdateDao.getMerchant(Matchers.anyString())).thenThrow(new NullPointerException());
-		cardPaymentProcessorImpl.validMerchant("123");
-	}
-
-	@Test
 	public void testValidateMerchantIdAndTerminalId() {
-		cardPaymentProcessorImpl.validateMerchantIdAndTerminalId("123", "456");
-	}
-
-	@Test
-	public void testValidateMerchantIdAndTerminalIdException() {
-		Mockito.when(merchantTerminalDao.validateMerchantIdAndTerminalId(Matchers.anyString(), Matchers.anyString()))
-				.thenThrow(new NullPointerException());
 		cardPaymentProcessorImpl.validateMerchantIdAndTerminalId("123", "456");
 	}
 
@@ -99,19 +90,6 @@ public class CardPaymentProcessorImplTest {
 		cardDetails.setNumber("45");
 		paymentDetails.setClientPort(1);
 		paymentDetails.setTransactionType(TransactionType.AUTH);
-		cardPaymentProcessorImpl.initializeCardPayment(paymentDetails, cardDetails);
-	}
-
-	@Test
-	public void testInitializeCardPaymentException() {
-		PaymentDetails paymentDetails = new PaymentDetails();
-		CardDetails cardDetails = new CardDetails();
-		paymentDetails.setBillerCountry(CountryTypeEnum.AE);
-		cardDetails.setNumber("45");
-		paymentDetails.setClientPort(1);
-		paymentDetails.setTransactionType(TransactionType.AUTH);
-		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any(PGOnlineTxnLog.class)))
-				.thenThrow(new NullPointerException());
 		cardPaymentProcessorImpl.initializeCardPayment(paymentDetails, cardDetails);
 	}
 
@@ -166,7 +144,7 @@ public class CardPaymentProcessorImplTest {
 		PGAccount pgAccount = new PGAccount();
 		pgAccount.setAvailableBalance(Long.parseLong("786"));
 		Mockito.when(accountDao.getPgAccount(Matchers.anyString())).thenReturn(pgAccount);
-		cardPaymentProcessorImpl.updateAccount("123", "capture_payment", Long.parseLong("34"));
+		cardPaymentProcessorImpl.updateAccount("123", PGConstants.CAPTURE_PAYMENT_METHOD, Long.parseLong("34"));
 	}
 
 	@Test(expected = ChatakPayException.class)
@@ -195,22 +173,6 @@ public class CardPaymentProcessorImplTest {
 	}
 
 	@Test(expected = ChatakPayException.class)
-	public void testDuplicateRequest() throws ChatakPayException {
-		Timestamp previousRequest = new Timestamp(Long.parseLong("43"));
-		Mockito.when(onlineTxnLogDao.duplicateRequest(Matchers.anyString(), Matchers.anyString(), Matchers.anyLong(),
-				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(previousRequest);
-		cardPaymentProcessorImpl.duplicateRequest("123", "456", Long.parseLong("34"), "45", "51", "44");
-	}
-
-	@Test(expected = InvalidRequestException.class)
-	public void testDuplicateInvoice() throws InvalidRequestException {
-		PGTransaction transaction = new PGTransaction();
-		Mockito.when(transactionDao.getTransactionOnInvoiceNum(Matchers.anyString(), Matchers.anyString(),
-				Matchers.anyString())).thenReturn(transaction);
-		cardPaymentProcessorImpl.duplicateInvoice("123", "456", "543");
-	}
-
-	@Test(expected = ChatakPayException.class)
 	public void testDuplicateOrderRequest() throws ChatakPayException {
 		Timestamp previousRequest = new Timestamp(Long.parseLong("43"));
 		Mockito.when(onlineTxnLogDao.duplicateOrderRequest(Matchers.anyString(), Matchers.anyString(),
@@ -233,13 +195,7 @@ public class CardPaymentProcessorImplTest {
 
 	@Test
 	public void testValidateMerchantId() throws ChatakPayException {
-		cardPaymentProcessorImpl.validateMerchantId("123");
-	}
-
-	@Test
-	public void testValidateMerchantIdException() throws ChatakPayException {
-		Mockito.when(merchantTerminalDao.validateMerchantId(Matchers.anyString()))
-				.thenThrow(new NullPointerException());
+		Mockito.when(merchantRepository.findOneMerchantCodeAndStatus(Matchers.anyString(), Matchers.anyInt())).thenReturn(pgMerchant);
 		cardPaymentProcessorImpl.validateMerchantId("123");
 	}
 

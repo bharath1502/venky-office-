@@ -22,10 +22,10 @@ import com.chatak.pg.user.bean.SwitchResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * Dao class to perform switch record related insert, update and search
@@ -103,13 +103,8 @@ public class SwitchDaoImpl implements SwitchDao {
         limit = pageSize;
       }
 
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query.from(QPGSwitch.pGSwitch)
-    	   .select(QPGSwitch.pGSwitch.id,
-              QPGSwitch.pGSwitch.switchName, QPGSwitch.pGSwitch.switchType,
-              QPGSwitch.pGSwitch.primarySwitchURL, QPGSwitch.pGSwitch.primarySwitchPort,
-              QPGSwitch.pGSwitch.secondarySwitchURL, QPGSwitch.pGSwitch.secondarySwitchPort,
-              QPGSwitch.pGSwitch.priority, QPGSwitch.pGSwitch.status)
           .where(isSwitchNameLike(searchSwitchRequest.getSwitchName()),
               isSwitchTypeLike(searchSwitchRequest.getSwitchType()),
               isPrimarySwitchURLLike(searchSwitchRequest.getPrimarySwitchURL()),
@@ -118,7 +113,11 @@ public class SwitchDaoImpl implements SwitchDao {
               isSecondarySwitchPortEq(searchSwitchRequest.getSecondarySwitchPort()),
               isPriorityEq(searchSwitchRequest.getPriority()),
               isStatusEq(searchSwitchRequest.getStatus()))
-          .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc()).fetch();
+          .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc()).list(QPGSwitch.pGSwitch.id,
+              QPGSwitch.pGSwitch.switchName, QPGSwitch.pGSwitch.switchType,
+              QPGSwitch.pGSwitch.primarySwitchURL, QPGSwitch.pGSwitch.primarySwitchPort,
+              QPGSwitch.pGSwitch.secondarySwitchURL, QPGSwitch.pGSwitch.secondarySwitchPort,
+              QPGSwitch.pGSwitch.priority, QPGSwitch.pGSwitch.status);
 
       if (!CollectionUtils.isEmpty(tupleList)) {
         SwitchRequest pgswitch = null;
@@ -148,7 +147,7 @@ public class SwitchDaoImpl implements SwitchDao {
   public SwitchResponse updateSwitchInformation(SwitchRequest updateSwitchRequest, String userid) {
     log.info("SwitchDaoImpl | updateSwitch | Entering");
     SwitchResponse updateSwitchResponse = new SwitchResponse();
-    PGSwitch pgSwitch = switchRepository.findById(updateSwitchRequest.getId()).orElse(null);
+    PGSwitch pgSwitch = switchRepository.findById(updateSwitchRequest.getId());
     try {
       if (pgSwitch != null) {
         pgSwitch.setId(updateSwitchRequest.getId());
@@ -175,7 +174,7 @@ public class SwitchDaoImpl implements SwitchDao {
 
   @Override
   public PGSwitch getSwtichInformationById(Long getSwitchId) {
-    return switchRepository.findById(getSwitchId).orElse(null);
+    return switchRepository.findById(getSwitchId);
   }
 
   @Override
@@ -184,7 +183,7 @@ public class SwitchDaoImpl implements SwitchDao {
   }
 
   public int getTotalNumberOfRecords(SwitchRequest switchRecords) {
-    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Long> list = query.from(QPGSwitch.pGSwitch)
         .where(isSwitchNameLike(switchRecords.getSwitchName()),
             isSwitchTypeLike(switchRecords.getSwitchType()),
@@ -193,7 +192,7 @@ public class SwitchDaoImpl implements SwitchDao {
             isSecondarySwitchURLLike(switchRecords.getSecondarySwitchURL()),
             isSecondarySwitchPortEq(switchRecords.getSecondarySwitchPort()),
             isPriorityEq(switchRecords.getPriority()), isStatusEq(switchRecords.getStatus()))
-        .fetch();
+        .list(QPGSwitch.pGSwitch.id);
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }

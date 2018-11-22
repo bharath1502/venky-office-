@@ -19,9 +19,9 @@ import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.AdvancedFraudDTO;
 import com.chatak.pg.util.Constants;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
 
 /**
  * @Author: Girmiti Software
@@ -50,7 +50,7 @@ public class FraudAdvancedServicesDaoImpl implements FraudAdvancedServicesDao{
 	 */
 	@Override
 	public PGMerchant findById(Long id) throws DataAccessException {
-		return merchantRepository.findById(id).orElse(null);
+		return merchantRepository.findById(id);
 	}
 
 	/**
@@ -92,19 +92,20 @@ public class FraudAdvancedServicesDaoImpl implements FraudAdvancedServicesDao{
 			limit = pageSize;
 		}
 		
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> dataList = query.from(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud)
-				.select(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.id,
-						QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.filterType,
-						QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.filterOn,
-						QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.duration,
-						QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.transactionLimit,
-						QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.maxLimit,
-						QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.merchantCode,
-						QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.action)
 				.where(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.createdBy.eq(advancedFraudDTO.getCreatedBy()))
 								.offset(offset)
-								.limit(limit).orderBy(orderByIdDesc()).fetch();
+								.limit(limit).orderBy(orderByIdDesc()).list(
+										QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.id,
+										QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.filterType,
+										QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.filterOn,
+										QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.duration,
+										QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.transactionLimit,
+										QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.maxLimit,
+										QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.merchantCode,
+										QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.action
+										);
 		for (Tuple tuple : dataList) {
 			advancedFraudInfoDTO = new AdvancedFraudDTO();
 			advancedFraudInfoDTO.setId(tuple.get(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.id));
@@ -125,10 +126,10 @@ public class FraudAdvancedServicesDaoImpl implements FraudAdvancedServicesDao{
 	 * @return
 	 */
 	private Integer getAdvancedFraudTotalRecords(AdvancedFraudDTO advancedFraudDTO){
-		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Long> dataList = query.from(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud)
-				.select(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.id)
-				.where(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.createdBy.eq(advancedFraudDTO.getCreatedBy())).orderBy(orderByIdDesc()).fetch();
+				.where(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.createdBy.eq(advancedFraudDTO.getCreatedBy())).orderBy(orderByIdDesc()).
+								list(QPGMerchantAdvancedFraud.pGMerchantAdvancedFraud.id);
 		return (StringUtil.isListNotNullNEmpty(dataList) ? dataList.size() : 0);
 	}
 	
@@ -152,7 +153,7 @@ public class FraudAdvancedServicesDaoImpl implements FraudAdvancedServicesDao{
 	 */
 	@Override
 	public void deleteAdvancedFraud(Long id) throws DataAccessException {
-		advancedFraudRepository.deleteById(id);
+		advancedFraudRepository.delete(id);
 	}
 	
 }

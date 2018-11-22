@@ -35,10 +35,10 @@ import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.DateUtils;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -265,19 +265,8 @@ public class AccountDaoImpl implements AccountDao {
         limit = requestDto.getPageSize();
       }
       
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant, QPGAccount.pGAccount, QPGMerchantBank.pGMerchantBank).
-    	 select(QPGMerchant.pGMerchant.businessName,
-    	              QPGMerchant.pGMerchant.merchantCode,
-    	              QPGMerchant.pGMerchant.parentMerchantId,
-    	              QPGMerchant.pGMerchant.merchantType,
-    	              QPGAccount.pGAccount.id,
-    	              QPGAccount.pGAccount.accountNum,
-    	              QPGAccount.pGAccount.currentBalance,
-    	              QPGAccount.pGAccount.status,
-    	              QPGAccount.pGAccount.createdDate,
-    	              QPGMerchantBank.pGMerchantBank.nameOnAccount,
-    	              QPGMerchantBank.pGMerchantBank.state).
           where(isBusinessNameLike(requestDto.getBusinessName()),
           isAccountNoLike(requestDto.getMerchantAccountNumber()),
           isParentMerchantIdEq(requestDto.getParentMerchantCode()),
@@ -289,7 +278,17 @@ public class AccountDaoImpl implements AccountDao {
           offset(offset).
           limit(limit).
           orderBy(orderByCreatedDateDesc()).
-          fetch();
+          list(QPGMerchant.pGMerchant.businessName,
+              QPGMerchant.pGMerchant.merchantCode,
+              QPGMerchant.pGMerchant.parentMerchantId,
+              QPGMerchant.pGMerchant.merchantType,
+              QPGAccount.pGAccount.id,
+              QPGAccount.pGAccount.accountNum,
+              QPGAccount.pGAccount.currentBalance,
+              QPGAccount.pGAccount.status,
+              QPGAccount.pGAccount.createdDate,
+              QPGMerchantBank.pGMerchantBank.nameOnAccount,
+              QPGMerchantBank.pGMerchantBank.state);
       
       if(!CollectionUtils.isEmpty(tupleList)) {
         searchList = new ArrayList<MerchantAccountSearchDto>();
@@ -320,9 +319,8 @@ public class AccountDaoImpl implements AccountDao {
    * @return
    */
   private Integer getTotalNumberOfRecords(MerchantAccountSearchDto requestDto) {
-    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Long> tupleList = query.from(QPGMerchant.pGMerchant, QPGAccount.pGAccount, QPGMerchantBank.pGMerchantBank).
-    	select(QPGAccount.pGAccount.id).
         where(isBusinessNameLike(requestDto.getBusinessName()),
         isAccountNoLike(requestDto.getMerchantAccountNumber()),
         isParentMerchantIdEq(requestDto.getParentMerchantCode()),
@@ -331,7 +329,7 @@ public class AccountDaoImpl implements AccountDao {
         isMerchantStatusEq(),
         QPGAccount.pGAccount.pgMerchantBank.id.eq(QPGMerchantBank.pGMerchantBank.id),
         QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode)).
-        fetch();
+        list(QPGAccount.pGAccount.id);
     
     return (StringUtils.isListNotNullNEmpty(tupleList) ? tupleList.size() : 0);
   }
@@ -369,7 +367,7 @@ public class AccountDaoImpl implements AccountDao {
   @Override
   public void changeAccountStatus(Long accountId, String accountStatus, String reason) {
     
-    PGAccount pgAccount = accountRepository.findById(accountId).orElse(null);
+    PGAccount pgAccount = accountRepository.findOne(accountId);
     
     if(null != pgAccount) {
       pgAccount.setStatus(accountStatus);
@@ -386,7 +384,7 @@ public class AccountDaoImpl implements AccountDao {
    */
   @Override
   public PGAccount getAccountOnId(Long accountId) {
-    return accountRepository.findById(accountId).orElse(null);
+    return accountRepository.findById(accountId);
   }
 
   /**
@@ -419,11 +417,10 @@ public class AccountDaoImpl implements AccountDao {
   
   public List<AccountBalanceDTO> getAccDetailsOnAccNums(List<Long> accounts) {
 	    List<AccountBalanceDTO> accountBalanceDTOs = new ArrayList<AccountBalanceDTO>(0);
-	    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+	    JPAQuery query = new JPAQuery(entityManager);
 	    List<Tuple> tuples = query.from(QPGAccount.pGAccount)
-	    	  .select(QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.availableBalance, QPGAccount.pGAccount.currentBalance, QPGAccount.pGAccount.accountDesc,QPGAccount.pGAccount.status)
 	          .where(QPGAccount.pGAccount.accountNum.in(accounts))
-	          .fetch();
+	          .list(QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.availableBalance, QPGAccount.pGAccount.currentBalance, QPGAccount.pGAccount.accountDesc,QPGAccount.pGAccount.status);
 	    if(!CollectionUtils.isEmpty(tuples)){
 	      AccountBalanceDTO accountBalanceDTO = null;
 	      for(Tuple tuple : tuples){

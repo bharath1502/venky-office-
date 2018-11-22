@@ -20,8 +20,8 @@ import com.chatak.pg.acq.dao.model.QPGFeature;
 import com.chatak.pg.acq.dao.model.QPGRolesFeatureMapping;
 import com.chatak.pg.acq.dao.model.QPGUserRoles;
 import com.chatak.pg.acq.dao.repository.UsersRoleRepository;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -57,9 +57,9 @@ public class RoleDaoImpl implements RoleDao {
    */
   @Override
   public List<PGRolesFeatureMapping> findByRoleId(Long roleId) {
-    JPAQuery<PGRolesFeatureMapping> query = new JPAQuery<PGRolesFeatureMapping>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     QPGRolesFeatureMapping qPGRoleFeatureMapping = QPGRolesFeatureMapping.pGRolesFeatureMapping;
-    return query.from(qPGRoleFeatureMapping).select(qPGRoleFeatureMapping).where(isRoleId(roleId)).fetch();
+    return query.from(qPGRoleFeatureMapping).where(isRoleId(roleId)).list(qPGRoleFeatureMapping);
   }
 
 
@@ -71,9 +71,9 @@ public class RoleDaoImpl implements RoleDao {
   @Override
   public List<PGFeature> searchRole(String roleType) {
 
-    JPAQuery<PGFeature> query = new JPAQuery<PGFeature>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     QPGFeature qPGFeatures = QPGFeature.pGFeature;
-    return query.from(qPGFeatures).select(qPGFeatures).where(isRoleType(roleType)).fetch();
+    return query.from(qPGFeatures).where(isRoleType(roleType)).list(qPGFeatures);
   }
 
   private BooleanExpression isRoleType(String roleType) {
@@ -83,9 +83,9 @@ public class RoleDaoImpl implements RoleDao {
 
   @Override
   public List<PGUserRoles> findByRoleName(String roleName) {
-    JPAQuery<PGUserRoles> query = new JPAQuery<PGUserRoles>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     QPGUserRoles qHostUserRoles = QPGUserRoles.pGUserRoles;
-    return query.from(qHostUserRoles).select(qHostUserRoles).where(isRoleNameEq(roleName)).fetch();
+    return query.from(qHostUserRoles).where(isRoleNameEq(roleName)).list(qHostUserRoles);
   }
 
   @Override
@@ -111,15 +111,14 @@ public class RoleDaoImpl implements RoleDao {
    */
   @Override
   public List<Long> getFeatureDataOnRoleIdData(Long roleId) {
-    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     QPGFeature pgFeature = QPGFeature.pGFeature;
     QPGRolesFeatureMapping qPGRolesFeatureMapping = QPGRolesFeatureMapping.pGRolesFeatureMapping;
     return query.from(qPGRolesFeatureMapping, pgFeature)
-    	.select(qPGRolesFeatureMapping.featureId)
         .where(isRoleId(roleId),
             QPGFeature.pGFeature.featureId
                 .eq(QPGRolesFeatureMapping.pGRolesFeatureMapping.featureId))
-        .fetch();
+        .list(qPGRolesFeatureMapping.featureId);
   }
 
   /**
@@ -128,11 +127,11 @@ public class RoleDaoImpl implements RoleDao {
    */
   @Override
   public List<PGUserRoles> findByRoleType(String rolesType) {
-    JPAQuery<PGUserRoles> query = new JPAQuery<PGUserRoles>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     QPGUserRoles qPGUserRoles = QPGUserRoles.pGUserRoles;
-    return query.from(qPGUserRoles).select(qPGUserRoles)
+    return query.from(qPGUserRoles)
         .where(qPGUserRoles.roleType.equalsIgnoreCase(rolesType), isRoleStatusEq("0"))
-        .fetch();
+        .list(qPGUserRoles);
   }
 
 	/**
@@ -141,9 +140,9 @@ public class RoleDaoImpl implements RoleDao {
 	 */
 	@Override
 	public List<PGFeature> getFeatureDataByIds(List<Long> featureIds) {
-		JPAQuery<PGFeature> query = new JPAQuery<PGFeature>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		QPGFeature qPGFeatures = QPGFeature.pGFeature;
-		return query.from(qPGFeatures).select(qPGFeatures).where(qPGFeatures.featureId.in(featureIds)).fetch();
+		return query.from(qPGFeatures).where(qPGFeatures.featureId.in(featureIds)).list(qPGFeatures);
 	}
 
 }

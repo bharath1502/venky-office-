@@ -40,10 +40,10 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.JPASubQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -122,12 +122,25 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
     Timestamp endDate = null;
     startDate = getStartDate(getTransactionsListRequest, startDate);
     endDate = getEndDate(getTransactionsListRequest, endDate);
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> infoList = query.distinct()
         .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
             QPGOnlineTxnLog.pGOnlineTxnLog, QPGBankCurrencyMapping.pGBankCurrencyMapping,
             QPGCurrencyConfig.pGCurrencyConfig)
-        .select(QPGMerchant.pGMerchant.userName, QPGMerchant.pGMerchant.businessName,
+        .where(
+            QPGMerchant.pGMerchant.merchantCode
+                .eq(QPGTransaction.pGTransaction.merchantId.stringValue())
+                .and(QPGTransaction.pGTransaction.transactionId
+                    .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()))
+                .and(isValidDate(startDate, endDate))
+                .and(QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode)),
+            QPGTransaction.pGTransaction.merchantSettlementStatus
+                .eq(getTransactionsListRequest.getSettlementStatus()),
+            QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
+            QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
+                .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha))
+        .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
+        .list(QPGMerchant.pGMerchant.userName, QPGMerchant.pGMerchant.businessName,
             QPGMerchant.pGMerchant.merchantType, QPGAccount.pGAccount.accountNum,
             QPGAccount.pGAccount.entityType, QPGAccount.pGAccount.currency,
             QPGTransaction.pGTransaction.txnTotalAmount,
@@ -145,21 +158,7 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
             QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
             QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
             QPGTransaction.pGTransaction.deviceLocalTxnTime,
-            QPGTransaction.pGTransaction.timeZoneOffset,QPGTransaction.pGTransaction.batchId)
-        .where(
-            QPGMerchant.pGMerchant.merchantCode
-                .eq(QPGTransaction.pGTransaction.merchantId.stringValue())
-                .and(QPGTransaction.pGTransaction.transactionId
-                    .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()))
-                .and(isValidDate(startDate, endDate))
-                .and(QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode)),
-            QPGTransaction.pGTransaction.merchantSettlementStatus
-                .eq(getTransactionsListRequest.getSettlementStatus()),
-            QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
-            QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
-                .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha))
-        .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-        .fetch();
+            QPGTransaction.pGTransaction.timeZoneOffset,QPGTransaction.pGTransaction.batchId);
     if (StringUtil.isListNotNullNEmpty(infoList)) {
       reportList = new ArrayList<>();
       TransactionPopUpDataDto txnDto = null;
@@ -298,12 +297,35 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 		startDate = getStartDate(getTransactionsListRequest, startDate);
 		endDate = getEndDate(getTransactionsListRequest, endDate);
     QPGMerchant pp = new QPGMerchant("pp");
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     if (null != getTransactionsListRequest.getMerchant_code()) {
       List<Tuple> infoList = query.distinct()
           .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
               QPGOnlineTxnLog.pGOnlineTxnLog, QPGAccountFeeLog.pGAccountFeeLog)
-          .select(QPGTransaction.pGTransaction.transactionId,
+          .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGTransaction.pGTransaction.merchantId),
+              QPGTransaction.pGTransaction.transactionId
+                  .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()),
+              QPGTransaction.pGTransaction.transactionId
+                  .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId),
+              QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode),
+              QPGTransaction.pGTransaction.merchantSettlementStatus
+                  .eq(getTransactionsListRequest.getSettlementStatus()),
+              QPGMerchant.pGMerchant.merchantCode
+                  .eq(QPGTransaction.pGTransaction.merchantId.stringValue()),
+              QPGTransaction.pGTransaction.transactionId
+                  .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId),
+              QPGTransaction.pGTransaction.transactionType.equalsIgnoreCase("sale"),
+              QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode),
+              QPGTransaction.pGTransaction.merchantSettlementStatus
+                  .eq(getTransactionsListRequest.getSettlementStatus()),
+              isRevenueType(getTransactionsListRequest.getEntryMode()),
+              isValidDate(startDate, endDate),
+              QPGMerchant.pGMerchant.merchantCode.eq(getTransactionsListRequest.getMerchant_code())
+                  .or((QPGMerchant.pGMerchant.parentMerchantId.in(new JPASubQuery().from(pp)
+                      .where(pp.merchantCode.eq(getTransactionsListRequest.getMerchant_code()))
+                      .list(pp.id)))))
+          			  .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
+                      .list(QPGTransaction.pGTransaction.transactionId,
               QPGTransaction.pGTransaction.txnTotalAmount,
               QPGTransaction.pGTransaction.txnDescription,
               QPGTransaction.pGTransaction.paymentMethod, QPGTransaction.pGTransaction.txnAmount,
@@ -324,31 +346,7 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
               QPGAccountFeeLog.pGAccountFeeLog.chatakFee,
               QPGAccountFeeLog.pGAccountFeeLog.parentEntityId,
               QPGTransaction.pGTransaction.deviceLocalTxnTime,
-              QPGTransaction.pGTransaction.timeZoneOffset)
-          .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGTransaction.pGTransaction.merchantId),
-              QPGTransaction.pGTransaction.transactionId
-                  .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()),
-              QPGTransaction.pGTransaction.transactionId
-                  .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId),
-              QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode),
-              QPGTransaction.pGTransaction.merchantSettlementStatus
-                  .eq(getTransactionsListRequest.getSettlementStatus()),
-              QPGMerchant.pGMerchant.merchantCode
-                  .eq(QPGTransaction.pGTransaction.merchantId.stringValue()),
-              QPGTransaction.pGTransaction.transactionId
-                  .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId),
-              QPGTransaction.pGTransaction.transactionType.equalsIgnoreCase("sale"),
-              QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode),
-              QPGTransaction.pGTransaction.merchantSettlementStatus
-                  .eq(getTransactionsListRequest.getSettlementStatus()),
-              isRevenueType(getTransactionsListRequest.getEntryMode()),
-              isValidDate(startDate, endDate),
-              QPGMerchant.pGMerchant.merchantCode.eq(getTransactionsListRequest.getMerchant_code())
-                  .or((QPGMerchant.pGMerchant.parentMerchantId.in(JPAExpressions.selectFrom(pp)
-                      .where(pp.merchantCode.eq(getTransactionsListRequest.getMerchant_code()))
-                      .select(pp.id)))))
-          			  .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-                      .fetch();
+              QPGTransaction.pGTransaction.timeZoneOffset);
       if (StringUtil.isListNotNullNEmpty(infoList)) {
         TransactionPopUpDataDto txnDto = null;
         String statusMsg = null;
@@ -390,11 +388,23 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
         }
       }
     } else {
-      JPAQuery<Tuple> query1 = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query1 = new JPAQuery(entityManager);
       List<Tuple> infoList = query1.distinct()
           .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
               QPGOnlineTxnLog.pGOnlineTxnLog, QPGAccountFeeLog.pGAccountFeeLog)
-          .select(QPGMerchant.pGMerchant.userName,
+          .where(
+              QPGMerchant.pGMerchant.merchantCode
+                  .eq(QPGTransaction.pGTransaction.merchantId.stringValue())
+                  .and(QPGTransaction.pGTransaction.transactionId
+                      .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()))
+              .and(QPGTransaction.pGTransaction.transactionId
+                  .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId))
+              .and(isValidDate(startDate, endDate))
+              .and(QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode)),
+              QPGTransaction.pGTransaction.merchantSettlementStatus
+                  .eq(getTransactionsListRequest.getSettlementStatus()),
+              isRevenueType(getTransactionsListRequest.getEntryMode()))
+          .orderBy(orderByCreatedDateDesc()).list(QPGMerchant.pGMerchant.userName,
               QPGMerchant.pGMerchant.businessName, QPGAccount.pGAccount.accountNum,
               QPGAccount.pGAccount.entityType, QPGAccount.pGAccount.currency,
               QPGTransaction.pGTransaction.createdDate, QPGTransaction.pGTransaction.txnTotalAmount,
@@ -412,20 +422,7 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
               QPGTransaction.pGTransaction.status, QPGAccountFeeLog.pGAccountFeeLog.merchantFee,
               QPGAccountFeeLog.pGAccountFeeLog.chatakFee,
               QPGAccountFeeLog.pGAccountFeeLog.parentEntityId,QPGTransaction.pGTransaction.deviceLocalTxnTime,
-              QPGTransaction.pGTransaction.timeZoneOffset)
-          .where(
-              QPGMerchant.pGMerchant.merchantCode
-                  .eq(QPGTransaction.pGTransaction.merchantId.stringValue())
-                  .and(QPGTransaction.pGTransaction.transactionId
-                      .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()))
-              .and(QPGTransaction.pGTransaction.transactionId
-                  .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId))
-              .and(isValidDate(startDate, endDate))
-              .and(QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode)),
-              QPGTransaction.pGTransaction.merchantSettlementStatus
-                  .eq(getTransactionsListRequest.getSettlementStatus()),
-              isRevenueType(getTransactionsListRequest.getEntryMode()))
-          .orderBy(orderByCreatedDateDesc()).fetch();
+              QPGTransaction.pGTransaction.timeZoneOffset);
       if (StringUtil.isListNotNullNEmpty(infoList)) {
         reportList = new ArrayList<>();
         TransactionPopUpDataDto txnDto = null;
@@ -652,9 +649,12 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
     }
     List<LitleEFTDTO> txntList = null;
     LitleEFTDTO litleEFTDTO = null;
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> infoList = query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant)
-    	.select(QPGTransaction.pGTransaction.transactionId, QPGTransaction.pGTransaction.txnAmount,
+        .where(QPGTransaction.pGTransaction.eftStatus.eq(PGConstants.LITLE_EXECUTED),
+            QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode))
+        .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
+        .list(QPGTransaction.pGTransaction.transactionId, QPGTransaction.pGTransaction.txnAmount,
             QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.createdDate,
             QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.authId,
             QPGTransaction.pGTransaction.refTransactionId, QPGTransaction.pGTransaction.terminalId,
@@ -665,11 +665,7 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
             QPGTransaction.pGTransaction.merchantSettlementStatus,
             QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
             QPGTransaction.pGTransaction.cardHolderName, QPGMerchant.pGMerchant.businessName,
-            QPGMerchant.pGMerchant.merchantType)
-        .where(QPGTransaction.pGTransaction.eftStatus.eq(PGConstants.LITLE_EXECUTED),
-            QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode))
-        .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-        .fetch();
+            QPGMerchant.pGMerchant.merchantType);
     if (StringUtil.isListNotNullNEmpty(infoList)) {
       txntList = new ArrayList<>();
       TransactionPopUpDataDto txnDto = null;
@@ -750,14 +746,13 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 
   @Override
   public int getLitleExecutedTransactionsCount() {
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> infoList = query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant)
-    	.select(QPGTransaction.pGTransaction.transactionId,
-            QPGTransaction.pGTransaction.txnAmount, QPGTransaction.pGTransaction.merchantId,
-            QPGTransaction.pGTransaction.createdDate)
         .where(QPGTransaction.pGTransaction.eftStatus.eq(PGConstants.LITLE_EXECUTED),
             QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode))
-        .orderBy(orderByCreatedDateDesc()).fetch();
+        .orderBy(orderByCreatedDateDesc()).list(QPGTransaction.pGTransaction.transactionId,
+            QPGTransaction.pGTransaction.txnAmount, QPGTransaction.pGTransaction.merchantId,
+            QPGTransaction.pGTransaction.createdDate);
     return infoList.size();
   }
 
@@ -770,15 +765,14 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
     Date now = new Date();
     Timestamp fromDate = new Timestamp(now.getTime() - Long.parseLong("86400000") * payoutFrequencyDays);
     Timestamp todate = new Timestamp(now.getTime());
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> infoList = query.from(QPGTransaction.pGTransaction)
-    	.select(QPGTransaction.pGTransaction.transactionId,
-            QPGTransaction.pGTransaction.txnAmount, QPGTransaction.pGTransaction.merchantId,
-            QPGTransaction.pGTransaction.createdDate)
         .where(QPGTransaction.pGTransaction.eftStatus.eq(PGConstants.LITLE_EXECUTED),
             QPGTransaction.pGTransaction.merchantId.eq(merchantCode),
             QPGTransaction.pGTransaction.updatedDate.between(fromDate, todate))
-        .orderBy(orderByCreatedDateDesc()).fetch();
+        .orderBy(orderByCreatedDateDesc()).list(QPGTransaction.pGTransaction.transactionId,
+            QPGTransaction.pGTransaction.txnAmount, QPGTransaction.pGTransaction.merchantId,
+            QPGTransaction.pGTransaction.createdDate);
     if (StringUtil.isListNotNullNEmpty(infoList)) {
       txntList = new ArrayList<>();
       for (Tuple tuple : infoList) {
@@ -813,14 +807,36 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	  Timestamp startDate = null;
 	    Timestamp endDate = null;
   QPGMerchant pp = new QPGMerchant("pp");
-  JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+  JPAQuery query = new JPAQuery(entityManager);
   startDate = getStartDate(getTransactionsListRequest, startDate);
     endDate = getEndDate(getTransactionsListRequest, endDate);
   if (null != getTransactionsListRequest.getMerchant_code()) {
     List<Tuple> infoList = query.distinct()
         .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
             QPGOnlineTxnLog.pGOnlineTxnLog, QPGAccountFeeLog.pGAccountFeeLog)
-        .select(QPGTransaction.pGTransaction.transactionId,
+        .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGTransaction.pGTransaction.merchantId),
+            QPGTransaction.pGTransaction.transactionId
+                .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()),
+            QPGTransaction.pGTransaction.transactionId
+                .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId),
+            QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode),
+            QPGTransaction.pGTransaction.merchantSettlementStatus
+                .eq(getTransactionsListRequest.getSettlementStatus()),
+            QPGMerchant.pGMerchant.merchantCode
+                .eq(QPGTransaction.pGTransaction.merchantId.stringValue()),
+            QPGTransaction.pGTransaction.transactionId
+                .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId),
+            QPGTransaction.pGTransaction.transactionType.equalsIgnoreCase("sale"),
+            QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode),
+            QPGTransaction.pGTransaction.merchantSettlementStatus
+                .eq(getTransactionsListRequest.getSettlementStatus()),
+            isRevenueType(getTransactionsListRequest.getEntryMode()),
+            isValidDate(startDate, endDate),
+            QPGMerchant.pGMerchant.merchantCode.eq(getTransactionsListRequest.getMerchant_code())
+                .or((QPGMerchant.pGMerchant.parentMerchantId.in(new JPASubQuery().from(pp)
+                    .where(pp.merchantCode.eq(getTransactionsListRequest.getMerchant_code()))
+                    .list(pp.id)))))
+        .orderBy(orderByCreatedDateDesc()).list(QPGTransaction.pGTransaction.transactionId,
             QPGTransaction.pGTransaction.txnTotalAmount,
             QPGTransaction.pGTransaction.txnDescription,
             QPGTransaction.pGTransaction.paymentMethod, QPGTransaction.pGTransaction.txnAmount,
@@ -841,38 +857,27 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
             QPGAccountFeeLog.pGAccountFeeLog.chatakFee,
             QPGAccountFeeLog.pGAccountFeeLog.parentEntityId,
             QPGTransaction.pGTransaction.deviceLocalTxnTime,
-            QPGTransaction.pGTransaction.timeZoneOffset)
-        .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGTransaction.pGTransaction.merchantId),
-            QPGTransaction.pGTransaction.transactionId
-                .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()),
-            QPGTransaction.pGTransaction.transactionId
-                .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId),
-            QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode),
-            QPGTransaction.pGTransaction.merchantSettlementStatus
-                .eq(getTransactionsListRequest.getSettlementStatus()),
-            QPGMerchant.pGMerchant.merchantCode
-                .eq(QPGTransaction.pGTransaction.merchantId.stringValue()),
-            QPGTransaction.pGTransaction.transactionId
-                .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId),
-            QPGTransaction.pGTransaction.transactionType.equalsIgnoreCase("sale"),
-            QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode),
-            QPGTransaction.pGTransaction.merchantSettlementStatus
-                .eq(getTransactionsListRequest.getSettlementStatus()),
-            isRevenueType(getTransactionsListRequest.getEntryMode()),
-            isValidDate(startDate, endDate),
-            QPGMerchant.pGMerchant.merchantCode.eq(getTransactionsListRequest.getMerchant_code())
-                .or((QPGMerchant.pGMerchant.parentMerchantId.in(JPAExpressions.selectFrom(pp)
-                    .where(pp.merchantCode.eq(getTransactionsListRequest.getMerchant_code()))
-                    .select(pp.id)))))
-        .orderBy(orderByCreatedDateDesc()).fetch();
+            QPGTransaction.pGTransaction.timeZoneOffset);
       return (StringUtils.isListNotNullNEmpty(infoList) ? infoList.size() : 0);
     
       } else {
-    JPAQuery<Tuple> merchantCodeNullQuery = new JPAQuery<Tuple>(entityManager);
+    JPAQuery merchantCodeNullQuery = new JPAQuery(entityManager);
     List<Tuple> infoList = merchantCodeNullQuery.distinct()
         .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
             QPGOnlineTxnLog.pGOnlineTxnLog, QPGAccountFeeLog.pGAccountFeeLog)
-        .select(QPGMerchant.pGMerchant.userName,
+        .where(
+            QPGMerchant.pGMerchant.merchantCode
+                .eq(QPGTransaction.pGTransaction.merchantId.stringValue())
+                .and(QPGTransaction.pGTransaction.transactionId
+                    .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()))
+            .and(QPGTransaction.pGTransaction.transactionId
+                .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId))
+            .and(QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode)),
+            QPGTransaction.pGTransaction.merchantSettlementStatus
+                .eq(getTransactionsListRequest.getSettlementStatus()),
+                isValidDate(startDate, endDate),
+            isRevenueType(getTransactionsListRequest.getEntryMode()))
+        .orderBy(orderByCreatedDateDesc()).list(QPGMerchant.pGMerchant.userName,
             QPGMerchant.pGMerchant.businessName, QPGAccount.pGAccount.accountNum,
             QPGAccount.pGAccount.entityType, QPGAccount.pGAccount.currency,
             QPGTransaction.pGTransaction.createdDate, QPGTransaction.pGTransaction.txnTotalAmount,
@@ -890,20 +895,7 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
             QPGTransaction.pGTransaction.status, QPGAccountFeeLog.pGAccountFeeLog.merchantFee,
             QPGAccountFeeLog.pGAccountFeeLog.chatakFee,
             QPGAccountFeeLog.pGAccountFeeLog.parentEntityId,QPGTransaction.pGTransaction.deviceLocalTxnTime,
-            QPGTransaction.pGTransaction.timeZoneOffset)
-        .where(
-            QPGMerchant.pGMerchant.merchantCode
-                .eq(QPGTransaction.pGTransaction.merchantId.stringValue())
-                .and(QPGTransaction.pGTransaction.transactionId
-                    .eq(QPGOnlineTxnLog.pGOnlineTxnLog.pgTxnId.stringValue()))
-            .and(QPGTransaction.pGTransaction.transactionId
-                .eq(QPGAccountFeeLog.pGAccountFeeLog.transactionId))
-            .and(QPGAccount.pGAccount.entityId.eq(QPGMerchant.pGMerchant.merchantCode)),
-            QPGTransaction.pGTransaction.merchantSettlementStatus
-                .eq(getTransactionsListRequest.getSettlementStatus()),
-                isValidDate(startDate, endDate),
-            isRevenueType(getTransactionsListRequest.getEntryMode()))
-        .orderBy(orderByCreatedDateDesc()).fetch();
+            QPGTransaction.pGTransaction.timeZoneOffset);
     return (StringUtils.isListNotNullNEmpty(infoList) ? infoList.size() : 0);
    }
  }

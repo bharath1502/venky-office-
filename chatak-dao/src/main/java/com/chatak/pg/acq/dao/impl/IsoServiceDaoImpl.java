@@ -48,10 +48,10 @@ import com.chatak.pg.user.bean.MerchantResponse;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 /**
  * @Author: Girmiti Software
  * @Date: May 7, 2018
@@ -257,15 +257,9 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 			limit = isoRequest.getPageSize();
 		}
 
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> tupleList = query
 				.from(QIso.iso)
-				.select(QIso.iso.id, QIso.iso.isoName,
-						QIso.iso.businessEntityName, QIso.iso.address,
-						QIso.iso.city, QIso.iso.contactPerson,
-						QIso.iso.country, QIso.iso.state,
-						QIso.iso.createdDate, QIso.iso.phoneNumber,
-						QIso.iso.status, QIso.iso.currency,QIso.iso.email)
 				.where(isIsoNameLike(isoRequest.getIsoName().trim()),
 						isBusinessEntityNameLike(isoRequest
 								.getProgramManagerRequest().getBusinessName()),
@@ -278,7 +272,12 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 				.limit(limit)
 				.orderBy(orderByIdDesc())
 				.distinct()
-				.fetch();
+				.list(QIso.iso.id, QIso.iso.isoName,
+						QIso.iso.businessEntityName, QIso.iso.address,
+						QIso.iso.city, QIso.iso.contactPerson,
+						QIso.iso.country, QIso.iso.state,
+						QIso.iso.createdDate, QIso.iso.phoneNumber,
+						QIso.iso.status, QIso.iso.currency,QIso.iso.email);
 
 		IsoRequest isoDTO = null;
 		ProgramManagerRequest programManagerRequest = null;
@@ -367,8 +366,8 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 	}
 	
 	@Override
-	public Iso findByIsoId(Long isoId)  {
-		return isoRepository.findById(isoId).orElse(null);
+	public List<Iso> findByIsoId(Long isoId)  {
+		return isoRepository.findById(isoId);
 	}
 	
 	@Override
@@ -376,10 +375,11 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 		IsoResponse isoResponse = new IsoResponse();
 		List<IsoRequest> isoRequests = new ArrayList<>();
 		
-		Iso  iso = findByIsoId(isoRequest.getId());
+		List<Iso>  isoList = findByIsoId(isoRequest.getId());
 		IsoRequest isoDTO = null;
 		ProgramManagerRequest programManagerRequest = null;
-		if(iso!=null){
+		if(isoList!=null){
+			for(Iso iso: isoList){
 				isoDTO = new IsoRequest();
 				programManagerRequest = new ProgramManagerRequest();
 				isoDTO.setId(iso.getId());
@@ -402,16 +402,16 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 				isoDTO.setBankAccNum(iso.getBankAccNum());
 				isoDTO.setRoutingNumber(iso.getRoutingNumber());
 				isoRequests.add(isoDTO);
+			}			
 		}
 		isoResponse.setIsoRequest(isoRequests);
 		
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> tupleList = query
 				.from(QProgramManager.programManager,QIsoPmMap.isoPmMap)
-				.select(QProgramManager.programManager.id,QProgramManager.programManager.programManagerName)
 				.where(QIsoPmMap.isoPmMap.isoId.eq(isoRequest.getId()).and(QIsoPmMap.isoPmMap.pmId.eq(QProgramManager.programManager.id)))
 				.distinct()
-				.fetch();
+				.list(QProgramManager.programManager.id,QProgramManager.programManager.programManagerName);
 		
 		List<ProgramManagerRequest> programManagerRequests = new ArrayList<>();
 		ProgramManagerRequest programManager = null;
@@ -581,11 +581,11 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 	public List<IsoRequest> getAllIso(IsoRequest isoRequest) {
 		logger.info("Entering :: IsoServiceDaoImpl :: getAllIso");
 		List<IsoRequest> isoRequests = new ArrayList<>();
-	    JPAQuery<Iso> query = new JPAQuery<Iso>(entityManager);
-	    List<Iso> isos = query.from(QIso.iso).select(QIso.iso)
+	    JPAQuery query = new JPAQuery(entityManager);
+	    List<Iso> isos = query.from(QIso.iso)
 	        .where(isStatus(isoRequest.getProgramManagerRequest().getStatus()), isIsoId(isoRequest.getId()))
 	        .orderBy(QIso.iso.isoName.asc())
-	        .fetch();
+	        .list(QIso.iso);
 	    if (StringUtil.isListNotNullNEmpty(isos)) {
 	    	  try {
 				isoRequests =
@@ -679,13 +679,13 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 	}
 	
 	private Integer getTotalNumberOfRecords(IsoRequest isoRequest) {
-		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
-		List<Long> iso = query.from(QIso.iso).select(QIso.iso.id)
+		JPAQuery query = new JPAQuery(entityManager);
+		List<Long> iso = query.from(QIso.iso)
 				.where(isIsoNameLike(isoRequest.getIsoName().trim()),
 						isBusinessEntityNameLike(isoRequest.getProgramManagerRequest().getBusinessName()),
 						isStatus(isoRequest.getProgramManagerRequest().getStatus()), isIsoId(isoRequest.getId()),
 						isIsoIds(isoRequest.getIds()), isIsoEmailLike(isoRequest.getProgramManagerRequest().getContactEmail()))
-				.fetch();
+				.list(QIso.iso.id);
 		return (StringUtil.isListNotNullNEmpty(iso) ? iso.size() : 0);
 	}
 	/**
@@ -862,7 +862,7 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 		List<IsoPmMap> isoPmMapList = isoPmMapRepository.findByPmId(Pmid);
 		for (IsoPmMap isoPmMap : isoPmMapList) {
 			IsoRequest isoRequest = new IsoRequest();
-			Iso iso = isoRepository.findById(isoPmMap.getIsoId()).orElse(null);
+			Iso iso = isoRepository.findById(isoPmMap.getIsoId()).get(0);
 			isoRequest.setIsoName(iso.getIsoName());
 			isoRequest.setId(iso.getId());
 			isoRequests.add(isoRequest);
@@ -876,7 +876,7 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 		List<ProgramManagerRequest> programManagerRequestList = new ArrayList<>();
 		for (IsoPmMap isoPmMap : isoPmMapList) {
 			ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
-			ProgramManager programamanger =  programManagerRepository.findById(isoPmMap.getPmId()).orElse(null);
+			ProgramManager programamanger =  programManagerRepository.findById(isoPmMap.getPmId());
 			programManagerRequest.setProgramManagerId(programamanger.getId());
 			programManagerRequest.setProgramManagerName(programamanger.getProgramManagerName());
 			programManagerRequestList.add(programManagerRequest);

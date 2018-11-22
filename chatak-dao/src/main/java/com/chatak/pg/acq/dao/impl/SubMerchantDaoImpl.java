@@ -32,9 +32,9 @@ import com.chatak.pg.user.bean.GetMerchantListResponse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.JPASubQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -82,15 +82,8 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
         offset = (searchMerchant.getPageIndex() - 1) * searchMerchant.getPageSize();
         limit = searchMerchant.getPageSize();
       }
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant)
-    	  .select(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.firstName,
-              QPGMerchant.pGMerchant.lastName, QPGMerchant.pGMerchant.emailId,
-              QPGMerchant.pGMerchant.phone, QPGMerchant.pGMerchant.city,
-              QPGMerchant.pGMerchant.country, QPGMerchant.pGMerchant.status,
-              QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId,
-              QPGMerchant.pGMerchant.id, QPGMerchant.pGMerchant.agentAccountNumber,
-              QPGMerchant.pGMerchant.agentANI, QPGMerchant.pGMerchant.agentClientId)
           .where(isBusinessNameLike(searchMerchant.getBusinessName()),
               isMerchantCodeEq(searchMerchant.getMerchantCode()),
               isCityLike(searchMerchant.getCity()), isCountryEq(searchMerchant.getCountry()),
@@ -101,7 +94,13 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
               isSubMerchantCodeEq(searchMerchant.getSubMerchantCode()), isMerchantNotEq(),
               isMerchantStatusNotEq())
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .fetch();
+          .list(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.firstName,
+              QPGMerchant.pGMerchant.lastName, QPGMerchant.pGMerchant.emailId,
+              QPGMerchant.pGMerchant.phone, QPGMerchant.pGMerchant.city,
+              QPGMerchant.pGMerchant.country, QPGMerchant.pGMerchant.status,
+              QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId,
+              QPGMerchant.pGMerchant.id, QPGMerchant.pGMerchant.agentAccountNumber,
+              QPGMerchant.pGMerchant.agentANI, QPGMerchant.pGMerchant.agentClientId);
       if (!CollectionUtils.isEmpty(tupleList)) {
     	  PGMerchant merchant = null;
         merchantList = new ArrayList<>();
@@ -129,7 +128,7 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
             && null != subMerchantList.get(0).getParentMerchantId()) {
 
           PGMerchant parentMerchant =
-              merchantRepository.findById(subMerchantList.get(0).getParentMerchantId()).orElse(null);
+              merchantRepository.findById(subMerchantList.get(0).getParentMerchantId());
           merchantList.add(parentMerchant);
         }
       }
@@ -181,16 +180,8 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
         offset = (searchMerchant.getPageIndex() - 1) * searchMerchant.getPageSize();
         limit = searchMerchant.getPageSize();
       }
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant)
-    	  .select(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.firstName,
-              QPGMerchant.pGMerchant.lastName, QPGMerchant.pGMerchant.emailId,
-              QPGMerchant.pGMerchant.phone, QPGMerchant.pGMerchant.city,
-              QPGMerchant.pGMerchant.country, QPGMerchant.pGMerchant.status,
-              QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId,
-              QPGMerchant.pGMerchant.id, QPGMerchant.pGMerchant.agentAccountNumber,
-              QPGMerchant.pGMerchant.agentANI, QPGMerchant.pGMerchant.agentClientId,
-              QPGMerchant.pGMerchant.localCurrency)
           .where(isParentMerchantIdAlwaysEq(searchMerchant.getId()),
               isBusinessNameLike(searchMerchant.getBusinessName()),
               isMerchantCodeEq(searchMerchant.getMerchantCode()),
@@ -200,7 +191,14 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
               isLastNameLike(searchMerchant.getLastName()), isPhoneEq(searchMerchant.getPhone()),
               isStatusEq(searchMerchant.getStatus()), isSubMerchantStatusNotEq())
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .fetch();
+          .list(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.firstName,
+              QPGMerchant.pGMerchant.lastName, QPGMerchant.pGMerchant.emailId,
+              QPGMerchant.pGMerchant.phone, QPGMerchant.pGMerchant.city,
+              QPGMerchant.pGMerchant.country, QPGMerchant.pGMerchant.status,
+              QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId,
+              QPGMerchant.pGMerchant.id, QPGMerchant.pGMerchant.agentAccountNumber,
+              QPGMerchant.pGMerchant.agentANI, QPGMerchant.pGMerchant.agentClientId,
+              QPGMerchant.pGMerchant.localCurrency);
       if (!CollectionUtils.isEmpty(tupleList)) {
         merchantList = new ArrayList<>();
         subMerchantList = new ArrayList<>();
@@ -607,12 +605,12 @@ private void getListOfSubMerchants(List<MerchantRequest> subMerchantList, List<O
   @Override
   public List<String> getMerchantAndSubMerchantList(String merchantCode) {
     QPGMerchant tempMerchant = new QPGMerchant("parentMerchant");
-    JPAQuery<String> query = new JPAQuery<String>(entityManager);
-    return query.from(QPGMerchant.pGMerchant).select(QPGMerchant.pGMerchant.merchantCode)
+    JPAQuery query = new JPAQuery(entityManager);
+    return query.from(QPGMerchant.pGMerchant)
         .where(QPGMerchant.pGMerchant.merchantCode.eq(merchantCode)
-            .or((QPGMerchant.pGMerchant.parentMerchantId.in(JPAExpressions.selectFrom(tempMerchant)
-                .where(tempMerchant.merchantCode.eq(merchantCode)).select(tempMerchant.id)))))
-        .fetch();
+            .or((QPGMerchant.pGMerchant.parentMerchantId.in(new JPASubQuery().from(tempMerchant)
+                .where(tempMerchant.merchantCode.eq(merchantCode)).list(tempMerchant.id)))))
+        .list(QPGMerchant.pGMerchant.merchantCode);
   }
 
   /**
@@ -630,12 +628,11 @@ private void getListOfSubMerchants(List<MerchantRequest> subMerchantList, List<O
   }
 
   public int getTotalSubMerchantOnMerchantCode(GetMerchantListRequest searchMerchant) {
-    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     if (null == searchMerchant.getId()) {
       return 0;
     }
     List<Long> list = query.from(QPGMerchant.pGMerchant)
-    	.select(QPGMerchant.pGMerchant.id)
         .where(isBusinessNameLike(searchMerchant.getBusinessName()),
             isCityLike(searchMerchant.getCity()), isCountryEq(searchMerchant.getCountry()),
             isEmailLike(searchMerchant.getEmailId()),
@@ -644,7 +641,7 @@ private void getListOfSubMerchants(List<MerchantRequest> subMerchantList, List<O
             QPGMerchant.pGMerchant.parentMerchantId.eq(searchMerchant.getId()),
             isStatusEqSelfRegistered(searchMerchant.getStatus()), isMerchantNotEq(),
             isMerchantStatusNotEq())
-        .fetch();
+        .list(QPGMerchant.pGMerchant.id);
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }

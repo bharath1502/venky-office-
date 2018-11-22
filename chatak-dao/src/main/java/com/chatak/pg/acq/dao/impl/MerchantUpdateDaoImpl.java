@@ -54,8 +54,8 @@ import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -108,7 +108,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
     String emailID = addMerchantRequest.getEmailId().toLowerCase();
 
     if (null != addMerchantRequest.getParentMerchantId()) {
-      parentMerchant = merchantRepository.findById(addMerchantRequest.getParentMerchantId()).orElse(null);
+      parentMerchant = merchantRepository.findById(addMerchantRequest.getParentMerchantId());
     }
 
     if (null != parentMerchant && null != parentMerchant.getParentMerchantId()) {
@@ -646,7 +646,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
   public boolean updateMerchantProfile(PGMerchant pgMerchant) {
     logger.info("Entering:: MerchantController:: updateMerchantProfile method");
     boolean response = false;
-    PGMerchant merchantDb = merchantRepository.findById(pgMerchant.getId()).orElse(null);
+    PGMerchant merchantDb = merchantRepository.findById(pgMerchant.getId());
     if (null != merchantDb) {
       merchantDb.setAddress1(pgMerchant.getAddress1());
       merchantDb.setAddress2(pgMerchant.getAddress2());
@@ -776,15 +776,15 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 
   @Override
   public List<PGMerchant> getMerchantByStatusPendingandDecline() {
-    JPAQuery<PGMerchant> query = new JPAQuery<PGMerchant>(entityManager);
-    return query.from(QPGMerchant.pGMerchant).select(QPGMerchant.pGMerchant)
+    JPAQuery query = new JPAQuery(entityManager);
+    return query.from(QPGMerchant.pGMerchant)
         .where(isMerchantNotEq(), QPGMerchant.pGMerchant.status.in(1, Integer.parseInt("4")))
-        .fetch();
+        .list(QPGMerchant.pGMerchant);
   }
 
   @Override
   public PGMerchantConfig getConfigDetails(PGMerchantConfig pgMerchantConfig) {
-    return merchantConfigRepositrory.findById(pgMerchantConfig.getId()).orElse(null);
+    return merchantConfigRepositrory.findById(pgMerchantConfig.getId());
   }
 
   @Override
@@ -892,15 +892,14 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 
 	@Override
 	public List<PGMerchant> getPmMerchantByEntityIdandEntityType(Long entityId, String entityType) {
-		JPAQuery<PGMerchant> query = new JPAQuery<PGMerchant>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		return query.from(QPGMerchant.pGMerchant, QPGMerchantEntityMap.pGMerchantEntityMap)
-				.select(QPGMerchant.pGMerchant)
 				.where(isMerchantNotEq(),
 						QPGMerchantEntityMap.pGMerchantEntityMap.entityId.eq(entityId)
 								.and(QPGMerchantEntityMap.pGMerchantEntityMap.entitytype.eq(entityType))
 								.and(QPGMerchantEntityMap.pGMerchantEntityMap.merchantId.eq(QPGMerchant.pGMerchant.id))
 								.and(QPGMerchant.pGMerchant.status.in(1, Integer.parseInt("4"))))
-				.fetch();
+				.list(QPGMerchant.pGMerchant);
 	}
 	  @Override
 	  public PGMerchant getMerchantOnCodeAndEntityDetails(String merchantCode, String entityType,

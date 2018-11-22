@@ -6,7 +6,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGPartnerFeeCode;
 
@@ -18,7 +18,7 @@ import com.chatak.pg.acq.dao.model.PGPartnerFeeCode;
  * @Comments: 
  *
  */
-public interface PartnerFeeCodeRepository extends JpaRepository<PGPartnerFeeCode,Long>,QuerydslPredicateExecutor<PGPartnerFeeCode>{
+public interface PartnerFeeCodeRepository extends JpaRepository<PGPartnerFeeCode,Long>,QueryDslPredicateExecutor<PGPartnerFeeCode>{
   public List<PGPartnerFeeCode> findAll();
   public List<PGPartnerFeeCode> findByPartnerEntityId(String partnerEntityId);
   public List<PGPartnerFeeCode> findByAccountNumber(Long accountNumber);

@@ -4,10 +4,9 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGPaymentScheme;
 
@@ -19,9 +18,9 @@ import com.chatak.pg.acq.dao.model.PGPaymentScheme;
  * @Comments:
  *
  */
-public interface PaymentSchemeRepository extends JpaRepository<PGPaymentScheme, Long>, QuerydslPredicateExecutor<PGPaymentScheme> 
+public interface PaymentSchemeRepository extends JpaRepository<PGPaymentScheme, Long>, QueryDslPredicateExecutor<PGPaymentScheme> 
 {
-	public Optional<PGPaymentScheme> findById(Long id);
+	public PGPaymentScheme findById(Long id);
 	
 	public List<PGPaymentScheme> findByContactEmailOrderByUpdatedDateDesc(String contactEmail);
 	

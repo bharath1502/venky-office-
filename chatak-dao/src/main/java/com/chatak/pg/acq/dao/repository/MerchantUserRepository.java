@@ -1,11 +1,10 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.PGAdminUser;
@@ -13,11 +12,11 @@ import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 
 public interface MerchantUserRepository extends
                                        JpaRepository<PGMerchantUsers, Long>,
-                                       QuerydslPredicateExecutor<PGMerchantUsers> {
+                                       QueryDslPredicateExecutor<PGMerchantUsers> {
 
   public List<PGMerchantUsers> findByUserNameAndMerPassword(String userName, String merPassword);
 
-  public Optional<PGMerchantUsers> findById(Long id);
+  public PGMerchantUsers findById(Long id);
 
   @Query("select t from PGMerchantUsers t where t.userName=:userName and t.status <> :status")
   public PGMerchantUsers findByUserNameAndStatusNotLike(@Param("userName") String userName, @Param("status") Integer status);

@@ -3,7 +3,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGReseller;
 
@@ -14,7 +14,7 @@ import com.chatak.pg.acq.dao.model.PGReseller;
  * @date 01-Jan-2015 4:13:38 PM
  * @version 1.0
  */
-public interface ResellerRepository extends JpaRepository<PGReseller, Long>, QuerydslPredicateExecutor<PGReseller> {
+public interface ResellerRepository extends JpaRepository<PGReseller, Long>, QueryDslPredicateExecutor<PGReseller> {
 
   public PGReseller findByEmailId(String emailId);
 

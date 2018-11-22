@@ -6,13 +6,13 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.Partner;
 
 public interface PartnerRepository
-    extends JpaRepository<Partner, Long>, QuerydslPredicateExecutor<Partner> {
+    extends JpaRepository<Partner, Long>, QueryDslPredicateExecutor<Partner> {
 
   public List<Partner> getDetailsByPartnerId(Long partnerId);
 

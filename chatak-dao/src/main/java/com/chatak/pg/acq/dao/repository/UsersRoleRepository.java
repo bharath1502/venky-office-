@@ -3,11 +3,11 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGUserRoles;
 
-public interface UsersRoleRepository  extends JpaRepository<PGUserRoles, Long>,QuerydslPredicateExecutor<PGUserRoles> 
+public interface UsersRoleRepository  extends JpaRepository<PGUserRoles, Long>,QueryDslPredicateExecutor<PGUserRoles> 
 {
   public PGUserRoles findByRoleName(String roleName);
   

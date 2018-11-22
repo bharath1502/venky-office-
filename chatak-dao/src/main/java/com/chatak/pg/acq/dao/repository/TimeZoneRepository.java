@@ -1,17 +1,16 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.TimeZone;
 
 public interface TimeZoneRepository extends JpaRepository<TimeZone, Long>,
-QuerydslPredicateExecutor<TimeZone>{
+QueryDslPredicateExecutor<TimeZone>{
 
 	public List<TimeZone> findByCountryId(Long countryId);
 	
-	public Optional<TimeZone> findById(Long id);
+	public List<TimeZone> findById(Long id);
 }

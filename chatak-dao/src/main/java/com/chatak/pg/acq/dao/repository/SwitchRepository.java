@@ -1,10 +1,9 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGSwitch;
 
@@ -17,12 +16,12 @@ import com.chatak.pg.acq.dao.model.PGSwitch;
  * @version 1.0
  */
 public interface SwitchRepository extends JpaRepository<PGSwitch, Long>,
-QuerydslPredicateExecutor<PGSwitch> {
+QueryDslPredicateExecutor<PGSwitch> {
 
 	public List<PGSwitch> findBySwitchName(String switchName);
 
 	public List<PGSwitch> findByStatus(Integer status);
 
-	public Optional<PGSwitch> findById(Long id);
+	public PGSwitch findById(Long id);
 
 }

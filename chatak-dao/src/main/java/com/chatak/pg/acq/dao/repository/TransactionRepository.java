@@ -2,11 +2,10 @@ package com.chatak.pg.acq.dao.repository;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.PGTransaction;
@@ -20,9 +19,9 @@ import com.chatak.pg.acq.dao.model.PGTransaction;
  */
 public interface TransactionRepository extends
                                       JpaRepository<PGTransaction, BigInteger>,
-                                      QuerydslPredicateExecutor<PGTransaction> {
+                                      QueryDslPredicateExecutor<PGTransaction> {
 
-  public Optional<PGTransaction> findById(BigInteger pGTransactionId);
+  public PGTransaction findById(BigInteger pGTransactionId);
 
   public List<PGTransaction> findByTransactionType(String transactionType);
 

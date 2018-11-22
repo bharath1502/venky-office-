@@ -4,7 +4,7 @@
 package com.chatak.pg.acq.dao.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGTransactionCategoryCode;
 
@@ -18,6 +18,6 @@ import com.chatak.pg.acq.dao.model.PGTransactionCategoryCode;
  */
 public interface TransactionCategoryCodeRepository extends
 		JpaRepository<PGTransactionCategoryCode, Long>,
-		QuerydslPredicateExecutor<PGTransactionCategoryCode> {
+		QueryDslPredicateExecutor<PGTransactionCategoryCode> {
 
 }

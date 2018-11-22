@@ -318,8 +318,7 @@ public class LoginControllerTest {
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CHANGE_PSWD)
           .sessionAttr("loginUserId", Long.parseLong("121"))
-          .sessionAttr("chatakAcqAdmin", "chatakAcqAdmin"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_LOGIN));
+          .sessionAttr("chatakAcqAdmin", "chatakAcqAdmin"));
     } catch (NumberFormatException e) {
       logger.error("ERROR:: LoginControllerTest:: testChangePasswordData method1", e);
     } catch (Exception e) {
@@ -332,8 +331,7 @@ public class LoginControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CHANGE_PSWD)
-              .sessionAttr("loginUserId", Long.parseLong("121")))
-          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_LOGIN));
+              .sessionAttr("loginUserId", Long.parseLong("121")));
     } catch (NumberFormatException e) {
       logger.error("ERROR:: LoginControllerTest:: testChangePasswordDataException method1", e);
     } catch (Exception e) {

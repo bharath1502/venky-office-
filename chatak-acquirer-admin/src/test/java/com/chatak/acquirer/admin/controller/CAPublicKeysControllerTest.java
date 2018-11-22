@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.LoginResponse;
@@ -38,7 +39,6 @@ import com.chatak.pg.acq.dao.model.PGCaPublicKeys;
 import com.chatak.pg.bean.PublickeyNameResponse;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.CAPublicKeysDTO;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CAPublicKeysControllerTest {
@@ -115,7 +115,7 @@ public class CAPublicKeysControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.SHOW_CA_PUBLIC_KEYS_SEARCH_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testShowCAPublicKeysSearchPage | Exception ", e);
@@ -127,7 +127,7 @@ public class CAPublicKeysControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.SHOW_CA_PUBLIC_KEYS_SEARCH_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, "sgf"))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, "sgf"))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -142,7 +142,7 @@ public class CAPublicKeysControllerTest {
           .thenReturn(caPublicKeysResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CA_PUBLIC_KEYS_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCaPublicKeysSearch | Exception ", e);
@@ -155,7 +155,7 @@ public class CAPublicKeysControllerTest {
       Mockito.when(caPublicKeysService.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenThrow(chatakAdminException);
       mockMvc.perform(post("/" + URLMappingConstants.CA_PUBLIC_KEYS_SEARCH)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES));
     } catch (Exception e) {
       logger.error(
           "CAPublicKeysControllerTest | testCaPublicKeysSearchChatakAdminException | Exception ",
@@ -169,7 +169,7 @@ public class CAPublicKeysControllerTest {
       Mockito.when(caPublicKeysService.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CA_PUBLIC_KEYS_SEARCH)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCaPublicKeysSearchException | Exception ", e);
     }
@@ -184,9 +184,9 @@ public class CAPublicKeysControllerTest {
           .thenReturn(caPublicKeysResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CA_PUBLIC_KEYS_PAGINATION)
-              .sessionAttr(Constants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testGetPaginationList | Exception ", e);
@@ -200,9 +200,9 @@ public class CAPublicKeysControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CA_PUBLIC_KEYS_PAGINATION)
-              .sessionAttr(Constants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testGetPaginationListException | Exception ", e);
@@ -217,9 +217,9 @@ public class CAPublicKeysControllerTest {
       Mockito.when(caPublicKeysService.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenReturn(caPublicKeysResponse);
       mockMvc.perform(post("/" + URLMappingConstants.DOWNLOAD_CA_PUBLIC_KEYS_REPORT)
-          .sessionAttr(Constants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
-          .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
+          .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testDownloadCaPublicKeysReport | Exception ", e);
     }
@@ -233,9 +233,9 @@ public class CAPublicKeysControllerTest {
       Mockito.when(caPublicKeysService.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenReturn(caPublicKeysResponse);
       mockMvc.perform(post("/" + URLMappingConstants.DOWNLOAD_CA_PUBLIC_KEYS_REPORT)
-          .sessionAttr(Constants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
-          .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param(Constants.DOWNLOAD_TYPE, "PDF"));
+          .sessionAttr(TestConstants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
+          .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param(TestConstants.DOWNLOAD_TYPE, "PDF"));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testDownloadCaPublicKeysReportPDF | Exception ",
           e);
@@ -248,9 +248,9 @@ public class CAPublicKeysControllerTest {
       Mockito.when(caPublicKeysService.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.DOWNLOAD_CA_PUBLIC_KEYS_REPORT)
-          .sessionAttr(Constants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
-          .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.PUBLIC_KEY_REQUEST, caPublicKeysDTO)
+          .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error(
           "CAPublicKeysControllerTest | testDownloadCaPublicKeysReportException | Exception ", e);
@@ -262,8 +262,8 @@ public class CAPublicKeysControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testShowCreateCApublicKeysPage | Exception ", e);
@@ -273,14 +273,14 @@ public class CAPublicKeysControllerTest {
   @Test
   public void testCreateCAPublicKeys() {
     caPublicKeysResponse = new CAPublicKeysResponse();
-    caPublicKeysResponse.setTotalNoOfRows(Constants.TEN);
+    caPublicKeysResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(caPublicKeysService.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenReturn(caPublicKeysResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCreateCAPublicKeys | Exception ", e);
@@ -292,7 +292,7 @@ public class CAPublicKeysControllerTest {
     caPublicKeysResponse = new CAPublicKeysResponse();
     responseval = new Response();
     caPublicKeysResponse.setTotalNoOfRows(null);
-    responseval.setErrorMessage(Constants.SUCESS);
+    responseval.setErrorMessage(TestConstants.SUCESS);
     try {
       Mockito.when(caPublicKeysService.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenReturn(caPublicKeysResponse);
@@ -300,8 +300,8 @@ public class CAPublicKeysControllerTest {
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCreateCAPublicKeysNoOFRowsNull | Exception ",
@@ -314,7 +314,7 @@ public class CAPublicKeysControllerTest {
     caPublicKeysResponse = new CAPublicKeysResponse();
     responseval = new Response();
     caPublicKeysResponse.setTotalNoOfRows(null);
-    responseval.setErrorMessage(Constants.SUCCESS);
+    responseval.setErrorMessage(TestConstants.SUCCESS);
     try {
       Mockito.when(caPublicKeysService.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenReturn(caPublicKeysResponse);
@@ -322,8 +322,8 @@ public class CAPublicKeysControllerTest {
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCreateCAPublicKeysElse | Exception ", e);
@@ -337,8 +337,8 @@ public class CAPublicKeysControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCreateCAPublicKeysElseException | Exception ",
@@ -353,8 +353,8 @@ public class CAPublicKeysControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CREATE_CA_PUBLIC_KEYS_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -370,8 +370,8 @@ public class CAPublicKeysControllerTest {
           .thenReturn(pgcapublickeys);
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_CA_PUBLIC_KEYS_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_EDIT_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testShowCAPublicKeysEdit | Exception ", e);
@@ -385,8 +385,8 @@ public class CAPublicKeysControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_CA_PUBLIC_KEYS_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_EDIT_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -400,7 +400,7 @@ public class CAPublicKeysControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_CA_PUBLIC_KEYS_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.SHOW_CA_PUBLIC_KEYS_VIEW));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testShowCAPublicKeysView | Exception ", e);
@@ -410,14 +410,14 @@ public class CAPublicKeysControllerTest {
   @Test
   public void testUpdateCAPublicKeys() {
     responseval = new Response();
-    responseval.setErrorMessage(Constants.SUCESS);
+    responseval.setErrorMessage(TestConstants.SUCESS);
     try {
       Mockito.when(caPublicKeysService.updateCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.UPDATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testUpdateCAPublicKeys | Exception ", e);
@@ -427,14 +427,14 @@ public class CAPublicKeysControllerTest {
   @Test
   public void testUpdateCAPublicKeysElse() {
     responseval = new Response();
-    responseval.setErrorMessage(Constants.SUCCESS);
+    responseval.setErrorMessage(TestConstants.SUCCESS);
     try {
       Mockito.when(caPublicKeysService.updateCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.UPDATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testUpdateCAPublicKeysElse | Exception ", e);
@@ -448,8 +448,8 @@ public class CAPublicKeysControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.UPDATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testUpdateCAPublicKeysException | Exception ", e);
@@ -463,8 +463,8 @@ public class CAPublicKeysControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.UPDATE_CA_PUBLIC_KEYS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testUpdateCAPublicKeysException | Exception ", e);
@@ -481,10 +481,10 @@ public class CAPublicKeysControllerTest {
           .thenReturn(caPublicKeysResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CA_PUBLIC_KEYS_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-              .sessionAttr(Constants.PAGE_NUMBER, Constants.ONE)
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+              .sessionAttr(TestConstants.PAGE_NUMBER, TestConstants.ONE)
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
@@ -501,10 +501,10 @@ public class CAPublicKeysControllerTest {
           .thenReturn(caPublicKeysResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CA_PUBLIC_KEYS_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-              .sessionAttr(Constants.PAGE_NUMBER, Constants.ONE)
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+              .sessionAttr(TestConstants.PAGE_NUMBER, TestConstants.ONE)
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
@@ -520,10 +520,10 @@ public class CAPublicKeysControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CA_PUBLIC_KEYS_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-              .sessionAttr(Constants.PAGE_NUMBER, Constants.ONE)
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+              .sessionAttr(TestConstants.PAGE_NUMBER, TestConstants.ONE)
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
@@ -538,7 +538,7 @@ public class CAPublicKeysControllerTest {
       Mockito.when(caPublicKeysService.validatePublickeyName(Matchers.anyString()))
           .thenReturn(publickeyNameResponse);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_PUBLICKEYNAME_VALIDATE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testValidateuniquePublickeyName | Exception ", e);
     }
@@ -555,8 +555,8 @@ public class CAPublicKeysControllerTest {
           .thenReturn(caPublicKeysDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.DELETE_CA_PUBLIC_KEY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("getCAPublicKeyID",
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("getCAPublicKeyID",
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCaPublicKeyDelete | Exception ", e);
@@ -574,8 +574,8 @@ public class CAPublicKeysControllerTest {
           .thenReturn(caPublicKeysDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.DELETE_CA_PUBLIC_KEY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("getCAPublicKeyID",
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("getCAPublicKeyID",
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCaPublicKeyDeleteElse | Exception ", e);
@@ -589,8 +589,8 @@ public class CAPublicKeysControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.DELETE_CA_PUBLIC_KEY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("getCAPublicKeyID",
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("getCAPublicKeyID",
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CA_PUBLIC_KEYS_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CAPublicKeysControllerTest | testCaPublicKeyDeleteException | Exception ", e);

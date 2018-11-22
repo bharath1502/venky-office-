@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -39,7 +40,6 @@ import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.Bank;
 import com.chatak.pg.user.bean.BankResponse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BankControllerTest {
@@ -114,7 +114,7 @@ public class BankControllerTest {
     Mockito.when(currencyConfigService.getCurrencyConfigCode()).thenReturn(optionList);
     try {
       mockMvc
-          .perform(get("/" + URLMappingConstants.BANK_CREATE).sessionAttr(Constants.LOGIN_USER, Constants.LOGIN_USER))
+          .perform(get("/" + URLMappingConstants.BANK_CREATE).sessionAttr(TestConstants.LOGIN_USER, TestConstants.LOGIN_USER))
           .andExpect(view().name(URLMappingConstants.BANK_CREATE));
     } catch (Exception e) {
       logger.error("BankControllerTest | testShowCreateBankPage | Exception " + e.getMessage(), e);
@@ -124,12 +124,12 @@ public class BankControllerTest {
   @Test
   public void testShowCreateBankPageException() {
     LocaleContextHolder.setLocale(locale);
-    Mockito.when(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+    Mockito.when(messageSource.getMessage(TestConstants.CHATAK_GENERAL_ERROR, null,
         LocaleContextHolder.getLocale())).thenReturn("abc");
     Mockito.when(bankService.getCountries()).thenThrow(nullPointerException);
     try {
       mockMvc
-          .perform(get("/" + URLMappingConstants.BANK_CREATE).sessionAttr(Constants.LOGIN_USER, Constants.LOGIN_USER))
+          .perform(get("/" + URLMappingConstants.BANK_CREATE).sessionAttr(TestConstants.LOGIN_USER, TestConstants.LOGIN_USER))
           .andExpect(view().name(URLMappingConstants.BANK_CREATE));
     } catch (Exception e) {
       logger.error(
@@ -148,8 +148,8 @@ public class BankControllerTest {
     Mockito.when(bankService.createBank(Matchers.any(Bank.class))).thenReturn(bankResponse);
     try {
       mockMvc
-          .perform(post("/" + URLMappingConstants.BANK_CREATE).sessionAttr(Constants.EXISTING_FEATURES,
-              Constants.EXISTING_FEATURES))
+          .perform(post("/" + URLMappingConstants.BANK_CREATE).sessionAttr(TestConstants.EXISTING_FEATURES,
+              TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error("BankControllerTest | testCreateBank | Exception " + e.getMessage(), e);
@@ -163,8 +163,8 @@ public class BankControllerTest {
         .thenReturn(responseval);
     Mockito.when(bankService.createBank(bank)).thenReturn(bankResponse);
     try {
-      mockMvc.perform(post("/" + URLMappingConstants.BANK_CREATE).sessionAttr(Constants.EXISTING_FEATURES,
-          Constants.EXISTING_FEATURES)).andExpect(view().name(URLMappingConstants.BANK_CREATE));
+      mockMvc.perform(post("/" + URLMappingConstants.BANK_CREATE).sessionAttr(TestConstants.EXISTING_FEATURES,
+          TestConstants.EXISTING_FEATURES)).andExpect(view().name(URLMappingConstants.BANK_CREATE));
     } catch (Exception e) {
       logger.error(
           "BankControllerTest | testCreateBankWhenBankResponseNull | Exception " + e.getMessage(),
@@ -177,8 +177,8 @@ public class BankControllerTest {
     LocaleContextHolder.setLocale(locale);
     Mockito.when(bankService.getCountries()).thenThrow(nullPointerException);
     try {
-      mockMvc.perform(post("/" + URLMappingConstants.BANK_CREATE).sessionAttr(Constants.EXISTING_FEATURES,
-          Constants.EXISTING_FEATURES)).andExpect(view().name(URLMappingConstants.BANK_CREATE));
+      mockMvc.perform(post("/" + URLMappingConstants.BANK_CREATE).sessionAttr(TestConstants.EXISTING_FEATURES,
+          TestConstants.EXISTING_FEATURES)).andExpect(view().name(URLMappingConstants.BANK_CREATE));
     } catch (Exception e) {
       logger.error("BankControllerTest | testCreateBankException | Exception " + e.getMessage(), e);
     }
@@ -186,10 +186,10 @@ public class BankControllerTest {
 
   @Test
   public void testSearchBank() {
-    Mockito.when(request.getHeader(Matchers.anyString())).thenReturn(Constants.REFERER);
+    Mockito.when(request.getHeader(Matchers.anyString())).thenReturn(TestConstants.REFERER);
     try {
       mockMvc
-          .perform(get("/" + URLMappingConstants.BANK_SEARCH).header(Constants.REFERER, Constants.REFERER))
+          .perform(get("/" + URLMappingConstants.BANK_SEARCH).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testSearchBank | Exception " + e.getMessage(), e);
@@ -201,7 +201,7 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(
-              post("/" + URLMappingConstants.BANK_SEARCH).sessionAttr(Constants.LOGIN_USER, Constants.LOGIN_USER))
+              post("/" + URLMappingConstants.BANK_SEARCH).sessionAttr(TestConstants.LOGIN_USER, TestConstants.LOGIN_USER))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -214,7 +214,7 @@ public class BankControllerTest {
     Mockito.when(bankService.searchBank(Matchers.any(Bank.class))).thenReturn(searchResponse);
     try {
       mockMvc
-          .perform(post("/" + URLMappingConstants.BANK_SEARCH).header(Constants.REFERER, Constants.REFERER))
+          .perform(post("/" + URLMappingConstants.BANK_SEARCH).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testSearchBankList | Exception " + e.getMessage(), e);
@@ -226,7 +226,7 @@ public class BankControllerTest {
     Mockito.when(bankService.searchBank(Matchers.any(Bank.class))).thenThrow(nullPointerException);
     try {
       mockMvc
-          .perform(post("/" + URLMappingConstants.BANK_SEARCH).header(Constants.REFERER, Constants.REFERER))
+          .perform(post("/" + URLMappingConstants.BANK_SEARCH).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testSearchBankListException | Exception " + e.getMessage(),
@@ -238,13 +238,13 @@ public class BankControllerTest {
   public void testGetPaginationList() throws ChatakAdminException {
     searchResponse = new BankSearchResponse();
     searchResponse.setBanks(banks);
-    searchResponse.setTotalNoOfRows(Constants.TEN);
+    searchResponse.setTotalNoOfRows(TestConstants.TEN);
     Mockito.when(bankService.searchBank(Matchers.any(Bank.class))).thenReturn(searchResponse);
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_PAGINATION)
-              .sessionAttr(Constants.BANK_MODEL, bank).param(Constants.PAGE_NUMBER, Constants.TWO.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.BANK_MODEL, bank).param(TestConstants.PAGE_NUMBER, TestConstants.TWO.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testGetPaginationList | Exception " + e.getMessage(), e);
@@ -257,8 +257,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_PAGINATION)
-              .sessionAttr(Constants.BANK_MODEL, bank).param(Constants.PAGE_NUMBER, Constants.TWO.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.BANK_MODEL, bank).param(TestConstants.PAGE_NUMBER, TestConstants.TWO.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error(
@@ -274,8 +274,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("editBankName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("editBankName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_EDIT));
     } catch (Exception e) {
       logger.error("BankControllerTest | testShowEditBank | Exception " + e.getMessage(), e);
@@ -287,8 +287,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("editBankName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("editBankName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error("BankControllerTest | testShowEditBankException | Exception " + e.getMessage(),
@@ -304,8 +304,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("bankViewName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("bankViewName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_VIEW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testShowViewBank | Exception " + e.getMessage(), e);
@@ -317,8 +317,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("bankViewName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("bankViewName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -335,8 +335,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("bankViewName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("bankViewName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error("BankControllerTest | testShowViewBankException | Exception " + e.getMessage(),
@@ -352,8 +352,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_DELETE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("deleteBankName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("deleteBankName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testDeleteBank | Exception " + e.getMessage(), e);
@@ -368,8 +368,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_DELETE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("deleteBankName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("deleteBankName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testDeleteBankElseIf | Exception " + e.getMessage(), e);
@@ -378,15 +378,15 @@ public class BankControllerTest {
 
   @Test
   public void testDeleteBankException() throws ChatakAdminException {
-    Mockito.when(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+    Mockito.when(messageSource.getMessage(TestConstants.CHATAK_GENERAL_ERROR, null,
         LocaleContextHolder.getLocale())).thenReturn("abc");
     Mockito.when(bankService.deleteBankByName(Matchers.anyString()))
         .thenThrow(nullPointerException);
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_DELETE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("deleteBankName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("deleteBankName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testDeleteBankException | Exception " + e.getMessage(), e);
@@ -401,8 +401,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_UPDATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("deleteBankName", "Axis")
-              .header(Constants.REFERER, Constants.REFERER).param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("deleteBankName", "Axis")
+              .header(TestConstants.REFERER, TestConstants.REFERER).param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testUpdateBank | Exception " + e.getMessage(), e);
@@ -417,8 +417,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_UPDATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("deleteBankName", "Axis")
-              .header(Constants.REFERER, Constants.REFERER).param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("deleteBankName", "Axis")
+              .header(TestConstants.REFERER, TestConstants.REFERER).param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_EDIT));
     } catch (Exception e) {
       logger.error("BankControllerTest | testUpdateBankElse | Exception " + e.getMessage(), e);
@@ -427,7 +427,7 @@ public class BankControllerTest {
 
   @Test
   public void testUpdateBankException() throws ChatakAdminException {
-    Mockito.when(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+    Mockito.when(messageSource.getMessage(TestConstants.CHATAK_GENERAL_ERROR, null,
         LocaleContextHolder.getLocale())).thenReturn("abc");
     bankResponse = new BankResponse();
     bankResponse.setErrorCode(ActionErrorCode.ERROR_CODE_B4);
@@ -435,8 +435,8 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_UPDATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("deleteBankName", "Axis")
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("deleteBankName", "Axis")
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_EDIT));
     } catch (Exception e) {
       logger.error("BankControllerTest | testUpdateBankException | Exception " + e.getMessage(), e);
@@ -448,8 +448,8 @@ public class BankControllerTest {
     Mockito.when(bankService.getStatesByCountry(Matchers.anyString())).thenReturn(responseval);
     try {
       mockMvc.perform(get("/" + URLMappingConstants.GET_STATES_BY_COUNTRY_ID)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("deleteBankName", "Axis")
-          .header(Constants.REFERER, Constants.REFERER).param(Constants.TOTAL_RECORDS, Constants.TEN.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("deleteBankName", "Axis")
+          .header(TestConstants.REFERER, TestConstants.REFERER).param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error("BankControllerTest | testGetStatesById | Exception " + e.getMessage(), e);
     }
@@ -462,10 +462,10 @@ public class BankControllerTest {
     Mockito.when(bankService.searchBank(Matchers.any(Bank.class))).thenReturn(searchResponse);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.GET_BANK_REPORT)
-          .sessionAttr(Constants.BANK_MODEL, bank)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadType", "PDF")
-          .param(Constants.TOTAL_RECORDS, "20").param("downloadAllRecords", "true")
-          .header(Constants.REFERER, Constants.REFERER).param(Constants.TOTAL_RECORDS, Constants.TEN.toString()));
+          .sessionAttr(TestConstants.BANK_MODEL, bank)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadType", "PDF")
+          .param(TestConstants.TOTAL_RECORDS, "20").param("downloadAllRecords", "true")
+          .header(TestConstants.REFERER, TestConstants.REFERER).param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error("BankControllerTest | testDownloadBankListPDF | Exception " + e.getMessage(), e);
     }
@@ -478,10 +478,10 @@ public class BankControllerTest {
     Mockito.when(bankService.searchBank(Matchers.any(Bank.class))).thenReturn(searchResponse);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.GET_BANK_REPORT)
-          .sessionAttr(Constants.BANK_MODEL, bank)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadType", "XLS")
-          .param(Constants.TOTAL_RECORDS, "20").param("downloadAllRecords", "true")
-          .header(Constants.REFERER, Constants.REFERER).param(Constants.TOTAL_RECORDS, Constants.TEN.toString()));
+          .sessionAttr(TestConstants.BANK_MODEL, bank)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadType", "XLS")
+          .param(TestConstants.TOTAL_RECORDS, "20").param("downloadAllRecords", "true")
+          .header(TestConstants.REFERER, TestConstants.REFERER).param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error("BankControllerTest | testDownloadBankListXLS | Exception " + e.getMessage(), e);
     }
@@ -489,15 +489,15 @@ public class BankControllerTest {
 
   @Test
   public void testDownloadBankListException() throws ChatakAdminException {
-    Mockito.when(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+    Mockito.when(messageSource.getMessage(TestConstants.CHATAK_GENERAL_ERROR, null,
         LocaleContextHolder.getLocale())).thenReturn("abc");
     bankResponse = new BankResponse();
     bankResponse.setErrorCode(ActionErrorCode.ERROR_CODE_B4);
     Mockito.when(bankService.updateBank(Matchers.any(Bank.class))).thenThrow(nullPointerException);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.GET_BANK_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("deleteBankName", "Axis")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("deleteBankName", "Axis")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error(
           "BankControllerTest | testDownloadBankListException | Exception " + e.getMessage(), e);
@@ -509,9 +509,9 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_STATUS_CHANGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -527,9 +527,9 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_STATUS_CHANGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).header(Constants.REFERER, Constants.REFERER)
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).header(TestConstants.REFERER, TestConstants.REFERER)
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testChangeBankStatus | Exception " + e.getMessage(), e);
@@ -544,9 +544,9 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_STATUS_CHANGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).header(Constants.REFERER, Constants.REFERER)
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).header(TestConstants.REFERER, TestConstants.REFERER)
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error("BankControllerTest | testChangeBankStatusNotZero | Exception " + e.getMessage(),
@@ -562,9 +562,9 @@ public class BankControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.BANK_STATUS_CHANGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).header(Constants.REFERER, Constants.REFERER)
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).header(TestConstants.REFERER, TestConstants.REFERER)
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.BANK_SEARCH));
     } catch (Exception e) {
       logger.error(

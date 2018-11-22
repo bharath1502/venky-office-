@@ -312,7 +312,7 @@ var successCheckSession = function(response, statusText, xhr, $form) {
 };
 
 var failureCheckSession = function(response, status, err) {
-	var responseObj = eval(response);
+	var responseObj = JSON.parse(response);
 	if (responseObj && responseObj.status && responseObj.status === 'S') {
 		$('#progressingId').hide();
 		$('#contentId').show();

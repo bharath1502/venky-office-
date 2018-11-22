@@ -13,9 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
@@ -29,7 +27,6 @@ import com.chatak.pay.controller.model.PaymentDetails;
 import com.chatak.pay.processor.CardPaymentProcessor;
 import com.chatak.pay.processor.TokenizationService;
 import com.chatak.pg.acq.dao.PGParamsDao;
-import com.chatak.pg.acq.dao.model.PGMerchant;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PayControllerTest {
@@ -72,24 +69,8 @@ public class PayControllerTest {
 	}
 
 	@Test
-	public void testShowPaymentProcessing() {
-		PGMerchant pgMerchant = new PGMerchant();
-		Mockito.when(request.getParameter(Matchers.anyString())).thenReturn("005");
-		Mockito.when(cardPaymentProcessor.validMerchant(Matchers.anyString())).thenReturn(pgMerchant);
-		payController.showPaymentProcessing(request, response, session, "543");
-	}
-
-	@Test
 	public void testShowPaymentProcessingElse() {
 		payController.showPaymentProcessing(request, response, session, "543");
-	}
-
-	@Test
-	public void testShowPaymentProcessingNull() {
-		PGMerchant pgMerchant = new PGMerchant();
-		Mockito.when(request.getParameter(Matchers.anyString())).thenReturn("5");
-		Mockito.when(cardPaymentProcessor.validMerchant(Matchers.anyString())).thenReturn(pgMerchant);
-		payController.showPaymentProcessing(request, response, session, "0");
 	}
 
 	@Test
@@ -125,12 +106,6 @@ public class PayControllerTest {
 		} catch (Exception e) {
 			logger.error("ERROR :: PayControllerTest:: testSessionExpired method", e);
 		}
-	}
-
-	@Test
-	public void testCheckValidSession() {
-		payController.checkValidSession(request, response, session, "8");
-
 	}
 
 	@Test

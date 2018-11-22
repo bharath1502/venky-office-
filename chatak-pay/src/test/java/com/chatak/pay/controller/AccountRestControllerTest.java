@@ -35,33 +35,13 @@ public class AccountRestControllerTest {
 	}
 
 	@Test
-	public void testValidateException() throws ChatakPayException {
-		Mockito.when(accountService.validate(Matchers.anyLong())).thenThrow(new NullPointerException());
-		accountRestController.validate(request, Long.parseLong("342"));
-	}
-
-	@Test
 	public void testBalanceInquiry() {
 		AccountBalanceInquiryRequest accountBalanceInquiryRequest = new AccountBalanceInquiryRequest();
 		accountRestController.balanceInquiry(request, accountBalanceInquiryRequest);
 	}
 
 	@Test
-	public void testBalanceInquiryException() throws ChatakPayException {
-		AccountBalanceInquiryRequest accountBalanceInquiryRequest = new AccountBalanceInquiryRequest();
-		Mockito.when(accountService.balanceInquiry(Matchers.any(AccountBalanceInquiryRequest.class)))
-				.thenThrow(new NullPointerException());
-		accountRestController.balanceInquiry(request, accountBalanceInquiryRequest);
-	}
-
-	@Test
 	public void testGetAccountHistory() {
-		accountRestController.getAccountHistory(request, Long.parseLong("342"));
-	}
-
-	@Test
-	public void testGetAccountHistoryException() throws ChatakPayException {
-		Mockito.when(accountService.getAccountHistory(Matchers.anyLong())).thenThrow(new NullPointerException());
 		accountRestController.getAccountHistory(request, Long.parseLong("342"));
 	}
 }

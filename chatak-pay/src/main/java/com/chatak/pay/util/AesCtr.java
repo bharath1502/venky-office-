@@ -22,7 +22,7 @@ public class AesCtr {
     int nBytes = nBits / Constants.EIGHT;
     byte[] key = validateNBytesValue(password, aes, nBytes);
     byte counterBlock[] = new byte[Constants.SIXTEEN];
-    long nonce = (new Date()).getTime();
+    double nonce = (new Date()).getTime();
     int nonceMs = (int) nonce % Constants.ONE_THOUSAND;
     int nonceSec = (int) Math.floor(nonce / Constants.ONE_THOUSAND_LONG);
     int nonceRnd = (int) Math.floor(Math.random() * Constants.SIX_FIVE_FIVE_THREE_FIVE_DOUBLE);

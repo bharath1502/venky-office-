@@ -122,7 +122,7 @@ public class AsyncServiceImpl implements AsyncService {
 		  // PERF >> Using primary key transaction id as reference
 		  //PGTransaction pgTransaction = transactionDao.getTransactionOnTxnIdAndTxnType(merchantId, terminalId, txnId, txnType);
 		  
-		  PGTransaction pgTransaction = transactionRepository.findById(new BigInteger(txnId)).orElse(null);
+		  PGTransaction pgTransaction = transactionRepository.findById(new BigInteger(txnId));
 		  
 		  if(null != pgTransaction) {
 			  //PGOnlineTxnLog pgOnlineTxnLog = onlineTxnLogDao.getTransactionOnPgTxnIdAndMerchantId(pgTransaction.getTransactionId(), pgTransaction.getMerchantId());

@@ -311,6 +311,7 @@ public class PGMerchantServiceImpl implements PGMerchantService {
     try {
       PGMerchantUsers merchantUsers = merchantUserDao.findByUserName(loginRequest.getUsername());
       if (merchantUsers != null) {
+    	if (merchantUsers.getStatus() == PGConstants.STATUS_SUCCESS) {
         log.info(
             "RestService | PGMerchantServiceImpl | authenticateMerchantUser | Merchant user Details Found");
         if (EncryptionUtil.encodePassword(loginRequest.getPassword())
@@ -331,6 +332,15 @@ public class PGMerchantServiceImpl implements PGMerchantService {
           PGCurrencyConfig pgCurrencyConfig =
               currencyConfigDao.getCurrencyCodeNumeric(pgMerchant.getLocalCurrency());
           validatePGCurrencyConfig(loginRequest, loginResponse, merchantUsers, pgMerchant, pgCurrencyConfig);
+          
+          if(loginResponse.getTerminalData().getErrorCode().equals(Constant.SIXTEEN.toString())){
+        	  loginResponse.setErrorCode(Constant.SIXTEEN.toString());
+      	       return loginResponse;
+          }
+          if(loginResponse.getTerminalData().getErrorCode().equals(Constant.ELEVEN.toString())){
+            loginResponse.setErrorCode(Constant.ELEVEN.toString());
+            return loginResponse;
+          } 
 
           loginResponse.setErrorCode(ChatakPayErrorCode.GEN_001.name());
           loginResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(),
@@ -347,7 +357,13 @@ public class PGMerchantServiceImpl implements PGMerchantService {
           loginResponse.setErrorMessage(messageSource.getMessage("chatak.admin.login.error.message",
               null, LocaleContextHolder.getLocale()));
         }
-      } else {
+    	} else {
+    		loginResponse.setStatus(false);
+			loginResponse.setErrorCode(Constants.ERROR_CODE);
+			loginResponse.setErrorMessage(messageSource.getMessage("chatak.merchant.user.suspended.error.message",
+							null, LocaleContextHolder.getLocale()));
+    	}
+    	} else {
         loginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
         loginResponse.setErrorMessage(messageSource.getMessage("chatak.admin.login.error.message",
             null, LocaleContextHolder.getLocale()));
@@ -400,7 +416,7 @@ public class PGMerchantServiceImpl implements PGMerchantService {
 	  } else {
 	    log.info("Chatak TMS Disabled");
 	    PGTerminal pgTerminal = terminalDao
-	        .getTerminalonMerchantCode(Long.valueOf(merchantUsers.getPgMerchantId()));
+	        .getTerminalonMerchantCode(merchantUsers.getPgMerchantId());
 	    loginResponse.setTerminalID(String.valueOf(pgTerminal.getTerminalId()));
 	  }
 	  log.info("Exiting :: PGMerchantServiceImpl :: validatePGCurrencyConfig");
@@ -447,6 +463,7 @@ public class PGMerchantServiceImpl implements PGMerchantService {
       throws ChatakPayException {
     try {
       PGMerchantUsers pgMerchantUsers = merchantUserDao.findByUserName(userName);
+      if (pgMerchantUsers.getStatus() == PGConstants.STATUS_SUCCESS) {
       if (!(EncryptionUtil.encodePassword(currentPassword))
           .equals(pgMerchantUsers.getMerPassword()))
         throw new ChatakPayException(messageSource.getMessage("current.password.error.message",
@@ -459,17 +476,25 @@ public class PGMerchantServiceImpl implements PGMerchantService {
       checkPreviousPassword(pgMerchantUsers, encryptionPassword,
           Integer.parseInt(messageSource.getMessage("merchant.user.previous.password.count", null,
               LocaleContextHolder.getLocale())));
+      if (!pgMerchantUsers.getStatus().equals(Constants.ONE)
+    		  && !pgMerchantUsers.getStatus().equals(Constants.ZERO)) {
+    	  throw new ChatakPayException(messageSource.getMessage(
+    			  "chatak.merchant.user.inactive.error.message", null, LocaleContextHolder.getLocale()));
+      }
       if (pgMerchantUsers.getEmailVerified().equals(Constant.ZERO)
           || pgMerchantUsers.getStatus().equals(1)) {
-        pgMerchantUsers.setEmailVerified(PGConstants.ONE.intValue());
+        pgMerchantUsers.setEmailVerified(PGConstants.ONE);
         pgMerchantUsers.setStatus(PGConstants.ZERO.intValue());
       }
       pgMerchantUsers.setMerPassword(encryptionPassword);
       pgMerchantUsers.setLastPassWordChange(new Timestamp(System.currentTimeMillis()));
       merchantUserDao.createOrUpdateUser(pgMerchantUsers);
       return true;
-
-    } catch (ChatakPayException e) {
+      } else {
+    	  throw new ChatakPayException(messageSource.getMessage("chatak.merchant.user.suspended.error.message",
+    			  null, LocaleContextHolder.getLocale()));
+      }
+     } catch (ChatakPayException e) {
       log.error("ERROR:: PGMerchantServiceImpl:: changedPassword method", e);
       throw new ChatakPayException(e.getMessage());
     } catch (Exception e) {

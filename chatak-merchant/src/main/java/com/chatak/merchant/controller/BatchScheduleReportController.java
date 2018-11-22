@@ -28,6 +28,7 @@ import com.chatak.merchant.controller.model.Option;
 import com.chatak.merchant.exception.ChatakMerchantException;
 import com.chatak.merchant.model.MerchantData;
 import com.chatak.merchant.service.BatchSchedularReportService;
+import com.chatak.merchant.service.LoginService;
 import com.chatak.merchant.util.ExportUtil;
 import com.chatak.merchant.util.PaginationUtil;
 import com.chatak.merchant.util.StringUtil;
@@ -54,6 +55,9 @@ public class BatchScheduleReportController implements URLMappingConstants {
   
   @Autowired
   private MessageSource messageSource;
+  
+  @Autowired
+  LoginService loginService;
   
   @RequestMapping(value = CHATAK_MERCHANT_SHOW_BATCH_REPORT, method = RequestMethod.GET)
   public ModelAndView showBatchReport(HttpSession session, Map model, HttpServletRequest request,
@@ -104,6 +108,12 @@ public class BatchScheduleReportController implements URLMappingConstants {
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
     }
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     List<Option> merchantList = new ArrayList<>();
     List<Option> subMerchantData = new ArrayList<>();
     Option option = new Option();
@@ -136,6 +146,14 @@ public class BatchScheduleReportController implements URLMappingConstants {
     modelAndView.addObject(Constants.BATCH_REPORT, batchReport);
     return modelAndView;
   }
+  
+	@RequestMapping(value = CHATAK_MERCHANT_GET_BATCH_REPORT, method = RequestMethod.GET)
+	public ModelAndView getBatchReportGetMethod(HttpServletRequest request, HttpServletResponse response,
+			GetBatchReportRequest batchReport, BindingResult bindingResult, Map model, HttpSession session) {
+		logger.info("Entering :: BatchScheduleReportController :: getBatchReport method");
+		ModelAndView modelAndView = showBatchReport(session, model, request, response);
+		return modelAndView;
+	}
   
   @RequestMapping(value = CHATA_MERCHANT_BATCH_TRANSACTION_EXPORT, method = RequestMethod.POST)
   public ModelAndView downloadBatchReport(HttpSession session, Map model,
@@ -261,6 +279,12 @@ public class BatchScheduleReportController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_SHOW_DAILY_FUNDING_REPORT);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     if (!existingFeature.contains(FeatureConstants.MERCHANT_SERVICE_FUNDING_REPORT_FEATURE_ID)) {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
@@ -293,6 +317,16 @@ public class BatchScheduleReportController implements URLMappingConstants {
     logger.info("Exiting :: BatchScheduleReportController :: getDailyFundingReport method");
     return modelAndView;
   }
+  
+	@RequestMapping(value = CHATAK_MERCHANT_GET_DAILY_FUNDING_REPORT, method = RequestMethod.GET)
+	public ModelAndView getDailyFundingReportGetMethod(HttpServletRequest request, HttpServletResponse response,
+			GetDailyFundingReportRequest dailyFundingReport, BindingResult bindingResult, Map model,
+			HttpSession session) {
+		logger.info("Entering :: BatchScheduleReportController :: getDailyFundingReport method");
+		ModelAndView modelAndView = showDailyFundingReport(session, model, request, response);
+		logger.info("Exiting :: BatchScheduleReportController :: getDailyFundingReport method");
+		return modelAndView;
+	}
   
   @RequestMapping(value = CHATA_MERCHANT_FUNDING_REPORT_EXPORT, method = RequestMethod.POST)
   public ModelAndView downloadFundingReport(HttpSession session, Map model,

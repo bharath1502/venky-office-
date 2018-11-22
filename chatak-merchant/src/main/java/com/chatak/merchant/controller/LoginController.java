@@ -3,11 +3,14 @@
  */
 package com.chatak.merchant.controller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -40,13 +43,14 @@ import com.chatak.merchant.service.LoginService;
 import com.chatak.merchant.service.MerchantProfileService;
 import com.chatak.merchant.service.RestPaymentService;
 import com.chatak.merchant.service.TransactionService;
-import com.chatak.merchant.util.DateUtils;
 import com.chatak.merchant.util.PasswordHandler;
 import com.chatak.merchant.util.StringUtil;
+import com.chatak.pg.acq.dao.AdminUserDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
 import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
+import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.constants.AccountTransactionCode;
@@ -106,6 +110,9 @@ public class LoginController implements URLMappingConstants {
 
   @Autowired
   MerchantProfileDao merchantProfileDao;
+  
+  @Autowired
+  private AdminUserDao adminUserDao;
 
   /**
    * Method to show Login Page
@@ -171,7 +178,13 @@ public class LoginController implements URLMappingConstants {
       }
       loginDetails.setLoginIpAddress(request.getRemoteAddr());//Setting remote ipaddress
       userAgent = removeWhiteSpace(userAgent);
-      loginDetails.setCurrentLoginTime(DateUtils.getFormatLastLoginTime(loginDetails));
+
+      //to maintain current login time
+      Date today = new Date();
+      DateFormat df = new SimpleDateFormat(Constants.TIMEZONE_DATE_FORMAT);
+      df.setTimeZone(TimeZone.getTimeZone(loginDetails.getTimeZoneRegion()));
+      loginDetails.setCurrentLoginTime(df.format(today));
+
       LoginResponse loginResponse = loginSevice.authenticate(loginDetails);
       getChatakException(loginResponse);
       if (null != loginResponse.getUserType()
@@ -189,13 +202,13 @@ public class LoginController implements URLMappingConstants {
         session.setAttribute("existingFeatuesData", loginResponse.getExistingFeature());
         session.setAttribute("merchantCode", loginResponse.getMerchantCode());
         for (Object object : sessionRegistry.getAllPrincipals()) {
-        	modelAndView = validateLoginResponseData(request, response, session, loginDetails, modelAndView, userAgent, object);
+        	validateLoginResponseData(request, response, session, loginDetails, modelAndView, userAgent, object);
 
         }
         session.setAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME,
 	  			(String) session.getAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME));
 
-        modelAndView = getStatusResponse(response, session, loginDetails, modelAndView, userAgent, loginResponse);
+        getStatusResponse(response, session, loginDetails, modelAndView, userAgent, loginResponse);
       } else if (loginResponse.getErrorCode().equals(Constants.ERROR_CODE)) {
         modelAndView.addObject(Constants.ERROR, loginResponse.getMessage());
       } else {
@@ -227,7 +240,7 @@ public class LoginController implements URLMappingConstants {
 			Cookie[] cookies = request.getCookies();
 			String cookieValue = "";
 			cookieValue = getCookiesValue(cookies, cookieValue);
-			modelAndView = getInvalidSessionResponse(response, loginDetails, userAgent, modelAndView, loginResponseData,
+			getInvalidSessionResponse(response, loginDetails, userAgent, modelAndView, loginResponseData,
 					cookieValue, object, exIpAdress, session);
 		}
 		return modelAndView;
@@ -284,7 +297,7 @@ public class LoginController implements URLMappingConstants {
 	private ModelAndView getStatusResponse(HttpServletResponse response, HttpSession session, LoginDetails loginDetails,
 			ModelAndView modelAndView, String userAgent, LoginResponse loginResponse) {
 		if (loginResponse.getStatus() != null && loginResponse.getStatus()) {
-			modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse, loginDetails,
+			setLoginSuccessResponse(response, session, modelAndView, loginResponse, loginDetails,
 					userAgent);
 			session.setAttribute("loginResponse", loginResponse);
 		}
@@ -501,12 +514,24 @@ public class LoginController implements URLMappingConstants {
           logger.info("LoginController:: fetching processing txn");
           GetTransactionsListResponse processingTxnList =
               transactionService.searchAccountTransactions(transaction);
-
+          //fetching entityId and entityType
+          PGAdminUser pgAdminUser  = adminUserDao.findByAdminUserId(Long.valueOf(merchantDetailsResponse.getCreatedBy()));
+          if(null != pgAdminUser){
+        	  transaction.setEntityId(pgAdminUser.getEntityId());
+        	  transaction.setUserType(pgAdminUser.getUserType());
+          }
           transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-          logger.info("LoginController:: fetching executed txn");
-          GetTransactionsListResponse executedTxnList =
-              transactionService.searchAccountTransactions(transaction);
-
+          GetTransactionsListResponse executedTxnList = null;
+          
+          if (transaction.getUserType().equals(Constants.PM_USER_TYPE)
+        		  || transaction.getUserType().equals(Constants.ISO_USER_TYPE)) {
+        	  logger.info("LoginController:: fetching executed txn for entityType");
+        	  executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, transaction.getEntityId(), transaction.getUserType());
+          } else {
+        	  logger.info("LoginController:: fetching executed txn for Merchant");
+        	  executedTxnList = transactionService.searchAccountTransactions(transaction);
+          }
+          
           List<AccountTransactionDTO> transactionList = fetchProcessingTxnList(session, modelAndView, transactionResponse,
               processingTxnList, executedTxnList);
 
@@ -515,13 +540,18 @@ public class LoginController implements URLMappingConstants {
           manualTxnCodeList.add(AccountTransactionCode.MANUAL_CREDIT);
           manualTxnCodeList.add(AccountTransactionCode.MANUAL_DEBIT);
           manualTransactionRequest.setTransactionCodeList(manualTxnCodeList);
-
           manualTransactionRequest.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-
-          logger.info("LoginController:: fetching manual txn");
-          GetTransactionsListResponse manualTransactionsReportList =
-              transactionService.searchAccountTransactions(manualTransactionRequest);
-
+          GetTransactionsListResponse manualTransactionsReportList = null;
+          
+          if (transaction.getUserType().equals(Constants.PM_USER_TYPE)
+        		  || transaction.getUserType().equals(Constants.ISO_USER_TYPE)) {
+        	  logger.info("LoginController:: fetching manual txn for entityType");
+        	  manualTransactionsReportList = transactionService.searchAccountTransactionsForEntityId(manualTransactionRequest, transaction.getEntityId(), transaction.getUserType());
+          } else {
+        	  logger.info("LoginController:: fetching manual txn for Merchant");
+        	  manualTransactionsReportList = transactionService.searchAccountTransactions(manualTransactionRequest);
+          }
+          
           PGMerchant parentMerchant = merchantProfileDao.getMerchantById(merchantId);
           List<PGMerchant> subMerchantList = merchantDao.findById(merchantId);
           List<String> merchantCodeList = new ArrayList<>();

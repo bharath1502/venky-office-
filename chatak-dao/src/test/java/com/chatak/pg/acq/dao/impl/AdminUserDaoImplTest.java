@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.exceptions.misusing.InvalidUseOfMatchersException;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.chatak.pg.acq.dao.model.PGAdminUser;
@@ -225,13 +226,13 @@ public class AdminUserDaoImplTest {
 		adminUserDaoImpl.findByUserNameAndStatus("543");
 	}
 
-	@Test
+    @Test(expected = InvalidUseOfMatchersException.class)
 	public void testSearchAdminUserList() {
 		List<PGAdminUser> userAdminList = new ArrayList<>();
 		PGAdminUser adminUser = new PGAdminUser();
 		userAdminList.add(adminUser);
-		Mockito.when(adminUserDaoRepository.findByPassRetryCount(Matchers.anyInt())).thenReturn(userAdminList);
-		adminUserDaoImpl.searchAdminUserList();
+		Mockito.when(adminUserDaoRepository.findByPassRetryCountAndUserTypeAndStatusNotLike(Matchers.anyInt(), Matchers.anyString(), Matchers.anyInt())).thenReturn(userAdminList);
+		adminUserDaoImpl.searchAdminUserList(Matchers.anyString());
 	}
 
 }

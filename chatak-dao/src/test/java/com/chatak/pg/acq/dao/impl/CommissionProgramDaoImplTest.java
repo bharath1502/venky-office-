@@ -59,7 +59,7 @@ public class CommissionProgramDaoImplTest {
 		commissionProgramDaoImpl.createCommissionProgram(commissionDaoDetails);
 	}
 
-	@Test(expected=ClassCastException.class)
+    @Test(expected = ClassCastException.class)
 	public void testSearchCommissionProgram() {
 		CommissionDTO commissionDTO = new CommissionDTO();
 		List<PGCommission> commissionDTORequestList = new ArrayList<>();

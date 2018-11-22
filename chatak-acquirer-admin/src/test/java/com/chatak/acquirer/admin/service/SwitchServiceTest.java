@@ -1,12 +1,19 @@
 package com.chatak.acquirer.admin.service;
 
+import java.util.Arrays;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.impl.SwitchServiceImpl;
 import com.chatak.pg.acq.dao.SwitchDao;
@@ -15,14 +22,6 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.Switch;
 import com.chatak.pg.user.bean.SwitchRequest;
 import com.chatak.pg.user.bean.SwitchResponse;
-import com.chatak.pg.util.Constants;
-
-import java.util.Arrays;
-
-import org.junit.Assert;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SwitchServiceTest {
@@ -87,8 +86,8 @@ public class SwitchServiceTest {
   public void testgetSwtichInformationById() {
     PGSwitch pgSwitch = Mockito.mock(PGSwitch.class);
 
-    Mockito.when(switchDao.getSwtichInformationById(Constants.TWO_LONG)).thenReturn(pgSwitch);
-    switchRequest = switchService.getSwtichInformationById(Constants.TWO_LONG);
+    Mockito.when(switchDao.getSwtichInformationById(TestConstants.TWO_LONG)).thenReturn(pgSwitch);
+    switchRequest = switchService.getSwtichInformationById(TestConstants.TWO_LONG);
     Assert.assertNotNull(switchRequest);
   }
 

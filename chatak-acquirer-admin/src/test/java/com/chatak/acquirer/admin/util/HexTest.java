@@ -1,16 +1,32 @@
 package com.chatak.acquirer.admin.util;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.Properties;
+
+@SuppressWarnings("static-access")
 @RunWith(MockitoJUnitRunner.class)
 public class HexTest {
 
 	@InjectMocks
 	Hex hex;
-
+	
+	@Mock
+	Constants constants;
+	
+	@Before
+	public void init() {
+		java.util.Properties propsExportedLocal = new java.util.Properties();
+		propsExportedLocal.setProperty("max.download.limit", "12");
+		Properties.mergeProperties(propsExportedLocal);
+	}
+	
 	@Test
 	public void testEncodeHex() {
 		byte data[] = { 1, 0, 1 };
@@ -23,9 +39,9 @@ public class HexTest {
 		hex.decodeHex(data);
 	}
 
-	@Test(expected=NumberFormatException.class)
+	@Test
 	public void testDecodeHexException() {
-		char data[] = { '1', '1', '0' };
+		char data[] = { '1', '1', '0','2' };
 		hex.decodeHex(data);
 	}
 
@@ -54,14 +70,14 @@ public class HexTest {
 		hex.asciiToHex(Byte.parseByte("97"));
 	}
 
-	@Test(expected=NumberFormatException.class)
+	@Test
 	public void testAsciiToHexCaseException() {
-		hex.asciiToHex(Byte.parseByte("34"));
+		hex.asciiToHex(Byte.parseByte("98"));
 	}
 
-	@Test(expected=NumberFormatException.class)
+	@Test
 	public void testAsciiToBinaryByte() {
-		byte[] buffer = { Byte.parseByte("13"), Byte.parseByte("43"), Byte.parseByte("5") };
+		byte[] buffer = { Byte.parseByte("13"), Byte.parseByte("98"), Byte.parseByte("99") };
 		hex.asciiToBinary(buffer);
 	}
 

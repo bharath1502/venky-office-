@@ -94,7 +94,7 @@ public class TransactionsEFTController implements URLMappingConstants {
       if (litleEFTRequest != null && !CollectionUtils.isEmpty(litleEFTRequest.getLitleEFTDTOs())) {
         modelAndView =
             PaginationUtil.getPagenationModel(modelAndView, litleEFTRequest.getNoOfRecords());
-        session.setAttribute("litleEFTExecutedTransList", litleEFTRequest.getLitleEFTDTOs());
+        session.setAttribute("litleEFTExecutedTransList", new ArrayList(litleEFTRequest.getLitleEFTDTOs()));
         for (LitleEFTDTO litleEFTDTO : litleEFTRequest.getLitleEFTDTOs()) {
           litleEFTDTO.setTxnJsonString(JsonUtil.convertObjectToJSON(litleEFTDTO.getTxnDto()));
         }
@@ -138,7 +138,7 @@ public class TransactionsEFTController implements URLMappingConstants {
       if (litleEFTRequest != null && !CollectionUtils.isEmpty(litleEFTRequest.getLitleEFTDTOs())) {
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             litleEFTRequest.getNoOfRecords());
-        session.setAttribute("litleEFTExecutedTransList", litleEFTRequest.getLitleEFTDTOs());
+        session.setAttribute("litleEFTExecutedTransList", new ArrayList(litleEFTRequest.getLitleEFTDTOs()));
         for (LitleEFTDTO litleEFTDTO : litleEFTRequest.getLitleEFTDTOs()) {
           litleEFTDTO.setTxnJsonString(JsonUtil.convertObjectToJSON(litleEFTDTO.getTxnDto()));
         }

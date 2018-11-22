@@ -364,9 +364,7 @@
 	<!--Panel Action Button Start -->
 	<div class="col-sm-12 button-content merchantDiv1">
 		<fieldset class="col-sm-7 pull-right">
-			<input type="button" class="form-control button pull-right atm-next"
-				value="<spring:message code="manage.buttton.sub-merchant.continue" />"
-				onclick="validateRadio();"> <input type="button"
+			<input type="button"
 				class="form-control button pull-right marginL10 atm-prev"
 				value="<spring:message code="manage.buttton.sub-merchant.previous" />">
 			<input type="button" class="form-control button pull-right marginL10"

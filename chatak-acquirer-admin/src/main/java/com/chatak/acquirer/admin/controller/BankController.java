@@ -27,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.BankSearchResponse;
@@ -69,11 +70,9 @@ public class BankController implements URLMappingConstants {
 
       List<Option> countryList = bankService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
 
       List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
       modelAndView.addObject("currencyList", currencyList);
-      session.setAttribute("currencyList", currencyList);
 
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR, messageSource
@@ -112,11 +111,10 @@ public class BankController implements URLMappingConstants {
 
       List<Option> countryList = bankService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
 
       Response stateList = bankService.getStatesByCountry(bank.getCountry());
       modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-      session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+      session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
       modelAndView.addObject("bank", bank);
 
       BankResponse bankResponse = bankService.createBank(bank);
@@ -171,12 +169,14 @@ public class BankController implements URLMappingConstants {
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
     }
-
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+    String loginuserType = loginResponse.getUserType();
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
     session.setAttribute(Constants.BANK_MODEL, bank);
     bank.setPageIndex(Constants.ONE);
     try {
+      bank.setLoginuserType(loginuserType);
       BankSearchResponse searchResponse = bankService.searchBank(bank);
       List<Bank> banks = new ArrayList<>();
       if (searchResponse != null) {
@@ -250,18 +250,14 @@ public class BankController implements URLMappingConstants {
     try {
       List<Option> countryList = bankService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
       bank.setBankName(editBankName);
       bank = bankService.findByBankName(bank);
 
       if (null != bank) {
-
         Response stateList = bankService.getStatesByCountry(bank.getCountry());
         modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-
-        session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+        session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
         modelAndView.addObject("bank", bank);
-
       } else {
         throw new ChatakAdminException();
       }
@@ -375,7 +371,6 @@ public class BankController implements URLMappingConstants {
       bank.setUpdatedBy(String.valueOf(updatedBy));
       List<Option> countryList = bankService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
 
 
       BankResponse bankResponse = bankService.updateBank(bank);

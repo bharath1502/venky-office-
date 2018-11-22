@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
-import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.MerchantData;
 import com.chatak.acquirer.admin.model.MerchantSearchResponse;
 import com.chatak.acquirer.admin.service.BankService;
@@ -51,7 +49,6 @@ import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.AddMerchantResponse;
 import com.chatak.pg.user.bean.DeleteMerchantResponse;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
-import com.chatak.pg.util.Properties;
 
 /**
  *
@@ -185,7 +182,7 @@ public class SubMerchantControllerTest {
     merchantSearchResponse.setMerchants(merchants);
     merchantSearchResponse.setTotalNoOfRows(Integer.parseInt("1"));
     try {
-      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(merchantSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_SUB_MERCHANT)
@@ -199,7 +196,7 @@ public class SubMerchantControllerTest {
   @Test
   public void testSubMerchantSearchResponseNull() {
     try {
-      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(null);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_SUB_MERCHANT)
@@ -213,7 +210,7 @@ public class SubMerchantControllerTest {
   @Test
   public void testSubMerchantSearchResponseException() {
     try {
-      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_SUB_MERCHANT)
@@ -379,7 +376,7 @@ public class SubMerchantControllerTest {
     merchantSearchResponse.setTotalNoOfRows(Integer.parseInt("1"));
 
     try {
-      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(merchantSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SUB_MERCHANTS_PAGINATION)
@@ -396,7 +393,7 @@ public class SubMerchantControllerTest {
   public void testGetSubMerchantPaginationListException() {
 
     try {
-      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SUB_MERCHANTS_PAGINATION)
@@ -419,7 +416,7 @@ public class SubMerchantControllerTest {
     merchants.add(merchant);
     merchantSearchResponse.setMerchants(merchants);
     try {
-      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(merchantSearchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SUB_MERCHANT_REPORT)
           .sessionAttr("merchants", merchantResponse).param("downloadAllRecords", "true")
@@ -439,7 +436,7 @@ public class SubMerchantControllerTest {
     merchants.add(merchant);
     merchantSearchResponse.setMerchants(merchants);
     try {
-      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchSubMerchants(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(merchantSearchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SUB_MERCHANT_REPORT)
           .sessionAttr("merchants", merchantResponse).param("downloadAllRecords", "true")

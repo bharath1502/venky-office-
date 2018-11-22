@@ -17,7 +17,7 @@ public interface MerchantUpdateService {
   public Response changeMerchantStatus(Merchant merchant, Integer status)
       throws ChatakAdminException;
 
-  public MerchantSearchResponse searchMerchant(Merchant merchant) throws ChatakAdminException;
+  public MerchantSearchResponse searchMerchant(Merchant merchant, String userType, Long entityId) throws ChatakAdminException;
 
   public List<Option> getActiveMerchants() throws ChatakAdminException;
 
@@ -42,7 +42,7 @@ public interface MerchantUpdateService {
 
   public Long getMerchantIdOnMerchantCode(Long parentMerchantId);
 
-  public MerchantSearchResponse searchSubMerchants(Merchant merchant) throws ChatakAdminException;
+  public MerchantSearchResponse searchSubMerchants(Merchant merchant, String userType, Long entityId) throws ChatakAdminException;
 
   public Map<String, String> getMerchantCodeAndCompanyName(String merchantType);
 

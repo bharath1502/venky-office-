@@ -401,20 +401,20 @@
 		}
 		/* Common Navigation Include End */
 		/* DatePicker Javascript Strat*/
-	/* 	$(document).ready(function() {
+		$(document).ready(function() {
 			$(".focus-field").click(function() {
 				$(this).children('.effectiveDate').focus();
 			});
 
-			$('.effectiveDate').datetimepicker({
+			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',
 				formatDate : 'Y/m/d',
-			});
+			}); */
 			$('#my_popup').popup({
 				blur : false
 			});
-		}); */
+		}); 
 
 
 
@@ -423,11 +423,13 @@
 			$(".focus-field").click(function() {
 				$(this).children('.effectiveDate').focus();
 			});
-			$('.effectiveDate').datetimepicker({
+			/* rome(transFromDate, { time: false });
+			rome(transToDate, { time: false }); */
+			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'm/d/Y',
 				formatDate : 'Y/m/d',
-			});
+			}); */
 			$('#my_popup').popup({
 				blur : false
 			});

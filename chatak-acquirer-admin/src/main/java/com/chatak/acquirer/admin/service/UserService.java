@@ -51,6 +51,6 @@ public interface UserService {
 
 	public Response unblockMerchantUser(String userName)throws ChatakAdminException;
 	
-	public UserData merchantIdByMerchantName(String merchantId) throws ChatakAdminException;
+	public UserData merchantIdByMerchantName(String merchantId, Long entityId, String userType) throws ChatakAdminException;
 
 }

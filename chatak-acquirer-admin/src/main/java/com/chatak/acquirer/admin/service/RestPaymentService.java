@@ -104,4 +104,6 @@ public interface RestPaymentService {
   public GetTransactionResponse getTransactionByRefIdForRefund(String merchantId, String terminalId, 
 		  String refId, String txnType) throws ChatakPayException;
 
+  public GetMerchantDetailsResponse getMerchantIdAndTerminalIdOnEntityType(String merchantCode,
+	      String entityType, Long entityId);
 }

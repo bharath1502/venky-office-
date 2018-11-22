@@ -35,14 +35,18 @@ public interface IsoService {
 	public List<Long> findByPmId(Long pmId) throws ChatakAdminException;
 
 	public Response findIsoNameByCurrencyAndId(Long id, String currencyId);
+	
+	public Response findIsoNameByProgramManagerId(Long pmId);
 
 	public IsoResponse changeStatus(IsoRequest isoRequest) throws ChatakAdminException;
 
 	public CardProgramResponse fetchIsoCardProgramByMerchantId(Long merchantId);
 
-	public Iso findIsoByIsoId(Long isoId);
+	public List<Iso> findIsoByIsoId(Long isoId);
 
 	public List<IsoRequest> findIsoByProgramaManagerId(Long Pmid);
 
 	public List<ProgramManagerRequest> findPmByIsoId(Long isoId);
+	
+	public Response findIsoNameAndIdByEntityId(Long pmId);
 }

@@ -202,7 +202,7 @@ public class SettlementServiceImpl implements SettlementService {
       pgTransaction.setTxnDescription(descriptionTemplate);
       pgTransaction.setReason(comments);// setting reason
       pgTransaction.setUserName(userName);
-      pgTransaction = getPgTxnEftStatus(pgTransaction);
+      getPgTxnEftStatus(pgTransaction);
       
       Date date = new Date();
       String batchId = new SimpleDateFormat(Constants.BATCH_ID_DATE_FORMAT).format(date);
@@ -275,10 +275,10 @@ public class SettlementServiceImpl implements SettlementService {
   private boolean processVoidTransaction(PGTransaction pgTransaction, String status,
       String userName, String timeZoneOffset, String timeZoneRegion) {
     VirtualTerminalVoidDTO virtualTerminalVoidDTO = new VirtualTerminalVoidDTO();
-    virtualTerminalVoidDTO.setMerchantId(pgTransaction.getMerchantId());
+    virtualTerminalVoidDTO.setMerchantCode(pgTransaction.getMerchantId());
     virtualTerminalVoidDTO.setTerminalId(pgTransaction.getTerminalId());
     virtualTerminalVoidDTO.setCgRefNumber(pgTransaction.getIssuerTxnRefNum());
-    virtualTerminalVoidDTO.setTxnRefNumber(pgTransaction.getTransactionId());
+    virtualTerminalVoidDTO.setTxnRefNumber(pgTransaction.getId().toString());
     virtualTerminalVoidDTO.setTransactionType(com.chatak.pg.enums.TransactionType.VOID);
     virtualTerminalVoidDTO.setUserName(userName);
     virtualTerminalVoidDTO.setTimeZoneOffset(timeZoneOffset);
@@ -463,7 +463,7 @@ public class SettlementServiceImpl implements SettlementService {
               "Exiting:: TransactionService:: getProcessingFee method :: Applying parentMerchantCode fee ");
           chatakFeeAmountTotal = getChatakFeeAmountTotal(txnTotalAmount,
               calculatedProcessingFeeList, chatakFeeAmountTotal, acquirerFeeValueList);
-          calculatedProcessingFeeList = getCalculatedProcessingFeeList(txnTotalAmount,
+          getCalculatedProcessingFeeList(txnTotalAmount,
               calculatedProcessingFeeList, chatakFeeAmountTotal, acquirerFeeValueList);
         }
       }
@@ -596,16 +596,16 @@ public class SettlementServiceImpl implements SettlementService {
         switch (accTxn.getTransactionCode()) {
           case AccountTransactionCode.CC_AMOUNT_CREDIT:
             // updating pg account debting refund amount
-            accTxn = udpateAccountCcAmountCredit(currentTime, accTxn);
+            udpateAccountCcAmountCredit(currentTime, accTxn);
             break;
           case AccountTransactionCode.CC_FEE_DEBIT:
-            accTxn = updateAccountForCcFeeDebit(currentTime, accTxn);
+            updateAccountForCcFeeDebit(currentTime, accTxn);
             break;
           case AccountTransactionCode.CC_MERCHANT_FEE_CREDIT:
-            accTxn = updateAccountForMerchantFeeCredit(currentTime, accTxn);
+            updateAccountForMerchantFeeCredit(currentTime, accTxn);
             break;
           case AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT:
-            accTxn = updateAccountForAcquirerFeeCredit(currentTime, accTxn);
+            updateAccountForAcquirerFeeCredit(currentTime, accTxn);
             break;
           default:
         }
@@ -768,6 +768,7 @@ public class SettlementServiceImpl implements SettlementService {
 			pgSettlementTxn.setPgTransactionId(issuanceSettlementTransactions.getPgTransactionId());
 			pgSettlementTxn.setTerminalId(issuanceSettlementTransactions.getTerminalId());
 			pgSettlementTxn.setTxnDate(issuanceSettlementTransactions.getTxnDate());
+			pgSettlementTxn.setTransactionType(issuanceSettlementTransactions.getTxnType());
 			pgSettlementTransactions.add(pgSettlementTxn);
 		}
 		

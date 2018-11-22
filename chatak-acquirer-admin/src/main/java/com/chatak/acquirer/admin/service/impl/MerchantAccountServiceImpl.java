@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import com.chatak.pg.acq.dao.AccountTransactionsDao;
 import com.chatak.pg.acq.dao.CurrencyConfigDao;
 import com.chatak.pg.acq.dao.CurrencyDao;
 import com.chatak.pg.acq.dao.MerchantDao;
+import com.chatak.pg.acq.dao.MerchantEntityMapDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
@@ -94,6 +96,9 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
   @Autowired
   MerchantUpdateDao merchantUpdateDao;
   
+  @Autowired
+  MerchantEntityMapDao merchantEntityMapDao;
+  
   @Override
   public Merchant getMerchantAccountDetails(String merchantCode) throws ChatakAdminException {
     Merchant merchant = new Merchant();
@@ -125,9 +130,15 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
   }
 
   @Override
-  public AccountBalanceDTO getAccountBalanceDTO(String merchantId) {
+  public AccountBalanceDTO getAccountBalanceDTO(String merchantId, Long entityId, String userType) throws NoSuchMessageException, ChatakAdminException {
     logger.info("Entering:: MerchantServiceImpl:: getAccountBalanceDTO method");
-    PGMerchant pgMerchant = merchantUpdateDao.getMerchant(merchantId);
+    PGMerchant pgMerchant = null;
+     pgMerchant = merchantUpdateDao.getMerchantOnCodeAndEntityDetails(merchantId, userType, entityId);
+      if (StringUtils.isNull(pgMerchant)) {
+        throw new ChatakAdminException(Constants.MERCHANT_NOT_ASSOCIATED,messageSource.getMessage(Constants.MERCHANT_NOT_ASSOCIATED, null, LocaleContextHolder.getLocale()));
+      }
+    
+    pgMerchant = merchantUpdateDao.getMerchant(merchantId);
     PGAccount pgAccount = accountDao.getPgAccount(merchantId);
     PGCurrencyConfig pgCurrencyConfig =
         currencyConfigDao.getCurrencyCodeNumeric(pgMerchant.getLocalCurrency());
@@ -162,6 +173,9 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
             Properties.getProperty("chatak.admin.virtual.terminal.invalid.merchant"));
       }
       logger.info("Exiting:: MerchantServiceImpl:: getAccountBalanceDTO method");
+    } else {
+      accountBalanceDTO.setErrorCode(Constants.ERROR_CODE);
+      accountBalanceDTO.setErrorMessage(messageSource.getMessage("chatak.admin.virtual.terminal.invalid.merchant", null, LocaleContextHolder.getLocale()));
     }
     return accountBalanceDTO;
   }
@@ -558,6 +572,27 @@ private String setTxnDescription(AccountBalanceDTO accountBalanceDTO, String amo
   @Override
   public Map<String, String> getMerchantMapByMerchantType(String merchantType) {
     List<Map<String, String>> merchantList = merchantDao.getMerchantMapByMerchantType(merchantType);
+    Map<String, String> merchantMap = new HashMap<String, String>();
+    if (StringUtil.isListNotNullNEmpty(merchantList)) {
+      for (Map<String, String> map : merchantList) {
+        merchantMap.put(String.valueOf(map.get("0")), map.get("1"));
+      }
+    }
+    return merchantMap;
+  }
+  
+  @Override
+  public Map<String, String> getMerchantDataMapByMerchantType(String merchantType, Long entityId,
+      String loginUserType) {
+    List<Map<String, String>> merchantList = null;
+    if (loginUserType.equals(Constants.ADMIN_USER_TYPE)) {
+      merchantList = merchantDao.getMerchantMapByMerchantType(merchantType);
+    } else {
+      Map<String, String> merchantCodeListForPMOrIso =
+          merchantEntityMapDao.getMerchantCodeForPMOrIso(entityId, loginUserType);
+      return merchantCodeListForPMOrIso;
+    }
+
     Map<String, String> merchantMap = new HashMap<String, String>();
     if (StringUtil.isListNotNullNEmpty(merchantList)) {
       for (Map<String, String> map : merchantList) {

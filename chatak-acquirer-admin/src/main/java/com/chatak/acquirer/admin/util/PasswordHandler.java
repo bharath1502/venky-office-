@@ -2,17 +2,18 @@ package com.chatak.acquirer.admin.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.chatak.pg.util.Constants;
 
 public final class PasswordHandler {
 
-  private static Logger logger = Logger.getLogger(PasswordHandler.class);
+  private static Logger logger = LogManager.getLogger(PasswordHandler.class);
 
   private static String PREFIX = "_crypt_chatak_";
 
@@ -100,26 +101,41 @@ public final class PasswordHandler {
    * 
    * @return password
    */
-  public static String getSystemGeneratedPassword(int length) {
-    final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    StringBuilder sb = new StringBuilder(length);
-    Random rnd = new Random();
-    for (int i = 0; i < length; i++) {
-      sb.append(AB.charAt(rnd.nextInt(AB.length())));
-    }
-    return sb.toString();
-  }
+	public static String getSystemGeneratedPassword(int length) {
+		final String alphabets = "abcdefghijklmnopqrstuvwxyz";
+		final String specialCharacters = "@!$";
+		final String numbers = "0123456789";
+		final String capitalAlphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		StringBuilder sb = new StringBuilder(length);
+		try {
+			SecureRandom rnd = new SecureRandom();
+			for (int i = 0; i < length; i++) {
+				if (i == 2) {
+					sb.append(specialCharacters.charAt(rnd.nextInt(specialCharacters.length())));
+				} else if (i == 3) {
+					sb.append(numbers.charAt(rnd.nextInt(numbers.length())));
+				} else if (i == 4) {
+					sb.append(capitalAlphabets.charAt(rnd.nextInt(numbers.length())));
+				} else {
+					sb.append(alphabets.charAt(rnd.nextInt(alphabets.length())));
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error :: PasswordHandler :: getSystemGeneratedPassword", e.getMessage());
+		}
+		return sb.toString();
+	}
 
   /**
    * Generate Random numbers for given length
    * 
    * @param length
    * @return
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generateRandomNumber(int length) {
+  public static String generateRandomNumber(int length) throws NoSuchAlgorithmException {
     StringBuilder sb = new StringBuilder();
-    Random random = new Random();
+    SecureRandom random =new SecureRandom();
     int n;
     for (n = 0; n < length; n++) {
       int j = (random.nextInt() % Constants.TEN);

@@ -230,14 +230,14 @@
 									<c:when test="${!(fn:length(searchList) eq 0) }">
 										<c:forEach items="${searchList}" var="programManagerDetails">
 											<tr>
-												<td><div class="feeDescDiv tbl-text-align-left" data-title="Program Manager Name" class="ellipsis"
-													id="15" title="${programManagerDetails.programManagerName}">${programManagerDetails.programManagerName}&nbsp;</div></td>
-												<td><div data-title="Company Name" class="ellipsis" id="15"
-													title="${programManagerDetails.companyName}">${programManagerDetails.companyName}&nbsp;</div></td>
-												<td><div data-title="Business Entity Name" class="ellipsis"
-													id="15" title="${programManagerDetails.businessName}">${programManagerDetails.businessName}&nbsp;</div></td>
-												<td><div data-title="Status">
-													${programManagerDetails.status}&nbsp;</div></td>
+												<td data-title="Program Manager Name" class="ellipsis"
+													id="15" title="${programManagerDetails.programManagerName}">${programManagerDetails.programManagerName}&nbsp;</td>
+												<td data-title="Company Name" class="ellipsis" id="15"
+													title="${programManagerDetails.companyName}">${programManagerDetails.companyName}&nbsp;</td>
+												<td data-title="Business Entity Name" class="ellipsis"
+													id="15" title="${programManagerDetails.businessName}">${programManagerDetails.businessName}&nbsp;</td>
+												<td data-title="Status">
+													${programManagerDetails.status}&nbsp;</td>
 												<td data-title="Action"><c:choose>
 														<c:when
 															test="${fn:containsIgnoreCase(programManagerDetails.status,'Active') }">

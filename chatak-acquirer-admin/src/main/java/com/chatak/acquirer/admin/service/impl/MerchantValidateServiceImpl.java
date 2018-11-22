@@ -35,6 +35,7 @@ import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGFeeProgram;
+import com.chatak.pg.acq.dao.model.PGLegalEntity;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantBank;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
@@ -522,7 +523,7 @@ public class MerchantValidateServiceImpl implements MerchantValidateService, PGC
   private Merchant getMerchantOtherDetails(Merchant merchant, PGMerchant pgMerchant) {
     if (pgMerchant.getParentMerchantId() != null) {
       merchant.setParentMerchantId(Long.valueOf(
-          merchantRepository.findById(pgMerchant.getParentMerchantId()).orElse(null).getMerchantCode()));
+          merchantRepository.findById(pgMerchant.getParentMerchantId()).getMerchantCode()));
     }
     merchant.setAllowAdvancedFraudFilter(null != pgMerchant.getAllowAdvancedFraudFilter()
         && pgMerchant.getAllowAdvancedFraudFilter() == 1 ? true : false);

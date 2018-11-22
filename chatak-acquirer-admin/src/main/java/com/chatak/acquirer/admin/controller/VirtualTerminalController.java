@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.exception.ChatakPayException;
 import com.chatak.acquirer.admin.service.BlackListedCardService;
 import com.chatak.acquirer.admin.service.MerchantValidateService;
@@ -144,7 +145,7 @@ public class VirtualTerminalController implements URLMappingConstants {
             .setExpDate(terminalSaleDTO.getYear().substring(Constants.TWO) + terminalSaleDTO.getMonth());
         TransactionResponse transactionResponse = paymentService.doSale(terminalSaleDTO);
         
-        modelAndView = setSaleTxnResponse(terminalSaleDTO, model, modelAndView, transactionResponse);
+        setSaleTxnResponse(terminalSaleDTO, model, modelAndView, transactionResponse);
         
       } catch (ChatakPayException e) {
         logger.error("ERROR :: VirtualTerminalController :: processSale method:" + e);
@@ -180,7 +181,7 @@ public class VirtualTerminalController implements URLMappingConstants {
       terminalSaleDTO.setSuccessDiv(true);
       modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, terminalSaleDTO);
     } else {
-      modelAndView = setTransactionError(modelAndView, transactionResponse);
+      setTransactionError(modelAndView, transactionResponse);
       modelAndView.addObject(Constants.VIRTUAL_TEMINAL_SALE, terminalSaleDTO);
     }
     return modelAndView;
@@ -244,11 +245,12 @@ public class VirtualTerminalController implements URLMappingConstants {
     String refId = request.getParameter("refId");
     String txnType = request.getParameter("txnType");
     String merchantId = request.getParameter("merchantId");
-    GetTransactionResponse getTransactionResponse;
+    GetTransactionResponse getTransactionResponse = null;
     GetMerchantDetailsResponse merchantDetailsResponse;
     try {
-      merchantDetailsResponse = paymentService.getMerchantIdAndTerminalId(merchantId);
-      if (merchantDetailsResponse != null) {
+      LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+      merchantDetailsResponse = paymentService.getMerchantIdAndTerminalIdOnEntityType(merchantId, loginResponse.getUserType(), loginResponse.getEntityId());
+      if (merchantDetailsResponse != null && merchantDetailsResponse.getErrorCode().equals(Constants.SUCCESS_CODE)) {
         if ("sale".equalsIgnoreCase(txnType)) {
           getTransactionResponse =
               paymentService.getTransactionByRefId(merchantDetailsResponse.getMerchantId(),
@@ -259,6 +261,10 @@ public class VirtualTerminalController implements URLMappingConstants {
                   merchantDetailsResponse.getTerminalId(), refId, txnType);
         }
         return JsonUtil.convertObjectToJSON(getTransactionResponse);
+      } else {
+    	  getTransactionResponse = new GetTransactionResponse();
+    	  getTransactionResponse.setErrorCode(merchantDetailsResponse != null ? merchantDetailsResponse.getErrorCode() : "");
+    	  return JsonUtil.convertObjectToJSON(getTransactionResponse);  
       }
     } catch (ChatakPayException e) {
       modelAndView.addObject(Constants.ERROR, e.getMessage());
@@ -348,7 +354,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           virtualTerminalVoidDTO.setSuccessDiv(true);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_VOID, virtualTerminalVoidDTO);
         } else {
-          modelAndView = setTransactionError(modelAndView, voidResponse);
+          setTransactionError(modelAndView, voidResponse);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_VOID, virtualTerminalVoidDTO);
         }
       } catch (ChatakPayException e) {
@@ -447,7 +453,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           virtualTerminalRefundDTO.setSuccessDiv(true);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_REFUND, virtualTerminalRefundDTO);
         } else {
-          modelAndView = setTransactionError(modelAndView, refundResponse);
+          setTransactionError(modelAndView, refundResponse);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_REFUND, virtualTerminalRefundDTO);
         }
       } catch (ChatakPayException e) {
@@ -547,7 +553,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_PRE_AUTH_COMPLEATION,
               new VirtualTerminalRefundDTO());
         } else {
-          modelAndView = setTransactionError(modelAndView, captureResponse);
+          setTransactionError(modelAndView, captureResponse);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_PRE_AUTH_COMPLEATION, virtualTerminalCaptureDTO);
         }
       } catch (ChatakPayException e) {

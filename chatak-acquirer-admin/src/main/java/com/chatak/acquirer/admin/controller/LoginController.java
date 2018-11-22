@@ -5,10 +5,13 @@ package com.chatak.acquirer.admin.controller;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +57,7 @@ import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.exception.PrepaidAdminUserNotActiveException;
 import com.chatak.pg.model.AccountTransactionDTO;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.model.UserRolesDTO;
@@ -108,6 +112,8 @@ public class LoginController implements URLMappingConstants {
   
   @Autowired
   private IssSettlementDataDao issSettlementDataDao;
+  
+  private static final String EXECUTED_LIST_SIZE="executedListSize";
 
   /**
    * Method to show login page
@@ -150,7 +156,6 @@ public class LoginController implements URLMappingConstants {
       LoginDetails loginDetails, BindingResult bindingResult, Map model, HttpSession session) {
     logger.info("Entering:: LoginController:: authenticate method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_LOGIN);
-    String userAgent = request.getHeader("user-agent");
     try {
       modelAndView.addObject(Constants.ERROR, null);
       session.setAttribute(Constants.ERROR, null);
@@ -162,16 +167,16 @@ public class LoginController implements URLMappingConstants {
         getError(bindingResult, modelAndView);
         return modelAndView;
       }
-	  if (null != userAgent) {
-				userAgent = userAgent.replaceAll("\\ ", "");
-	  }
-      loginDetails.setCurrentLoginTime(DateUtils.getFormatLastLoginTime(loginDetails));
+      String userAgent = getUserAgent(request);
+
+      //to maintain current login time
+      Date today = new Date();
+      DateFormat df = new SimpleDateFormat(Constants.TIMEZONE_DATE_FORMAT);
+      df.setTimeZone(TimeZone.getTimeZone(loginDetails.getTimeZoneRegion()));
+      loginDetails.setCurrentLoginTime(df.format(today));
+
       LoginResponse loginResponse = loginService.authenticate(loginDetails);
-      if (loginResponse == null)
-        throw new ChatakAdminException(messageSource.getMessage("chatak.admin.login.error.message",
-            null, LocaleContextHolder.getLocale()));
-      if (null != loginResponse.getStatus() && loginResponse.getStatus().equals(Boolean.FALSE))
-          throw new ChatakAdminException(loginResponse.getMessage());
+      validateLoginResponse(loginResponse);
       if (checkUserType(loginResponse)) {
         session.setAttribute(Constants.LOGIN_USER_ID, loginResponse.getUserId());
         session.setAttribute("loginUserType", loginResponse.getUserType());
@@ -186,13 +191,15 @@ public class LoginController implements URLMappingConstants {
     	  session.setAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME,
     	  			(String) session.getAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME));
     	  
-             if (checkValidStatus(loginResponse)) {
+    	  if (loginResponse.getMessage() == Properties
+    	      .getProperty("admin.service.login.password.expiration.error.message")) {
+    	    modelAndView = setModel(request, model, session, modelAndView, loginResponse);
+    	  } else if (checkValidStatus(loginResponse)) {
           modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse,
               loginDetails, userAgent);
           processSettlement(session, loginResponse);
           session.setAttribute("adminId", loginResponse.getUserId());
-          List<Merchant> merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
-          
+          List<Merchant> merchants = getMerchantsList(loginResponse);
           validateMerchantList(session, merchants);
           
           GetTransactionsListRequest transaction = new GetTransactionsListRequest();
@@ -213,8 +220,9 @@ public class LoginController implements URLMappingConstants {
               transactionService.searchAccountTransactions(transaction);
           transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
           GetTransactionsListResponse executedTxnList =
-              transactionService.searchAccountTransactions(transaction);
+              getExecutedTxnList(loginResponse, transaction);
           loginProcess(session, modelAndView, transactionResponse, processingTxnList, executedTxnList);
+          modelAndView.addObject(EXECUTED_LIST_SIZE, getTotalResultCount(executedTxnList));
           model.put("transaction", new GetTransactionsListRequest());
         } 
         else
@@ -234,6 +242,49 @@ public class LoginController implements URLMappingConstants {
     }
     logger.info("Exiting:: LoginController:: authenticate method");
     return modelAndView;
+  }
+
+  private GetTransactionsListResponse getExecutedTxnList(LoginResponse loginResponse,
+      GetTransactionsListRequest transaction) {
+    GetTransactionsListResponse executedTxnList = null;
+    if (loginResponse.getUserType().equals(Constants.PM_USER_TYPE)
+    	  || loginResponse.getUserType().equals(Constants.ISO_USER_TYPE)) {
+      executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, loginResponse.getEntityId(), loginResponse.getUserType());
+    } else {
+      executedTxnList = transactionService.searchAccountTransactions(transaction);
+    }
+    return executedTxnList;
+  }
+
+  private void validateLoginResponse(LoginResponse loginResponse) throws ChatakAdminException {
+    if (loginResponse == null)
+      throw new ChatakAdminException(messageSource.getMessage("chatak.admin.login.error.message",
+          null, LocaleContextHolder.getLocale()));
+    if (null != loginResponse.getStatus() && loginResponse.getStatus().equals(Boolean.FALSE))
+        throw new ChatakAdminException(loginResponse.getMessage());
+  }
+
+  private String getUserAgent(HttpServletRequest request) {
+    String userAgent = request.getHeader("user-agent");
+    if (null != userAgent) {
+      userAgent = userAgent.replaceAll("\\ ", "");
+    }
+    return userAgent;
+  }
+
+  private List<Merchant> getMerchantsList(LoginResponse loginResponse) {
+	  List<Merchant> merchants = null;
+	  if (loginResponse.getUserType().equals(PGConstants.ADMIN)) {
+		  merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+	  } else if (loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+		  merchants = merchantUpdateService.getPmMerchantByEntityIdandEntityType(loginResponse.getEntityId(),
+				  loginResponse.getUserType());
+	  }
+	  return merchants;
+  }
+
+  private Integer getTotalResultCount(GetTransactionsListResponse executedTxnList) {
+	  return executedTxnList != null ? executedTxnList.getTotalResultCount() : Constants.ZERO;
   }
 
 	private void processSettlement(HttpSession session, LoginResponse loginResponse) {
@@ -274,13 +325,16 @@ public class LoginController implements URLMappingConstants {
 				issSettlementData.setTotalTxnCount(data.getTotalTxnCount());
 				settlementData.add(issSettlementData);
 			}
-			session.setAttribute("settlementDataList", settlementData);
+			session.setAttribute("settlementDataList", new ArrayList(settlementData));
+  			session.setAttribute("processSettlementDataList", settlementData.size());
+
 		}
 		logger.info("Exiting :: LoginController :: processSettlementData");
 	}
 
   private void validateMerchantList(HttpSession session, List<Merchant> merchants) {
 	if (StringUtil.isListNotNullNEmpty(merchants)) {
+		session.setAttribute("merchantDataList", merchants.size());
 	    if (merchants.size() > Constants.MAX_ENTITY_DISPLAY_SIZE) {
 	      session.setAttribute("merchantSubList", merchants.subList(0, Constants.MAX_ENTITY_DISPLAY_SIZE));
 	    } else {
@@ -398,9 +452,8 @@ private void loginProcess(HttpSession session, ModelAndView modelAndView, Transa
 private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession session, ModelAndView modelAndView,
         LoginResponse loginResponse) {
       logger.info("LoginController::login::false::status");
-      modelAndView.addObject(Constants.ERROR, StringUtil.isNullEmpty(loginResponse.getMessage())
-          ? loginResponse.getErrorMessage() : loginResponse.getMessage());
-      if (loginResponse.getErrorMessage() == Properties
+      modelAndView.addObject(Constants.ERROR, loginResponse.getMessage());
+      if (loginResponse.getMessage() == Properties
           .getProperty("admin.service.login.password.expiration.error.message")) {
         session.setAttribute(Constants.LOGIN_USER_ID, loginResponse.getUserId());
         modelAndView = changePassword(model, request, session);
@@ -592,6 +645,12 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
       resetCookie(request, response, session);
       modelAndView.setViewName(CHATAK_ADMIN_LOGIN);
       model.put(Constants.LOGIN_DETAILS, new LoginDetails());
+    } catch(PrepaidAdminUserNotActiveException e) {
+      logger.error("Error :: LoginController :: changePasswordData :: User Is not active", e);
+      modelAndView = showLogin(request, model, session);
+      model.put(Constants.ERROR, e.getMessage());
+      modelAndView.addObject(Constants.ERROR, e.getMessage());
+      model.put(Constants.LOGIN_DETAILS, new LoginDetails());
     } catch (ChatakAdminException e) {
       logger.error(" LoginController:: changePasswordData method1" + e);
       model.put(Constants.ERROR, e.getMessage());
@@ -733,6 +792,9 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
           null, LocaleContextHolder.getLocale()));
       model.put(Constants.LOGIN_DETAILS, new LoginDetails());
       session.removeAttribute("tokenval");
+      session = request.getSession();
+      String token = CSRFTokenManager.getTokenForSession(session);
+      session.setAttribute("tokenval", token);
     } catch (ChatakAdminException e) {
       logger.error("Error:: LoginController:: resetPassword method1" + e);
       modelAndView = new ModelAndView(RESET_PSWD);

@@ -15,8 +15,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+  <link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -238,7 +237,7 @@
 <script src="../js/utils.js"></script>
 	<script src="../js/sortable.js"></script>
 	<script src="../js/validation.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	 <script src="../js/rome.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -251,11 +250,14 @@
 			$(this).children('.effectiveDate').focus();
 		});
 
-		$('.effectiveDate').datetimepicker({
+		
+		rome(transFromDate, { time: false });
+		rome(transToDate, { time: false });
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'm/d/Y',
 			formatDate : 'Y/m/d',
-		});
+		}); */
 		
 		  if ("${transactionDiv}" == "true"){
 			 $('#checkb').show();

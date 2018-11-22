@@ -365,7 +365,8 @@ var C_MERCHANT_MSG = {
 		RIGHT_CLICK_NOT_ALLOWED : "Right click is not allowed",
 		shouldContainNumericAndAlphabets : "Should contain numeric and alpbhabets",
 		maximumownloadLimit : "Max of 5000 records can be downloaded. Please contact system support for more records.",
-		address_should_contains_message : 'Only # , . / and alphanumerics are allowed'
+		address_should_contains_message : 'Only # , . / and alphanumerics are allowed',
+		merchantNotAssociatedToCurrentPM :"Merchant Code Not Associated To current Entity"
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",
@@ -736,6 +737,7 @@ var C_MERCHANT_MSG = {
 		shouldContainNumericAndAlphabets : "Debe contener numérico y alpbhabets",
 		maximumownloadLimit : "Se puede descargar un máximo de 5000 registros. Por favor, póngase en contacto con el soporte del sistema para obtener más registros.",
 		address_should_contains_message : 'Solamente # , . / y alfanuméricos están permitidos',
+		merchantNotAssociatedToCurrentPM :"Merchant Code no asociado al Entity actual"
 	}
 };
 

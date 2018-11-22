@@ -648,6 +648,7 @@
 						getCardProgramByPmId(SelID);
 						entitiesId.push(SelID);
 						entityNameArr.push(SelText);
+						setDiv('programManagerNameIdEr', '');
 					}
 				}				
 			}else if(action == 'REMOVE'){
@@ -707,6 +708,7 @@
 			var selectedId = 'cpId' + cardProgramId + entityId;
 			
 			if($('#' + selectedId).is(":checked")){
+				$('#ambiguityFlag').text('');
 				cardProgramIdList.push(cardProgramId+'@'+entityId);
 				cardProgramArr.push(cardProgramName);
 				selectedCpId.push(parseInt(cardProgramId));

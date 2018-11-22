@@ -1,4 +1,6 @@
- function validRoleName() {
+var usernameFlag = null;
+
+function validRoleName() {
 	var roleName = get('roleName').value.trim();
 	if (isEmpty(roleName)) {
 		setDiv('roleNameDiv', webMessages.adminUserRoleType);

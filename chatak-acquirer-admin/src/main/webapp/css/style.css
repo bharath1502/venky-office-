@@ -101,7 +101,7 @@ textarea.form-control{
 	overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-     width: 185px; 
+     width: 100%; 
 }
 
 .discriptionErrorMsgReset {

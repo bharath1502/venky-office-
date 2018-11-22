@@ -247,6 +247,8 @@ public class FeeProgramController implements URLMappingConstants {
       model.put("feeProgramDTO", feeProgramDTO);
       session.setAttribute(Constants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO);
       feeProgramDTO.setCreatedBy(loginResponse.getUserId().toString());
+      feeProgramDTO.setEntityId(loginResponse.getEntityId());
+      feeProgramDTO.setUserType(loginResponse.getUserType());
       feeProgramDTO.setPageIndex(Constants.ONE);
       FeeProgramResponseDetails feeProgramResponse =
           feeProgramService.searchFeeProgramForJpa(feeProgramDTO);
@@ -277,6 +279,15 @@ public class FeeProgramController implements URLMappingConstants {
     logger.info("Exit:: FeeProgramController:: searchFeeProgram method");
     return modelAndView;
   }
+  
+	@RequestMapping(value = FEE_PROGRAM_SEARCH, method = RequestMethod.GET)
+	public ModelAndView searchFeeProgramGetMethod(HttpServletRequest request, FeeProgramDTO feeProgramDTO,
+			HttpServletResponse response, Map model, HttpSession session) {
+		logger.info("Entering:: FeeProgramController:: searchFeeProgram method");
+		ModelAndView modelAndView = showFeeProgramSearch(request, response, model, session);
+		logger.info("Exit:: FeeProgramController:: searchFeeProgram method");
+		return modelAndView;
+	}
 
   @RequestMapping(value = SHOW_FEE_PROGRAM_EDIT, method = RequestMethod.POST)
   public ModelAndView showFeeProgramEdit(HttpServletRequest request, HttpServletResponse response,

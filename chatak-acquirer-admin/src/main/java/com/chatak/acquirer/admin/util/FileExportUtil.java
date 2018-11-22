@@ -48,8 +48,8 @@ private static Logger logger = Logger.getLogger(FileExportUtil.class);
     String dateString = new SimpleDateFormat(Constants.EXPORT_FILE_NAME_DATE_FORMAT).format(date);
     String filename = "Requests Batch Report" + dateString + ".xls";
     response.setHeader("Content-Disposition", "attachment;filename=" + filename);
-    try {
-    	HSSFWorkbook wb = new HSSFWorkbook();
+   
+    try (HSSFWorkbook wb = new HSSFWorkbook()) {
     	HSSFSheet sheet = wb.createSheet(messageSource.getMessage("chatak.report.batch.sheetName",
     	          null, LocaleContextHolder.getLocale()));
 
@@ -75,7 +75,6 @@ private static Logger logger = Logger.getLogger(FileExportUtil.class);
         }
       }
       wb.write(response.getOutputStream());
-      wb.close();
     } catch (Exception e) {
       logger.error("ERROR :: FileExportUtil ::downloadEFTRequestsXlBatch ", e);
     }

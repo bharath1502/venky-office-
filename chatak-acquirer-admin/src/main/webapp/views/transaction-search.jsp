@@ -14,6 +14,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
+ <link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -264,6 +265,7 @@
 	<script src="../js/sortable.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script src="../js/common-lib.js"></script>
+	 <script src="../js/rome.js"></script>
 
 	<script>
 	$(document).ready(function() {
@@ -271,12 +273,13 @@
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-
-		$('.effectiveDate').datetimepicker({
+		rome(from_Date, { time: false });
+		rome(to_Date, { time: false });
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'd/m/Y',
-		});
+		}); */
 	});
 
 	</script>

@@ -28,7 +28,7 @@ function doAjaxFetchAccountDetails() {
 				success : function(response) {
 					var obj = JSON.parse(response);
 					if (obj.errorCode === '00') {
-						
+						setDiv("errorMsgDiv", "");
 						get('merchantName').value = obj.merchantName;
 						get('accountNumber').value = obj.accountNumber;
 						get('availableBalance').value = obj.availableBalance/100;
@@ -44,9 +44,6 @@ function doAjaxFetchAccountDetails() {
 						currencyThousandsUnit = obj.currencyThousandsUnit;
 						formatNum(currencyId);
 						formatNum(currentbalId);
-						if($("#errorMsgDiv").text() == webMessages.MerchantOrSubMerchantAccountStatusTerminated){
-							setDiv("errorMsgDiv", "");
-						}
 						if($("#errorMsgDiv").text() != ""){
 							setDiv("errorMsgDiv", $("#errorMsgDiv").text());
 						}
@@ -54,13 +51,10 @@ function doAjaxFetchAccountDetails() {
 						$("#hideSearchButton").fadeOut();
 						document.getElementById("merchantIdDiv").readOnly = true;
 						} else {
-						setDiv(
-								"errorMsgDiv",
-								webMessages.MerchantOrSubMerchantAccountStatusTerminated);
+						setDiv("errorMsgDiv",obj.errorMessage);
 					}
 				},
 				error : function(e) {
-					alert(e);
 				}
 			});
 }

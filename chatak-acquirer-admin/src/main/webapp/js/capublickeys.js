@@ -160,22 +160,22 @@ function viewCAPublicKeys(CAPublicKeysId) {
 }
 
 function openConfirmPageSale() {
-	if (!validCAPublicKeyName() | !validateRId('rID')
-			| !validCAPublicKeyModulus('publicKeyModulus')
-			| !validIndex('index')
-			| !validCAPublicKeyExponent('publicKeyExponent')
-			| !validateCAPublicKeysExpDate('expiryDate')) {
+	if (!validCAPublicKeyName() | !validateRId()
+			| !validCAPublicKeyModulus()
+			| !validIndex()
+			| !validCAPublicKeyExponent()
+			| !validateCAPublicKeysExpDate()) {
 		return false;
 	}
 	return true;
 }
 
 function updateCapublickey() {
-	if (!validateRId('rID')
-			| !validCAPublicKeyModulus('publicKeyModulus')
-			| !validIndex('index')
-			| !validCAPublicKeyExponent('publicKeyExponent')
-			| !validateCAPublicKeysExpDate('expiryDate')) {
+	if (!validateRId()
+			| !validCAPublicKeyModulus()
+			| !validIndex()
+			| !validCAPublicKeyExponent()
+			| !validateCAPublicKeysExpDate()) {
 		return false;
 	}
 	return true;

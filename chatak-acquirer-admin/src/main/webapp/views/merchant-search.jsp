@@ -157,7 +157,7 @@
 														<span id="businessNameEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-												<fieldset class="col-sm-3">
+										<%-- 		<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.entitytype"/></label>
 													<form:input cssClass="form-control" path="entityType"
 														id="entityType" onblur="clientValidation('entityType','middle_name','entityTypeEr')"/>
@@ -172,7 +172,7 @@
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="isoNameEr" class="red-error">&nbsp;</span>
 													</div>
-												</fieldset>
+												</fieldset> --%>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.emailID"/> </label>
 													<form:input cssClass="form-control" path="emailId"
@@ -181,20 +181,20 @@
 														<span id="emailIdEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-												<fieldset class="col-sm-3">
+											<%-- 	<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="admin.cardprogramname"/></label>
 													<form:input cssClass="form-control" path="cardProgramName" id="cardProgramName" onblur="clientValidation('cardProgramName','middle_name','cardProgramNameEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="cardProgramNameEr" class="red-error">&nbsp;</span>
 													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
+												</fieldset> --%>
+											<%-- 	<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="access-user-create.label.entityname"/></label>
 													<form:input cssClass="form-control" path="programManagerName" id="programManagerName" onblur="clientValidation('programManagerName','companyname_not_mandatory','programManagerNameEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="programManagerNameEr" class="red-error">&nbsp;</span>
 													</div>
-												</fieldset>
+												</fieldset> --%>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.country"/></label>
 													<form:select cssClass="form-control" path="country"
@@ -282,15 +282,15 @@
 							<table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">
 							<thead>
 							<tr>
-								<th style="width: 102px;"><spring:message code="merchant.label.merchantcode"/></th>
+								<th style="width: 150px;"><spring:message code="merchant.label.merchantcode"/></th>
 								<th style="width: 151px;"><spring:message code="merchant.label.merchantname"/></th>
 								<th style="width: 151px;"><spring:message code="currency-search-page.label.currencycode"/></th>
-								<th style="width: 110px;"><spring:message code="merchant.label.entitytype"/></th>
+								<%-- <th style="width: 110px;"><spring:message code="merchant.label.entitytype"/></th>
 								<th style="width: 110px;"><spring:message code="merchant.label.entityname"/></th>
-								<th style="width: 103px;"><spring:message code="admin.cardprogramname"/></th>
-								<th style="width: 93px;"><spring:message code="merchant.label.emailID"/></th>
-								<th style="width: 54px;"><spring:message code="common.label.country"/></th>
-								<th style="width: 93px;"><spring:message code="common.label.status"/></th>
+								<th style="width: 103px;"><spring:message code="admin.cardprogramname"/></th> --%>
+								<th style="width: 150px;"><spring:message code="merchant.label.emailID"/></th>
+								<th style="width: 100px;"><spring:message code="common.label.country"/></th>
+								<th style="width: 100px;"><spring:message code="common.label.status"/></th>
 								<th class="sorter-false tablesorter-header tablesorter-headerUnSorted"><spring:message code="common.label.action"/></th>
 							</tr>
 							</thead>
@@ -301,9 +301,9 @@
 											<td><div class="feeDescDiv tbl-text-align-right">${merchantData.merchantCode }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.businessName }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.localCurrency }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityType }</div></td>
+											<%-- <td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityType }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityName }</div></td>
-											<td><div class="feeDescDiv">${merchantData.cardProgramName }</div></td>
+											<td><div class="feeDescDiv">${merchantData.cardProgramName }</div></td> --%>
 											<td><div class="feeDescDiv">${merchantData.emailId }</div></td>
 											<%-- <td><div class="feeDescDiv tbl-text-align-left">${merchantData.city }</div></td> --%>
 											<td class="tbl-text-align-left">${merchantData.country }</td>

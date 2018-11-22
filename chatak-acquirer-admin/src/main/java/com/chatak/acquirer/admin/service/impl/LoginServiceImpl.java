@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGRolesFeatureMapping;
 import com.chatak.pg.acq.dao.model.PGUserRoles;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.exception.PrepaidAdminUserNotActiveException;
 import com.chatak.pg.model.RolesFeatureMappingDTO;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
@@ -194,10 +196,10 @@ public class LoginServiceImpl implements LoginService {
 			loginResponse.setEntityId(adminUser.getEntityId());
 			loginResponse.setLastLonginTime(adminUser.getLastLonginTime());
 		} else {
-			loginResponse.setStatus(false);
+			loginResponse.setStatus(true);
 			loginResponse.setUserId(adminUser.getAdminUserId());
-			loginResponse
-					.setErrorMessage(Properties.getProperty("admin.service.login.password.expiration.error.message"));
+			loginResponse.setMessage(
+			    Properties.getProperty("admin.service.login.password.expiration.error.message"));
 		}
 	}
 
@@ -244,7 +246,7 @@ private void setAdminUser(int passRetryCount, LoginResponse loginResponse, PGAdm
 
   @Override
   public Boolean changdPassword(Long userId, String currentPassword, String newPassword)
-      throws ChatakAdminException {
+      throws ChatakAdminException, PrepaidAdminUserNotActiveException {
     try {
       PGAdminUser adminUser = adminUserDao.findByAdminUserId(userId);
       if (!(EncryptionUtil.encodePassword(currentPassword)).equals(adminUser.getPassword()))
@@ -258,9 +260,13 @@ private void setAdminUser(int passRetryCount, LoginResponse loginResponse, PGAdm
       checkPreviousPassword(adminUser, encryptionPassword,
           Integer.parseInt(Properties.getProperty("admin.user.previous.password.count")));
 
+      if (!adminUser.getStatus().equals(Constants.ONE)
+          && !adminUser.getStatus().equals(Constants.ZERO)) {
+        throw new PrepaidAdminUserNotActiveException();
+      }
       if (adminUser.getEmailVerified().equals(Constants.ZERO)
           || adminUser.getStatus().equals(Constants.ONE)) {
-        adminUser.setEmailVerified(PGConstants.ONE.intValue());
+        adminUser.setEmailVerified(PGConstants.ONE);
         adminUser.setStatus(PGConstants.ZERO.intValue());
       }
 
@@ -268,7 +274,11 @@ private void setAdminUser(int passRetryCount, LoginResponse loginResponse, PGAdm
       adminUser.setLastPassWordChange(new Timestamp(System.currentTimeMillis()));
       adminUserDao.createOrUpdateUser(adminUser);
       return true;
-
+    } catch (PrepaidAdminUserNotActiveException e) {
+      logger.error("Error :: LoginServiceImpl :: changdPassword :: AdminUserNotActiveException", e);
+      throw new PrepaidAdminUserNotActiveException(Constants.ACC_SUSPENDED,
+          messageSource.getMessage("chatak.admin.user.inactive.error.message", null,
+              LocaleContextHolder.getLocale()));
     } catch (ChatakAdminException e) {
     	logger.error("Error :: LoginServiceImpl :: changdPassword", e);
       throw new ChatakAdminException(e.getMessage());

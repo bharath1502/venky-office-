@@ -474,11 +474,11 @@
 						<li style="text-align: left;"><a href="showIsoRevenueReport"><spring:message
 									code="admin.label.isorevenue" /></a></li>
 					 </c:if>
-					
+					<%-- 
 					 <c:if test="${fn:contains(existingFeatures, merchantRevenueReport)}"> 
 						<li style="text-align: left;"><a href="showMerchantRevenueReport"><spring:message
 									code="admin.label.merchantrevenue" /></a></li>
-					 </c:if>
+					 </c:if> --%>
 					<c:if test="${fn:contains(existingFeatures, pmRevenueReport)}">
 						<li style="text-align: left;"><a href="showPmRevenueReport"><spring:message
 									code="admin.label.pmrevenue" /></a></li>
@@ -548,7 +548,20 @@
 </div>
 <div id="processingDiv" class="general-popup">
         <div class="processing"><img alt="Processing" src="../images/processing.gif"></div>
-</div> 
+</div>
+
+<!-- Common Alert PopUp STARTS here -->
+<div id="alertPopUp" class="locatioin-list-popup">
+<h3  id="alertPopUpMsg"></h3>
+<div class="col-sm-12 form-action-buttons">
+		<div class="col-sm-12">
+			<input type="button" name="Ok" value="Ok"
+				class="form-control button pull-right" onclick="closeAlertPopup()">
+		</div>
+</div>
+</div>
+<!-- Common Alert PopUp ENDS here --> 
+
 <script src="../js/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
@@ -670,6 +683,20 @@ function closeBatch() {
 		$('#deviceTimeZoneRegion').val(region);
 		$('#deviceTzOffset').val(offset);
 		$('#deviceTzRegion').val(region);
+	}
+	
+	$(document).ready(function() {
+		$('#alertPopUp').popup({
+			blur:false
+		});
+	});
+	
+	function closeAlertPopup() {
+		$('#alertPopUp').popup("hide");
+	}
+	function showAlertPopup(message) {
+		$('#alertPopUpMsg').text(message);
+		$('#alertPopUp').popup("show");
 	}
 </script>
 <script>

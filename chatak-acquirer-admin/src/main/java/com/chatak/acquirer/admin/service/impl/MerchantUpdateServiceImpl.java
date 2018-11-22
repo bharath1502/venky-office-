@@ -128,18 +128,20 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
   private ObjectMapper mapper = new ObjectMapper();
 
   @Override
-  public MerchantSearchResponse searchMerchant(Merchant merchant) throws ChatakAdminException {
+  public MerchantSearchResponse searchMerchant(Merchant merchant, String userType, Long entityId) throws ChatakAdminException {
     logger.info("Entering:: MerchantServiceImpl:: searchMerchant method");
     GetMerchantListRequest searchMerchant = new GetMerchantListRequest();
     GetMerchantListResponse getMerchantListResponse = null;
-    searchMerchant = getSearchMerchantDetails(merchant, searchMerchant);
+    getSearchMerchantDetails(merchant, searchMerchant);
     searchMerchant.setPageSize(merchant.getPageSize());
     searchMerchant.setPageIndex(merchant.getPageIndex());
     searchMerchant.setNoOfRecords(merchant.getNoOfRecords());
     searchMerchant.setMerchantCode(merchant.getMerchantCode());
     searchMerchant.setSubMerchantCode(merchant.getSubMerchantCode());
     searchMerchant.setEntityIds(merchant.getEntitiesId());
-    getMerchantListResponse = getMerchantResponse(searchMerchant);
+    
+    getMerchantListResponse = getMerchantResponse(searchMerchant, userType, entityId);
+    
     List<MerchantRequest> pgMerchants = getMerchantListResponse.getMerchantRequests();
     List<PGMerchant> subMerchants = getMerchantListResponse.getSubMerchants();
     MerchantSearchResponse response = new MerchantSearchResponse();
@@ -197,6 +199,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 	    merchantRespObj.setMerchantCode(pgMerchant.getMerchantCode());
 	    merchantRespObj.setLocalCurrency(pgMerchant.getCurrency());
 	    merchantRespObj.setEntityName(pgMerchant.getEntityName());
+	    merchantRespObj.setPhone(pgMerchant.getPhone());
 	    return merchantRespObj;
 	  }
 
@@ -260,13 +263,17 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 	    return merchantRespObj;
 	  }
 
-  private GetMerchantListResponse getMerchantResponse(GetMerchantListRequest searchMerchant) {
-    GetMerchantListResponse getMerchantListResponse;
+  private GetMerchantListResponse getMerchantResponse(GetMerchantListRequest searchMerchant, String userType, Long entityId) {
+    GetMerchantListResponse getMerchantListResponse = new GetMerchantListResponse();
     if (null != searchMerchant.getSubMerchantCode() && "" != searchMerchant.getSubMerchantCode()) {
       getMerchantListResponse = subMerchantDao.getMerchantlistOnSubMerchantCode(searchMerchant);
-    } else {
-      getMerchantListResponse = merchantProfileDao.getMerchantlist(searchMerchant);
-    }
+    } else if (userType.equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+    	getMerchantListResponse = merchantEntityMapDao.fetchMerchantsForPM(searchMerchant, entityId);
+	} else if (userType.equalsIgnoreCase(Constants.ISO_USER_TYPE)) {
+		getMerchantListResponse = merchantEntityMapDao.fetchMerchantsForISO(searchMerchant,entityId);
+	} else if (userType.equalsIgnoreCase(Constants.ADMIN_USER_TYPE)) {
+		getMerchantListResponse = merchantProfileDao.getMerchantlist(searchMerchant);
+	}
     return getMerchantListResponse;
   }
 
@@ -376,7 +383,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
         merchantRespObj.setEmailId(pgMerchant.getEmailId());
         merchantRespObj.setCountry(pgMerchant.getCountry());
 
-        merchantRespObj = getMerchantStatus(merchantRespObj, pgMerchant);
+        getMerchantStatus(merchantRespObj, pgMerchant);
 
         merchantRespObj.setMerchantCode(pgMerchant.getMerchantCode());
         merchants.add(merchantRespObj);
@@ -408,7 +415,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
         merchantRespObj = new MerchantData();
         setMerchantRespObjData(merchantRespObj, pgMerchant);
 
-        merchantRespObj = getMerchantStatus(merchantRespObj, pgMerchant);
+        getMerchantStatus(merchantRespObj, pgMerchant);
 
         merchantRespObj.setMerchantCode(pgMerchant.getMerchantCode());
         merchants.add(merchantRespObj);
@@ -462,9 +469,9 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
   }
 
   @Override
-  public MerchantSearchResponse searchSubMerchants(Merchant merchant) throws ChatakAdminException {
+  public MerchantSearchResponse searchSubMerchants(Merchant merchant, String userType, Long entityId) throws ChatakAdminException {
     GetMerchantListRequest searchMerchant = new GetMerchantListRequest();
-    GetMerchantListResponse getMerchantListResponse = null;
+    GetMerchantListResponse getMerchantListResponse = new GetMerchantListResponse();
     getSearchMerchantDetails(merchant, searchMerchant);
     searchMerchant.setMerchantCode(merchant.getMerchantCode());
     searchMerchant.setSubMerchantCode(merchant.getSubMerchantCode());
@@ -475,7 +482,15 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     searchMerchant.setPageSize(merchant.getPageSize());
     searchMerchant.setNoOfRecords(merchant.getNoOfRecords());
     searchMerchant.setIsoName(merchant.getIsoName());
-    getMerchantListResponse = subMerchantDao.getSubMerchantList(searchMerchant);
+   
+    if (userType.equalsIgnoreCase(Constants.ADMIN_USER_TYPE)) {
+    	getMerchantListResponse = subMerchantDao.getSubMerchantList(searchMerchant);
+    } else if (userType.equalsIgnoreCase(Constants.PM_USER_TYPE)) {
+    	getMerchantListResponse = merchantEntityMapDao.fetchSubMerchantsForPM(searchMerchant, entityId);
+    } else if (userType.equalsIgnoreCase(Constants.ISO_USER_TYPE)) {
+    	getMerchantListResponse = merchantEntityMapDao.fetchSubMerchantsForISO(searchMerchant, entityId);
+    } 
+    
     List<MerchantRequest> pgMerchants = getMerchantListResponse.getMerchantRequestList();
     MerchantSearchResponse response = new MerchantSearchResponse();
     if (!CollectionUtils.isEmpty(pgMerchants)) {
@@ -483,9 +498,9 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
       MerchantCreateResponse merchantRespObj = null;
       for (MerchantRequest pgMerchant : pgMerchants) {
         merchantRespObj = new MerchantCreateResponse();
-        merchantRespObj = setSubMerchantListDetails(merchantRespObj, pgMerchant);
+        setSubMerchantListDetails(merchantRespObj, pgMerchant);
         
-        merchantRespObj = getSubMerchantStatus(merchantRespObj, pgMerchant);
+        getSubMerchantStatus(merchantRespObj, pgMerchant);
         merchants.add(merchantRespObj);
       }
       response.setMerchantCreateResponseList(merchants);
@@ -495,7 +510,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
   }
 
   private MerchantCreateResponse setSubMerchantListDetails(MerchantCreateResponse merchantRespObj, MerchantRequest pgMerchant) {
-    merchantRespObj = setSubMerchantBasicDetails(merchantRespObj, pgMerchant);
+    setSubMerchantBasicDetails(merchantRespObj, pgMerchant);
     return merchantRespObj;
   }
 
@@ -517,7 +532,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     List<PGMerchant> merchant = merchantUpdateDao.getMerchantsByStatus(status);
     if (StringUtil.isListNotNullNEmpty(merchant)) {
       for (PGMerchant merch : merchant) {
-        merchants = addMerchantsList(merchants, merch);
+        addMerchantsList(merchants, merch);
       }
     }
     return distinctList(merchants);
@@ -586,10 +601,10 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 			merchant.setEntityId(entityMap.getEntityId());
 			isoRequest = new IsoRequest();
 			merchant.setAssociatedTo(entityMap.getEntitytype());
-			Iso iso = isoServiceDao.findByIsoId(merchant.getEntityId());
-				if (iso!=null) {
-					isoRequest.setIsoName(iso.getIsoName());
-					isoRequest.setId(iso.getId());
+			List<Iso> list = isoServiceDao.findByIsoId(merchant.getEntityId());
+				if (StringUtil.isListNotNullNEmpty(list)) {
+					isoRequest.setIsoName(list.get(0).getIsoName());
+					isoRequest.setId(list.get(0).getId());
 					isoRequests.add(isoRequest);
 				}
 			}
@@ -636,7 +651,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     List<PGMerchant> merchant = merchantUpdateDao.getMerchantByStatusPendingandDecline();
     if (StringUtil.isListNotNullNEmpty(merchant)) {
       for (PGMerchant merch : merchant) {
-        merchants = addMerchantsList(merchants, merch);
+        addMerchantsList(merchants, merch);
       }
     }
     return merchants;
@@ -738,7 +753,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 		List<PGMerchant> merchant = merchantUpdateDao.getPmMerchantByEntityIdandEntityType(entityId, entityType);
 		if (StringUtil.isListNotNullNEmpty(merchant)) {
 			for (PGMerchant merch : merchant) {
-				merchants = addMerchantsList(merchants, merch);
+				addMerchantsList(merchants, merch);
 			}
 		}
 		return merchants;

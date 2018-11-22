@@ -181,6 +181,15 @@ public class TransactionsController implements URLMappingConstants {
     return modelAndView;
   }
 
+	@RequestMapping(value = CHATAK_ADMIN_SEARCH_TRANSACTION, method = RequestMethod.GET)
+	public ModelAndView searchTransactionsGetMethod(HttpServletRequest request, HttpServletResponse response,
+			GetTransactionsListRequest transaction, BindingResult bindingResult, Map model, HttpSession session) {
+		logger.info("Entering :: TransactionsController :: searchMerchant method");
+		ModelAndView modelAndView = showSearchTransactionsPage(request, response, transaction, bindingResult, model, session);
+		logger.info("Exiting :: TransactionsController :: searchMerchant method");
+		return modelAndView;
+	}
+    
   /**
    * Method used for Pagination Util
    * 
@@ -196,8 +205,9 @@ public class TransactionsController implements URLMappingConstants {
     logger.info("Entering :: TransactionsController :: getPaginationList method");
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE);
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     try {
-    	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+
       String requestObject = request.getParameter("requestObject");
       String[] removedTxns = request.getParameterValues("removedTxns");
       SettlementActionDTOList actionDTOList = new SettlementActionDTOList();
@@ -211,7 +221,7 @@ public class TransactionsController implements URLMappingConstants {
       transaction.setPageSize(Constants.MAX_TRANSACTION_ENTITY_DISPLAY_SIZE);
 
       GetTransactionsListResponse transactionsList =
-          transactionService.searchTransactions(transaction , loginResponse.getEntityId());
+          transactionService.searchTransactions(transaction, loginResponse.getEntityId());
       session.setAttribute(Constants.TRANSACTIONS_REPORT, transactionsList);
 
       if (transactionsList != null
@@ -552,7 +562,7 @@ public class TransactionsController implements URLMappingConstants {
           virtualTerminalVoidDTO.setSuccessDiv(true);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_VOID, virtualTerminalVoidDTO);
         } else {
-          modelAndView = setRefundError(modelAndView, voidResponse);
+          setRefundError(modelAndView, voidResponse);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_VOID, virtualTerminalVoidDTO);
         }
       } catch (ChatakPayException e) {
@@ -615,7 +625,7 @@ public class TransactionsController implements URLMappingConstants {
           virtualTerminalRefundDTO.setSuccessDiv(true);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_REFUND, virtualTerminalRefundDTO);
         } else {
-          modelAndView = setRefundError(modelAndView, refundResponse);
+          setRefundError(modelAndView, refundResponse);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_REFUND, virtualTerminalRefundDTO);
         }
       } catch (ChatakPayException e) {

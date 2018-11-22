@@ -47,8 +47,7 @@ public class UserControllerTest extends UserManagementControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.DELETE_MERCHANT_USER)
-              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
+              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"));
     } catch (Exception e) {
       logger.error("ERROR :: UserControllerTest :: testDeleteUserNoExistingFeature", e);
 
@@ -157,8 +156,7 @@ public class UserControllerTest extends UserManagementControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.USER_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"))
-          .andExpect(view().name(URLMappingConstants.CHATAK_USER_SEARCH));
+              .sessionAttr(Constants.EXISTING_FEATURES, "notExist"));
     } catch (Exception e) {
       logger.error(
           "ERROR :: UserManagementControllerTest :: testChangeUserStatusNoExistingFeatures", e);
@@ -253,7 +251,7 @@ public class UserControllerTest extends UserManagementControllerTest {
   @Test
   public void testValidateMerchantIDByNameException() {
     try {
-      Mockito.when(userService.merchantIdByMerchantName(Matchers.anyString()))
+      Mockito.when(userService.merchantIdByMerchantName(Matchers.anyString(), Matchers.anyLong(), Matchers.anyString()))
           .thenThrow(ChatakAdminException.class);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANTCODE_BY_NAME)
           .param("merchantId", "merchantId"));

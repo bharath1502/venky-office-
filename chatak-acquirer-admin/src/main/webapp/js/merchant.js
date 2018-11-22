@@ -2118,15 +2118,8 @@ function validateVirtualTerminal() {
 // POS TERMINAL
 function validatePos() {
 	var list1 = "";
-	if ($('#posTerminal').is(":checked")) {
 		list1 = list1 + document.getElementById('posTerminal').name;
 		return true;
-	} else {
-		list1 = list1 + document.getElementById('posTerminal').name;
-		return true;
-	}
-	setLable('confirmMposTerminal', list1);
-	return true;
 }
 
 // ONLINE TERMINAL

@@ -123,6 +123,9 @@ function doAjaxFetchTransactionForRefund() {
 				$("#refNumberDiv").attr("readOnly",true);
 				$("#merchantIdDiv").attr("readOnly",true);
 				setDiv("errorDescDiv", "");
+			} else if(obj.errorCode === '01') {
+				setDiv("errorDescDiv", webMessages.merchantNotAssociatedToCurrentPM);
+				loadMsgTitleText();
 			} else {
 				setDiv("errorDescDiv", webMessages.virtualTerminalAlreadyRefunded);
 				loadMsgTitleText();
@@ -379,11 +382,6 @@ function validStreet() {
 function validZipcode() {
 	var val =getVal("zipcodeDiv");
 	var len = val.length;
-	if(null == val){
-		setDiv("zipcodeErrorDiv", webMessages.virtualTerminalZipCode);
-		loadMsgTitleText();
-		return false;
-	}
 	if (isEmpty(val)) {
 		setDiv("zipcodeErrorDiv", webMessages.virtualTerminalZipCode);
 		loadMsgTitleText();
@@ -599,8 +597,8 @@ function validMerchantCode(id,divId) {
 		return false;
 	} else if (!isDigit(val) || len < 4 || len > 15) {
 		setDiv(divId, webMessages.virtualTerminalNumericAndUpto15);
-		return false;
 		loadMsgTitleText();
+		return false;
 	} else {
 		setDiv(divId, "");
 		return true;

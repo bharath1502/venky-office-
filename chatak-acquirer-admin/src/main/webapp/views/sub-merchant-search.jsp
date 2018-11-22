@@ -137,7 +137,7 @@
 														<span id="businessNameEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-												<fieldset class="col-sm-3">
+												<%-- <fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="admin.pm.Name.message" /></label>
 													<form:input cssClass="form-control" path="programManagerName"
 														id="programManagerName" onblur="clientValidation('programManagerName','companyname_not_mandatory','programManagerNameEr')"/>
@@ -160,7 +160,7 @@
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="cardProgramNameEr" class="red-error">&nbsp;</span>
 													</div>
-												</fieldset>
+												</fieldset> --%>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.E-mailID" /></label>
 													<form:input cssClass="form-control" path="emailId"
@@ -169,13 +169,13 @@
 														<span id="emailIdEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-												<fieldset class="col-sm-3">
+												<%-- <fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.city" /></label>
 													<form:input cssClass="form-control" path="city" id="city" onblur="clientValidation('city','middle_name','cityEr')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="cityEr" class="red-error">&nbsp;</span>
 													</div>
-												</fieldset>
+												</fieldset> --%>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="manage.label.sub-merchant.country" /></label>
 													<form:select cssClass="form-control" path="country"
@@ -255,14 +255,14 @@
 							<table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">
 							<thead>
 							<tr>
-								<th style="width: 102px;"><spring:message code="manage.label.sub-merchant.submerchantcode" /></th>
+								<th style="width: 150px;"><spring:message code="manage.label.sub-merchant.submerchantcode" /></th>
 								<th style="width: 151px;"><spring:message code="merchant.label.merchantname" /></th>
 								<th style="width: 151px;"><spring:message code="currency-search-page.label.currencycode"/></th>
-								<th style="width: 92px;"><spring:message code="merchant.label.entitytype" /></th>
-								<th style="width: 92px;"><spring:message code="merchant.label.entityname" /></th>
-								<th style="width: 93px;"><spring:message code="manage.label.sub-merchant.E-mailID" /></th>
-								<th style="width: 72px;"><spring:message code="admin.cardprogramname" /></th>
-								<th style="width: 103px;"><spring:message code="manage.label.sub-merchant.city" /></th>
+								<%-- <th style="width: 92px;"><spring:message code="merchant.label.entitytype" /></th>
+								<th style="width: 92px;"><spring:message code="merchant.label.entityname" /></th> --%>
+								<th style="width: 150px;"><spring:message code="manage.label.sub-merchant.E-mailID" /></th>
+								<%-- <th style="width: 72px;"><spring:message code="admin.cardprogramname" /></th> --%>
+								<%-- <th style="width: 103px;"><spring:message code="manage.label.sub-merchant.city" /></th> --%>
 								<th style="width: 54px;"><spring:message code="manage.label.sub-merchant.country" /></th>
 								<th style="width: 93px;"><spring:message code="manage.label.sub-merchant.status" /></th>
 								<th class="sorter-false tablesorter-header tablesorter-headerUnSorted"><spring:message code="manage.label.sub-merchant.action" /></th>
@@ -275,11 +275,11 @@
 											<td><div class="feeDescDiv tbl-text-align-right">${merchantData.merchantCode }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.businessName }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.localCurrency }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityType }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityName }</div></td>
+											<%-- <td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityType }</div></td>
+											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.entityName }</div></td> --%>
 											<td><div class="feeDescDiv">${merchantData.emailId }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.cardProgramName }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.city }</div></td>
+											<%-- <td><div class="feeDescDiv tbl-text-align-left">${merchantData.cardProgramName }</div></td> --%>
+											<%-- <td><div class="feeDescDiv tbl-text-align-left">${merchantData.city }</div></td> --%>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.country }</div></td>
 											<td><div class="feeDescDiv tbl-text-align-left">${merchantData.status }</div></td>
 											<td style="white-space:nowrap;">

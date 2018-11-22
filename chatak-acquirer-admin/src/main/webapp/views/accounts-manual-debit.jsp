@@ -60,6 +60,11 @@
 										<span class="red-error">&nbsp;${error }</span> 
 									</div>
 								</div>
+								<c:if test="${debitResponse.errorCode eq 01}">
+								    <tr>
+										<td><span class="red-error">&nbsp; ${error}</span></td>
+									</tr>
+								</c:if> 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="process-manual-debit" modelAttribute="accountBalance" method="post">
@@ -169,7 +174,7 @@
 													<div class="col-sm-12 button-content">
 														<fieldset class="col-sm-7 pull-right">
 															<input type="submit" class="form-control button pull-right pos-next" id="processBtn" onclick="return validateDebit();amountFmt()" value="Process"> 
-															<input type="button" class="form-control button pull-right marginL10 pos-prev close-fetch-details" value="Back"> <!-- onclick="showEditPage()"  -->
+															<a class="form-control button pull-right" href="accounts-manual-debit">Back</a>
 														</fieldset>
 													</div>
 													<!--Panel Action Button End -->

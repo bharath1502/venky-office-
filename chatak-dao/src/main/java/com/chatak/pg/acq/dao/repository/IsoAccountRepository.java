@@ -6,7 +6,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.IsoAccount;
 
@@ -18,7 +18,7 @@ import com.chatak.pg.acq.dao.model.IsoAccount;
  * @Comments:
  *
  */
-public interface IsoAccountRepository extends JpaRepository<IsoAccount, Long>, QuerydslPredicateExecutor<IsoAccount> {
+public interface IsoAccountRepository extends JpaRepository<IsoAccount, Long>, QueryDslPredicateExecutor<IsoAccount> {
 
 	public List<IsoAccount> findByIsoIdAndAccountType(Long isoId, String accountType);
 

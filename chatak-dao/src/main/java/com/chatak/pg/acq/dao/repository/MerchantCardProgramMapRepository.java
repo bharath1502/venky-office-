@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ import com.chatak.pg.acq.dao.model.PGMerchantCardProgramMap;
  * @Comments: 
  *
  */
-public interface MerchantCardProgramMapRepository extends JpaRepository<PGMerchantCardProgramMap,Long>, QuerydslPredicateExecutor<PGMerchantCardProgramMap> {
+public interface MerchantCardProgramMapRepository extends JpaRepository<PGMerchantCardProgramMap,Long>, QueryDslPredicateExecutor<PGMerchantCardProgramMap> {
 
 	public List<PGMerchantCardProgramMap> findByMerchantId(Long merchantId);
 	

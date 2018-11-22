@@ -1,10 +1,9 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGFeeDetail;
 
@@ -17,9 +16,9 @@ import com.chatak.pg.acq.dao.model.PGFeeDetail;
  * @version 1.0
  */
 public interface FeeDetailRepository extends JpaRepository<PGFeeDetail, Long>,
-QuerydslPredicateExecutor<PGFeeDetail> {
+QueryDslPredicateExecutor<PGFeeDetail> {
   
-  public Optional<PGFeeDetail> findById(Long pGFeeDetailId);
+  public List<PGFeeDetail> findById(Long pGFeeDetailId);
   
   public List<PGFeeDetail> findByTxnType(String txnType);
 }

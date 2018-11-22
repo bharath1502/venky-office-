@@ -3,10 +3,8 @@
  */
 package com.chatak.pg.acq.dao.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGBankCurrencyMapping;
 
@@ -20,10 +18,10 @@ import com.chatak.pg.acq.dao.model.PGBankCurrencyMapping;
  */
 
 public interface BankCurrencyMappingRepository extends JpaRepository<PGBankCurrencyMapping, Long>,
-QuerydslPredicateExecutor<PGBankCurrencyMapping> 
+QueryDslPredicateExecutor<PGBankCurrencyMapping> 
 {
 	
-	public Optional<PGBankCurrencyMapping> findById(Long currencyId);
+	public PGBankCurrencyMapping findById(Long currencyId);
 
 
 }

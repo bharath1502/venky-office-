@@ -17,8 +17,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+ <link href="../css/jquery-datepicker.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -78,7 +77,7 @@
 										data-placement="top" title="">
 										<span class="red-error">&nbsp;${error}</span> <span
 											class="red-error redirectionError">&nbsp;${redirectionError}</span>
-										<span class="green-error">&nbsp;${success}</span> <span
+										<span id="sucessDiv" class="green-error">&nbsp;${success}</span> <span
 											class="green-error">&nbsp;${sucess}</span>
 									</div>
 								</div>
@@ -182,9 +181,9 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.fromdate" /></label>
-													<div class="input-group focus-field">
+													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="from_date" id="fromDate"
-															cssClass="form-control effectiveDate" />
+															cssClass="form-control effectiveDate jquery-datepicker__input" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -196,9 +195,9 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.todate" /></label>
-													<div class="input-group focus-field">
+													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="to_date"
-															cssClass="form-control effectiveDate" id="toDate" />
+															cssClass="form-control effectiveDate jquery-datepicker__input " id="toDate" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -350,22 +349,6 @@
 											<br>
 										</c:otherwise>
 									</c:choose>
-									<div
-										style="display: inline-block; width: 203px; color: rgb(73, 105, 175);">
-										<spring:message
-											code="transactions-search.label.merchantrevenuefee" />
-									</div>:
-								<c:choose>
-										<c:when test="${accountDetails.feeBalance lt 0}">
-											<span style="color: red;">
-											${currencyAlpha} <fmt:formatNumber value="${accountDetails.feeBalance/100}" /></span>
-											<br>
-										</c:when>
-										<c:otherwise>
-											<span>
-											${currencyAlpha} <fmt:formatNumber value="${accountDetails.feeBalance/100}" /></span>
-										</c:otherwise>
-									</c:choose>
 								</c:catch>
 								<c:if test="${catchException != null}">
 									<p>
@@ -397,8 +380,6 @@
 											value="<spring:message code="transactions-search.label.executeall"/>" />
 											<input type="button" class="txn-button processAll"
 											value="<spring:message code="transactions-search.label.processall"/>" />
-											<input type="button" class="txn-button cancelAll"
-											value="<spring:message code="transactions-search.label.cancelall"/>" />
 									</span></td>
 								</tr>
 							</table>
@@ -463,11 +444,18 @@
 																			onclick="doTransactonRefund('${transaction.transactionId}','${transaction.merchant_code}','${transaction.terminal_id }')" />
 																	</c:if>
 																	<c:if
-																		test="${transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Executed'  && (transaction.refundStatus == null || transaction.refundStatus == 0)}">
+																		test="${transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Settled'  && (transaction.refundStatus == null || transaction.refundStatus == 0)}">
 																		<input type="button" name="Refund"
 																			class="txn-button refund"
 																			value="<spring:message code="transactions-search.label.refundbutton"/>"
 																			onclick="doTransactonRefund('${transaction.transactionId}','${transaction.merchant_code}','${transaction.terminal_id }')" />
+																	</c:if>
+																	<c:if
+																		test="${transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Executed'}">
+																		<input type="button" name="Refund"
+																			class="txn-button refund"
+																			value="<spring:message code="transactions-search.label.cancelbutton"/>"
+																			onclick="doTransactionVoid('${transaction.transactionId}','${transaction.merchant_code}','${transaction.terminal_id }')" />
 																	</c:if>
 																</c:when>
 																<c:otherwise>
@@ -480,15 +468,19 @@
 																				onclick="doTransactonRefund('${transaction.transactionId}','${transaction.merchant_code}','${transaction.terminal_id }')" />
 																		</c:when>
 																		<c:when
-																			test="${fn:contains(existingFeatures,refundSubMerchantTransactions) && (transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Executed')  && (transaction.refundStatus == null || transaction.refundStatus == 0)}">
+																			test="${fn:contains(existingFeatures,refundSubMerchantTransactions) && (transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Settled')  && (transaction.refundStatus == null || transaction.refundStatus == 0)}">
 																			<input type="button" name="Refund"
 																				class="txn-button refund"
 																				value="<spring:message code="transactions-search.label.refundbutton"/>"
 																				onclick="doTransactonRefund('${transaction.transactionId}','${transaction.merchant_code}','${transaction.terminal_id }')" />
 																		</c:when>
-																		<c:otherwise>
-
-																		</c:otherwise>
+																		<c:when
+																			test="${fn:contains(existingFeatures,refundSubMerchantTransactions) && (transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Executed') }">
+																			<input type="button" name="Refund"
+																				class="txn-button refund"
+																				value="<spring:message code="transactions-search.label.cancelbutton"/>"
+																				onclick="doTransactionVoid('${transaction.transactionId}','${transaction.merchant_code}','${transaction.terminal_id }')" />
+																		</c:when>
 																	</c:choose>
 																</c:otherwise>
 															</c:choose>
@@ -503,7 +495,14 @@
 																		onclick="doTransactonRefund('${transaction.transactionId}','${transaction.merchant_code}','${transaction.terminal_id }')" />
 																</c:when>
 																<c:when
-																	test="${transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Executed'  && (transaction.refundStatus == null || transaction.refundStatus == 0)}">
+																	test="${transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Executed'}">
+																	<input type="button" name="Refund"
+																		class="txn-button refund"
+																		value="<spring:message code="transactions-search.label.cancelbutton"/>"
+																		onclick="doTransactonRefund('${transaction.transactionId}','${transaction.merchant_code}','${transaction.terminal_id }')" />
+																</c:when>
+																<c:when
+																	test="${transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Settled'  && (transaction.refundStatus == null || transaction.refundStatus == 0)}">
 																	<input type="button" name="Refund"
 																		class="txn-button refund"
 																		value="<spring:message code="transactions-search.label.refundbutton"/>"
@@ -690,7 +689,7 @@
 	<script src="../js/sortable.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	  <script src="../js/jquery-datepicker.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script>
 	
@@ -734,15 +733,18 @@
 							highlightMainContent('navListId6');
 
 							$(".focus-field").click(function() {
-								$(this).children('.effectiveDate').focus();
+								 $(this).children('.effectiveDate').focus();
+								 $('.jquery-datepicker').datepicker();
 							});
-
-							$('.effectiveDate').datetimepicker({
+							 
+							/* rome(fromDate, { time: false });
+							rome(toDate, { time: false }); */
+							/* $('.effectiveDate').datetimepicker({
 								timepicker : false,
 								format : 'd/m/Y',
 								formatDate : 'd/m/Y',
 								maxDate:new Date()
-							});
+							}); */
 							($(".execute").length == 0) ? $(".executeAll")
 									.hide() : $(".executeAll").show();
 							($(".process").length == 0) ? $(".processAll")

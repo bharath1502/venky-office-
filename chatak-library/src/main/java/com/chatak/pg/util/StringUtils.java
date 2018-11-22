@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,10 +97,11 @@ public class StringUtils {
    * 
    * @param length
    * @return String
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generateNumericString(int length) {
+  public static String generateNumericString(int length){
     StringBuilder sb = new StringBuilder();
-    Random random = new Random();
+    SecureRandom random = new SecureRandom();
     for(int n = 0; n < length; n++) {
       int j = random.nextInt() % Integer.parseInt("10");
       sb.append((char) (j + Integer.parseInt("48")));
@@ -114,37 +114,15 @@ public class StringUtils {
    * 
    * @param length
    * @return String
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generateAlphabeticString(int length) {
+  public static String generateAlphabeticString(int length){
     StringBuilder sb = new StringBuilder();
-    Random random = new Random();
+    SecureRandom random = new SecureRandom();
     for(int n = 0; n < length; n++) {
       int j = random.nextInt() % Integer.parseInt("26");
       sb.append((char) (j + Integer.parseInt("65")));
     }
-    return sb.toString();
-  }
-
-  /**
-   * This method used for parsing the order receipt transaction
-   * 
-   * @param reciptTxt
-   * @return String
-   */
-  public static String parseReceiptOrder(String reciptTxt) {
-    StringBuffer sb = new StringBuffer();
-    // Create a pattern to match cat
-    Pattern p = Pattern.compile("\\r\\n");
-    // Create a matcher with an input string
-    Matcher m = p.matcher(reciptTxt);
-    boolean result = m.find();
-    // Loop through and create a new String with the replacements
-    while(result) {
-      m.appendReplacement(sb, "\r\n");
-      result = m.find();
-    }
-    // Add the last segment of input to the new String
-    m.appendTail(sb);
     return sb.toString();
   }
 

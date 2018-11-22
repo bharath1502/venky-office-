@@ -46,6 +46,22 @@ public class Bank extends SearchRequest {
   
   private String country;
   
+  private String loginuserType;
+  
+  /**
+   * @return the loginuserType
+   */
+  public String getLoginuserType() {
+    return loginuserType;
+  }
+
+  /**
+   * @param loginuserType the loginuserType to set
+   */
+  public void setLoginuserType(String loginuserType) {
+    this.loginuserType = loginuserType;
+  }
+
   public Long getId() {
     return id;
   }

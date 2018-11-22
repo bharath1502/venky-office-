@@ -11,7 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @SuppressWarnings("rawtypes")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(value=Include.NON_NULL)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response implements Serializable {
 
   /**
@@ -71,30 +72,32 @@ public class Response implements Serializable {
   
   private String deviceTimeZoneRegion;
   
+  private String txnType;
+  
   private Long id;
   
   private String isoName;
   
   private Long isoId;
-  
-  public String getIsoName() {
-    return isoName;
+
+  public Long getId() {
+    return id;
   }
 
-  public void setIsoName(String isoName) {
-    this.isoName = isoName;
+  public String getIsoName() {
+    return isoName;
   }
 
   public Long getIsoId() {
     return isoId;
   }
 
-  public void setIsoId(Long isoId) {
-    this.isoId = isoId;
+  public void setIsoName(String isoName) {
+    this.isoName = isoName;
   }
 
-  public Long getId() {
-    return id;
+  public void setIsoId(Long isoId) {
+    this.isoId = isoId;
   }
 
   public void setId(Long id) {
@@ -428,4 +431,11 @@ public class Response implements Serializable {
     this.deviceTimeZoneRegion = deviceTimeZoneRegion;
   }
 
+  public String getTxnType() {
+    return txnType;
+  }
+
+  public void setTxnType(String txnType) {
+    this.txnType = txnType;
+  }
 }

@@ -1,6 +1,7 @@
 package com.chatak.pg.util;
 
-import java.util.Random;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * This class is used to generate random numbers, alpha-numeric
@@ -16,12 +17,13 @@ public class RandomGenerator {
    * This method generate the default random alpha numeric value
    * 
    * @return String
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generateRandAlphaNumeric() {
+  public static String generateRandAlphaNumeric(){
     char[] randomChar = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
                           'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9'};
     String finalRandString = "";
-    Random randomObj = new Random();
+    SecureRandom randomObj = new SecureRandom();
     for(int j = 0; j < Integer.parseInt("6"); j++) {
       int rand_int = randomObj.nextInt(Integer.parseInt("72"));
       finalRandString += Character.toString(randomChar[rand_int]);
@@ -34,12 +36,13 @@ public class RandomGenerator {
    * 
    * @param length
    * @return String
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generateRandAlphaNumeric(int length) {
+  public static String generateRandAlphaNumeric(int length){
     char[] randomChar = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
                           'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9'};
     String finalRandString = "";
-    Random randomObj = new Random();
+    SecureRandom randomObj = new SecureRandom();
     for(int j = 0; j < length; j++) {
       int rand_int = randomObj.nextInt(Integer.parseInt("72"));
       finalRandString += Character.toString(randomChar[rand_int]);

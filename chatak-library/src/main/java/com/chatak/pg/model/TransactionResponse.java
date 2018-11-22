@@ -4,7 +4,7 @@
 package com.chatak.pg.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * @Author: Girmiti Software
  * @Date: Apr 23, 2015
@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class TransactionResponse extends Response{
   
   /**

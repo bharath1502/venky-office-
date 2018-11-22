@@ -7,15 +7,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.springframework.beans.BeanUtils;
 
@@ -27,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SuppressWarnings("rawtypes")
 public final class CommonUtil {
   
-  private static Logger logger = Logger.getLogger(CommonUtil.class);
+  private static Logger logger = LogManager.getLogger(CommonUtil.class);
   
   private static final String CARD_EXP_DATE = "expDate";
   private static final String CARD_NUMBER = "cardNumber";
@@ -43,7 +44,7 @@ public final class CommonUtil {
 
   public static String generateRandomNumber(int length) {
     StringBuilder sb = new StringBuilder();
-    Random random = new Random();
+    SecureRandom random = new SecureRandom();
     int n;
     for(n = 0; n < length; n++) {
       int j = random.nextInt() % Integer.parseInt("10");
@@ -65,14 +66,18 @@ public final class CommonUtil {
    */
   public static String generateRandNumeric(int length) {
     String finalRandString = "";
-    Random randomObj = new Random();
-    for(int j = 0; j < length; j++) {
-      int randomInt = randomObj.nextInt(Integer.parseInt("72"));
-      finalRandString += Integer.toString(randomInt);
-      if(finalRandString.length() >= length) {
-        finalRandString = finalRandString.substring(0, length);
-        break;
+    try {
+      SecureRandom randomObj =new SecureRandom();
+      for(int j = 0; j < length; j++) {
+        int randomInt = randomObj.nextInt(Integer.parseInt("72"));
+        finalRandString += Integer.toString(randomInt);
+        if(finalRandString.length() >= length) {
+          finalRandString = finalRandString.substring(0, length);
+          break;
+        }
       }
+    } catch(Exception e) {
+      logger.error("Error :: CommonUtil :: generateRandNumeric", e.getMessage());
     }
     return finalRandString;
   }

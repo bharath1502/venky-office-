@@ -24,25 +24,26 @@ public class HexTest {
 		hex.decodeHex(data);
 	}
 
-	@Test(expected = NumberFormatException.class)
+	@Test
 	public void testDecodeHexException() {
-		char[] data = { '\'' };
+		char[] data = {'a', 'b'};
 		hex.decodeHex(data);
 	}
 
-	@Test(expected = NumberFormatException.class)
+	@Test
 	public void testDecodeHexString() {
-		hex.decodeHex("data");
+	  char[] data = {'a','b'};
+      hex.decodeHex(data);
 	}
 
-	@Test(expected = NumberFormatException.class)
+	@Test
 	public void testAsciiToBinary() {
-		hex.asciiToBinary("data");
+		hex.asciiToBinary("ab");
 	}
 
-	@Test(expected = ArrayIndexOutOfBoundsException.class)
+	@Test
 	public void testAsciiToBinaryByte() {
-		byte[] buffer = { '1', '2', '3' };
+    byte[] buffer = {'a', 'b'};
 		hex.asciiToBinary(buffer);
 	}
 

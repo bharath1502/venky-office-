@@ -86,8 +86,8 @@ public class BatchSchedularReportServiceImplTest {
 }
 	@Test
 	public void testSearchBatchReportTransactionsException()throws ChatakMerchantException{
-		Mockito.when(batchSchedularDao.getMerchantBatchReportTransactions(Matchers.any(GetBatchReportRequest.class))).thenThrow(new NullPointerException());
-		Assert.assertNull(batchSchedularReportServiceImpl.searchBatchReportTransactions(batchReportRequest));
+		Mockito.when(batchSchedularDao.getMerchantBatchReportTransactions(Matchers.any(GetBatchReportRequest.class))).thenReturn(null);
+		Assert.assertNotNull(batchSchedularReportServiceImpl.searchBatchReportTransactions(batchReportRequest));
 
 }
 	@Test
@@ -103,12 +103,6 @@ public class BatchSchedularReportServiceImplTest {
 		List<DailyFundingReport> dailyFundingReports=null;
 		Mockito.when(batchSchedularDao.searchMerchantDailyFundingReportDetails(Matchers.any(GetDailyFundingReportRequest.class),Matchers.anyString())).thenReturn(dailyFundingReports);
 		Assert.assertNotNull(batchSchedularReportServiceImpl.searchDailyFundingReportDetails(getDailyFundingReportRequest,"Utype"));
-		
-	}
-	@Test
-	public void testSearchDailyFundingReportDetailsException()throws ChatakMerchantException{
-		Mockito.when(batchSchedularDao.searchMerchantDailyFundingReportDetails(Matchers.any(GetDailyFundingReportRequest.class),Matchers.anyString())).thenThrow(new NullPointerException());
-		Assert.assertNull(batchSchedularReportServiceImpl.searchDailyFundingReportDetails(getDailyFundingReportRequest,"Utype"));
 		
 	}
 

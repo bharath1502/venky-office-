@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.BankSearchResponse;
@@ -30,7 +31,6 @@ import com.chatak.pg.model.Bank;
 import com.chatak.pg.user.bean.BankRequest;
 import com.chatak.pg.user.bean.BankResponse;
 import com.chatak.pg.user.bean.GetBankListResopnse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BankServiceTest {
@@ -129,9 +129,9 @@ public class BankServiceTest {
     CountryRequest countryRequest = Mockito.mock(CountryRequest.class);
     PGState pgStates = Mockito.mock(PGState.class);
     Mockito.when(countryDao.getCountryByName(Matchers.anyString())).thenReturn(countryRequest);
-    Mockito.when(countryRequest.getId()).thenReturn(Constants.TWO_LONG);
+    Mockito.when(countryRequest.getId()).thenReturn(TestConstants.TWO_LONG);
     Mockito.when(countryRequest.getName()).thenReturn("india");
-    Mockito.when(stateRepository.findByCountryId(Constants.TWO_LONG)).thenReturn(Arrays.asList(pgStates));
+    Mockito.when(stateRepository.findByCountryId(TestConstants.TWO_LONG)).thenReturn(Arrays.asList(pgStates));
     response = bankService.getStatesByCountry("0");
     Assert.assertNotNull(response);
   }

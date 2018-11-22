@@ -3,6 +3,7 @@ package com.chatak.acquirer.admin.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,6 +27,8 @@ import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.model.FeeProgramDTO;
 import com.chatak.pg.model.FeeValue;
 import com.chatak.pg.model.OtherFeesDTO;
+import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.Properties;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FeeProgramServiceImplTest {
@@ -48,7 +51,20 @@ public class FeeProgramServiceImplTest {
 	@Mock
 	MerchantRepository merchantRepository;
 
-	@Test
+	@Mock
+    PGOtherFeeValue pgOtherFeeValue;
+
+    @Mock
+    Constants constants;
+
+    @Before
+    public void init() {
+      java.util.Properties propsExportedLocal = new java.util.Properties();
+      propsExportedLocal.setProperty("max.download.limit", "12");
+      Properties.mergeProperties(propsExportedLocal);
+    }
+
+    @Test
 	public void testCreateFeeProgram() throws ChatakAdminException {
 		List<PGAcquirerFeeValue> feeProgramValueDaoDetails = new ArrayList<>();
 		List<FeeValue> feeValues = new ArrayList<>();
@@ -144,7 +160,7 @@ public class FeeProgramServiceImplTest {
 		feeProgramServiceImpl.getByFeeProgramId(feeProgramDTO);
 	}
 
-	@Test(expected = ChatakAdminException.class)
+	@Test
 	public void testUpdateFeeProgram() throws ChatakAdminException {
 		List<FeeValue> feeValueList = new ArrayList<>();
 		FeeValue feeValue = new FeeValue();
@@ -169,6 +185,7 @@ public class FeeProgramServiceImplTest {
 		feeProgramDTO.setFeeProgramName("a");
 		feeProgramDTO.setFeeProgramId(Long.parseLong("1"));
 		feeProgram.setFeeProgramId(Long.parseLong("1"));
+		feeProgram.setPgOtherFeeValue(pgOtherFeeValue);
 		feeProgramDetails.add(feeProgram);
 		Mockito.when(feeProgramDao.findByFeeProgramName(Matchers.anyString())).thenReturn(feeProgramDetails);
 		Mockito.when(acquirerFeeValueDao.getAcquirerFeeValuesByFeeProgramId(Matchers.anyLong()))

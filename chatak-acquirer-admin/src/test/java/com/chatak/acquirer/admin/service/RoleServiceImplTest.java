@@ -121,8 +121,11 @@ public class RoleServiceImplTest {
 		roleServiceImpl.deletRole(Long.parseLong("534"));
 	}
 
-	@Test(expected = ChatakAdminException.class)
+	@Test
 	public void testDeletRoleException() throws ChatakAdminException {
+	    PGUserRoles pgUserRoles=new PGUserRoles();
+        pgUserRoles.setCreatedBy("admin");
+        Mockito.when(usersRoleDao.findByRoleId(Matchers.anyLong())).thenReturn(pgUserRoles);
 		roleServiceImpl.deletRole(Long.parseLong("534"));
 	}
 

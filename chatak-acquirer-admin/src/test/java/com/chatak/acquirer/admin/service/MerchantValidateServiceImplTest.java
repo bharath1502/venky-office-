@@ -1,6 +1,5 @@
 package com.chatak.acquirer.admin.service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,6 @@ import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.SwitchDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAdminUser;
-import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGFeeProgram;
 import com.chatak.pg.acq.dao.model.PGLegalEntity;
 import com.chatak.pg.acq.dao.model.PGMerchant;
@@ -92,13 +90,6 @@ public class MerchantValidateServiceImplTest {
 	ProgramManagerDao programManagerDao;
 
 	@Test
-	public void testValidateAgentDetails() {
-		PGCurrencyConfig currencyConfig = new PGCurrencyConfig();
-		Mockito.when(currencyConfigRepository.findByCurrencyCodeAlpha(Matchers.anyString())).thenReturn(currencyConfig);
-		merchantValidateServiceImpl.validateAgentDetails("34242", "133", "5435", "4234");
-	}
-
-	@Test
 	public void testvalidateUserName() throws ChatakAdminException {
 		merchantValidateServiceImpl.validateUserName("agentAccountNumber");
 	}
@@ -123,16 +114,6 @@ public class MerchantValidateServiceImplTest {
 	@Test
 	public void testvalidateEmailIdEdit() throws ChatakAdminException {
 		merchantValidateServiceImpl.validateEmailIdEdit("agentAccountNumber", "agentClientId");
-	}
-
-	@Test
-	public void testgetAgentDataById() throws ChatakAdminException {
-		merchantValidateServiceImpl.getAgentDataById(Long.parseLong("123"));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testgetPartnerList() throws ChatakAdminException, IOException {
-		merchantValidateServiceImpl.getPartnerList("currencyCodeAlpha");
 	}
 
 	@Test

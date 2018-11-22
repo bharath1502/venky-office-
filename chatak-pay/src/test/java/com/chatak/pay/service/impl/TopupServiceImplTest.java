@@ -2,6 +2,7 @@ package com.chatak.pay.service.impl;
 
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,6 +18,7 @@ import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.TerminalDao;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTerminal;
+import com.chatak.pg.util.Properties;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TopupServiceImplTest {
@@ -32,6 +34,23 @@ public class TopupServiceImplTest {
 
 	@Mock
 	MerchantUpdateDao merchantUpdateDao;
+
+	@Before
+    public void pro() {
+      java.util.Properties properties = new java.util.Properties();
+      properties.setProperty("thread.pool.size", "200");
+      properties.setProperty("thread.max.per.route", "200");
+      properties.setProperty("chatak-issuance.service.url", "https://dev.ipsidy.net/prepaidservices");
+      properties.setProperty("chatak-issuance.get.topupCategoryList", "/rest/topupService/getTopupCategoryList");
+      properties.setProperty("chatak-issuance.consumer.client.id", "ChatakPrepaidAdminBasicAuth");
+      properties.setProperty("chatak-issuance.consumer.client.secret", "ChatakAdmin@Secure");
+      properties.setProperty("prepaid.service.url", "https://dev.ipsidy.net/prepaidservices");
+      properties.setProperty("chatak-issuance.oauth.service.url", "/secure/oauth/token?grant_type=password&username=ChatakPrepaidAdminUser&password=ChatakPrepaidAdminPass");
+      properties.setProperty("chatak-issuance.oauth.basic.auth.username", "ChatakPrepaidAdminBasicAuth");
+      properties.setProperty("chatak-issuance.oauth.basic.auth.password", "ChatakAdmin@Secure");
+      properties.setProperty("chatak-issuance.get.operators", "/rest/topupService/getTopupOperators");
+      Properties.mergeProperties(properties);
+    }
 
 	@Test
 	public void testGetOperators() {

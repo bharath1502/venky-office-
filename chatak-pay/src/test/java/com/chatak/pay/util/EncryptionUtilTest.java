@@ -49,9 +49,4 @@ public class EncryptionUtilTest {
 		encryptionUtil.getJCryptoKeyPair();
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void testDecrypt() {
-		encryptionUtil.decrypt(null, "abc");
-	}
-
 }

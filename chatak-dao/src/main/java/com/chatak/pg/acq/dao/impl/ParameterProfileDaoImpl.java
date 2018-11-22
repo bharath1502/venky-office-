@@ -28,10 +28,10 @@ import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.ParameterProfileDTO;
 import com.chatak.pg.model.TerminalCapabilitiesDTO;
 import com.chatak.pg.util.Constants;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 @Repository("parameterProfileDao")
 public class ParameterProfileDaoImpl implements ParameterProfileDao {
@@ -73,9 +73,11 @@ public class ParameterProfileDaoImpl implements ParameterProfileDao {
 	@Override
 	public PGParameterProfile findByParameterProfileId(Long profileId) {
 		PGParameterProfile parameterProfile = null;
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> parameterProfileList= query.from(QPGParameterProfile.pGParameterProfile,QPGTerminalCapabilities.pGTerminalCapabilities)
-				 						.select(QPGParameterProfile.pGParameterProfile.profileId,QPGParameterProfile.pGParameterProfile.profileName,QPGParameterProfile.pGParameterProfile.terminalType,
+			                            .where(isProfileIdEq(profileId),	
+			    		                 QPGParameterProfile.pGParameterProfile.terminalCapabilities.terminalCapabilitiesId.eq(QPGTerminalCapabilities.pGTerminalCapabilities.terminalCapabilitiesId))
+			    		               .list(QPGParameterProfile.pGParameterProfile.profileId,QPGParameterProfile.pGParameterProfile.profileName,QPGParameterProfile.pGParameterProfile.terminalType,
 			    		            		 QPGParameterProfile.pGParameterProfile.isoCountryCode,QPGParameterProfile.pGParameterProfile.localCurrencyCode,QPGParameterProfile.pGParameterProfile.currencyCode,
 			    		            		 QPGParameterProfile.pGParameterProfile.targetPercentage,QPGParameterProfile.pGParameterProfile.terminalFloorLimit,QPGParameterProfile.pGParameterProfile.maxTargetPercentage,
 			    		            		 QPGParameterProfile.pGParameterProfile.defaultCdol,QPGParameterProfile.pGParameterProfile.defaultDdol,QPGParameterProfile.pGParameterProfile.defaultTdol,
@@ -85,10 +87,7 @@ public class ParameterProfileDaoImpl implements ParameterProfileDao {
 			    		            		 QPGParameterProfile.pGParameterProfile.terminalCapabilities.terminalCapabilitiesId,QPGParameterProfile.pGParameterProfile.attended,QPGParameterProfile.pGParameterProfile.unAttended,
 			    		            		 QPGParameterProfile.pGParameterProfile.attendFinancialInstitute, QPGParameterProfile.pGParameterProfile.attendMerchant,QPGParameterProfile.pGParameterProfile.unAttendMerchant,
 			    		            		 QPGParameterProfile.pGParameterProfile.unAttendfinancialInstitute,QPGParameterProfile.pGParameterProfile.createdBy,QPGParameterProfile.pGParameterProfile.createdDate,
-			    		            		 QPGParameterProfile.pGParameterProfile.status,QPGParameterProfile.pGParameterProfile.unAttendCardHolder)
-			                            .where(isProfileIdEq(profileId),	
-			    		                 QPGParameterProfile.pGParameterProfile.terminalCapabilities.terminalCapabilitiesId.eq(QPGTerminalCapabilities.pGTerminalCapabilities.terminalCapabilitiesId))
-			    		               .fetch();
+			    		            		 QPGParameterProfile.pGParameterProfile.status,QPGParameterProfile.pGParameterProfile.unAttendCardHolder);
 
 		for (Tuple tuple:parameterProfileList) {
 			parameterProfile = new PGParameterProfile();
@@ -148,13 +147,8 @@ public class ParameterProfileDaoImpl implements ParameterProfileDao {
 		}
 		
 		List<ParameterProfileDTO> parameterProfileList = new ArrayList<ParameterProfileDTO>();
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> profileList = query.from(QPGParameterProfile.pGParameterProfile,QPGTerminalCapabilities.pGTerminalCapabilities)
-									   .select(QPGParameterProfile.pGParameterProfile.profileId,QPGParameterProfile.pGParameterProfile.profileName,QPGParameterProfile.pGParameterProfile.terminalType,
-			    		            		 QPGParameterProfile.pGParameterProfile.isoCountryCode,QPGParameterProfile.pGParameterProfile.localCurrencyCode,QPGParameterProfile.pGParameterProfile.currencyCode,
-			    		            		 QPGParameterProfile.pGParameterProfile.targetPercentage,QPGParameterProfile.pGParameterProfile.terminalFloorLimit,QPGParameterProfile.pGParameterProfile.status,
-			    		            		 QPGParameterProfile.pGParameterProfile.defaultCdol,QPGParameterProfile.pGParameterProfile.defaultDdol,QPGParameterProfile.pGParameterProfile.defaultTdol,
-			    		            		 QPGParameterProfile.pGParameterProfile.terminalCapabilities.terminalCapabilitiesId)
 				                       .where(isProfileIdEq(parameterProfileTO.getProfileId()),
 				                    		   isProfileNameLike(parameterProfileTO.getProfileName()),
 				                    		   isTerminalTypeLike(parameterProfileTO.getTerminalType()),
@@ -163,7 +157,11 @@ public class ParameterProfileDaoImpl implements ParameterProfileDao {
 								               QPGParameterProfile.pGParameterProfile.terminalCapabilities.terminalCapabilitiesId.eq(QPGTerminalCapabilities.pGTerminalCapabilities.terminalCapabilitiesId))
 						                      .offset(offset)
 						               .limit(limit).orderBy(orderByProfileIdDesc())
-				                       .fetch();
+				                       .list(QPGParameterProfile.pGParameterProfile.profileId,QPGParameterProfile.pGParameterProfile.profileName,QPGParameterProfile.pGParameterProfile.terminalType,
+			    		            		 QPGParameterProfile.pGParameterProfile.isoCountryCode,QPGParameterProfile.pGParameterProfile.localCurrencyCode,QPGParameterProfile.pGParameterProfile.currencyCode,
+			    		            		 QPGParameterProfile.pGParameterProfile.targetPercentage,QPGParameterProfile.pGParameterProfile.terminalFloorLimit,QPGParameterProfile.pGParameterProfile.status,
+			    		            		 QPGParameterProfile.pGParameterProfile.defaultCdol,QPGParameterProfile.pGParameterProfile.defaultDdol,QPGParameterProfile.pGParameterProfile.defaultTdol,
+			    		            		 QPGParameterProfile.pGParameterProfile.terminalCapabilities.terminalCapabilitiesId);
 		for (Tuple tuple : profileList) {
 			ParameterProfileDTO parameterProfile = new ParameterProfileDTO();
 			TerminalCapabilitiesDTO terminalCapabilities = new TerminalCapabilitiesDTO();
@@ -185,16 +183,15 @@ public class ParameterProfileDaoImpl implements ParameterProfileDao {
 	
 
 	private int getTotalNumberOfRecords(ParameterProfileDTO parameterProfileTO) {
-		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Long> list = query.from(QPGParameterProfile.pGParameterProfile,QPGTerminalCapabilities.pGTerminalCapabilities)
-				 .select(QPGParameterProfile.pGParameterProfile.profileId)
 				 .where(isProfileIdEq(parameterProfileTO.getProfileId()),
 						 isProfileNameLike(parameterProfileTO.getProfileName()),
 			               isTerminalTypeLike(parameterProfileTO.getTerminalType()),
 			               isStatusEq(parameterProfileTO.getStatus()),
 			               isParameterType(parameterProfileTO.getParameterType()),
 			                QPGParameterProfile.pGParameterProfile.terminalCapabilities.terminalCapabilitiesId.eq(QPGTerminalCapabilities.pGTerminalCapabilities.terminalCapabilitiesId))
-						 .fetch();
+						 .list(QPGParameterProfile.pGParameterProfile.profileId);
 		return (StringUtil.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
 	

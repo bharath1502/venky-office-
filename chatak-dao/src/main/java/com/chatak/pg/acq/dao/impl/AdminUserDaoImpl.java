@@ -21,10 +21,10 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.GenericUserDTO;
 import com.chatak.pg.util.Constants;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 @Repository("adminUserDao")
 public class AdminUserDaoImpl implements AdminUserDao {
@@ -87,7 +87,7 @@ public class AdminUserDaoImpl implements AdminUserDao {
     @Override
     public List<PGAdminUser> createOrUpdateUsers(List<PGAdminUser> adminUserList)
             throws DataAccessException {
-        return adminUserDaoRepository.saveAll(adminUserList);
+        return adminUserDaoRepository.save(adminUserList);
 
     }
 
@@ -113,17 +113,9 @@ public class AdminUserDaoImpl implements AdminUserDao {
             limit = pageSize;
         }
 
-        JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+        JPAQuery query = new JPAQuery(entityManager);
         List<Tuple> dataList = query
                 .from(QPGAdminUser.pGAdminUser, QPGUserRoles.pGUserRoles)
-                .select(QPGAdminUser.pGAdminUser.adminUserId,
-                        QPGAdminUser.pGAdminUser.firstName,
-                        QPGAdminUser.pGAdminUser.lastName,
-                        QPGAdminUser.pGAdminUser.status,
-                        QPGAdminUser.pGAdminUser.phone,
-                        QPGAdminUser.pGAdminUser.userName,
-                        QPGAdminUser.pGAdminUser.email,
-                        QPGUserRoles.pGUserRoles.roleName)
                 .where(isAdminUserIdEq(userTo.getAdminUserId()),
                         isLastNameEq(userTo.getLastName()),
                         isFirstNameEq(userTo.getFirstName()),
@@ -138,7 +130,14 @@ public class AdminUserDaoImpl implements AdminUserDao {
                 .offset(offset)
                 .limit(limit)
                 .orderBy(orderByCreatedDateDesc())
-                .fetch();
+                .list(QPGAdminUser.pGAdminUser.adminUserId,
+                        QPGAdminUser.pGAdminUser.firstName,
+                        QPGAdminUser.pGAdminUser.lastName,
+                        QPGAdminUser.pGAdminUser.status,
+                        QPGAdminUser.pGAdminUser.phone,
+                        QPGAdminUser.pGAdminUser.userName,
+                        QPGAdminUser.pGAdminUser.email,
+                        QPGUserRoles.pGUserRoles.roleName);
         AdminUserDTO adminUserDto = null;
         for (Tuple data : dataList) {
             adminUserDto = new AdminUserDTO();
@@ -238,10 +237,9 @@ public class AdminUserDaoImpl implements AdminUserDao {
       }
 
     private int getTotalNumberOfAdminRecords(AdminUserDTO userTO) {
-        JPAQuery<PGAdminUser> query = new JPAQuery<PGAdminUser>(entityManager);
+        JPAQuery query = new JPAQuery(entityManager);
         List<PGAdminUser> adminuserList = query
                 .from(QPGAdminUser.pGAdminUser, QPGUserRoles.pGUserRoles)
-                .select(QPGAdminUser.pGAdminUser)
                 .where(isAdminUserIdEq(userTO.getAdminUserId()),
                         isRoleIdEq(userTO.getUserRoleId()),
                         isLastNameEq(userTO.getLastName()),
@@ -252,7 +250,7 @@ public class AdminUserDaoImpl implements AdminUserDao {
                         isEmailIdEq(userTO.getEmail()),
                         QPGAdminUser.pGAdminUser.userRoleId
                                 .eq(QPGUserRoles.pGUserRoles.roleId))
-                .orderBy(orderByUserIdAsc()).fetch();
+                .orderBy(orderByUserIdAsc()).list(QPGAdminUser.pGAdminUser);
 
         return (adminuserList != null && !adminuserList.isEmpty() ? adminuserList
                 .size() : 0);
@@ -338,20 +336,9 @@ public class AdminUserDaoImpl implements AdminUserDao {
             limit = pageSize;
         }
 
-        JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+        JPAQuery query = new JPAQuery(entityManager);
         List<Tuple> dataList = query
                 .from(QPGAdminUser.pGAdminUser, QPGUserRoles.pGUserRoles)
-                .select(QPGAdminUser.pGAdminUser.adminUserId,
-                        QPGAdminUser.pGAdminUser.firstName,
-                        QPGAdminUser.pGAdminUser.lastName,
-                        QPGAdminUser.pGAdminUser.status,
-                        QPGAdminUser.pGAdminUser.phone,
-                        QPGAdminUser.pGAdminUser.userName,
-                        QPGAdminUser.pGAdminUser.email,
-                        QPGUserRoles.pGUserRoles.roleName,
-                        QPGAdminUser.pGAdminUser.userType,
-                        QPGAdminUser.pGAdminUser.createdDate,
-                        QPGAdminUser.pGAdminUser.updatedDate)
                 .where(isAdminUserIdNotEq(userTo.getAdminUserId()),
                         isLastNameEq(userTo.getLastName()),
                         isFirstNameEq(userTo.getFirstName()),
@@ -368,7 +355,17 @@ public class AdminUserDaoImpl implements AdminUserDao {
                 .offset(offset)
                 .limit(limit)
                 .orderBy(orderByCreatedDateDesc())
-                .fetch();
+                .list(QPGAdminUser.pGAdminUser.adminUserId,
+                        QPGAdminUser.pGAdminUser.firstName,
+                        QPGAdminUser.pGAdminUser.lastName,
+                        QPGAdminUser.pGAdminUser.status,
+                        QPGAdminUser.pGAdminUser.phone,
+                        QPGAdminUser.pGAdminUser.userName,
+                        QPGAdminUser.pGAdminUser.email,
+                        QPGUserRoles.pGUserRoles.roleName,
+                        QPGAdminUser.pGAdminUser.userType,
+                        QPGAdminUser.pGAdminUser.createdDate,
+                        QPGAdminUser.pGAdminUser.updatedDate);
         GenericUserDTO adminUserDto = null;
         for (Tuple data : dataList) {
             adminUserDto = new GenericUserDTO();
@@ -392,10 +389,9 @@ public class AdminUserDaoImpl implements AdminUserDao {
     }
     
     private int getTotalNumberOfUserRecords(GenericUserDTO userTO) {
-        JPAQuery<PGAdminUser> query = new JPAQuery<PGAdminUser>(entityManager);
+        JPAQuery query = new JPAQuery(entityManager);
         List<PGAdminUser> adminuserList = query
                 .from(QPGAdminUser.pGAdminUser, QPGUserRoles.pGUserRoles)
-                .select(QPGAdminUser.pGAdminUser)
                 .where(isAdminUserIdNotEq(userTO.getAdminUserId()),
                         isRoleIdEq(userTO.getUserRoleId()),
                         isLastNameEq(userTO.getLastName()),
@@ -409,7 +405,7 @@ public class AdminUserDaoImpl implements AdminUserDao {
                         QPGAdminUser.pGAdminUser.userRoleId
                                 .eq(QPGUserRoles.pGUserRoles.roleId),
                                 isEntityIdEq(userTO.getEntityId()))
-                .orderBy(orderByCreatedDateDesc()).fetch();
+                .orderBy(orderByCreatedDateDesc()).list(QPGAdminUser.pGAdminUser);
 
         return (adminuserList != null && !adminuserList.isEmpty() ? adminuserList
                 .size() : 0);

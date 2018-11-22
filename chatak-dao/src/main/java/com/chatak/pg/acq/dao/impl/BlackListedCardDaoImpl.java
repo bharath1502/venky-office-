@@ -31,10 +31,10 @@ import com.chatak.pg.user.bean.BlackListedCardResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -94,7 +94,7 @@ public class BlackListedCardDaoImpl implements BlackListedCardDao {
 	public BlackListedCardResponse updateBlackListedCardInformation(BlackListedCardRequest updateBlackListedCardRequest, String userid) {
 		log.info("BlackListedCardDaoImpl | updateBlackListedCardInformation | Entering");
 		BlackListedCardResponse updateBlackListedCardResponse = new BlackListedCardResponse();
-		PGBlackListedCard pgBlackListedCard = blackListedCardRepository.findById(updateBlackListedCardRequest.getId()).orElse(null);
+		PGBlackListedCard pgBlackListedCard = blackListedCardRepository.findById(updateBlackListedCardRequest.getId());
 		try{
 		if(pgBlackListedCard != null)
 		{
@@ -118,7 +118,7 @@ public class BlackListedCardDaoImpl implements BlackListedCardDao {
 	 */
 	@Override
 	public PGBlackListedCard getBlackListedCardInfoById(Long getBlackListedCardId) {
-		PGBlackListedCard pgBlackListedCard = blackListedCardRepository.findById(getBlackListedCardId).orElse(null);
+		PGBlackListedCard pgBlackListedCard = blackListedCardRepository.findById(getBlackListedCardId);
 		return pgBlackListedCard;
 	}
 	
@@ -148,17 +148,16 @@ public class BlackListedCardDaoImpl implements BlackListedCardDao {
 			limit = pageSize;
 		}
 		
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 	      List<Tuple> tupleList = query.from(QPGBlackListedCard.pGBlackListedCard).
-	    	  select(QPGBlackListedCard.pGBlackListedCard.id,
-		        		  QPGBlackListedCard.pGBlackListedCard.cardNumber,
-		        		  QPGBlackListedCard.pGBlackListedCard.status).
 	          where(isCardNumberEq(searchBlackListedCardRequest.getCardNumber()),
 	          isStatusEq(searchBlackListedCardRequest.getStatus())).
 	          offset(offset).
 	          limit(limit).
 	          orderBy(orderByCreatedDateDesc()).
-	          fetch();
+	          list(QPGBlackListedCard.pGBlackListedCard.id,
+	        		  QPGBlackListedCard.pGBlackListedCard.cardNumber,
+	        		  QPGBlackListedCard.pGBlackListedCard.status);
 	             
 	      if(!CollectionUtils.isEmpty(tupleList)) {
 	    	  BlackListedCardRequest pgblackListedCard = null;
@@ -203,11 +202,10 @@ public class BlackListedCardDaoImpl implements BlackListedCardDao {
 	}
 
 	public int getTotalNumberOfRecords(BlackListedCardRequest blackListedCardRecords) {
-	    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
-	    List<Long> list = query.from(QPGBlackListedCard.pGBlackListedCard).select(QPGBlackListedCard.pGBlackListedCard.id).
-	    		where(
+	    JPAQuery query = new JPAQuery(entityManager);
+	    List<Long> list = query.from(QPGBlackListedCard.pGBlackListedCard). where(
 		          isCardNumberEq(blackListedCardRecords.getCardNumber()),
-		          isStatusEq(blackListedCardRecords.getStatus())).fetch();
+		          isStatusEq(blackListedCardRecords.getStatus())).list(QPGBlackListedCard.pGBlackListedCard.id);
 	    return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	  }
 	

@@ -42,10 +42,10 @@ import com.chatak.pg.user.bean.PartnerRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 @Repository("partnerDao")
@@ -80,7 +80,7 @@ public class PartnerDaoImpl implements PartnerDao {
 
   @Override
   public void deleteBankPartner(Set<BankPartnerMap> bankPartnerMap) throws DataAccessException {
-    bankPartnerRepository.deleteAll(bankPartnerMap);
+    bankPartnerRepository.delete(bankPartnerMap);
   }
 
   @Override
@@ -90,11 +90,11 @@ public class PartnerDaoImpl implements PartnerDao {
 
   @Override
   public List<Partner> findByPartnerName(String partnerName) throws DataAccessException {
-    JPAQuery<Partner> query = new JPAQuery<Partner>(entityManager);
-    List<Partner> list = query.from(QPartner.partner).select(QPartner.partner)
+    JPAQuery query = new JPAQuery(entityManager);
+    List<Partner> list = query.from(QPartner.partner)
         .where(
             QPartner.partner.partnerName.toLowerCase().equalsIgnoreCase(partnerName.toLowerCase()))
-        .fetch();
+        .list(QPartner.partner);
     return (StringUtil.isListNotNullNEmpty(list) ? list : null);
   }
 
@@ -114,12 +114,11 @@ public class PartnerDaoImpl implements PartnerDao {
     PartnerRequest partnerRequest2 = null;
 
     try {
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query.from(QPartner.partner, QProgramManager.programManager)
-    	  .select(QPartner.partner, QProgramManager.programManager)
           .where(isPartnerId(partnerRequest.getPartnerId()),
               QPartner.partner.programManagerId.eq(QProgramManager.programManager.id))
-          .fetch();
+          .list(QPartner.partner, QProgramManager.programManager);
 
       if (StringUtil.isListNotNullNEmpty(tupleList)) {
         for (Tuple tuple : tupleList) {
@@ -130,18 +129,16 @@ public class PartnerDaoImpl implements PartnerDao {
           partnerRequest2.setProgramManagerRequest((ProgramManagerRequest) CommonUtil
               .copyBeanProperties(programManager, ProgramManagerRequest.class));
 
-          List<PartnerAccount> partnerAccountList = new JPAQuery<PartnerAccount>(entityManager).from(QPartnerAccount.partnerAccount)
-        	  .select(QPartnerAccount.partnerAccount)
+          List<PartnerAccount> partnerAccountList = query.from(QPartnerAccount.partnerAccount)
               .where(QPartnerAccount.partnerAccount.partnerId.eq(partner.getPartnerId())).distinct()
-              .fetch();
+              .list(QPartnerAccount.partnerAccount);
 
           getPartnerAccountList(partnerRequest2, partnerAccountList);
 
           List<Tuple> tupleList2 = query.from(QBankPartnerMap.bankPartnerMap, QPGBank.pGBank)
-        	  .select(QBankPartnerMap.bankPartnerMap, QPGBank.pGBank)
               .where(QBankPartnerMap.bankPartnerMap.partnerId.eq(partner.getPartnerId()))
               .orderBy(QPGBank.pGBank.bankName.asc()).distinct()
-              .fetch();
+              .list(QBankPartnerMap.bankPartnerMap, QPGBank.pGBank);
 
           processToupleData(partnerRequest2, tupleList2);
         }
@@ -217,14 +214,10 @@ public class PartnerDaoImpl implements PartnerDao {
       offset = (partnerRequest.getPageIndex() - 1) * partnerRequest.getPageSize();
       limit = partnerRequest.getPageSize();
     }
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tupleList = query
         .from(QPartner.partner, QProgramManager.programManager, QBankPartnerMap.bankPartnerMap,
             QPGBank.pGBank)
-        .select(QPartner.partner.partnerId, QPartner.partner.companyName,
-            QPartner.partner.businessEntityName, QPartner.partner.partnerName,
-            QPartner.partner.status, QProgramManager.programManager.id,
-            QProgramManager.programManager.programManagerName, QPartner.partner.accountCurrency)
         .where(isCompanyNameLike(partnerRequest.getCompanyName()),
             isPartnerNameLike(partnerRequest.getPartnerName()),
             isPartnerType(partnerRequest.getPartnerType()),
@@ -236,7 +229,10 @@ public class PartnerDaoImpl implements PartnerDao {
             QPGBank.pGBank.id.eq(QBankPartnerMap.bankPartnerMap.bankId),
             QPartner.partner.partnerId.eq(QBankPartnerMap.bankPartnerMap.partnerId))
         .offset(offset).limit(limit).orderBy(orderByPartnerIdDesc()).distinct()
-        .fetch();
+        .list(QPartner.partner.partnerId, QPartner.partner.companyName,
+            QPartner.partner.businessEntityName, QPartner.partner.partnerName,
+            QPartner.partner.status, QProgramManager.programManager.id,
+            QProgramManager.programManager.programManagerName, QPartner.partner.accountCurrency);
     if (StringUtil.isListNotNullNEmpty(tupleList)) {
       for (Tuple tuple : tupleList) {
         PartnerRequest partnerRequest2 = new PartnerRequest();
@@ -268,17 +264,16 @@ public class PartnerDaoImpl implements PartnerDao {
   public List<PartnerRequest> getAllPartners(PartnerRequest partnerRequestStatus)
       throws DataAccessException {
     List<PartnerRequest> response = new ArrayList<>();
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tuple = query.from(QPartner.partner, QProgramManager.programManager)
-    	.select(QPartner.partner.partnerId, QPartner.partner.partnerName, QPartner.partner.status,
-            QPartner.partner.programManagerId, QPartner.partner.accountCurrency,
-            QProgramManager.programManager.programManagerName)
         .where(nonSystemPartner(), isPartnerId(partnerRequestStatus.getPartnerId()),
             isPartnerTypeIn(partnerRequestStatus.getPartnerTypeList()),
             isProgramManagerId(partnerRequestStatus.getProgramManagerId()),
         isStatusIn(partnerRequestStatus.getStatusList()),
         QProgramManager.programManager.id.eq(QPartner.partner.programManagerId))
-        .fetch();
+        .list(QPartner.partner.partnerId, QPartner.partner.partnerName, QPartner.partner.status,
+            QPartner.partner.programManagerId, QPartner.partner.accountCurrency,
+            QProgramManager.programManager.programManagerName);
 
     for (Tuple tuples : tuple) {
       PartnerRequest partnerRequest = new PartnerRequest();
@@ -291,10 +286,10 @@ public class PartnerDaoImpl implements PartnerDao {
           .setProgramManagerName(tuples.get(QProgramManager.programManager.programManagerName));
       partnerRequest.setAccountCurrency(tuples.get(QPartner.partner.accountCurrency));
       partnerRequest.setProgramManagerRequest(programManagerRequest);
-      List<BankPartnerMap> bankPartnerMaps = new JPAQuery<BankPartnerMap>(entityManager).from(QBankPartnerMap.bankPartnerMap)
-    	  .select(QBankPartnerMap.bankPartnerMap)
+      query = new JPAQuery(entityManager);
+      List<BankPartnerMap> bankPartnerMaps = query.from(QBankPartnerMap.bankPartnerMap)
           .where(QBankPartnerMap.bankPartnerMap.partnerId.eq(partnerRequest.getPartnerId()))
-          .fetch();
+          .list(QBankPartnerMap.bankPartnerMap);
       try {
         List<BankPartnerMapRequest> bankPartnerMapRequests =
             CommonUtil.copyListBeanProperty(bankPartnerMaps, BankPartnerMapRequest.class);
@@ -319,10 +314,10 @@ public class PartnerDaoImpl implements PartnerDao {
   }
 
   private int getTotalNumberOfRecords(PartnerRequest partnerRequest) {
-    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Long> partnerIdList = query
         .from(QPartner.partner, QProgramManager.programManager, QBankPartnerMap.bankPartnerMap,
-            QPGBank.pGBank).select(QPartner.partner.partnerId)
+            QPGBank.pGBank)
         .where(isCompanyNameLike(partnerRequest.getCompanyName()),
             isPartnerNameLike(partnerRequest.getPartnerName()),
             isPartnerType(partnerRequest.getPartnerType()),
@@ -333,7 +328,7 @@ public class PartnerDaoImpl implements PartnerDao {
             QPartner.partner.programManagerId.eq(QProgramManager.programManager.id),
             QPGBank.pGBank.id.eq(QBankPartnerMap.bankPartnerMap.bankId),
             QPartner.partner.partnerId.eq(QBankPartnerMap.bankPartnerMap.partnerId))
-        .distinct().fetch();
+        .distinct().list(QPartner.partner.partnerId);
 
     return (StringUtil.isListNotNullNEmpty(partnerIdList) ? partnerIdList.size() : 0);
   }
@@ -425,11 +420,10 @@ public class PartnerDaoImpl implements PartnerDao {
   public List<PartnerRequest> getAllPartnersForAdminUser(PartnerRequest partnerRequestStatus)
       throws DataAccessException {
     List<PartnerRequest> response = new ArrayList<>();
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tuple = query.from(QPartner.partner)
-    	.select(QPartner.partner.partnerId, QPartner.partner.partnerName, QPartner.partner.status)
         .where(QPartner.partner.partnerName.equalsIgnoreCase(Constants.SYSTEM_PARTNER))
-        .fetch();
+        .list(QPartner.partner.partnerId, QPartner.partner.partnerName, QPartner.partner.status);
 
     for (Tuple tuples : tuple) {
       PartnerRequest partnerRequest = new PartnerRequest();
@@ -450,9 +444,9 @@ public class PartnerDaoImpl implements PartnerDao {
 
   @Override
   public List<Partner> findByPartnerClientId(String partnerClientId) throws DataAccessException {
-    JPAQuery<Partner> query = new JPAQuery<Partner>(entityManager);
-    List<Partner> list = query.from(QPartner.partner).select(QPartner.partner).where(QPartner.partner.partnerClientId
-        .toLowerCase().equalsIgnoreCase(partnerClientId.toLowerCase())).fetch();
+    JPAQuery query = new JPAQuery(entityManager);
+    List<Partner> list = query.from(QPartner.partner).where(QPartner.partner.partnerClientId
+        .toLowerCase().equalsIgnoreCase(partnerClientId.toLowerCase())).list(QPartner.partner);
     return (StringUtil.isListNotNullNEmpty(list) ? list : null);
   }
 
@@ -536,14 +530,13 @@ public class PartnerDaoImpl implements PartnerDao {
   @Override
   public PartnerAccountRequest findBankDetailsByPartnerId(PartnerAccountRequest parnAccountRequest)
       throws DataAccessException {
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     Map<Long, String> mappedBanks = new HashMap<Long, String>();
     List<Tuple> results =
         query.from(QPartner.partner, QBankPartnerMap.bankPartnerMap, QPGBank.pGBank)
-        	.select(QPGBank.pGBank.id, QPGBank.pGBank.bankName)
             .where(QPartner.partner.partnerId.eq(parnAccountRequest.getPartnerId()),
                 QBankPartnerMap.bankPartnerMap.partnerId.eq(QPartner.partner.partnerId))
-            .fetch();
+        .list(QPGBank.pGBank.id, QPGBank.pGBank.bankName);
 
     for (Tuple tuple3 : results) {
       mappedBanks.put(tuple3.get(QPGBank.pGBank.id), tuple3.get(QPGBank.pGBank.bankName));
@@ -660,18 +653,17 @@ public class PartnerDaoImpl implements PartnerDao {
   public List<PartnerAccount> getPartnerAccountsByPartnerId(Long partnerId, AccountType accountType)
       throws DataAccessException {
     List<PartnerAccount> list = new ArrayList<>();
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tuple = query.from(QPartnerAccount.partnerAccount)
-    	.select(QPartnerAccount.partnerAccount.accountNumber,
+        .where(isPartnerIdLike(partnerId), isAccountTypeLike(accountType))
+        .list(QPartnerAccount.partnerAccount.accountNumber,
             QPartnerAccount.partnerAccount.accountType,
             QPartnerAccount.partnerAccount.availableBalance,
             QPartnerAccount.partnerAccount.createdBy, QPartnerAccount.partnerAccount.createdDate,
             QPartnerAccount.partnerAccount.currentBalance,
             QPartnerAccount.partnerAccount.partnerAccountId,
             QPartnerAccount.partnerAccount.partnerId, QPartnerAccount.partnerAccount.status,
-            QPartnerAccount.partnerAccount.updatedBy, QPartnerAccount.partnerAccount.updatedDate)
-        .where(isPartnerIdLike(partnerId), isAccountTypeLike(accountType))
-        .fetch();
+            QPartnerAccount.partnerAccount.updatedBy, QPartnerAccount.partnerAccount.updatedDate);
     for (Tuple tuples : tuple) {
       PartnerAccount partnerAccount = new PartnerAccount();
       partnerAccount.setAccountNumber(tuples.get(QPartnerAccount.partnerAccount.accountNumber));
@@ -695,12 +687,11 @@ public class PartnerDaoImpl implements PartnerDao {
   @Override
   public ProgramManager findProgramManagerByPartnerId(String partnerId) {
     ProgramManager programManager = null;
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tuples = query.from(QPartner.partner, QProgramManager.programManager)
-    	.select(QProgramManager.programManager.id, QProgramManager.programManager.programManagerName)
         .where(QPartner.partner.partnerId.eq(Long.parseLong(partnerId))
             .and(QPartner.partner.programManagerId.eq(QProgramManager.programManager.id)))
-        .fetch();
+        .list(QProgramManager.programManager.id, QProgramManager.programManager.programManagerName);
     for (Tuple tuple : tuples) {
       programManager = new ProgramManager();
       programManager.setId(tuple.get(QProgramManager.programManager.id));

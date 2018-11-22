@@ -29,11 +29,11 @@ import com.chatak.pg.model.BinResponse;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.expr.NumberExpression;
 
 /**
  * @Author: Girmiti Software
@@ -154,7 +154,7 @@ public class BINDaoImpl implements BINDao {
   public BinDTO findById(Long binId) throws DataAccessException {
     logger.info("BINDaoImpl | findById | Entering");
     BinDTO binDTO = new BinDTO();
-    PGBINRange pgbinRange = binRepository.findById(binId).orElse(null);
+    PGBINRange pgbinRange = binRepository.findById(binId);
     if (pgbinRange != null) {
       binDTO.setBinNumber(pgbinRange.getBin().intValue());
       if (pgbinRange.getStatus() == 0) {
@@ -196,15 +196,14 @@ public class BINDaoImpl implements BINDao {
         offset = (binDTO.getPageIndex() - 1) * binDTO.getPageSize();
         limit = binDTO.getPageSize();
       }
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query.from(QPGBINRange.pGBINRange, QPGSwitch.pGSwitch)
-    	  .select(
-              QPGBINRange.pGBINRange.id, QPGBINRange.pGBINRange.bin, QPGBINRange.pGBINRange.status,
-              QPGBINRange.pGBINRange.switchId, QPGBINRange.pGBINRange.dccSupported,
-              QPGBINRange.pGBINRange.emvSupported, QPGSwitch.pGSwitch.switchName)
           .where(isBinEq(binDTO.getBinNumber()), isSwitchIdEq(binDTO.getSwitchId()),
               isIdEq(QPGBINRange.pGBINRange.switchId), isBinStatusNotEq())
-          .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc()).fetch();
+          .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc()).list(
+              QPGBINRange.pGBINRange.id, QPGBINRange.pGBINRange.bin, QPGBINRange.pGBINRange.status,
+              QPGBINRange.pGBINRange.switchId, QPGBINRange.pGBINRange.dccSupported,
+              QPGBINRange.pGBINRange.emvSupported, QPGSwitch.pGSwitch.switchName);
       if (!CollectionUtils.isEmpty(tupleList)) {
         binList = new ArrayList<BinDTO>();
         BinDTO pgBin = null;
@@ -248,13 +247,12 @@ public class BINDaoImpl implements BINDao {
   }
 
   private int getTotalNumberOfMerchantRecords(BinDTO binDTO) {
-    JPAQuery<PGBINRange> query = new JPAQuery<PGBINRange>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<PGBINRange> list = query.from(QPGBINRange.pGBINRange, QPGSwitch.pGSwitch)
-    	.select(QPGBINRange.pGBINRange)
         .where(isBinEq(binDTO.getBinNumber()), isSwitchIdEq(binDTO.getSwitchId()),
             isIdEq(QPGBINRange.pGBINRange.switchId), isSwitchIdEq(binDTO.getSwitchId()),
             isBinStatusNotEq())
-        .fetch();
+        .list(QPGBINRange.pGBINRange);
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
@@ -315,7 +313,7 @@ public class BINDaoImpl implements BINDao {
 
   @Override
   public PGBINRange findByBinId(Long binId) throws DataAccessException {
-    PGBINRange pgbinRange = binRepository.findById(binId).orElse(null);
+    PGBINRange pgbinRange = binRepository.findById(binId);
     return pgbinRange;
   }
 

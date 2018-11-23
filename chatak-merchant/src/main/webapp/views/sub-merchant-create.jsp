@@ -601,11 +601,11 @@
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-		$('.effectiveDate').datetimepicker({
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'Y/m/d',
-		});
+		}); */
 
 		function highlightMainContent() {
 			$("#navListId2").addClass("active-background");

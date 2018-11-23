@@ -57,34 +57,28 @@ var chataPay = function() {
 		var getCvvMaxLen = $('#code' + type).attr('maxlength');
 
 		if (!mod10(cardNumber)) {
-			alert("This is not a valid card number.");
 			return false;
 		}
 		if (cardName == "" || !cardName.match(regName)) {
-			alert("Please enter your name specified on the card.");
 			$('#cname2').focus();
 			return false;
 		}
 		// Avoid validation for Maestro cards
 		if (cardType != 'maestro') {
 			if (cardMonth == '0') {
-				alert("Please select a valid month.");
 				$('#expmon').focus();
 				return false;
 			}
 			if (cardYear == '0') {
-				alert("Please select a valid year.");
 				$('#expyr').focus();
 				return false;
 			}
 			if (CHATAKPG.expired(cardMonth, cardYear)) {
-				alert("The expiry date that you have entered is invalid..");
 				$('#expmon').focus();
 				return false;
 			}
 			if (cardCvv == "" || !regCvv.test(cardCvv)
 					|| cardCvv.length != getCvvMaxLen) {
-				alert("Please enter valid CVV/CVC");
 				$('input[id$=code' + type + ']').focus();
 				return false;
 			}
@@ -143,7 +137,6 @@ var chataPay = function() {
 
 		if (cardNumberValidate) {
 			if (getCardType == "") {
-				alert("This is not a valid card number.");
 				return false;
 			} else if (getCardType == "maestro") {
 				$('input#number' + type).attr('maxlength', '23');
@@ -151,14 +144,12 @@ var chataPay = function() {
 			}
 
 			if (cardAsocType == '' /* && chCType != cardAsocType */) {
-				alert("This is not a valid card type which is used at billing time.");
 				return false;
 			}
 
 			// visa and Master
 			if (setCardNumber.length === L) {
 				if (!mod10(setCardNumber)) {
-					alert("This is not a valid card number.");
 					return false;
 				}
 				if ((getCardType == "maestro" || getCardType == "maestro16d")
@@ -169,7 +160,6 @@ var chataPay = function() {
 				}
 				if ((getCardType == "maestro" || getCardType == "maestro16d")
 						&& document.form1.paymentMode.value != 'DEBIT') {
-					alert('This is not a valid card number.');
 					return false;
 				}
 				return {
@@ -186,7 +176,6 @@ var chataPay = function() {
 				$(".cards-info").css("background-position", "0 0");
 				return false;
 			}
-			return false;
 		} else {
 			return false;
 		}
@@ -195,27 +184,22 @@ var chataPay = function() {
 
 	var validateCard = function(cNumber, cMon, cYear, cCode, cName, type) {
 		if (cNumber === "") {
-			alert('Card number cannot be blank');
 			$('input#number' + type).focus();
 			return false;
 		}
 		if (cMon === "") {
-			alert('Card expiry month cannot be blank');
 			$('input#month' + type).focus();
 			return false;
 		}
 		if (cYear === "") {
-			alert('Card expiry year cannot be blank');
 			$('input#year' + type).focus();
 			return false;
 		}
 		if (cCode === "") {
-			alert('Card CVV/CVC cannot be blank');
 			$('input#code' + type).focus();
 			return false;
 		}
 		if (cName === "") {
-			alert('Card holder name cannot be blank');
 			$('input#name' + type).focus();
 			return false;
 		} else {
@@ -243,7 +227,6 @@ var chataPay = function() {
 
 			if (cCode == "" || !regCvv.test(cCode)
 					|| cCode.length != getCvvMaxLen) {
-				alert("Please enter valid CVV/CVC");
 				$('input[id$=code' + type + ']').focus();
 				return false;
 			}
@@ -448,4 +431,3 @@ function CheckIdleTime() {
 	if (_idleSecondsCounter >= IDLE_TIMEOUT) {
 		document.location.href = contextPath + "/pg/session-expired";
 	}
-}

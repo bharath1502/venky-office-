@@ -37,6 +37,8 @@ public class AccountBalanceDTO extends Response implements Serializable {
   private String timeZoneOffset;
   private String timeZoneRegion;
   private String deviceLocalTxnTime;
+  private String availableBalanceString;
+  private String currentBalanceString;
   /**
    * @return the currencyMinorUnit
    */
@@ -202,4 +204,16 @@ public class AccountBalanceDTO extends Response implements Serializable {
   public void setDeviceLocalTxnTime(String deviceLocalTxnTime) {
     this.deviceLocalTxnTime = deviceLocalTxnTime;
   }
+  public String getAvailableBalanceString() {
+    return availableBalanceString;
+  }
+  public void setAvailableBalanceString(String availableBalanceString) {
+    this.availableBalanceString = availableBalanceString;
+  }
+  public String getCurrentBalanceString() {
+    return currentBalanceString;
+  }
+  public void setCurrentBalanceString(String currentBalanceString) {
+    this.currentBalanceString = currentBalanceString;
+  }  
 }

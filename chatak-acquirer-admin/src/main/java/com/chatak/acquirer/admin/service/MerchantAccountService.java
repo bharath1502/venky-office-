@@ -8,6 +8,7 @@ import org.springframework.context.NoSuchMessageException;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.MerchantAccountSearchResponse;
 import com.chatak.pg.bean.Response;
+import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.model.AccountBalanceReportDTO;
 import com.chatak.pg.model.Merchant;
@@ -23,9 +24,9 @@ public interface MerchantAccountService {
   
   public List<AccountBalanceReportDTO> getAllAccountsBalanceReportPagination(Merchant merchant)throws ChatakAdminException;
   
-  public AccountBalanceDTO getAccountBalanceDTO(String merchantId, Long entityId, String userType )throws NoSuchMessageException, ChatakAdminException;
+  public AccountBalanceDTO getAccountBalanceDTO(String merchantId, Long entityId, String userType )throws NoSuchMessageException, ChatakAdminException, PrepaidAdminException;
   
-  public Response processMerchantAccountBalanceUpdate(AccountBalanceDTO accountBalanceDTO,String type);
+  public Response processMerchantAccountBalanceUpdate(AccountBalanceDTO accountBalanceDTO,String type) throws PrepaidAdminException;
   
   public MerchantDetailsForAccountResponse getMerchantDetailsForAccountCreation(Merchant merchant);
   

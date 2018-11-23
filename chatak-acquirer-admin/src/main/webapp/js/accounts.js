@@ -31,10 +31,10 @@ function doAjaxFetchAccountDetails() {
 						setDiv("errorMsgDiv", "");
 						get('merchantName').value = obj.merchantName;
 						get('accountNumber').value = obj.accountNumber;
-						get('availableBalance').value = obj.availableBalance/100;
-						currencyId = "availableBalance";
-						get('currentBalance').value = obj.currentBalance/100;
-						currentbalId = "currentBalance";
+						get('availableBalanceString').value = obj.availableBalanceString;
+						currencyId = "availableBalanceString";
+						get('currentBalanceString').value = obj.currentBalanceString;
+						currentbalId = "currentBalanceString";
 						get('availableBalCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
 						get('currentBalCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
 						get('inputAmtCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
@@ -42,8 +42,8 @@ function doAjaxFetchAccountDetails() {
 						currencySeparatorPosition = obj.currencySeparatorPosition;
 						currencyMinorUnit = obj.currencyMinorUnit;
 						currencyThousandsUnit = obj.currencyThousandsUnit;
-						formatNum(currencyId);
-						formatNum(currentbalId);
+						$("#"+currencyId).val(obj.availableBalanceString);
+						$("#"+currentbalId).val(obj.currentBalanceString);
 						if($("#errorMsgDiv").text() != ""){
 							setDiv("errorMsgDiv", $("#errorMsgDiv").text());
 						}

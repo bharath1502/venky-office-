@@ -65,8 +65,6 @@
 								<!-- Page Form Start -->
 								<form:form action="process-manual-credit" modelAttribute="accountBalance" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
-								<form:hidden id="availableBal" path="availableBalance"/>
-								<form:hidden id="currentBal" path="currentBalance"/>
 								<form:hidden id="inputAmt" path="inputAmount"/>
 								<form:hidden id="timeZoneOffset" path="timeZoneOffset"/>
 								<form:hidden id="timeZoneRegion" path="timeZoneRegion"/>
@@ -126,8 +124,8 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="show-account-transfer.label.availablebalance"/><span class="required-field">*</span></label>
-														<form:input path="availableBalance" cssClass="form-control alignright"
-															id="availableBalance" readonly="true"
+														<form:input path="availableBalanceString" cssClass="form-control alignright"
+															id="availableBalanceString" readonly="true"
 															onblur="this.value=this.value.trim();validAuthNumber('authNumberDiv1','authNumberErrorDiv1')" />
 															<h3 class="currencySymbol" id="availableBalCurrencyAlpha"></h3>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -136,8 +134,8 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.currentbalance"/><span class="required-field">*</span></label>
-														<form:input path="currentBalance" cssClass="form-control alignright"
-															readonly="true" id="currentBalance"
+														<form:input path="currentBalanceString" cssClass="form-control alignright"
+															readonly="true" id="currentBalanceString"
 															onblur="this.value=this.value.trim();validExpDate()" />
 															<h3 class="currencySymbol" id="currentBalCurrencyAlpha"></h3>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -201,13 +199,11 @@
 												</c:if>
 												<tr>
 													<td><span class="black-text">&nbsp;<spring:message code="reports.label.balancereports.availablebalance"/>(${accountBalance.merchantCurrencyAlpha})</span></td>
-													<td><span id="avlBal" class="green-error">&nbsp;:${accountBalance.availableBalance}</span></td>
-													<input type="hidden" id="avlamt" value="${accountBalance.availableBalance/100}" />
+													<td><span id="avlBal" class="green-error">&nbsp;:${accountBalance.availableBalanceString}</span></td>
 												</tr>
 												<tr>
 													<td><span class="black-text">&nbsp;<spring:message code="reports.label.balancereports.currentbalance"/>(${accountBalance.merchantCurrencyAlpha})</span></td>
-													<td ><span id="curBal" class="green-error">&nbsp;:${accountBalance.currentBalance}</span></td>
-													<input type="hidden" id="curamt" value="${accountBalance.currentBalance/100}" />
+													<td ><span id="curBal" class="green-error">&nbsp;:${accountBalance.currentBalanceString}</span></td>
 												</tr>
 												<tr>
 													<td><span class="black-text">&nbsp;<spring:message code="reports.label.transactions.companyname"/></span></td>

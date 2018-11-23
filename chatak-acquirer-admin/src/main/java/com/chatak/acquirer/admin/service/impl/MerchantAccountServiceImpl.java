@@ -39,6 +39,7 @@ import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.model.AccountBalanceReportDTO;
 import com.chatak.pg.model.Merchant;
@@ -130,7 +131,7 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
   }
 
   @Override
-  public AccountBalanceDTO getAccountBalanceDTO(String merchantId, Long entityId, String userType) throws NoSuchMessageException, ChatakAdminException {
+  public AccountBalanceDTO getAccountBalanceDTO(String merchantId, Long entityId, String userType) throws NoSuchMessageException, ChatakAdminException, PrepaidAdminException {
     logger.info("Entering:: MerchantServiceImpl:: getAccountBalanceDTO method");
     PGMerchant pgMerchant = null;
      pgMerchant = merchantUpdateDao.getMerchantOnCodeAndEntityDetails(merchantId, userType, entityId);
@@ -167,6 +168,14 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
             .setCurrencySeparatorPosition(pgCurrencyConfig.getCurrencySeparatorPosition());
         accountBalanceDTO.setCurrencyMinorUnit(pgCurrencyConfig.getCurrencyMinorUnit());
         accountBalanceDTO.setCurrencyThousandsUnit(pgCurrencyConfig.getCurrencyThousandsUnit());
+        accountBalanceDTO
+		.setAvailableBalanceString(CommonUtil.formatAmountOnCurrency(pgAccount.getAvailableBalance().toString(),
+				pgCurrencyConfig.getCurrencyExponent(), pgCurrencyConfig.getCurrencySeparatorPosition(),
+				pgCurrencyConfig.getCurrencyMinorUnit(), pgCurrencyConfig.getCurrencyThousandsUnit()));
+        accountBalanceDTO
+		.setCurrentBalanceString(CommonUtil.formatAmountOnCurrency(pgAccount.getCurrentBalance().toString(),
+				pgCurrencyConfig.getCurrencyExponent(), pgCurrencyConfig.getCurrencySeparatorPosition(),
+				pgCurrencyConfig.getCurrencyMinorUnit(), pgCurrencyConfig.getCurrencyThousandsUnit()));
       } else {
         accountBalanceDTO.setErrorCode(Constants.ERROR_CODE);
         accountBalanceDTO.setErrorMessage(
@@ -182,7 +191,7 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
 
   @Override
   public Response processMerchantAccountBalanceUpdate(
-      AccountBalanceDTO accountBalanceDTO, String type) {
+      AccountBalanceDTO accountBalanceDTO, String type) throws PrepaidAdminException {
     logger.info("Entering:: MerchantServiceImpl:: processMerchantAccountBalanceUpdate method");
     PGMerchant pgMerchant = merchantUpdateDao.getMerchant(accountBalanceDTO.getMerchantCode());
     PGAccount pgAccount = accountDao.getPgAccount(accountBalanceDTO.getMerchantCode());
@@ -226,7 +235,7 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
   }
 
 private Response processsPGAccount(AccountBalanceDTO accountBalanceDTO, String type, PGAccount pgAccount,
-		Response response) {
+		Response response) throws PrepaidAdminException {
 	if (pgAccount.getAvailableBalance() >= accountBalanceDTO.getInputAmount()) {
 	    pgAccount.setAvailableBalance(
 	        pgAccount.getAvailableBalance() - accountBalanceDTO.getInputAmount());
@@ -524,7 +533,7 @@ private void getMerchantAccountDto(Map<String, String> merchantDataMap,
   }
 
   public void logManualAccountTransaction(PGAccount account, Long amountToTransfer,
-      String transactionCode, AccountBalanceDTO accountBalanceDTO) {
+      String transactionCode, AccountBalanceDTO accountBalanceDTO) throws PrepaidAdminException {
     logger.info("Entering:: MerchantServiceImpl:: logManualAccountTransaction method");
     Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
     PGAccountTransactions pgAccountTransactions = new PGAccountTransactions();
@@ -563,11 +572,13 @@ private void getMerchantAccountDto(Map<String, String> merchantDataMap,
     accountTransactionsDao.createOrUpdate(pgAccountTransactions);
   }
 
-private String setTxnDescription(AccountBalanceDTO accountBalanceDTO, String amount) {
-	return CommonUtil.getCurrencyPattern(amount,
-			accountBalanceDTO.getCurrencySeparatorPosition(), accountBalanceDTO.getCurrencyThousandsUnit(),
-			accountBalanceDTO.getCurrencyExponent(), accountBalanceDTO.getCurrencyMinorUnit());
-}
+  private String setTxnDescription(AccountBalanceDTO accountBalanceDTO, String amount) throws PrepaidAdminException {
+	  return CommonUtil.formatAmountOnCurrency(amount, 
+			  accountBalanceDTO.getCurrencyExponent(),
+			  accountBalanceDTO.getCurrencySeparatorPosition(), 
+			  accountBalanceDTO.getCurrencyMinorUnit(),
+			  accountBalanceDTO.getCurrencyThousandsUnit());
+  }
 
   @Override
   public Map<String, String> getMerchantMapByMerchantType(String merchantType) {

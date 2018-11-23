@@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 
 import org.springframework.beans.BeanUtils;
 
+import com.chatak.pg.exception.PrepaidAdminException;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -464,6 +466,46 @@ public final class CommonUtil {
         nestedMaskMap.put(TRACK2, "***");
       }
     }
+  }
+  
+  /**
+   * @param amountInCents, prefer to be in cents
+   * @param currencyExponent
+   * @param currencySeparatorPosition
+   * @param currencyMinorUnit
+   * @param currencyThousandsUnit
+   * @return formattedAmount
+   * Note : This utility method will support all integer amounts, from 0 to 999,999,999
+   * After 999,999,999 Double is giving Exponent Numbers
+   * @throws PrepaidAdminException 
+   */
+  public static String formatAmountOnCurrency(String amountInCents,
+                                              Integer currencyExponent,
+                                              Integer currencySeparatorPosition,
+                                              Character currencyMinorUnit,
+                                              Character currencyThousandsUnit) throws PrepaidAdminException {
+    if(amountInCents == null || "".equals(amountInCents)) {
+      logger.info("Invalid amount : " + amountInCents);
+      throw new PrepaidAdminException("Please enter valid amount");
+    }
+    String amount = amountInCents.replaceAll("[^0-9]", "");
+    amount = Double.toString(Double.parseDouble(amount) / (Math.pow(10d, currencyExponent)));
+    amount = amount.replaceAll("[^0-9]", currencyMinorUnit.toString());
+    if(amount.substring(amount.indexOf(currencyMinorUnit), amount.length()).length() != currencyExponent + 1) {
+      for(int i = amount.substring(amount.indexOf(currencyMinorUnit), amount.length()).length(); i < currencyExponent
+                                                                                                     + 1; i++) {
+        amount = new StringBuilder(amount) + "0";
+      }
+    }
+    String nonDecimal = amount.substring(0, amount.indexOf(currencyMinorUnit));
+
+    String decimal = amount.substring(amount.indexOf(currencyMinorUnit), amount.length());
+
+    String string = "#" + currencyThousandsUnit + "##";
+    DecimalFormat decimalFormat = new DecimalFormat(string);
+    decimalFormat.setGroupingUsed(true);
+    decimalFormat.setGroupingSize(currencySeparatorPosition);
+    return (decimalFormat.format(new BigInteger(nonDecimal)).replace(',', currencyThousandsUnit) + decimal);
   }
   
 }

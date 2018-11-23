@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -33,7 +34,6 @@ import com.chatak.acquirer.admin.service.CurrencyConfigService;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.CurrencyDTO;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CurrencyControllerTest {
@@ -95,7 +95,7 @@ public class CurrencyControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_CURRENCY_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testShowCurrencySearchPage | Exception ", e);
@@ -107,13 +107,13 @@ public class CurrencyControllerTest {
     optionList.add(option);
     responseval = new Response();
     responseval.setResponseList(optionList);
-    responseval.setTotalNoOfRows(Constants.TEN);
+    responseval.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(currencyConfigService.searchCurrencyConfig(Matchers.any(CurrencyDTO.class)))
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_ACTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testSearchCurrencyAccount | Exception ", e);
@@ -127,7 +127,7 @@ public class CurrencyControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_ACTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testSearchCurrencyAccountException | Exception ", e);
@@ -139,7 +139,7 @@ public class CurrencyControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_CURRENCY_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_CURRENCY_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testShowCreateCurrencyPage | Exception ", e);
@@ -155,8 +155,8 @@ public class CurrencyControllerTest {
           .thenReturn(currencyDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CURRENCY_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString())))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString())))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testCreateCurrencyPage | Exception ", e);
@@ -172,8 +172,8 @@ public class CurrencyControllerTest {
           .thenReturn(currencyDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CURRENCY_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString())))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString())))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_CURRENCY_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testCreateCurrencyPageElse | Exception ", e);
@@ -187,8 +187,8 @@ public class CurrencyControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CURRENCY_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString())))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString())))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testCreateCurrencyPageException | Exception ", e);
@@ -204,9 +204,9 @@ public class CurrencyControllerTest {
           .thenReturn(currencyDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_EDIT_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_EDIT_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testShowEditCurrency | Exception ", e);
@@ -222,9 +222,9 @@ public class CurrencyControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_EDIT_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_EDIT_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testShowEditCurrencyException | Exception ", e);
@@ -238,9 +238,9 @@ public class CurrencyControllerTest {
           .thenReturn(currencyDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_VIEW_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_VIEW_CURRENCY));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testShowViewCurrency | Exception ", e);
@@ -254,9 +254,9 @@ public class CurrencyControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_VIEW_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_VIEW_CURRENCY));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testShowViewCurrencyException | Exception ", e);
@@ -272,9 +272,9 @@ public class CurrencyControllerTest {
           .thenReturn(currencyDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testUpdateCurrency | Exception ", e);
@@ -290,9 +290,9 @@ public class CurrencyControllerTest {
           .thenReturn(currencyDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testUpdateCurrencyElse | Exception ", e);
@@ -306,9 +306,9 @@ public class CurrencyControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testUpdateCurrencyException | Exception ", e);
@@ -324,9 +324,9 @@ public class CurrencyControllerTest {
           .thenReturn(currencyDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DELETE_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getDeleteId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getDeleteId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testDeleteCurrency | Exception ", e);
@@ -342,9 +342,9 @@ public class CurrencyControllerTest {
           .thenReturn(currencyDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DELETE_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getDeleteId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getDeleteId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testDeleteCurrencyElse | Exception ", e);
@@ -358,9 +358,9 @@ public class CurrencyControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DELETE_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("getDeleteId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("getDeleteId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testDeleteCurrencyException | Exception ", e);
@@ -375,9 +375,9 @@ public class CurrencyControllerTest {
       Mockito.when(currencyConfigService.findByCurrencyName(Matchers.anyString()))
           .thenReturn(responseval);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_GET_CURRENCY_DATA)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-          .param("getDeleteId", Constants.ONE.toString()).param("currencyName", "Dollor"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+          .param("getDeleteId", TestConstants.ONE.toString()).param("currencyName", "Dollor"));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testGetCurrencyBycurrencyName | Exception ", e);
     }
@@ -392,9 +392,9 @@ public class CurrencyControllerTest {
           Matchers.anyString())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CURRENCY_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "Status").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
@@ -411,9 +411,9 @@ public class CurrencyControllerTest {
           Matchers.anyString())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CURRENCY_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "Status").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
@@ -428,9 +428,9 @@ public class CurrencyControllerTest {
           Matchers.anyString())).thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CURRENCY_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE.toString()))
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE.toString()))
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "Status").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
@@ -445,10 +445,10 @@ public class CurrencyControllerTest {
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAGINATION_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.CURRENCY_MODEL, currencyDTO)
-              .param("pageNumber", Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.CURRENCY_MODEL, currencyDTO)
+              .param("pageNumber", TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testGetPaginationList | Exception ", e);
@@ -462,10 +462,10 @@ public class CurrencyControllerTest {
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAGINATION_CURRENCY)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.CURRENCY_MODEL, currencyDTO)
-              .param("pageNumber", Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.CURRENCY_MODEL, currencyDTO)
+              .param("pageNumber", TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CURRENCY_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testGetPaginationListException | Exception ", e);
@@ -481,10 +481,10 @@ public class CurrencyControllerTest {
       Mockito.when(currencyConfigService.searchCurrencyConfig(Matchers.any(CurrencyDTO.class)))
           .thenReturn(responseval);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DOWNLOAD_CURRENCY)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.CURRENCY_MODEL, currencyDTO)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadType", "XLS")
-          .param("downloadAllRecords", "true").param(Constants.TOTAL_RECORDS, Constants.TEN.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.CURRENCY_MODEL, currencyDTO)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadType", "XLS")
+          .param("downloadAllRecords", "true").param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testDownloadCurrencyReport | Exception ", e);
     }
@@ -499,10 +499,10 @@ public class CurrencyControllerTest {
       Mockito.when(currencyConfigService.searchCurrencyConfig(Matchers.any(CurrencyDTO.class)))
           .thenReturn(responseval);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DOWNLOAD_CURRENCY)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.CURRENCY_MODEL, currencyDTO)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadType", "PDF")
-          .param("downloadAllRecords", "true").param(Constants.TOTAL_RECORDS, Constants.TEN.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.CURRENCY_MODEL, currencyDTO)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadType", "PDF")
+          .param("downloadAllRecords", "true").param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error("CurrencyControllerTest | testDownloadCurrencyReportPDF | Exception ", e);
     }

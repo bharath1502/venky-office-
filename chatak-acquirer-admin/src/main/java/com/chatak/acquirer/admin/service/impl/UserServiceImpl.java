@@ -22,6 +22,7 @@ import com.chatak.mailsender.service.MailServiceManagement;
 import com.chatak.pg.acq.dao.AdminUserDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
+import com.chatak.pg.acq.dao.MerchantTerminalDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.UserActivityLogDao;
@@ -76,6 +77,9 @@ public class UserServiceImpl implements UserService, PGConstants {
 
   @Autowired
   MerchantProfileDao merchantProfileDao;
+
+  @Autowired
+  MerchantTerminalDao merchantTerminalDao;
 
   @Override
   public void saveUser(UserData userData) throws ChatakAdminException {
@@ -485,7 +489,11 @@ public class UserServiceImpl implements UserService, PGConstants {
   public List<GenericUserDTO> searchMerchantUser(GenericUserDTO adminUserDTO)
       throws ChatakAdminException {
     try {
-      return merchantUserDao.searchMerchantUsers(adminUserDTO);
+      if (adminUserDTO.getLoginuserType().equals(Constants.PM_USER_TYPE)) {
+        return merchantUserDao.searchMerchantUsersForPM(adminUserDTO, adminUserDTO.getEntityId());
+      } else {
+        return merchantUserDao.searchMerchantUsers(adminUserDTO);
+      }
     } catch (Exception e) {
       logger.error("ERROR:: UserServiceImpl:: searchUser method2", e);
       throw new ChatakAdminException(Properties.getProperty(Constants.CHATAK_NORMAL_ERROR_MESSAGE));
@@ -691,10 +699,10 @@ public class UserServiceImpl implements UserService, PGConstants {
   }
 
   @Override
-  public UserData merchantIdByMerchantName(String merchantId) throws ChatakAdminException {
-    PGMerchant pgMerchant = merchantUpdateDao.getMerchant(merchantId);
+  public UserData merchantIdByMerchantName(String merchantId, Long entityId, String userType) throws ChatakAdminException {
+    PGMerchant pgMerchant = merchantTerminalDao.validateMerchantId(merchantId, entityId, userType);
     UserData userResponse = new UserData();
-    if(pgMerchant != null){
+    if(null != pgMerchant && !StringUtil.isNullAndEmpty(pgMerchant.getBusinessName())){
       userResponse.setMerchantName(pgMerchant.getBusinessName());
       userResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
     }

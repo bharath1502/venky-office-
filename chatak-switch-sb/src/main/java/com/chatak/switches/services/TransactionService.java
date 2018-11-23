@@ -45,6 +45,7 @@ import com.chatak.pg.acq.dao.model.PGSwitchTransaction;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.BINRepository;
+import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.acq.dao.repository.SplitTransactionRepository;
 import com.chatak.pg.bean.Request;
 import com.chatak.pg.bean.Response;
@@ -145,6 +146,9 @@ public abstract class TransactionService extends AccountTransactionService {
   
   @Autowired
   public AsyncService asyncService;
+  
+  @Autowired
+  private MerchantRepository merchantRepository;
 
   protected String txnRefNum = RandomGenerator.generateRandNumeric(PGConstants.LENGTH_TXN_REF_NUM);
 
@@ -235,7 +239,7 @@ public abstract class TransactionService extends AccountTransactionService {
     // PERF >> Replaced by fetching only auto-settlement status and ID based on merchant code
     PGMerchant pgMerchant = merchantUpdateDao.getMerchantAutoSettlementByCode(request.getMerchantCode());
     String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() != null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
-    autoSettlement = (autoSettlement!=null && autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_YES : Constants.BATCH_STATUS_NA;
+    autoSettlement = (autoSettlement!=null && autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_NO : Constants.BATCH_STATUS_NA;
     
     if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
       pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);
@@ -871,8 +875,8 @@ public abstract class TransactionService extends AccountTransactionService {
     return pgTransaction;
   }
 
-  protected ISOMsg getBalanceEnquiryISOMsg(Request request, ISOMsg isoMsg) throws ISOException {
-    isoMsg = new ISOMsg();
+  protected ISOMsg getBalanceEnquiryISOMsg(Request request) throws ISOException {
+	  ISOMsg isoMsg = new ISOMsg();
     try {
       isoMsg.setMTI("0200");
       isoMsg.set(ISOConstants.PAN, request.getCardNum());
@@ -916,7 +920,7 @@ public abstract class TransactionService extends AccountTransactionService {
   }
 
   protected ISOMsg getISOMsg(ISOMsg isoMsg) {
-    isoMsg.set(ISOConstants.TRANSMISSION_DATE_TIME, (new SimpleDateFormat("MMddhhmmss").format(new Date())));
+      isoMsg.set(ISOConstants.TRANSMISSION_DATE_TIME, (new SimpleDateFormat("MMddhhmmss").format(new Date())));
       isoMsg.set(ISOConstants.LOCAL_TRANSACTION_TIME, DateUtils.getLocalTransactionTime());// TODO: local
       // time
       isoMsg.set(ISOConstants.LOCAL_TRANSACTION_DATE, DateUtils.getLocalTransactionDate());// TODO: local
@@ -1102,8 +1106,16 @@ private void validateVirtualAccFeePostResponse(PGAccountFeeLog feeLog, virtualAc
 	  logger.info("TransactionService | getCardProgramDetailsByCardNumber | Entering");
 	  
 	  Long cardProgramId = cardProgramDao.findCardProgramByIIN(iin, iinPartnerCode, iinExt);
-	  PGMerchantCardProgramMap pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(merchantId, cardProgramId);
-	  pgTransaction.setCpId(cardProgramId);
+	  PGMerchant pgMerchant = merchantRepository.findById(merchantId);
+	  
+	  PGMerchantCardProgramMap pGMerchantCardProgramMap = null;
+	  if(pgMerchant.getMerchantType().equalsIgnoreCase(PGConstants.SUB_MERCHANT)) {
+		  pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(pgMerchant.getParentMerchantId(), cardProgramId);
+		  pgTransaction.setCpId(cardProgramId);
+	  } else {	  
+		  pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(merchantId, cardProgramId);
+	      pgTransaction.setCpId(cardProgramId);	  
+	  }	 
 	  
 	  logger.info("TransactionService | getCardProgramDetailsByCardNumber | pGMerchantCardProgramMap: " + pGMerchantCardProgramMap);
 	  

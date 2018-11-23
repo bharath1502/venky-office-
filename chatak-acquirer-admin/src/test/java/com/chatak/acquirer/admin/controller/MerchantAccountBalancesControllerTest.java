@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -38,8 +38,8 @@ import com.chatak.acquirer.admin.service.MerchantAccountService;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.user.bean.MerchantAccountSearchDto;
-import com.chatak.pg.util.Constants;
 
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class MerchantAccountBalancesControllerTest {
 
@@ -114,7 +114,7 @@ public class MerchantAccountBalancesControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.SHOW_ACC_MANUAL_CREDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.SHOW_ACC_MANUAL_CREDIT));
     } catch (Exception e) {
       logger.error("MerchantAccountBalancesControllerTest | testShowAccManualCredit | Exception ",
@@ -127,7 +127,7 @@ public class MerchantAccountBalancesControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.SHOW_ACC_MANUAL_DEBIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.SHOW_ACC_MANUAL_DEBIT));
     } catch (Exception e) {
       logger.error("MerchantAccountBalancesControllerTest | testShowAccManualDebit | Exception ",
@@ -138,13 +138,13 @@ public class MerchantAccountBalancesControllerTest {
   @Test
   public void testProcessAccManualCredit() {
     responseval = new Response();
-    responseval.setErrorCode(Constants.SUCCESS_CODE);
+    responseval.setErrorCode(TestConstants.SUCCESS_CODE);
     try {
       Mockito.when(merchantAccountService.processMerchantAccountBalanceUpdate(
           Matchers.any(AccountBalanceDTO.class), Matchers.anyString())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.PROCESS_ACC_MANUAL_CREDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.SHOW_ACC_MANUAL_CREDIT));
     } catch (Exception e) {
       logger.error("MerchantAccountBalancesControllerTest | testShowAccManualCredit | Exception ",
@@ -155,13 +155,13 @@ public class MerchantAccountBalancesControllerTest {
   @Test
   public void testProcessAccManualCreditElse() {
     responseval = new Response();
-    responseval.setErrorCode(Constants.SUCCESS);
+    responseval.setErrorCode(TestConstants.SUCCESS);
     try {
       Mockito.when(merchantAccountService.processMerchantAccountBalanceUpdate(
           Matchers.any(AccountBalanceDTO.class), Matchers.anyString())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.PROCESS_ACC_MANUAL_CREDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.SHOW_ACC_MANUAL_CREDIT));
     } catch (Exception e) {
       logger.error(
@@ -178,7 +178,7 @@ public class MerchantAccountBalancesControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.PROCESS_ACC_MANUAL_CREDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.SHOW_ACC_MANUAL_CREDIT));
     } catch (Exception e) {
       logger.error(
@@ -190,15 +190,15 @@ public class MerchantAccountBalancesControllerTest {
   @Test
   public void testProcessAccManualDebit() {
     responseval = new Response();
-    responseval.setErrorCode(Constants.SUCCESS_CODE);
+    responseval.setErrorCode(TestConstants.SUCCESS_CODE);
     try {
       Mockito.when(merchantAccountService.processMerchantAccountBalanceUpdate(
           Matchers.any(AccountBalanceDTO.class), Matchers.anyString())).thenReturn(responseval);
-      Mockito.when(merchantAccountService.getAccountBalanceDTO(Matchers.anyString()))
+      Mockito.when(merchantAccountService.getAccountBalanceDTO(Matchers.anyString(), Matchers.anyLong(), Matchers.anyString()))
           .thenReturn(accountBalanceDTO);
       mockMvc
           .perform(post("/" + URLMappingConstants.PROCESS_ACC_MANUAL_DEBIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.SHOW_ACC_MANUAL_DEBIT));
     } catch (Exception e) {
       logger.error("MerchantAccountBalancesControllerTest | testProcessAccManualDebit | Exception ",
@@ -209,15 +209,15 @@ public class MerchantAccountBalancesControllerTest {
   @Test
   public void testProcessAccManualDebitElse() {
     responseval = new Response();
-    responseval.setErrorCode(Constants.SUCCESS);
+    responseval.setErrorCode(TestConstants.SUCCESS);
     responseval.setErrorMessage("error");
     try {
       Mockito.when(merchantAccountService.processMerchantAccountBalanceUpdate(
           Matchers.any(AccountBalanceDTO.class), Matchers.anyString())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.PROCESS_ACC_MANUAL_DEBIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER)
-              .param("inputAmount", Constants.TWO_LONG.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER)
+              .param("inputAmount", TestConstants.TWO_LONG.toString()))
           .andExpect(view().name(URLMappingConstants.SHOW_ACC_MANUAL_DEBIT));
     } catch (Exception e) {
       logger.error(
@@ -234,8 +234,8 @@ public class MerchantAccountBalancesControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.PROCESS_ACC_MANUAL_DEBIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER)
-              .param("inputAmount", Constants.TWO_LONG.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER)
+              .param("inputAmount", TestConstants.TWO_LONG.toString()))
           .andExpect(view().name(URLMappingConstants.SHOW_ACC_MANUAL_DEBIT));
     } catch (Exception e) {
       logger.error(
@@ -247,11 +247,11 @@ public class MerchantAccountBalancesControllerTest {
   @Test
   public void testFetchAccountDetialsbyMerchantCode() {
     try {
-      Mockito.when(merchantAccountService.getAccountBalanceDTO(Matchers.anyString()))
+      Mockito.when(merchantAccountService.getAccountBalanceDTO(Matchers.anyString(), Matchers.anyLong(), Matchers.anyString()))
           .thenReturn(accountBalanceDTO);
       mockMvc.perform(get("/" + URLMappingConstants.AJAX_MERCHANT_BALANCE_DETAILS)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER)
-          .param("inputAmount", Constants.TWO_LONG.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER)
+          .param("inputAmount", TestConstants.TWO_LONG.toString()));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountBalancesControllerTest | testFetchAccountDetialsbyMerchantCode | Exception ",
@@ -272,10 +272,10 @@ public class MerchantAccountBalancesControllerTest {
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenReturn(searchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param(Constants.DOWNLOAD_TYPE, "XLS")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param(TestConstants.DOWNLOAD_TYPE, "XLS")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountBalancesControllerTest | testDownloadSubMerchantAccountReport | Exception ",
@@ -296,10 +296,10 @@ public class MerchantAccountBalancesControllerTest {
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenReturn(searchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param(Constants.DOWNLOAD_TYPE, "PDF")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param(TestConstants.DOWNLOAD_TYPE, "PDF")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountBalancesControllerTest | testDownloadSubMerchantAccountReportPDF | Exception ",
@@ -317,10 +317,10 @@ public class MerchantAccountBalancesControllerTest {
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenReturn(searchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param(Constants.DOWNLOAD_TYPE, "PDF")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param(TestConstants.DOWNLOAD_TYPE, "PDF")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountBalancesControllerTest | testDownloadSubMerchantAccountReportException | Exception ",
@@ -333,7 +333,7 @@ public class MerchantAccountBalancesControllerTest {
     searchResponse = new MerchantAccountSearchResponse();
     merchantAccountSearchDtoList.add(merchantAccountSearchDto);
     searchResponse.setMerchantAccountSearchDtoList(merchantAccountSearchDtoList);
-    searchResponse.setTotalNoOfRows(Constants.TEN);
+    searchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(merchantAccountService.getMerchantMapByMerchantType(Matchers.anyString()))
           .thenReturn(merchantDataMap);
@@ -342,10 +342,10 @@ public class MerchantAccountBalancesControllerTest {
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenReturn(searchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGINATION)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("pageNumber", Constants.ONE.toString()).param("sortProperty", "sortProperty")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("pageNumber", TestConstants.ONE.toString()).param("sortProperty", "sortProperty")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountBalancesControllerTest | testSubMerchantAccountSearchPagination | Exception ",
@@ -359,10 +359,10 @@ public class MerchantAccountBalancesControllerTest {
       Mockito.when(merchantAccountService.getMerchantMapByMerchantType(Matchers.anyString()))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGINATION)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).header(Constants.REFERER, Constants.REFERER)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("pageNumber", Constants.ONE.toString()).param("sortProperty", "sortProperty")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).header(TestConstants.REFERER, TestConstants.REFERER)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("pageNumber", TestConstants.ONE.toString()).param("sortProperty", "sortProperty")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountBalancesControllerTest | testSubMerchantAccountSearchPaginationException | Exception ",

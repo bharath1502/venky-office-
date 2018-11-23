@@ -4,10 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -214,9 +214,8 @@ public class VaultServiceImpl implements VaultService {
   public String generateToken(String pan, PGCardTokenDetails pgCardTokenDetails) throws ChatakVaultException {
     logger.debug("Entering:: VaultServiceImpl:: generateToken method");
 
-    Random r = new Random();
     try {
-
+      SecureRandom r = new SecureRandom();
       String token = "";
       String encryptedToken = null;
 
@@ -249,6 +248,9 @@ public class VaultServiceImpl implements VaultService {
       logger.debug("Exiting:: VaultServiceImpl:: generateToken method");
 
       return encryptedToken;
+    } catch(NoSuchAlgorithmException e) {
+      logger.error("ERROR:: VaultController:: getTokens method", e);
+      throw new ChatakVaultException(e.getMessage());
     } catch(Exception e) {
       logger.error("ERROR:: VaultController:: getTokens method", e);
       throw new ChatakVaultException(VaultErrorCodes.ERROR_CODE_V16);

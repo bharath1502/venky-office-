@@ -469,7 +469,7 @@ public class BinController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(ONUS_BIN_CONFIGURATION_SHOW);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
-    modelAndView = showBinSearchCondition(session, modelAndView, existingFeature);
+    showBinSearchCondition(session, modelAndView, existingFeature);
     try {
       BinDTO dtoResponse = new BinDTO();
       dtoResponse.setId(binId);

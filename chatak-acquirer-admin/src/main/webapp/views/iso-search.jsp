@@ -235,10 +235,10 @@
 									<c:when test="${!(fn:length(searchList) eq 0) }">
 										<c:forEach items="${searchList}" var="isoDetails">
 											<tr>
-												<td><div data-title="Iso Name" class="feeDescDiv tbl-text-align-left"
-													id="15" title="${isoDetails.isoName}">${isoDetails.isoName}&nbsp;</div></td>
-												<td><div data-title="Business Entity Name" class="feeDescDiv tbl-text-align-left"
-													id="15" title="${isoDetails.programManagerRequest.businessName}">${isoDetails.programManagerRequest.businessName}&nbsp;</div></td>
+												<td data-title="Iso Name" class="ellipsis"
+													id="15" title="${isoDetails.isoName}">${isoDetails.isoName}&nbsp;</td>
+												<td data-title="Business Entity Name" class="ellipsis"
+													id="15" title="${isoDetails.programManagerRequest.businessName}">${isoDetails.programManagerRequest.businessName}&nbsp;</td>
 												<td
 													data-title="${isoDetails.programManagerRequest.accountCurrency}">${isoDetails.programManagerRequest.accountCurrency}&nbsp;</td>
 												<td data-title="Status">

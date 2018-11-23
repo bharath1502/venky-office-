@@ -1,4 +1,6 @@
 package com.chatak.merchant.service;
+import javax.servlet.http.HttpSession;
+import org.springframework.web.servlet.ModelAndView;
 import com.chatak.merchant.controller.model.LoginDetails;
 import com.chatak.merchant.controller.model.LoginResponse;
 import com.chatak.merchant.controller.model.ResetPasswordData;
@@ -59,5 +61,7 @@ public interface LoginService {
 	 * @throws ChatakMerchantException
 	 */
 	public void resetPassword(ResetPasswordData resetPasswordData,Long userId)throws ChatakMerchantException;
+
+	public boolean checkUserActive(HttpSession session);
 	
 }

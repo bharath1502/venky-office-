@@ -16,8 +16,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+<link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -302,6 +301,42 @@
 														</div>
 													</div>
 												</div>
+												<div class="col-sm-9">
+													<ul class="pagination custom-table-footer-pagination">
+														<c:if test="${portalListPageNumber gt 1}">
+															<li><a
+																href="javascript:getPortalOnPageWithRecords('1','${totalRecords}')">
+																	&laquo;</a></li>
+															<li><a
+																href="javascript:getPortalPrevPageWithRecords('${portalListPageNumber }','${totalRecords}')">
+																	&lsaquo; </a></li>
+														</c:if>
+
+														<c:forEach var="page" begin="${beginPortalPage }"
+															end="${endPortalPage}" step="1" varStatus="pagePoint">
+															<c:if test="${portalListPageNumber == pagePoint.index}">
+																<li
+																	class="${portalListPageNumber == pagePoint.index?'active':''}">
+																	<a href="javascript:">${pagePoint.index}</a>
+																</li>
+															</c:if>
+															<c:if test="${portalListPageNumber ne pagePoint.index}">
+																<li><a
+																	href="javascript:getPortalOnPageWithRecords('${pagePoint.index }','${totalRecords}')">${pagePoint.index}</a>
+																</li>
+															</c:if>
+														</c:forEach>
+
+														<c:if test="${portalListPageNumber lt portalPages}">
+															<li><a
+																href="javascript:getPortalNextPageWithRecords('${portalListPageNumber }','${totalRecords}')">
+																	&rsaquo;</a></li>
+															<li><a
+																href="javascript:getPortalOnPageWithRecords('${portalPages }','${totalRecords}')">&raquo;
+															</a></li>
+														</c:if>
+													</ul>
+												</div>
 											</div>
 										</td>
 									</tr>
@@ -336,7 +371,7 @@
 	<script src="../js/bootstrap.min.js"></script> <script src="../js/utils.js"></script>
 	<script src="../js/sortable.js"></script>
 	<script src="../js/validation.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+		 <script src="../js/rome.js"></script>
 	<script src="../js/reports.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
@@ -365,13 +400,14 @@
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-
-		$('.effectiveDate').datetimepicker({
+		rome(transFromDate, { time: false });
+		rome(transToDate, { time: false });
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'd/m/Y',
 			maxDate:new Date()
-		});
+		}); */
 		
 		  if ("${transactionDiv}" == "true"){
 			 $('#checkb').show();
@@ -390,102 +426,6 @@
 		}
 		/* Common Navigation Include End */
 		  /* Common Pagination Include Start */
-		 
-						$(function() {
-							highlightMainContent('navListId1');
-							var rowsShown = 20;
-							var pageShown=10;
-							var rowsTotal = $('#serviceResults tbody tr').length;
-							var numPages = rowsTotal / rowsShown;
-							var startPagePoint=1;
-							var endPagePoint=startPagePoint+pageShown-1;
-							$('#serviceResults')
-							.after(
-									'<table style="width: 100%; margin-top: -20px;"><tr class="table-footer-main"><td class="search-table-header-column" colspan="10"><div class="col-sm-12">	<div class="col-sm-3">&nbsp;</div><div class="col-sm-9"><ul class="pagination custom-table-footer-pagination"><li id="liIdLeft"><a href="#" rel="'+startPagePoint+'">&laquo;</a></li><li id="liId"></a></li><li id="liIdRight"><a href="#" rel="'+endPagePoint+'">&raquo;</a></li></ul></div></div></td></tr></table>');
-							for (i = 0; i < numPages; i++) {
-								var pageNum = i + 1;
-								$('#liId').append(
-										'<a href="#" rel="'+i+'" id="rel'+i+'">' + pageNum
-												+ '</a> ');
-							}
-							if(numPages<=pageShown){
-								$('#liIdRight a').hide();
-								$('#liIdLeft a').hide();
-								}
-							$('#liIdLeft a').hide();
-							$('#serviceResults tbody tr').hide();
-							$('#serviceResults tbody tr').slice(0, rowsShown).show();
-							$('#liId a:first').addClass('active');
-							$('#liId a').hide(); 
-							$('#liId a').slice(0, pageShown).show(); 
-							$('#liId a').bind(
-									'click',
-									function() {
-										$('#liId a').removeClass('active');
-										$(this).addClass('active');
-										var currPage = parseInt($(this).attr('rel'));
-										var startItem = currPage * rowsShown;
-										var endItem = startItem + rowsShown;
-										$('#serviceResults tbody tr').css('opacity',
-												'0.0').hide().slice(startItem,
-												endItem).css('display',
-												'table-row').animate({
-											opacity : 1
-										}, 300);
-									});
-							$('#liIdLeft a').bind(
-									'click',
-									function() {
-										var currPage1 = parseInt($(this).attr('rel'));
-										$('#liId a').hide();
-										$('#liId a').slice(currPage1-pageShown,currPage1).show();
-										if((currPage1-pageShown)<=0){
-											startPagePoint=0;
-											$('#liIdLeft a').hide();
-											$(this).attr('rel',1);
-											}
-										else{
-											startPagePoint=(currPage1-pageShown);
-											$('#liIdLeft a').show();
-											$(this).attr('rel',startPagePoint);
-									     	}
-										endPagePoint=startPagePoint+pageShown;
-										$('#liIdRight a').attr('rel',endPagePoint);
-										if(endPagePoint>=numPages){
-											$('#liIdRight a').hide();
-											}else{
-												$('#liIdRight a').show();
-												}
-										if(startPagePoint>0&&startPagePoint<=(numPages)){
-											$('#liIdLeft a').show();
-											}else{
-												$('#liIdLeft a').hide();
-												}
-										var t='rel'+(startPagePoint);
-										$('#'+t).click();
-									});
-							$('#liIdRight a').bind(
-									'click',
-									function() {
-										var currPage2 = parseInt($(this).attr('rel'));
-										$('#liId a').slice(0,currPage2).hide();
-										$('#liId a').slice(currPage2,currPage2+pageShown).show();
-										startPagePoint=parseInt(currPage2);
-										endPagePoint=parseInt(startPagePoint)+pageShown;
-										$(this).attr('rel',endPagePoint);
-										$('#liIdLeft a').attr('rel',startPagePoint);
-										if(endPagePoint>=numPages){
-											$('#liIdRight a').hide();
-											}
-										if(startPagePoint>0&&startPagePoint<=numPages){
-											$('#liIdLeft a').show();
-											}
-										var t='rel'+(startPagePoint);
-										$('#'+t).click();
-									});
-						});
-		
-				  /* Common Pagination Include End */
 	</script>
 </body>
 </html>

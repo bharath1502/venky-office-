@@ -15,7 +15,7 @@ import com.chatak.pg.acq.dao.model.QPGEntity;
 import com.chatak.pg.acq.dao.model.QPGEntityFeature;
 import com.chatak.pg.acq.dao.model.QPGFeature;
 import com.chatak.pg.acq.dao.model.QPGRolesFeatureMapping;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -37,13 +37,12 @@ public class EntityFeatureDaoImpl implements EntityFeatureDao{
 	 */
 	@Override
 	public List<Long> getFeaturesByEntity(String entity) {
-		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		return query.from(QPGEntityFeature.pGEntityFeature,QPGEntity.pGEntity)
-		.select(QPGEntityFeature.pGEntityFeature.featureId)
 		.where(QPGEntity.pGEntity.name.equalsIgnoreCase(entity),
 				QPGEntityFeature.pGEntityFeature.entityId.eq(QPGEntity.pGEntity.id))
 		.orderBy(QPGEntityFeature.pGEntityFeature.featureId.asc())
-		.fetch();
+		.list(QPGEntityFeature.pGEntityFeature.featureId);
 	}
 
 }

@@ -4,7 +4,6 @@
 package com.chatak.pg.acq.dao;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 
@@ -50,7 +49,7 @@ public interface MerchantCategoryCodeDao {
 	 * @return the PG merchant category code
 	 * @throws DataAccessException the data access exception
 	 */
-	public Optional<PGMerchantCategoryCode> findById(Long mcc)
+	public PGMerchantCategoryCode findById(Long mcc)
 			throws DataAccessException;
 
 	/**

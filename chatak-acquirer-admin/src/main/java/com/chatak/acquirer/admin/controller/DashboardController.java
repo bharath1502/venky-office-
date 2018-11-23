@@ -132,15 +132,10 @@ public class DashboardController implements URLMappingConstants {
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
     String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
     LoginResponse loginResponse = (LoginResponse) session.getAttribute("loginResponse");
-    List<Merchant> merchants = new ArrayList<>();
     if ("admin".equalsIgnoreCase(userType)) {
       modelAndView = showLoginCondition(session, modelAndView, existingFeature, userType);
     }
-    if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.ADMIN)) {
-        merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
-	} else if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
-		merchants = merchantUpdateService.getPmMerchantByEntityIdandEntityType(loginResponse.getEntityId(), loginResponse.getUserType());
-	}
+    List<Merchant> merchants = getMerchantsOnUserType(loginResponse);
     setMerchantSubList(modelAndView, merchants);
     GetTransactionsListRequest transaction = new GetTransactionsListRequest();
     TransactionResponse transactionResponse = new TransactionResponse();
@@ -158,7 +153,6 @@ public class DashboardController implements URLMappingConstants {
       txnCodeList.add(AccountTransactionCode.EFT_DEBIT);
       txnCodeList.add(AccountTransactionCode.FT_BANK);
       txnCodeList.add(AccountTransactionCode.FT_CHECK);
-
       transaction.setTransactionCodeList(txnCodeList);
 
       transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_PROCESSING);
@@ -166,8 +160,7 @@ public class DashboardController implements URLMappingConstants {
           transactionService.searchAccountTransactions(transaction);
 
       transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-      GetTransactionsListResponse executedTxnList =
-          transactionService.searchAccountTransactions(transaction);
+      GetTransactionsListResponse executedTxnList = getExecutedTxnList(loginResponse, transaction);
 
       if (null != processingTxnList && null != processingTxnList.getAccountTransactionList()) {
 
@@ -209,6 +202,28 @@ public class DashboardController implements URLMappingConstants {
     return modelAndView;
   }
 
+  private GetTransactionsListResponse getExecutedTxnList(LoginResponse loginResponse,
+      GetTransactionsListRequest transaction) {
+    GetTransactionsListResponse executedTxnList = null;
+    if (loginResponse.getUserType().equals(Constants.PM_USER_TYPE)
+    	  || loginResponse.getUserType().equals(Constants.ISO_USER_TYPE)) {
+      executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, loginResponse.getEntityId(), loginResponse.getUserType());
+    } else {
+      executedTxnList = transactionService.searchAccountTransactions(transaction);
+    }
+    return executedTxnList;
+  }
+
+  private List<Merchant> getMerchantsOnUserType(LoginResponse loginResponse) {
+    List<Merchant> merchants = new ArrayList<>();
+    if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.ADMIN)) {
+        merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+	} else if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+		merchants = merchantUpdateService.getPmMerchantByEntityIdandEntityType(loginResponse.getEntityId(), loginResponse.getUserType());
+	}
+    return merchants;
+  }
+
   private void setMerchantSubList(ModelAndView modelAndView, List<Merchant> merchants) {
     if (CommonUtil.isListNotNullAndEmpty(merchants) && merchants.size() > Constants.TEN) {
       modelAndView.addObject("merchantSubList", merchants.subList(0, Constants.TEN));
@@ -242,7 +257,6 @@ public class DashboardController implements URLMappingConstants {
 
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject("countryList", countryList);
-      session.setAttribute("countryList", countryList);
       merchant.setId(merchantViewId);
       merchant = merchantValidateService.getMerchant(merchant);
       if (null == merchant) {
@@ -252,7 +266,6 @@ public class DashboardController implements URLMappingConstants {
         List<Option> options =
             merchantValidateService.getFeeProgramNamesForEdit(merchant.getFeeProgram());
         modelAndView.addObject("feeprogramnames", options);
-        session.setAttribute("feeprogramnames", options);
 
         fetchState(session, modelAndView, merchant);
 
@@ -263,7 +276,7 @@ public class DashboardController implements URLMappingConstants {
         Response agentnamesList = merchantUpdateService.getAgentNames(merchant.getLocalCurrency());
         if (agentnamesList != null) {
           modelAndView.addObject("agentnamesList", agentnamesList.getResponseList());
-          session.setAttribute("agentnamesList", agentnamesList.getResponseList());
+          session.setAttribute("agentnamesList", new ArrayList(agentnamesList.getResponseList()));
         }
         session.setAttribute("updateMerchantId", merchantViewId);
         merchant.setMerchantFlag(true);
@@ -318,15 +331,15 @@ private void validateMerchant(Map model, Merchant merchant) {
   private void fetchState(HttpSession session, ModelAndView modelAndView, Merchant merchant) throws ChatakAdminException {
 	Response stateList = merchantUpdateService.getStatesByCountry(merchant.getCountry());
 	modelAndView.addObject("stateList", stateList.getResponseList());
-	session.setAttribute("stateList", stateList.getResponseList());
+	session.setAttribute("stateList", new ArrayList(stateList.getResponseList()));
 
 	stateList = merchantUpdateService.getStatesByCountry(merchant.getBankCountry());
 	modelAndView.addObject("bankStateList", stateList.getResponseList());
-	session.setAttribute("bankStateList", stateList.getResponseList());
+	session.setAttribute("bankStateList", new ArrayList(stateList.getResponseList()));
 
 	stateList = merchantUpdateService.getStatesByCountry(merchant.getLegalCountry());
 	modelAndView.addObject("legalStateList", stateList.getResponseList());
-	session.setAttribute("legalStateList", stateList.getResponseList());
+	session.setAttribute("legalStateList", new ArrayList(stateList.getResponseList()));
   }
 
   @RequestMapping(value = CHATAK_ADMIN_UNBLOCK_USERS, method = RequestMethod.GET)
@@ -497,14 +510,14 @@ private void validateMerchant(Map model, Merchant merchant) {
 		logger.info("EXITING :: DashboardController :: showAllPendingSettlementDetails");
 		return modelAndView;
 	}
-	
+
 	private void processIssSettlementData(HttpSession session, ModelAndView modelAndView,
 			List<PGIssSettlementData> list) {
 		List<SettlementDataRequest> settlementData = new ArrayList<>();
 		if (StringUtil.isListNotNullNEmpty(list)) {
 			for (PGIssSettlementData data : list) {
 				SettlementDataRequest settlementDataRequest = new SettlementDataRequest();
-				//settlementDataRequest.setProgramManagerId(Long.valueOf(data.getAcqPmId()));
+				settlementDataRequest.setProgramManagerId(data.getAcqPmId());
 				settlementDataRequest.setProgramManagerName(data.getProgramManagerName());
 				settlementDataRequest.setBatchDate(data.getBatchDate());
 				settlementDataRequest.setTotalAmount(new BigDecimal(data.getTotalAmount()).divide(PGConstants.BIG_DECIMAL_HUNDRED));

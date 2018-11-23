@@ -152,8 +152,12 @@ private static String getValidOAuth2TokenForFee() {
 	          
 	        	@Override
 	            public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1) throws CertificateException {
-	             
-	        		// need to implement based on requirement
+	        		try {
+						arg0[0].checkValidity();
+					} catch (CertificateException e) {
+						logger.info("Error:: JsonUtil:: checkServerTrusted method ");
+						throw new CertificateException("Certificate not valid or trusted.");
+					}
 	            }
 	        	
 	          @Override
@@ -166,14 +170,19 @@ private static String getValidOAuth2TokenForFee() {
 	          
 	          @Override
 	          public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1) throws CertificateException {
-	        	// need to implement based on requirement
+	        	  try {
+						arg0[0].checkValidity();
+					} catch (CertificateException e) {
+						logger.info("Error:: JsonUtil:: checkClientTrusted method ");
+						throw new CertificateException("Certificate not valid or trusted.");
+					}
 	          }
 	        } };
 	        
 
 	      // Install the all-trusting trust manager
 	      try {
-	          SSLContext sc = SSLContext.getInstance("TLS");
+	          SSLContext sc = SSLContext.getInstance("TLSv1.2");
 	          sc.init(null, trustAllCerts, new SecureRandom());
 	          HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 	      } catch (Exception e) {

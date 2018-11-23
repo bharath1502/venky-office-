@@ -1,3 +1,7 @@
+var firstNameRegx = /^[A-Za-z0-9@][A-Za-z0-9. ]*$/;
+
+var lastNameRegx = /^[A-Za-z0-9@][A-Za-z0-9. ]*$/;
+
 function validateProfileSubmit() {
 	if (!validateAddress1() 
 			| !validateCity()
@@ -190,7 +194,7 @@ function validateFirstName() {
 		setError(get('firstName'), webMessages.pleasenterfirstname);
 		loadMsgTitleText();
 		return false;
-	} else if (!isCharacter(firstName)) {
+	} else if (!firstNameRegx.test(firstName)) {
 		setError(get('firstName'), webMessages.invalidfirstname);
 		loadMsgTitleText();
 		return false;
@@ -207,7 +211,7 @@ function validateLastName() {
 		setError(get('lastName'), webMessages.pleasenterlastname);
 		loadMsgTitleText();
 		return false;
-	} else if (!isCharacter(lastName)) {
+	} else if (!lastNameRegx.test(lastName)) {
 		setError(get('lastName'), webMessages.invalidlastname);
 		loadMsgTitleText();
 		return false;
@@ -783,3 +787,7 @@ $("#myEdit").click(function() {
 		$(("#"+'mailingState')).append(selectOption);
 	}
 })
+function clearMsg(){
+	document.getElementById("sucessDiv").innerHTML = "";
+	document.getElementById("errorDiv").innerHTML = "";
+}

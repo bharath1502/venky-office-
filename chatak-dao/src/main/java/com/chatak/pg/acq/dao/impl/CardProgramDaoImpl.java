@@ -27,8 +27,8 @@ import com.chatak.pg.acq.dao.repository.CardProgramRepository;
 import com.chatak.pg.acq.dao.repository.PmCardProgramMappingRepository;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.user.bean.CardProgramRequest;
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -79,14 +79,13 @@ public class CardProgramDaoImpl implements CardProgramDao {
 	@Override
 	public List<CardProgramRequest> findCardProgramByPmId(Long programManagerId) {
 		List<CardProgramRequest> cardProgramRequestList = new ArrayList<>();
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> list = query
 				.from(QProgramManager.programManager, QPmCardProgamMapping.pmCardProgamMapping, QCardProgram.cardProgram)
-				.select(QCardProgram.cardProgram.cardProgramId, QCardProgram.cardProgram.cardProgramName)
 				.where(QProgramManager.programManager.id.eq(programManagerId),
 						QPmCardProgamMapping.pmCardProgamMapping.programManagerId.eq(QProgramManager.programManager.id),
 						QCardProgram.cardProgram.cardProgramId.eq(QPmCardProgamMapping.pmCardProgamMapping.cardProgramId))
-				.distinct().fetch();
+				.distinct().list(QCardProgram.cardProgram.cardProgramId, QCardProgram.cardProgram.cardProgramName);
 		for (Tuple tuple : list) {
 			CardProgramRequest cardProgramRequest = new CardProgramRequest();
 			cardProgramRequest.setCardProgramId(tuple.get(QCardProgram.cardProgram.cardProgramId));

@@ -107,14 +107,14 @@
 								<c:when test="${!(fn:length(balanceList) eq 0) }">
 									<c:forEach items="${balanceList}" var="balanceList">
 										<tr>
-											<td><div class="feeDescDiv tbl-text-align-left"><div>${balanceList.userName }</div></div></td>
-											<td><div class="feeDescDiv tbl-text-align-left"><div>${balanceList.businessName }</div></div></td>
-											<td><div class="feeDescDiv tbl-text-align-left"><div>${balanceList.accCreationDate}</div></div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${balanceList.accountNumber }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${balanceList.accountType }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left">${balanceList.currency }</div></td>
-											<td><div class="feeDescDiv tbl-text-align-left"><div>${balanceList.availableBalance }</div></div></td>
-											<td><div class="feeDescDiv tbl-text-align-left"><div>${balanceList.currentBalance }</div></div></td>
+											<td class="alignleft"><div>${balanceList.userName }</div></td>
+											<td class="alignleft"><div>${balanceList.businessName }</div></td>
+											<td class="alignleft"><div>${balanceList.accCreationDate}</div></td>
+											<td class="alignright">${balanceList.accountNumber }</td>
+											<td class="alignleft">${balanceList.accountType }</td>
+											<td class="alignright">${balanceList.currency }</td>
+											<td class="alignright"><div>${balanceList.availableBalance }</div></td>
+											<td class="alignright"><div>${balanceList.currentBalance }</div></td>
 											<td>${balanceList.status }</td>
 										</tr>
 									</c:forEach>

@@ -224,9 +224,15 @@
 											<tr>
 												<td>${settlementEntity.value.batchid}</td>
 												<td>${settlementEntity.value.merchantId} </td>
-												<td><fmt:formatNumber value="${settlementEntity.value.acqSaleAmount/100.0}"/></td>
-												<td><fmt:formatNumber value="${settlementEntity.value.issSaleAmount/100.0}"/></td>
-											</tr>
+												<fmt:formatNumber type="number"
+													value="${settlementEntity.value.acqSaleAmount}"
+													pattern="<%=Constants.AMOUNT_FORMAT %>" var="acqSaleAmount"/>
+												<td><fmt:formatNumber value="${acqSaleAmount/100.0}" pattern="<%=Constants.SETTELEMENT_AMOUNT_FORMAT %>"/></td>
+												<fmt:formatNumber type="number"
+													value="${settlementEntity.value.issSaleAmount}"
+													pattern="<%=Constants.AMOUNT_FORMAT %>" var="issSaleAmount"/>
+												<td><fmt:formatNumber value="${issSaleAmount/100.0}" pattern="<%=Constants.SETTELEMENT_AMOUNT_FORMAT %>"/></td>										
+												</tr>
 										</c:forEach>
 									</c:when>
 									<c:otherwise>
@@ -280,7 +286,7 @@
 												<td>${acquirerUnmatchTxn.merchantId}</td>
 												<td>${acquirerUnmatchTxn.issuerTxnID}</td>
 												<td>${acquirerUnmatchTxn.pgTransactionId}</td>
-												<td><fmt:formatNumber value="${acquirerUnmatchTxn.issSaleAmount/100.0}"/></td>
+												<td><fmt:formatNumber value="${acquirerUnmatchTxn.issSaleAmount/100.0}" pattern="<%=Constants.SETTELEMENT_AMOUNT_FORMAT %>"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>
@@ -323,8 +329,8 @@
 												<td>${issuanceUnmatchTxn.merchantId}</td>
 												<td>${issuanceUnmatchTxn.issuerTxnRefNum}</td>
 												<td>${issuanceUnmatchTxn.transactionId}</td>
-												<td>${issuanceUnmatchTxn.deviceLocalTxnTime}</td>
-												<td><fmt:formatNumber value="${issuanceUnmatchTxn.txnAmount/100.0}"/></td>
+												<td>${issuanceUnmatchTxn.createdDate}</td>
+												<td><fmt:formatNumber value="${issuanceUnmatchTxn.txnAmount/100.0}" pattern="<%=Constants.SETTELEMENT_AMOUNT_FORMAT %>"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>

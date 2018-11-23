@@ -118,7 +118,7 @@ public class MerchantAccountServiceImplTest {
 		merchantAccountServiceImpl.getAllAccountsBalanceReportPagination(merchant);
 	}
 
-	@Test
+	@Test(expected = ChatakAdminException.class)
 	public void testGetAccountBalanceDTO() throws ChatakAdminException {
 		PGMerchant pgMerchant = new PGMerchant();
 		PGAccount pgAccount = new PGAccount();
@@ -127,7 +127,7 @@ public class MerchantAccountServiceImplTest {
 		Mockito.when(merchantUpdateDao.getMerchant(Matchers.anyString())).thenReturn(pgMerchant);
 		Mockito.when(accountDao.getPgAccount(Matchers.anyString())).thenReturn(pgAccount);
 		Mockito.when(currencyConfigDao.getCurrencyCodeNumeric(Matchers.anyString())).thenReturn(pgCurrencyConfig);
-		merchantAccountServiceImpl.getAccountBalanceDTO("abcd");
+		merchantAccountServiceImpl.getAccountBalanceDTO("abcd", 1l, "abcd");
 	}
 
 	@Test
@@ -348,19 +348,30 @@ public class MerchantAccountServiceImplTest {
 		merchantAccountServiceImpl.updateMerchantAccount(merchant);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testLogManualAccountTransactionManualCredit() {
 		PGAccount account = new PGAccount();
-		AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
 		account.setAccountNum(Long.parseLong("4234"));
+		AccountBalanceDTO accountBalanceDTO = getAccountBalanceDTO();
 		merchantAccountServiceImpl.logManualAccountTransaction(account, Long.parseLong("423"), "MANUAL_CREDIT",
 				accountBalanceDTO);
 	}
 
-	@Test(expected = NullPointerException.class)
+	private AccountBalanceDTO getAccountBalanceDTO() {
+		AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
+		accountBalanceDTO.setTimeZoneOffset("timeZoneOffset");
+		accountBalanceDTO.setTimeZoneRegion("timeZoneRegion");
+		accountBalanceDTO.setCurrencySeparatorPosition(2);
+		accountBalanceDTO.setCurrencyThousandsUnit(',');
+		accountBalanceDTO.setCurrencyExponent(2);
+		accountBalanceDTO.setCurrencyMinorUnit('.');
+		return accountBalanceDTO;
+	}
+
+	@Test
 	public void testLogManualAccountTransactionManualDebit() {
 		PGAccount account = new PGAccount();
-		AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
+		AccountBalanceDTO accountBalanceDTO = getAccountBalanceDTO();
 		account.setAccountNum(Long.parseLong("4234"));
 		merchantAccountServiceImpl.logManualAccountTransaction(account, Long.parseLong("423"), "MANUAL_DEBIT",
 				accountBalanceDTO);

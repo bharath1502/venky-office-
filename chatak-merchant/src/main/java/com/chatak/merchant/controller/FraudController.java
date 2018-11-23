@@ -2,6 +2,7 @@ package com.chatak.merchant.controller;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class FraudController implements URLMappingConstants {
       List<Option> isoCountryList = fraudService.getISOCountries();
 
       modelAndView.addObject("isoCountryList", isoCountryList);
-      session.setAttribute("isoCountryList", isoCountryList);
+      session.setAttribute("isoCountryList", new ArrayList(isoCountryList));
 
       Long userid = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
       fraudDetailsResponse = fraudService.getFraudDetails(userid);
@@ -206,7 +207,7 @@ private void populateFraudResponse(Map<String, List<String>> model, ModelAndView
     try {
       LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE);
       advancedFraudDTO.setCreatedBy(String.valueOf(loginResponse.getUserId()));
-      advancedFraudDTO.setId(Long.valueOf(loginResponse.getUserId()));
+      advancedFraudDTO.setId(loginResponse.getUserId());
 
       advancedFraudDTO.setId(advancedFraudDTO.getId());
       advancedFraudDTO.setPageIndex(Constants.ONE);
@@ -253,7 +254,7 @@ private void populateFraudResponse(Map<String, List<String>> model, ModelAndView
     try {
       LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE);
       advancedFraudDTO.setCreatedBy(String.valueOf(loginResponse.getUserId()));
-      advancedFraudDTO.setId(Long.valueOf(loginResponse.getUserId()));
+      advancedFraudDTO.setId(loginResponse.getUserId());
       advancedFraudDTO.setCreatedDate(new Timestamp(System.currentTimeMillis()));
       advancedFraudDTO = fraudService.createAdvancedFraud(advancedFraudDTO);
 
@@ -424,7 +425,7 @@ private void populateFraudResponse(Map<String, List<String>> model, ModelAndView
       LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE);
       AdvancedFraudDTO advancedFraudDTO = new AdvancedFraudDTO();
       advancedFraudDTO.setCreatedBy(loginResponse.getUserId().toString());
-      advancedFraudDTO.setId(Long.valueOf(getId));
+      advancedFraudDTO.setId(getId);
       advancedFraudDTO.setMerchantCode(getMerchantCode);
       advancedFraudDTO = fraudService.searchAdvancedFraudByIdAndMerchantCode(advancedFraudDTO);
 

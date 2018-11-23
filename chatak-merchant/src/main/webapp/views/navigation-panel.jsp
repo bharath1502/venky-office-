@@ -253,8 +253,36 @@
 	</li>
 	</ul>
 </nav>
+
+<!-- Common Alert PopUp STARTS here -->
+<div id="alertPopUp" class="locatioin-list-popup">
+<h3  id="alertPopUpMsg"></h3>
+<div class="col-sm-12 form-action-buttons">
+		<div class="col-sm-12">
+			<input type="button" name="Ok" value="Ok"
+				class="form-control button pull-right" onclick="closeAlertPopup()">
+		</div>
+</div>
+</div>
+<!-- Common Alert PopUp ENDS here --> 
+
 <script src="../js/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script> <script src="../js/utils.js"></script>
+<script >
+$(document).ready(function() {
+	$('#alertPopUp').popup({
+		blur:false
+	});
+});
+
+function closeAlertPopup() {
+	$('#alertPopUp').popup("hide");
+}
+function showAlertPopup(message) {
+	$('#alertPopUpMsg').text(message);
+	$('#alertPopUp').popup("show");
+}
+</script>
 <%-- <script>
 function getLitleEFTTxns() {
 	document.forms["litleEFTTxn"].submit();

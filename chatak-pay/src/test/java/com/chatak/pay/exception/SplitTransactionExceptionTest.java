@@ -1,13 +1,14 @@
 package com.chatak.pay.exception;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 public class SplitTransactionExceptionTest {
 
-	private static Logger logger = Logger.getLogger(SplitTransactionException.class);
+	private static Logger logger = LogManager.getLogger(SplitTransactionException.class);
 
 	@Mock
 	Throwable throwable;
@@ -23,7 +24,7 @@ public class SplitTransactionExceptionTest {
 
 	@Test
 	public void testSplitTransactionException() {
-		logger.info("ERROR :: SplitTransactionExceptionTest :: testSplitTransactionException:");
+		logger.info("Info :: SplitTransactionExceptionTest :: testSplitTransactionException method");
 
 	}
 

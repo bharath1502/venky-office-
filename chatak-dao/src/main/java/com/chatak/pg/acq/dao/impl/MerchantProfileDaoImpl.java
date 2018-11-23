@@ -59,8 +59,8 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -496,16 +496,8 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
           return getMerchantListResponse;
         }
       }
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant)
-    	  .select(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.firstName,
-              QPGMerchant.pGMerchant.lastName, QPGMerchant.pGMerchant.emailId,
-              QPGMerchant.pGMerchant.phone, QPGMerchant.pGMerchant.city,
-              QPGMerchant.pGMerchant.country, QPGMerchant.pGMerchant.status,
-              QPGMerchant.pGMerchant.userName, QPGMerchant.pGMerchant.createdDate,
-              QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId,
-              QPGMerchant.pGMerchant.id, QPGMerchant.pGMerchant.agentAccountNumber,
-              QPGMerchant.pGMerchant.agentANI, QPGMerchant.pGMerchant.agentClientId)
           .where(isBusinessNameLike(searchMerchant.getBusinessName()),
               isMerchantCodeEq(searchMerchant.getMerchantCode()),
               isCityLike(searchMerchant.getCity()), isCountryEq(searchMerchant.getCountry()),
@@ -516,7 +508,14 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
               isCreatedDateLike(searchMerchant.getCreatedDate()),
               isPhoneEq(searchMerchant.getPhone()), isStatusEq(searchMerchant.getStatus()))
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .fetch();
+          .list(QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.firstName,
+              QPGMerchant.pGMerchant.lastName, QPGMerchant.pGMerchant.emailId,
+              QPGMerchant.pGMerchant.phone, QPGMerchant.pGMerchant.city,
+              QPGMerchant.pGMerchant.country, QPGMerchant.pGMerchant.status,
+              QPGMerchant.pGMerchant.userName, QPGMerchant.pGMerchant.createdDate,
+              QPGMerchant.pGMerchant.merchantCode, QPGMerchant.pGMerchant.parentMerchantId,
+              QPGMerchant.pGMerchant.id, QPGMerchant.pGMerchant.agentAccountNumber,
+              QPGMerchant.pGMerchant.agentANI, QPGMerchant.pGMerchant.agentClientId);
       if (!CollectionUtils.isEmpty(tupleList)) {
         merchantList = processTupleList(tupleList);
       }
@@ -555,7 +554,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 
   @Override
   public PGMerchant getMerchantById(Long id) {
-    return merchantRepository.findById(id).orElse(null);
+    return merchantRepository.findById(id);
   }
 
   @Override
@@ -614,7 +613,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
   @Override
   public DeleteMerchantResponse deleteMerchant(Long id) {
     DeleteMerchantResponse deleteMerchantResponse = new DeleteMerchantResponse();
-    PGMerchant merchantDb = merchantRepository.findById(id).orElse(null);
+    PGMerchant merchantDb = merchantRepository.findById(id);
     if (null != merchantDb) {
 
       merchantDb.setStatus(PGConstants.STATUS_DELETED);
@@ -659,7 +658,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
   @Override
   public DeleteMerchantResponse deleteMerchantAndAssociatedAccounts(Long id) {
     DeleteMerchantResponse deleteMerchantResponse = new DeleteMerchantResponse();
-    PGMerchant pgMerchant = merchantRepository.findById(id).orElse(null);
+    PGMerchant pgMerchant = merchantRepository.findById(id);
     if (pgMerchant != null) {
       List<PGTransaction> transactions =
           transactionRepository.getAllTransactionsOnMerchantCode(pgMerchant.getMerchantCode());
@@ -919,8 +918,8 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 
   @Override
   public int getTotalNumberOfRecords(GetMerchantListRequest searchMerchant) {
-    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
-    List<Long> list = query.from(QPGMerchant.pGMerchant).select(QPGMerchant.pGMerchant.id)
+    JPAQuery query = new JPAQuery(entityManager);
+    List<Long> list = query.from(QPGMerchant.pGMerchant)
         .where(isBusinessNameLike(searchMerchant.getBusinessName()),
             isCityLike(searchMerchant.getCity()), isCountryEq(searchMerchant.getCountry()),
             isEmailLike(searchMerchant.getEmailId()),
@@ -928,7 +927,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
             isLastNameLike(searchMerchant.getLastName()), isPhoneEq(searchMerchant.getPhone()),
             isMerchantCodeEq(searchMerchant.getMerchantCode()),
             isStatusEqSelfRegistered(searchMerchant.getStatus()))
-        .fetch();
+        .list(QPGMerchant.pGMerchant.id);
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
 
@@ -961,7 +960,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
     if (StringUtil.isListNotNullNEmpty(merchantDb)) {
       merchantDb.get(0).setStatus(PGConstants.STATUS_DELETED);
       merchantDb.get(0).setUpdatedDate(DateUtil.getCurrentTimestamp());
-      merchantRepository.saveAll(merchantDb);
+      merchantRepository.save(merchantDb);
       deleteMerchantResponse.setIsdeleated(true);
       deleteMerchantResponse.setErrorCode(ActionErrorCode.ERROR_CODE_00);
       deleteMerchantResponse
@@ -975,8 +974,8 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
   }
 
   @Override
-  public PGState getStateById(String countryId) {
-    return stateRepository.findById(Long.valueOf(countryId)).orElse(null);
+  public List<PGState> getStateById(String countryId) {
+    return stateRepository.findById(Long.valueOf(countryId));
   }
 
   @Override
@@ -1080,15 +1079,14 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
     }
     List<AccountBalanceReportDTO> reportList = null;
     AccountBalanceReportDTO accountBalanceReport = null;
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> infoList = query.from(QPGMerchant.pGMerchant, QPGAccount.pGAccount)
-    	.select(QPGMerchant.pGMerchant.userName,
+        .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGAccount.pGAccount.entityId)).offset(offset)
+        .limit(limit).orderBy(orderByCreatedDateDesc()).list(QPGMerchant.pGMerchant.userName,
             QPGMerchant.pGMerchant.businessName, QPGAccount.pGAccount.createdDate,
             QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.entityType,
             QPGMerchant.pGMerchant.localCurrency, QPGAccount.pGAccount.availableBalance,
-            QPGAccount.pGAccount.currentBalance, QPGAccount.pGAccount.status)
-        .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGAccount.pGAccount.entityId)).offset(offset)
-        .limit(limit).orderBy(orderByCreatedDateDesc()).fetch();
+            QPGAccount.pGAccount.currentBalance, QPGAccount.pGAccount.status);
     if (StringUtil.isListNotNullNEmpty(infoList)) {
       reportList = new ArrayList<>();
       for (Tuple tuple : infoList) {
@@ -1115,20 +1113,19 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
   public List<ReportsDTO> getAccountHistoryList() {
     List<ReportsDTO> reportList = null;
     ReportsDTO historyReport = null;
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> infoList = query
         .from(QPGAccountHistory.pGAccountHistory, QPGMerchant.pGMerchant,
             QPGTransaction.pGTransaction)
-        .select(QPGAccountHistory.pGAccountHistory.accountNum,
-            QPGAccountHistory.pGAccountHistory.currency,
-            QPGAccountHistory.pGAccountHistory.transactionId,
-            QPGAccountHistory.pGAccountHistory.entityId, QPGMerchant.pGMerchant.userName,
-            QPGMerchant.pGMerchant.businessName, QPGAccountHistory.pGAccountHistory.feeBalance)
         .where(QPGMerchant.pGMerchant.merchantCode.eq(QPGAccountHistory.pGAccountHistory.entityId)
             .and(QPGAccountHistory.pGAccountHistory.transactionId
                 .eq(QPGTransaction.pGTransaction.transactionId)))
         .orderBy(orderByAccountHistoryUpdatedDateDesc())
-        .fetch();
+        .list(QPGAccountHistory.pGAccountHistory.accountNum,
+            QPGAccountHistory.pGAccountHistory.currency,
+            QPGAccountHistory.pGAccountHistory.transactionId,
+            QPGAccountHistory.pGAccountHistory.entityId, QPGMerchant.pGMerchant.userName,
+            QPGMerchant.pGMerchant.businessName, QPGAccountHistory.pGAccountHistory.feeBalance);
     if (StringUtil.isListNotNullNEmpty(infoList)) {
       reportList = new ArrayList<>();
       for (Tuple tuple : infoList) {

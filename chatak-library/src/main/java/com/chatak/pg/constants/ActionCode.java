@@ -289,8 +289,8 @@ public class ActionCode {
 		 mMessages.put(ERROR_CODE_UID ,"Invalid Card");
 		 mMessages.put(ERROR_CODE_ISO ,"Invalid IsoMessage");
 		 mMessages.put(ERROR_CODE_39, "No credit account");
-		 mMessages.put(ERROR_CODE_41, "Lost card, pick-up");
-		 mMessages.put(ERROR_CODE_43, "Stolen card, pick-up");
+		 mMessages.put(ERROR_CODE_41, "The card is Lost");
+		 mMessages.put(ERROR_CODE_43, "The card is Stolen");
 		 mMessages.put(ERROR_CODE_T7, "Only Purchase, no cash back");
 		 mMessages.put(ERROR_CODE_IT, "Invalid Card Token");
 		 mMessages.put(ERROR_CODE_0A, "Invalid transaction - MTI");

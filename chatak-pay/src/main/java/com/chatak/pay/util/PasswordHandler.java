@@ -2,7 +2,7 @@ package com.chatak.pay.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,11 +45,12 @@ public final class PasswordHandler {
    * Method to get System Generated Password
    * 
    * @return password
+   * @throws NoSuchAlgorithmException 
    */
-  public static String getSystemGeneratedPassword(int length) {
+  public static String getSystemGeneratedPassword(int length){
     final String ab = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    Random rnd = new Random();
+    SecureRandom rnd =new SecureRandom();
     StringBuilder sb = new StringBuilder(length);
     for(int i = 0; i < length; i++) {
       sb.append(ab.charAt(rnd.nextInt(ab.length())));
@@ -81,9 +82,10 @@ public final class PasswordHandler {
    * 
    * @param length
    * @return
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generateRandomNumber(int length) {
-	  Random random = new Random();
+  public static String generateRandomNumber(int length){
+	  SecureRandom random = new SecureRandom();
 	  StringBuilder sb = new StringBuilder();
 	  int n;
     for(n = 0; n < length; n++) {

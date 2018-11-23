@@ -4,7 +4,7 @@
 package com.chatak.pg.acq.dao.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGTokenCustomer;
 
@@ -17,7 +17,7 @@ import com.chatak.pg.acq.dao.model.PGTokenCustomer;
  * @Comments: 
  *
  */
-public interface TokenCustomerRepository extends JpaRepository<PGTokenCustomer, Long>, QuerydslPredicateExecutor<PGTokenCustomer>  {
+public interface TokenCustomerRepository extends JpaRepository<PGTokenCustomer, Long>, QueryDslPredicateExecutor<PGTokenCustomer>  {
 	
 	public PGTokenCustomer findByUserIdAndPassword(String userId, String password);
 	

@@ -28,10 +28,10 @@ import com.chatak.pg.user.bean.PaymentSchemeResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -58,7 +58,7 @@ public class PaymentSchemeDaoImpl implements PaymentSchemeDao {
 
 	@Override
 	public PGPaymentScheme getPaymentSchemeInfoId(Long id) {
-		PGPaymentScheme pgPaymentScheme = paymentSchemeRepository.findById(id).orElse(null);
+		PGPaymentScheme pgPaymentScheme = paymentSchemeRepository.findById(id);
 		if (null != pgPaymentScheme) {
 			return pgPaymentScheme;
 		}
@@ -85,7 +85,7 @@ public class PaymentSchemeDaoImpl implements PaymentSchemeDao {
 				  updatePaymentSchemeResponse.setErrorMessage(PGConstants.DUPLICATE_PAYMENT_SCHEME_EMAIL_ID);
 				  return updatePaymentSchemeResponse;
 			}
-			PGPaymentScheme pgPaymentScheme2 = paymentSchemeRepository.findById(updatePaymentSchemeRequest.getId()).orElse(null);
+			PGPaymentScheme pgPaymentScheme2 = paymentSchemeRepository.findById(updatePaymentSchemeRequest.getId());
 
 			if (pgPaymentScheme2 != null) {
 				pgPaymentScheme2.setId(updatePaymentSchemeRequest.getId());
@@ -187,20 +187,19 @@ public class PaymentSchemeDaoImpl implements PaymentSchemeDao {
 		}
 		List<PaymentSchemeRequest> searchList = null;
 
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 
 		List<Tuple> tupleList = query.from(QPGPaymentScheme.pGPaymentScheme)
-				.select(QPGPaymentScheme.pGPaymentScheme.paymentSchemeName,
-						QPGPaymentScheme.pGPaymentScheme.rid, QPGPaymentScheme.pGPaymentScheme.typeOfCard,
-						QPGPaymentScheme.pGPaymentScheme.status, QPGPaymentScheme.pGPaymentScheme.contactEmail,
-						QPGPaymentScheme.pGPaymentScheme.contactName, QPGPaymentScheme.pGPaymentScheme.contactPhone,
-						QPGPaymentScheme.pGPaymentScheme.id)
 				.where(isPaymentSchemeName(paymentScheme.getPaymentSchemeName()),
 						isTypeOfCard(paymentScheme.getTypeOfCard()), isRID(paymentScheme.getRid()),
 						isStatus(paymentScheme.getStatus()))
 				.offset(offset)
 				.limit(limit)
-				.orderBy(orderByCreatedDateDesc()).fetch();
+				.orderBy(orderByCreatedDateDesc()).list(QPGPaymentScheme.pGPaymentScheme.paymentSchemeName,
+						QPGPaymentScheme.pGPaymentScheme.rid, QPGPaymentScheme.pGPaymentScheme.typeOfCard,
+						QPGPaymentScheme.pGPaymentScheme.status, QPGPaymentScheme.pGPaymentScheme.contactEmail,
+						QPGPaymentScheme.pGPaymentScheme.contactName, QPGPaymentScheme.pGPaymentScheme.contactPhone,
+						QPGPaymentScheme.pGPaymentScheme.id);
 
 		if (!CollectionUtils.isEmpty(tupleList)) {
 			searchList = new ArrayList<PaymentSchemeRequest>();
@@ -246,25 +245,24 @@ public class PaymentSchemeDaoImpl implements PaymentSchemeDao {
 	  }
 
 	public int getTotalNumberOfRecords(PaymentSchemeRequest paymentScheme) {
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 
 		List<Tuple> tupleList = query.from(QPGPaymentScheme.pGPaymentScheme)
-				.select(QPGPaymentScheme.pGPaymentScheme.paymentSchemeName,
-						QPGPaymentScheme.pGPaymentScheme.rid, QPGPaymentScheme.pGPaymentScheme.typeOfCard,
-						QPGPaymentScheme.pGPaymentScheme.status, QPGPaymentScheme.pGPaymentScheme.contactEmail,
-						QPGPaymentScheme.pGPaymentScheme.contactName, QPGPaymentScheme.pGPaymentScheme.contactPhone,
-						QPGPaymentScheme.pGPaymentScheme.id)
 				.where(isPaymentSchemeName(paymentScheme.getPaymentSchemeName()),
 						isTypeOfCard(paymentScheme.getTypeOfCard()), isRID(paymentScheme.getRid()),
 						isStatus(paymentScheme.getStatus()))
-				.orderBy(orderByCreatedDateDesc()).fetch();
+				.orderBy(orderByCreatedDateDesc()).list(QPGPaymentScheme.pGPaymentScheme.paymentSchemeName,
+						QPGPaymentScheme.pGPaymentScheme.rid, QPGPaymentScheme.pGPaymentScheme.typeOfCard,
+						QPGPaymentScheme.pGPaymentScheme.status, QPGPaymentScheme.pGPaymentScheme.contactEmail,
+						QPGPaymentScheme.pGPaymentScheme.contactName, QPGPaymentScheme.pGPaymentScheme.contactPhone,
+						QPGPaymentScheme.pGPaymentScheme.id);
 	    return (StringUtils.isListNotNullNEmpty(tupleList) ? tupleList.size() : 0);
 	  }
 
 	
 	@Override
 	public PGPaymentScheme findPaymentSchemeById(Long paymentSchemeId) {
-		PGPaymentScheme pgPaymentScheme = paymentSchemeRepository.findById(paymentSchemeId).orElse(null);
+		PGPaymentScheme pgPaymentScheme = paymentSchemeRepository.findById(paymentSchemeId);
 		return pgPaymentScheme;
 	}
 	

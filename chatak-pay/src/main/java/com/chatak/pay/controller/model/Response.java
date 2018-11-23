@@ -5,9 +5,10 @@ package com.chatak.pay.controller.model;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * Model class basically holds all response
  * 
@@ -17,7 +18,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * @Version: 1.0
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL) 
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response implements Serializable {
 
   private static final long serialVersionUID = -6537889815349084535L;

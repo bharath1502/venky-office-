@@ -1,11 +1,9 @@
 package com.chatak.acquirer.admin.service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,7 +44,6 @@ import com.chatak.pg.model.SettlementActionDTOList;
 import com.chatak.pg.model.SettlemetActionDTO;
 import com.chatak.pg.model.TransactionResponse;
 import com.chatak.pg.model.VirtualTerminalVoidDTO;
-import com.chatak.pg.util.Properties;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementServiceImplTest {
@@ -158,7 +155,7 @@ public class SettlementServiceImplTest {
 
 	}
 
-	@Test
+	@Test(expected = ChatakAdminException.class)
 	public void testUpdateSettlementStatusExecutedProcessingRejected() throws ChatakAdminException {
 		PGTransaction pgTransaction = new PGTransaction();
 		List<PGAccountFeeLog> pgAccountFeeLogList = new ArrayList<>();
@@ -282,7 +279,7 @@ public class SettlementServiceImplTest {
 		settlementServiceImpl.updateBulkSettlementStatus(settlementActionDTOList, "Processing", "a", "b");
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testUpdateBulkSettlementStatusRejected() throws ChatakPayException {
 		SettlementActionDTOList settlementActionDTOList = new SettlementActionDTOList();
 		List<SettlemetActionDTO> actionDTOs = new ArrayList<>();
@@ -408,7 +405,7 @@ public class SettlementServiceImplTest {
 				.getAccountTransactionsOnTransactionIdAndTransactionType(Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(accountTxns);
 		Mockito.when(accountDao.getPgAccount(Matchers.anyString())).thenReturn(account);
-		Mockito.when(transactionRepository.findByTransactionId(Matchers.anyString())).thenReturn(transactions);
+		Mockito.when(transactionRepository.findByTransactionId(Matchers.anyString())).thenReturn(value);  
 		Mockito.when(currencyConfigDao.getcurrencyCodeAlpha(Matchers.anyString())).thenReturn(currencyConfig);
 		Mockito.when(accountRepository.findByEntityTypeAndCurrencyAndStatus(Matchers.anyString(), Matchers.anyString(),
 				Matchers.anyString())).thenReturn(account);

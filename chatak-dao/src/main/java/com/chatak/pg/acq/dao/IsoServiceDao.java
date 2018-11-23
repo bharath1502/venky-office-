@@ -36,7 +36,7 @@ public interface IsoServiceDao {
 	public IsoAccount saveIsoAccount(IsoAccount isoAccount);
 	public Long getAccountNumberSeries(String accountNumber);
 	public List<Iso> findByIsoName(String isoName);
-	public Iso findByIsoId(Long isoId) ;
+	public List<Iso> findByIsoId(Long isoId) ;
 	public IsoResponse getIsoById(IsoRequest isoRequest) ;
 	public Iso updateIso(Iso iso);
 	public void deleteIsoPmMappingByIsoId(Long isoId);	

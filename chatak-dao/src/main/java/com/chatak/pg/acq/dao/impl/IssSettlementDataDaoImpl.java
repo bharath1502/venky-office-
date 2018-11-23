@@ -19,9 +19,9 @@ import com.chatak.pg.acq.dao.model.QPGIssSettlementData;
 import com.chatak.pg.acq.dao.repository.IssSettlementDataRepository;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -79,19 +79,18 @@ public class IssSettlementDataDaoImpl implements IssSettlementDataDao {
 		}
 		List<PGIssSettlementData> listOfIssSettlementData = new ArrayList<>();
 		PGIssSettlementData issSettlementData = null;
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> tupleList = query.distinct().from(QPGIssSettlementData.pGIssSettlementData)
-				.select(QPGIssSettlementData.pGIssSettlementData.acqPmId,
+				.where(isPmIdEq(programManagerId)
+						.and(isBatchDate(batchDate)))
+				.list(QPGIssSettlementData.pGIssSettlementData.acqPmId,
 						QPGIssSettlementData.pGIssSettlementData.batchDate,
 						QPGIssSettlementData.pGIssSettlementData.programManagerId,
 						QPGIssSettlementData.pGIssSettlementData.programManagerName,
 						QPGIssSettlementData.pGIssSettlementData.status,
 						QPGIssSettlementData.pGIssSettlementData.totalAmount,
 						QPGIssSettlementData.pGIssSettlementData.totalTxnCount,
-						QPGIssSettlementData.pGIssSettlementData.id)
-				.where(isPmIdEq(programManagerId)
-						.and(isBatchDate(batchDate)))
-				.fetch();
+						QPGIssSettlementData.pGIssSettlementData.id);
 		if (StringUtil.isListNotNullNEmpty(tupleList)) {
 			for (Tuple tuple : tupleList) {
 				issSettlementData = new PGIssSettlementData();

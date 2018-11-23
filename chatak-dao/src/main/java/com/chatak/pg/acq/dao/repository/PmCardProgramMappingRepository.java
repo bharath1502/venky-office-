@@ -8,7 +8,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ import com.chatak.pg.acq.dao.model.PmCardProgamMapping;
  * @Comments: 
  *
  */
-public interface PmCardProgramMappingRepository extends JpaRepository<PmCardProgamMapping, Long>,QuerydslPredicateExecutor<PmCardProgamMapping> {
+public interface PmCardProgramMappingRepository extends JpaRepository<PmCardProgamMapping, Long>,QueryDslPredicateExecutor<PmCardProgamMapping> {
 
 	public PmCardProgamMapping findByCardProgramId(Long cardProgramId);
 	

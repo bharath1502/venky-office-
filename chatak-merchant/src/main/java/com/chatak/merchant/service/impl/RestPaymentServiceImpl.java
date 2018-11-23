@@ -187,6 +187,7 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       logger.info("Entering :: RestPaymentServiceImpl :: doVoid method");
       TransactionRequest transactionRequest =
           CommonUtil.copyBeanProperties(voidDTO, TransactionRequest.class);
+      transactionRequest.setMerchantCode(voidDTO.getMerchantId());
       transactionRequest.setTransactionType(TransactionType.VOID);
       transactionRequest.setOriginChannel(OriginalChannelEnum.MERCHANT_WEB.value());
       transactionRequest.setEntryMode(EntryModeEnum.MANUAL);
@@ -479,7 +480,7 @@ public class RestPaymentServiceImpl implements RestPaymentService {
 	  getTransactionResponse.setCardHolderName(pgTransaction.getCardHolderName());
 	  getTransactionResponse.setExpDate(
 	      pgTransaction.getExpDate() == null ? "" : pgTransaction.getExpDate().toString());
-	  getTransactionResponse.setTxnRefNum(pgTransaction.getTransactionId());
+	  getTransactionResponse.setTxnRefNum(pgTransaction.getId().toString());
 	  getTransactionResponse.setCgRefNumber(pgTransaction.getIssuerTxnRefNum());
 	  getTransactionResponse
 	      .setFeeAmount(CommonUtil.getDoubleAmountNotNull(pgTransaction.getFeeAmount()));
@@ -562,6 +563,7 @@ public class RestPaymentServiceImpl implements RestPaymentService {
       if (pgTerminal != null) {
         merchantDetailsResponse.setMerchantId(pgMerchant.getMerchantCode());
         merchantDetailsResponse.setBusinessName(pgMerchant.getBusinessName());
+        merchantDetailsResponse.setCreatedBy(pgMerchant.getCreatedBy());
         merchantDetailsResponse.setTerminalId(pgTerminal.getTerminalId().toString());
         merchantDetailsResponse.setErrorCode(Constants.SUCCESS_CODE);
       } else {
@@ -587,7 +589,7 @@ public class RestPaymentServiceImpl implements RestPaymentService {
     if (null != pgTransaction) {
       transactionRequest.setEntryMode(EntryModeEnum.MANUAL);
       transactionRequest.setOriginChannel(OriginalChannelEnum.MERCHANT_WEB.value());
-      transactionRequest.setTxnRefNumber(pgTransaction.getTransactionId());
+      transactionRequest.setTxnRefNumber(pgTransaction.getId().toString());
       transactionRequest.setCgRefNumber(pgTransaction.getIssuerTxnRefNum());
       transactionRequest.setTerminalId(pgTransaction.getTerminalId());
       transactionRequest.setMerchantCode(pgTransaction.getMerchantId());

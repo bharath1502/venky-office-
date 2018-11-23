@@ -7,17 +7,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.springframework.beans.BeanUtils;
+
+import com.chatak.pg.exception.PrepaidAdminException;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SuppressWarnings("rawtypes")
 public final class CommonUtil {
   
-  private static Logger logger = Logger.getLogger(CommonUtil.class);
+  private static Logger logger = LogManager.getLogger(CommonUtil.class);
   
   private static final String CARD_EXP_DATE = "expDate";
   private static final String CARD_NUMBER = "cardNumber";
@@ -43,7 +46,7 @@ public final class CommonUtil {
 
   public static String generateRandomNumber(int length) {
     StringBuilder sb = new StringBuilder();
-    Random random = new Random();
+    SecureRandom random = new SecureRandom();
     int n;
     for(n = 0; n < length; n++) {
       int j = random.nextInt() % Integer.parseInt("10");
@@ -65,14 +68,18 @@ public final class CommonUtil {
    */
   public static String generateRandNumeric(int length) {
     String finalRandString = "";
-    Random randomObj = new Random();
-    for(int j = 0; j < length; j++) {
-      int randomInt = randomObj.nextInt(Integer.parseInt("72"));
-      finalRandString += Integer.toString(randomInt);
-      if(finalRandString.length() >= length) {
-        finalRandString = finalRandString.substring(0, length);
-        break;
+    try {
+      SecureRandom randomObj =new SecureRandom();
+      for(int j = 0; j < length; j++) {
+        int randomInt = randomObj.nextInt(Integer.parseInt("72"));
+        finalRandString += Integer.toString(randomInt);
+        if(finalRandString.length() >= length) {
+          finalRandString = finalRandString.substring(0, length);
+          break;
+        }
       }
+    } catch(Exception e) {
+      logger.error("Error :: CommonUtil :: generateRandNumeric", e.getMessage());
     }
     return finalRandString;
   }
@@ -459,6 +466,46 @@ public final class CommonUtil {
         nestedMaskMap.put(TRACK2, "***");
       }
     }
+  }
+  
+  /**
+   * @param amountInCents, prefer to be in cents
+   * @param currencyExponent
+   * @param currencySeparatorPosition
+   * @param currencyMinorUnit
+   * @param currencyThousandsUnit
+   * @return formattedAmount
+   * Note : This utility method will support all integer amounts, from 0 to 999,999,999
+   * After 999,999,999 Double is giving Exponent Numbers
+   * @throws PrepaidAdminException 
+   */
+  public static String formatAmountOnCurrency(String amountInCents,
+                                              Integer currencyExponent,
+                                              Integer currencySeparatorPosition,
+                                              Character currencyMinorUnit,
+                                              Character currencyThousandsUnit) throws PrepaidAdminException {
+    if(amountInCents == null || "".equals(amountInCents)) {
+      logger.info("Invalid amount : " + amountInCents);
+      throw new PrepaidAdminException("Please enter valid amount");
+    }
+    String amount = amountInCents.replaceAll("[^0-9]", "");
+    amount = Double.toString(Double.parseDouble(amount) / (Math.pow(10d, currencyExponent)));
+    amount = amount.replaceAll("[^0-9]", currencyMinorUnit.toString());
+    if(amount.substring(amount.indexOf(currencyMinorUnit), amount.length()).length() != currencyExponent + 1) {
+      for(int i = amount.substring(amount.indexOf(currencyMinorUnit), amount.length()).length(); i < currencyExponent
+                                                                                                     + 1; i++) {
+        amount = new StringBuilder(amount) + "0";
+      }
+    }
+    String nonDecimal = amount.substring(0, amount.indexOf(currencyMinorUnit));
+
+    String decimal = amount.substring(amount.indexOf(currencyMinorUnit), amount.length());
+
+    String string = "#" + currencyThousandsUnit + "##";
+    DecimalFormat decimalFormat = new DecimalFormat(string);
+    decimalFormat.setGroupingUsed(true);
+    decimalFormat.setGroupingSize(currencySeparatorPosition);
+    return (decimalFormat.format(new BigInteger(nonDecimal)).replace(',', currencyThousandsUnit) + decimal);
   }
   
 }

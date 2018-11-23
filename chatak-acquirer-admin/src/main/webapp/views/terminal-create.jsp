@@ -13,8 +13,7 @@
 <!-- Bootstrap -->
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css">
+<link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -367,7 +366,7 @@
 	</div>
 	<!--Body Wrapper block End -->
 	<script type="text/javascript" src="../js/terminal.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	 <script src="../js/rome.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script src="../js/common-lib.js"></script>
@@ -375,11 +374,13 @@
 		$(document).ready(function() {
 			highlightMainContent('navListId3');
 			/* DatePicker Javascript Strat*/
-			$('.effectiveDate').datetimepicker({
+			rome(validFrom, { time: false });
+		   rome(validTo, { time: false });
+			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'm/d/Y',
 				formatDate : 'Y/m/d',
-			});
+			}); */
 			/* DatePicker Javascript End*/
 		});
 		$(

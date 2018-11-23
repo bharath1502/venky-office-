@@ -4,7 +4,7 @@
 package com.chatak.pg.acq.dao.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGBatch;
 
@@ -16,7 +16,7 @@ import com.chatak.pg.acq.dao.model.PGBatch;
  * @Comments: 
  *
  */
-public interface BatchRepository extends JpaRepository<PGBatch, Long>,QuerydslPredicateExecutor<PGBatch> {
+public interface BatchRepository extends JpaRepository<PGBatch, Long>,QueryDslPredicateExecutor<PGBatch> {
 	
 	public PGBatch findByProgramManagerIdAndStatus(Long programManagerId, String status);
 

@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -39,7 +40,6 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.Switch;
 import com.chatak.pg.user.bean.SwitchRequest;
 import com.chatak.pg.user.bean.SwitchResponse;
-import com.chatak.pg.util.Constants;
 
 /**
  *
@@ -180,7 +180,7 @@ public class SwitchControllerTest {
   public void testCreateSwitchException() {
     switchResponse = new SwitchResponse();
     LocaleContextHolder.setLocale(locale);
-    Mockito.when(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+    Mockito.when(messageSource.getMessage(TestConstants.CHATAK_GENERAL_ERROR, null,
         LocaleContextHolder.getLocale())).thenReturn("abc");
     try {
       Mockito
@@ -217,7 +217,7 @@ public class SwitchControllerTest {
   public void testShowSearchSwitchPageException() {
     switchResponse = new SwitchResponse();
     LocaleContextHolder.setLocale(locale);
-    Mockito.when(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+    Mockito.when(messageSource.getMessage(TestConstants.CHATAK_GENERAL_ERROR, null,
         LocaleContextHolder.getLocale())).thenReturn("abc");
     try {
       Mockito.when(switchService.searchSwitchInformation(Matchers.any(SwitchRequest.class)))
@@ -427,7 +427,7 @@ public class SwitchControllerTest {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SWITCH_PAGINATION)
               .sessionAttr("existingFeatures", "existingFeatures")
-              .param("pageNumber", Constants.TWO.toString())
+              .param("pageNumber", TestConstants.TWO.toString())
               .sessionAttr("searchSwitchRequestList", switchRequest))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_SWITCH_PAGE));
     } catch (Exception e) {
@@ -447,7 +447,7 @@ public class SwitchControllerTest {
           .thenReturn(switchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SWITCH_REPORT)
           .sessionAttr("existingFeatures", "existingFeatures")
-          .param("pageNumber", Constants.TWO.toString()).param("downloadType", "PDF")
+          .param("pageNumber", TestConstants.TWO.toString()).param("downloadType", "PDF")
           .param("downloadAllRecords", "true")
           .sessionAttr("searchSwitchRequestList", switchRequest));
     } catch (Exception e) {
@@ -467,7 +467,7 @@ public class SwitchControllerTest {
           .thenReturn(switchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SWITCH_REPORT)
           .sessionAttr("existingFeatures", "existingFeatures")
-          .param("pageNumber", Constants.TWO.toString()).param("downloadType", "XLS")
+          .param("pageNumber", TestConstants.TWO.toString()).param("downloadType", "XLS")
           .param("downloadAllRecords", "true")
           .sessionAttr("searchSwitchRequestList", switchRequest));
     } catch (Exception e) {

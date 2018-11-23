@@ -177,7 +177,7 @@ public class ExportUtil {
       MessageSource messageSource) throws IOException {
 
     String headerMsgProp = exportDetails.getHeaderMessageProperty();
-    HSSFWorkbook wb = new HSSFWorkbook();
+    try (HSSFWorkbook wb = new HSSFWorkbook()) {
     HSSFSheet sheet = wb.createSheet(
             messageSource.getMessage(headerMsgProp, null, LocaleContextHolder.getLocale()));
     Font font = wb.createFont();
@@ -228,15 +228,15 @@ public class ExportUtil {
         } else if (rowElement instanceof Integer) {
         	dataRow.createCell(i++).setCellValue((Integer)rowElement);
         } else {
-          dataRow.createCell(i++).setCellValue((String)rowElement);
+        	dataRow.createCell(i++).setCellValue((String)rowElement);
         }
       }
       j = j + 1;
     }
 
     wb.write(response.getOutputStream());
-    wb.close();
     response.getOutputStream().close();
+  }
   }
 
   private static double processDoubleAmount(Object rowElement) {

@@ -4,7 +4,13 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import com.chatak.pg.bean.SearchRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProgramManagerRequest extends SearchRequest {
 
 	private static final long serialVersionUID = -3348275668511102325L;

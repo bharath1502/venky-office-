@@ -1,9 +1,11 @@
 package com.chatak.pg.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class ResellerData 
-{
+public class ResellerData implements Serializable {
+
+  private static final long serialVersionUID = 7865474308177662062L;
 
   private String zip;
   

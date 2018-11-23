@@ -11,8 +11,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 
-import jxl.write.WriteException;
-
 @RunWith(MockitoJUnitRunner.class)
 public class StringUtilTest {
 
@@ -104,7 +102,7 @@ public class StringUtilTest {
 		stringUtil.getEmailToken("23", "abcd");
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testParseEmailToken() throws ChatakAdminException {
 		stringUtil.parseEmailToken("123");
 	}
@@ -158,28 +156,18 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testGetExportUtilCellFormat() throws WriteException {
-		stringUtil.getExportUtilCellFormat();
-	}
-
-	@Test
-	public void testGetAmountInFloat() throws WriteException {
-		stringUtil.getAmountInFloat(1, 1, Double.parseDouble("5"));
-	}
-
-	@Test
-	public void testGetLongString() throws WriteException {
+	public void testGetLongString() {
 		stringUtil.getLong("534");
 	}
 
 	@Test
-	public void testEncodeToString() throws WriteException {
+	public void testEncodeToString() {
 		byte[] image = { 1, 1, 0 };
 		stringUtil.encodeToString(image, "534");
 	}
 
 	@Test
-	public void testEscapeHTMLChars() throws WriteException {
+	public void testEscapeHTMLChars() {
 		stringUtil.escapeHTMLChars("534");
 	}
 

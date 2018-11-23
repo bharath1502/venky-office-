@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -164,7 +163,7 @@ public class TransactionsControllerTest {
     try {
       Mockito
           .when(
-              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class)))
+              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class), Matchers.anyLong()))
           .thenReturn(transactionsListResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_TRANSACTION))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE));
@@ -180,7 +179,7 @@ public class TransactionsControllerTest {
     try {
       Mockito
           .when(
-              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class)))
+              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class), Matchers.anyLong()))
           .thenReturn(transactionsListResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_TRANSACTION))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE));
@@ -196,7 +195,7 @@ public class TransactionsControllerTest {
     try {
       Mockito
           .when(
-              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class)))
+              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class), Matchers.anyLong()))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_TRANSACTION))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE));
@@ -217,7 +216,7 @@ public class TransactionsControllerTest {
     try {
       Mockito
           .when(
-              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class)))
+              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class), Matchers.anyLong()))
           .thenReturn(transactionsListResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_TRANSACTION_PAGINATION)
@@ -235,7 +234,7 @@ public class TransactionsControllerTest {
     try {
       Mockito
           .when(
-              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class)))
+              transactionService.searchTransactions(Matchers.any(GetTransactionsListRequest.class), Matchers.anyLong()))
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_TRANSACTION_PAGINATION)

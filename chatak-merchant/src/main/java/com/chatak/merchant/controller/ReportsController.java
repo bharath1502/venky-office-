@@ -30,6 +30,7 @@ import com.chatak.merchant.controller.model.Option;
 import com.chatak.merchant.model.GetMerchantDetailsResponse;
 import com.chatak.merchant.model.TransactionListResponse;
 import com.chatak.merchant.service.FundTransferService;
+import com.chatak.merchant.service.LoginService;
 import com.chatak.merchant.service.MerchantInfoService;
 import com.chatak.merchant.service.RestPaymentService;
 import com.chatak.merchant.service.TransactionService;
@@ -37,8 +38,10 @@ import com.chatak.merchant.util.ExportUtil;
 import com.chatak.merchant.util.JsonUtil;
 import com.chatak.merchant.util.PaginationUtil;
 import com.chatak.merchant.util.StringUtil;
+import com.chatak.pg.acq.dao.AdminUserDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
+import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
@@ -83,6 +86,12 @@ public class ReportsController implements URLMappingConstants {
   @Autowired
   MerchantProfileDao merchantProfileDao;
 
+  @Autowired
+  LoginService loginService;
+  
+  @Autowired
+  private AdminUserDao adminUserDao;
+
   @RequestMapping(value = GLOBAL_REVENUE_GENERATED_REPORTS_DATES, method = RequestMethod.GET)
   public ModelAndView showGlobalRevenueGeneratedReportsDates(HttpServletRequest request,
       HttpServletResponse response, Merchant merchant, BindingResult bindingResult, Map model,
@@ -120,6 +129,12 @@ public class ReportsController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(SHOW_GLOBAL_REVENUE_GENERATED_REPORT);
     GetTransactionsListRequest transactionsListRequest = new GetTransactionsListRequest();
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     if (!existingFeature.contains(FeatureConstants.MERCHANT_SERVICE_REPORTS_FEATURE_ID)) {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
@@ -203,7 +218,7 @@ public class ReportsController implements URLMappingConstants {
         modelAndView.addObject(Constants.SUB_MER_REVENUE, subMerRevenue);
         session.setAttribute(Constants.SUB_MER_REVENUE, subMerRevenue);
         modelAndView.addObject(Constants.MERCHANT_REVENUE, merchantRevenue);
-        session.setAttribute(Constants.REVENUE_TYPE, StringUtil.isNullAndEmpty(revenueType)?Constants.ALL:revenueType);
+        session.setAttribute(Constants.REVENUE_TYPE, getRevenueType(revenueType));
         session.setAttribute(Constants.MERCHANT_REVENUE, merchantRevenue);
         modelAndView.addObject(Constants.REVENUE_GENERATED_REPORT_LIST, revenueGeneratedReportList);
         if(!revenueGeneratedReportList.isEmpty()) {
@@ -218,6 +233,10 @@ public class ReportsController implements URLMappingConstants {
     }
     logger.info("Exiting:: ReportsController:: showGlobalRevenueGeneratedReport method");
     return modelAndView;
+  }
+
+  private String getRevenueType(String revenueType) {
+    return StringUtil.isNullAndEmpty(revenueType)?Constants.ALL:revenueType;
   }
 
 	private int getTotalCount(List<ReportsDTO> revenueGeneratedReportList, int totalcount) {
@@ -406,7 +425,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
     List<Option> merchantCodes =
         merchantInfoService.getMerchantCodeAndName(pgMerchant.getMerchantCode());
     session.setAttribute("executedTransactionsReportList", executedTransactionsReportList);
-    session.setAttribute("merchantCodesOptions", merchantCodes);
+    session.setAttribute("merchantCodesOptions", new ArrayList(merchantCodes));
     modelAndView.addObject("merchantList", merchantCodes);
     modelAndView.addObject(Constants.TRANSACTION_DIV, Boolean.FALSE);
     modelAndView.addObject(executedTransactionsReportList);
@@ -594,7 +613,7 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 
   private void processDownloadReport(HttpServletResponse response, final String downloadType,
       final boolean downloadAllRecords, GetTransactionsListRequest transactionRequest,
-      TransactionListResponse transactionResponse, List<AccountTransactionDTO> processingTxnList) throws  IOException {
+      TransactionListResponse transactionResponse, List<AccountTransactionDTO> processingTxnList) throws IOException {
     if (downloadAllRecords) {
       processingTxnList = fetchProcessingTxnList(transactionRequest, transactionResponse,
     processingTxnList);
@@ -678,7 +697,12 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
           merchantDetailsResponse =
               paymentService.getMerchantIdAndTerminalId(merchantId.toString());
           transaction.setMerchant_code(merchantDetailsResponse.getMerchantId());
-
+          //fetching entityId and entityType
+          PGAdminUser pgAdminUser  = adminUserDao.findByAdminUserId(Long.valueOf(merchantDetailsResponse.getCreatedBy()));
+          if(null != pgAdminUser){
+        	  transaction.setEntityId(pgAdminUser.getEntityId());
+        	  transaction.setUserType(pgAdminUser.getUserType());
+          }
           List<String> txnCodeList = new ArrayList<>(Constants.ELEVEN);
           setTxnCodeList(txnCodeList);
 
@@ -731,8 +755,15 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
 		GetTransactionsListRequest transaction, TransactionListResponse transactionResponse) {
 	transaction.setPageIndex(Constants.ONE);
 
-	GetTransactionsListResponse executedTxnList =
-	    transactionService.searchAccountTransactions(transaction);
+	GetTransactionsListResponse executedTxnList = null;
+	if (transaction.getUserType().equals(Constants.PM_USER_TYPE)
+			|| transaction.getUserType().equals(Constants.ISO_USER_TYPE)) {
+		logger.info("LoginController:: fetching executed txn for entityType");
+		executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, transaction.getEntityId(), transaction.getUserType());
+	} else {
+		logger.info("LoginController:: fetching executed txn for Merchant");
+		executedTxnList = transactionService.searchAccountTransactions(transaction);
+	}
 
 	if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
 	  transactionResponse.setAccountTxnList(executedTxnList.getAccountTransactionList());
@@ -770,6 +801,12 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
       if (downloadAll) {
         manualTransactionRequest.setPageIndex(Constants.ONE);
         PGMerchant parentMerchant = merchantProfileDao.getMerchantById(merchantId);
+        //fetching entityId and entityType
+        PGAdminUser pgAdminUser  = adminUserDao.findByAdminUserId(Long.valueOf(parentMerchant.getCreatedBy()));
+        if(null != pgAdminUser){
+        	manualTransactionRequest.setEntityId(pgAdminUser.getEntityId());
+        	manualTransactionRequest.setUserType(pgAdminUser.getUserType());
+        }
         List<PGMerchant> subMerchantList = merchantDao.findById(merchantId);
         List<String> merchantCodeList = new ArrayList<>();
         merchantCodeList.add(parentMerchant.getMerchantCode());
@@ -778,8 +815,17 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
         }
         String merchantCodes = org.apache.commons.lang.StringUtils.join(merchantCodeList, "|");
         manualTransactionRequest.setMerchant_code(merchantCodes);
-        GetTransactionsListResponse manualTransactionsReportList =
-            transactionService.searchManulAccountTransactions(manualTransactionRequest);
+        
+        GetTransactionsListResponse manualTransactionsReportList = null;
+        if (manualTransactionRequest.getUserType().equals(Constants.PM_USER_TYPE)
+        		|| manualTransactionRequest.getUserType().equals(Constants.ISO_USER_TYPE)) {
+        	logger.info("LoginController:: fetching manual txn for entityType");
+        	manualTransactionsReportList = transactionService.searchManualAccountTransactionsForEntityId(manualTransactionRequest, manualTransactionRequest.getEntityId(), manualTransactionRequest.getUserType());
+        } else {
+        	logger.info("LoginController:: fetching manual txn for Merchant");
+        	manualTransactionsReportList =  transactionService.searchManulAccountTransactions(manualTransactionRequest);
+        }
+    	
         if (null != manualTransactionsReportList
             && null != manualTransactionsReportList.getAccountTransactionList()) {
           transactionResponse.setTotalNoOfRows(manualTransactionsReportList.getTotalResultCount());
@@ -964,7 +1010,9 @@ private void fetchRevenueType(String revenueType, ModelAndView modelAndView) {
               : transaction.getDebit(),
           (!"".equals(transaction.getCredit())) ? Double.parseDouble(transaction.getCredit())
               : transaction.getCredit(),
-          Double.parseDouble(transaction.getCurrentBalance()), transaction.getStatus()};
+          (!"".equals(transaction.getCurrentBalance())) ? Double.parseDouble(transaction.getCurrentBalance())
+            		  : transaction.getCurrentBalance(),
+            		  transaction.getStatus()};
       fileData.add(rowData);
     }
 

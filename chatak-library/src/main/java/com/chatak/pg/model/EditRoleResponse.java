@@ -1,10 +1,13 @@
 package com.chatak.pg.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class EditRoleResponse {
-  
+public class EditRoleResponse implements Serializable {
+
+  private static final long serialVersionUID = 1458090226175852256L;
+
   private UserRoleDTO roleRequest;
 
   private Map<Long, List<FeatureDTO>> featureMap;

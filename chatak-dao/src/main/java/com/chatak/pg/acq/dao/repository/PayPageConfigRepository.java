@@ -4,7 +4,7 @@
 package com.chatak.pg.acq.dao.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGPayPageConfig;
 
@@ -16,7 +16,7 @@ import com.chatak.pg.acq.dao.model.PGPayPageConfig;
  * @Comments: 
  *
  */
-public interface PayPageConfigRepository extends JpaRepository<PGPayPageConfig, Long>,QuerydslPredicateExecutor<PGPayPageConfig>{
+public interface PayPageConfigRepository extends JpaRepository<PGPayPageConfig, Long>,QueryDslPredicateExecutor<PGPayPageConfig>{
 	
 	public PGPayPageConfig findByMerchantId(Long merchantId);
 

@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -13,7 +15,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
@@ -29,10 +30,11 @@ public class PGUtils {
    * 
    * @param length
    * @return String
+   * @throws NoSuchAlgorithmException 
    */
   public static String generatePin(int length) {
     StringBuilder sb = new StringBuilder();
-    Random random = new Random();
+    SecureRandom random = new SecureRandom();
     for(int n = 0; n < length; n++) {
       int j = random.nextInt() % Integer.parseInt("10");
       sb.append(Integer.toString(j));

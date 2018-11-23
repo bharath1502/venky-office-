@@ -3,10 +3,8 @@
  */
 package com.chatak.pg.acq.dao.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGDynamicMDR;
 
@@ -18,7 +16,7 @@ import com.chatak.pg.acq.dao.model.PGDynamicMDR;
  * @Comments: 
  *
  */
-public interface MDRRepository extends JpaRepository<PGDynamicMDR, Long>, QuerydslPredicateExecutor<PGDynamicMDR>{
+public interface MDRRepository extends JpaRepository<PGDynamicMDR, Long>, QueryDslPredicateExecutor<PGDynamicMDR>{
 
 	/**
 	 * @param bin
@@ -30,6 +28,6 @@ public interface MDRRepository extends JpaRepository<PGDynamicMDR, Long>, Queryd
 	 * @param getMDRBinId
 	 * @return
 	 */
-	public Optional<PGDynamicMDR> findById(Long getMDRBinId);
+	public PGDynamicMDR findById(Long getMDRBinId);
 
 }

@@ -109,6 +109,16 @@ public class CurrencyController implements URLMappingConstants {
     modelAndView.addObject("flag", true);
     return modelAndView;
   }
+  
+	@RequestMapping(value = CHATAK_ADMIN_CURRENCY_SEARCH_ACTION, method = RequestMethod.GET)
+	public ModelAndView searchCurrencyAccountGetMethod(HttpServletRequest request, HttpServletResponse response,
+			CurrencyDTO currencyDTO, Map model, HttpSession session) throws ChatakAdminException {
+		logger.info("Entering:: CurrencyController:: searchcurrencyAccount method");
+		BindingResult bindingResult = null;
+		ModelAndView modelAndView = showCurrencySearchPage(request, response, currencyDTO, bindingResult, model, session);
+		logger.info("Exiting:: CurrencyController:: searchcurrencyAccount method");
+		return modelAndView;
+	}
 
   @RequestMapping(value = CHATAK_ADMIN_SHOW_CURRENCY_CREATE_PAGE, method = RequestMethod.GET)
   public ModelAndView showCreateCurrencyPage(Map model, HttpServletRequest request,
@@ -127,7 +137,7 @@ public class CurrencyController implements URLMappingConstants {
 
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
-    session.setAttribute("currencies", currencyList);
+    session.setAttribute("currencies", new ArrayList(currencyList));
 
     CurrencyDTO currencyDTO = new CurrencyDTO();
     model.put("currencyDTO", currencyDTO);

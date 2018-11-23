@@ -42,7 +42,7 @@ public interface MerchantProfileDao {
 
   public PGAccount getPgAccount(String merchantCode);
 
-  public PGState getStateById(String countryId);
+  public List<PGState> getStateById(String countryId);
 
   public FeeProgramNameListDTO getActiveFeePrograms();
 

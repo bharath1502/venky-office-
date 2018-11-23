@@ -55,6 +55,8 @@ public class VirtualTerminalVoidDTO extends SearchRequest {
 		private String cardNumMasked;
 		
 		private TransactionType transactionType;
+		
+		private String merchantCode;
 
 		/**
 		 * @return the txnRefNum
@@ -360,5 +362,12 @@ public class VirtualTerminalVoidDTO extends SearchRequest {
       this.transactionType = transactionType;
     }
 
+    public String getMerchantCode() {
+      return merchantCode;
+    }
+
+    public void setMerchantCode(String merchantCode) {
+      this.merchantCode = merchantCode;
+    }
 
 }

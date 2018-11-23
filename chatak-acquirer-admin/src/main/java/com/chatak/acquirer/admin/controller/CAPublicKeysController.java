@@ -294,7 +294,7 @@ public class CAPublicKeysController implements URLMappingConstants {
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
     }
-    modelAndView = getCAPublicKeyData(model, session, getCAPublicKeysId, modelAndView);
+    getCAPublicKeyData(model, session, getCAPublicKeysId, modelAndView);
     logger.info("Exiting:: CAPublicKeysController:: showFeeProgramEdit method");
     return modelAndView;
   }
@@ -312,7 +312,7 @@ public class CAPublicKeysController implements URLMappingConstants {
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
     }
-    modelAndView = getCAPublicKeyData(model, session, getCAPublicKeysId, modelAndView);
+    getCAPublicKeyData(model, session, getCAPublicKeysId, modelAndView);
     logger.info("Exiting:: CAPublicKeysController:: showFeeProgramEdit method");
     return modelAndView;
   }

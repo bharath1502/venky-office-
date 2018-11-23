@@ -18,7 +18,6 @@ import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.model.IsoAccount;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAccountTransactions;
-import com.chatak.pg.acq.dao.model.PGAcquirerFeeValue;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGFeeProgram;
 import com.chatak.pg.acq.dao.model.PGTransaction;
@@ -30,8 +29,6 @@ import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.AccountType;
-import com.chatak.pg.model.ProcessingFee;
-import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
@@ -90,7 +87,7 @@ public abstract class AccountTransactionService {
     	  pgAccount = logVoidToAccountTransaction(pgTransaction);
         break;
       case PGConstants.TXN_TYPE_REFUND:
-    	  logRefundToAccountTransaction(pgTransaction);
+    	  logRefundToAccountTransaction(pgTransaction, request);
         break;
       case PGConstants.TXN_TYPE_AUTH:
         break;
@@ -146,6 +143,8 @@ public abstract class AccountTransactionService {
     pgAccountTransactions.setDeviceLocalTxnTime(pgTransaction.getDeviceLocalTxnTime());
     pgAccountTransactions.setEntityType(PGConstants.MERCHANT);
     pgAccountTransactions.setEntityId(request.getMerchantId());
+    pgAccountTransactions.setProcessedTime(timestamp);
+    pgAccountTransactions.setCurrentBalance(account.getCurrentBalance());
     // Step-1 : Initially logging total amount into account transactions
     pgAccountTransactions = accountTransactionsDao.createOrUpdate(pgAccountTransactions);
 
@@ -279,7 +278,7 @@ public abstract class AccountTransactionService {
     return descriptionTemplate;
   }
 
-  private void logRefundToAccountTransaction(PGTransaction pgTransaction) {
+  private void logRefundToAccountTransaction(PGTransaction pgTransaction, Request request) {
     logger.info("Entering:: AccountTransactionService:: logRefundAccountTransaction method ");
     List<PGAccountTransactions> saleTxnList = accountTransactionsDao.getAccountTransactionsOnTransactionId(pgTransaction.getRefTransactionId());
     PGAccountTransactions refundTxn = null;
@@ -297,7 +296,7 @@ public abstract class AccountTransactionService {
       refundTxn = new PGAccountTransactions();
       refundTxn.setAccountTransactionId(txnId);
       refundTxn.setAccountNumber(pgAccTxn.getAccountNumber());
-      refundTxn.setPgTransactionId(pgTransaction.getTransactionId());
+      refundTxn.setPgTransactionId(pgTransaction.getId().toString());
       refundTxn.setTransactionTime(pgTransaction.getCreatedDate());
       refundTxn.setProcessedTime(timestamp);
       refundTxn.setMerchantCode(pgTransaction.getMerchantId());
@@ -305,6 +304,8 @@ public abstract class AccountTransactionService {
       switch(pgAccTxn.getTransactionCode()) {
         case AccountTransactionCode.CC_AMOUNT_CREDIT:
           refundTxn.setDebit(pgTransaction.getTxnTotalAmount());
+          refundTxn.setEntityType(PGConstants.MERCHANT);
+          refundTxn.setEntityId(request.getMerchantId());
           refundType = validateTxnTotalAmount(pgTransaction, pgAccTxn);
           descriptionTemplate = validateForMessageFormat(pgTransaction, refundType, pgAccTxn);
           // updating pg account debting refund amount
@@ -316,6 +317,24 @@ public abstract class AccountTransactionService {
           descriptionTemplate = setPGAccountForFeeDebit(refundTxn, account, pgAccTxn);
           }
           break;
+        case AccountTransactionCode.CC_PM_FEE_CREDIT:
+			if ("".equals(refundType.trim())) {
+			 refundTxn.setDebit(pgAccTxn.getRefundableAmount());
+			 refundTxn.setEntityType(Constants.PM_USER_TYPE);
+	         refundTxn.setEntityId(pgTransaction.getPmId());
+			 descriptionTemplate = validateForMessageFormat(pgTransaction, refundType, pgAccTxn);
+			 setProgramManagerAccountTransactionsForAmountDebit(refundTxn, pgAccTxn);
+			}
+		 break;
+        case AccountTransactionCode.CC_ISO_FEE_CREDIT:
+           if("".equals(refundType.trim())) {
+       	    refundTxn.setDebit(pgAccTxn.getRefundableAmount());
+       	    refundTxn.setEntityType(Constants.ISO_USER_TYPE);
+            refundTxn.setEntityId(pgTransaction.getIsoId());
+            descriptionTemplate = validateForMessageFormat(pgTransaction, refundType, pgAccTxn);
+            setISOAccountTransactionsForAmountDebit(refundTxn, pgAccTxn);
+       	    }
+            break;
         case AccountTransactionCode.CC_MERCHANT_FEE_CREDIT:
           if("".equals(refundType.trim())){
             descriptionTemplate = validateForMerchantFeeCredit(refundTxn, account, pgAccTxn);
@@ -364,15 +383,25 @@ public abstract class AccountTransactionService {
 
   private PGAccount setPGAccountTransactionsAndPGAccountForAmountDebit(PGTransaction pgTransaction,
       PGAccountTransactions refundTxn, PGAccountTransactions pgAccTxn) {
-    PGAccount account;
-    account=accountDao.getPgAccount(pgAccTxn.getMerchantCode());
-    account.setAvailableBalance(account.getAvailableBalance() - pgTransaction.getTxnAmount());
-    account.setCurrentBalance(account.getCurrentBalance() - pgTransaction.getTxnAmount());
-    accountDao.savePGAccount(account);
+	PGAccount account=accountDao.getPgAccount(pgAccTxn.getMerchantCode());
     refundTxn.setCurrentBalance(account.getCurrentBalance());
     refundTxn.setTransactionCode(AccountTransactionCode.CC_AMOUNT_DEBIT);
     return account;
   }
+  
+	private void setProgramManagerAccountTransactionsForAmountDebit(PGAccountTransactions refundTxn, PGAccountTransactions pgAccTxn) {
+		ProgramManagerAccount programManagerAccount;
+		programManagerAccount = programManagerDao.findByProgramManagerIdAndAccountType(pgAccTxn.getEntityId(), Constants.ACCOUNT_NAME_SYSTEM);
+		refundTxn.setCurrentBalance(programManagerAccount.getCurrentBalance());
+		refundTxn.setTransactionCode(AccountTransactionCode.CC_PM_FEE_DEBIT);
+	}
+	
+	private void setISOAccountTransactionsForAmountDebit(PGAccountTransactions refundTxn, PGAccountTransactions pgAccTxn) {
+		IsoAccount isoAccount;
+		isoAccount = isoServiceDao.findAccountByIsoId(pgAccTxn.getEntityId()).get(0);
+		refundTxn.setCurrentBalance(isoAccount.getCurrentBalance());
+		refundTxn.setTransactionCode(AccountTransactionCode.CC_ISO_FEE_DEBIT);
+	}
 
   private String validateForMessageFormat(PGTransaction pgTransaction, String refundType,
       PGAccountTransactions pgAccTxn) {
@@ -428,6 +457,7 @@ public abstract class AccountTransactionService {
     setPGAccountTransactionsData(refundTxn, account, pgAccTxn);
     return descriptionTemplate;
   }
+  
   private PGAccountTransactions populateAccountTransactions(PGAccountTransactions accountTransaction) {
     logger.info("Entering:: AccountTransactionService:: populateAccountTransactions method ");
     PGAccountTransactions pgAccountTransactions = new PGAccountTransactions();
@@ -456,6 +486,7 @@ public abstract class AccountTransactionService {
     PGAccountTransactions feeTransactionLog = populateAccountTransactions(pgAccountTransactions);
     feeTransactionLog.setTransactionCode(transactionCode);
     feeTransactionLog.setDescription(descrilption);
+    feeTransactionLog.setProcessedTime(timestamp);
     switch(transactionCode) {
       case AccountTransactionCode.CC_FEE_DEBIT:
         feeTransactionLog.setDebit(feeAmount);

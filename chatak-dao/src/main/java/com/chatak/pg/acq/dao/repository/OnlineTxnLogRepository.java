@@ -2,13 +2,11 @@ package com.chatak.pg.acq.dao.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 
@@ -19,12 +17,11 @@ import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
  * @date 08-Dec-2014 12:33:27 pm
  * @version 1.0
  */
-@Repository
 public interface OnlineTxnLogRepository extends
                                       JpaRepository<PGOnlineTxnLog, Long>,
-                                      QuerydslPredicateExecutor<PGOnlineTxnLog> {
+                                      QueryDslPredicateExecutor<PGOnlineTxnLog> {
 
-  public Optional<PGOnlineTxnLog> findById(Long pGOnlineTxnLog);
+  public List<PGOnlineTxnLog> findById(Long pGOnlineTxnLog);
   
   public List<PGOnlineTxnLog> findByMerchantIdAndOrderId(String merchantId, String orderId);
   

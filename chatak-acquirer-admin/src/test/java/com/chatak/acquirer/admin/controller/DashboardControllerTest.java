@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -43,7 +44,6 @@ import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardControllerTest {
@@ -144,9 +144,8 @@ public class DashboardControllerTest {
           .thenReturn(getTransactionsListResponse);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_HOME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE))
-          .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_HOME));
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testShowLogin | Exception ", e);
     }
@@ -161,9 +160,8 @@ public class DashboardControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_HOME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testShowLoginException | Exception ", e);
     }
@@ -172,7 +170,7 @@ public class DashboardControllerTest {
   @Test
   public void testShowViewSubMerchant() {
     merchant = new Merchant();
-    merchant.setBankCurrencyCode(Constants.TEN.toString());
+    merchant.setBankCurrencyCode(TestConstants.TEN.toString());
     try {
       Mockito.when(merchantUpdateService.getCountries()).thenReturn(optionList);
       Mockito.when(merchantValidateService.getMerchant(Matchers.any(Merchant.class)))
@@ -188,9 +186,9 @@ public class DashboardControllerTest {
       Mockito.when(resellerService.getResellerData()).thenReturn(optionList);
       mockMvc
           .perform(post("/" + URLMappingConstants.PENDING_MERCHANT_SHOW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE)
-              .param("merchantViewId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE)
+              .param("merchantViewId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.PENDING_MERCHANT_SHOW));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testShowViewSubMerchant | Exception ", e);
@@ -204,9 +202,9 @@ public class DashboardControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.PENDING_MERCHANT_SHOW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE)
-              .param("merchantViewId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE)
+              .param("merchantViewId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testShowViewSubMerchantException | Exception ", e);
@@ -218,9 +216,9 @@ public class DashboardControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE)
-              .param("merchantViewId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE)
+              .param("merchantViewId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testShowUnblockUsers | Exception ", e);
@@ -230,11 +228,11 @@ public class DashboardControllerTest {
   @Test
   public void testSearchAdminUser() {
     try {
-      Mockito.when(userService.searchAdminUserList()).thenReturn(adminUserList);
+      Mockito.when(userService.searchAdminUserList(Matchers.anyString())).thenReturn(adminUserList);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE).param("userType", Constants.ADMIN_USER_TYPE))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE).param("userType", TestConstants.ADMIN_USER_TYPE))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testSearchAdminUser | Exception ", e);
@@ -244,11 +242,11 @@ public class DashboardControllerTest {
   @Test
   public void testSearchAdminUserMerchant() {
     try {
-      Mockito.when(userService.searchAdminUserList()).thenReturn(adminUserList);
+      Mockito.when(userService.searchAdminUserList(Matchers.anyString())).thenReturn(adminUserList);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE).param("userType", Constants.TYPE_MERCHANT))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE).param("userType", TestConstants.TYPE_MERCHANT))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testSearchAdminUserMerchant | Exception ", e);
@@ -258,11 +256,11 @@ public class DashboardControllerTest {
   @Test
   public void testSearchAdminUserException() {
     try {
-      Mockito.when(userService.searchAdminUserList()).thenThrow(nullPointerException);
+      Mockito.when(userService.searchAdminUserList(Matchers.anyString())).thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testSearchAdminUserException | Exception ", e);
@@ -277,9 +275,9 @@ public class DashboardControllerTest {
       Mockito.when(userService.unblockAdminUser(Matchers.anyString())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DO_UNBLOCK_USERS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, Constants.ADMIN_VALUE).param("userName", Constants.ADMIN_USER_TYPE)
-              .param("entityType", Constants.ADMIN_USER_TYPE))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, TestConstants.ADMIN_VALUE).param("userName", TestConstants.ADMIN_USER_TYPE)
+              .param("entityType", TestConstants.ADMIN_USER_TYPE))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testunblockUser | Exception ", e);
@@ -294,9 +292,9 @@ public class DashboardControllerTest {
       Mockito.when(userService.unblockAdminUser(Matchers.anyString())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DO_UNBLOCK_USERS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, "merchant").param("userName", Constants.TYPE_MERCHANT)
-              .param("entityType", Constants.TYPE_MERCHANT))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, "merchant").param("userName", TestConstants.TYPE_MERCHANT)
+              .param("entityType", TestConstants.TYPE_MERCHANT))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testunblockUserMerchant | Exception ", e);
@@ -310,9 +308,9 @@ public class DashboardControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_DO_UNBLOCK_USERS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_TYPE, "merchant").param("userName", Constants.TYPE_MERCHANT)
-              .param("entityType", Constants.TYPE_MERCHANT))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_TYPE, "merchant").param("userName", TestConstants.TYPE_MERCHANT)
+              .param("entityType", TestConstants.TYPE_MERCHANT))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_UNBLOCK_USERS));
     } catch (Exception e) {
       logger.error("DashboardControllerTest | testunblockUserMerchantException | Exception ", e);

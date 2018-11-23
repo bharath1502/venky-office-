@@ -72,8 +72,17 @@ public class GenericUserDTO extends SearchRequest{
 	
 	private Long entityId;
 	
+  private String loginuserType;
 
-	/**
+  public String getLoginuserType() {
+    return loginuserType;
+  }
+
+  public void setLoginuserType(String loginuserType) {
+    this.loginuserType = loginuserType;
+  }
+
+  /**
 	 * @return the adminUserId
 	 */
 	public Long getAdminUserId() {

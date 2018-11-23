@@ -2,18 +2,17 @@ package com.chatak.pg.acq.dao.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
 
 public interface ProgramManagerAccountRepository extends JpaRepository<ProgramManagerAccount, Long>,
-    QuerydslPredicateExecutor<ProgramManagerAccount> {
+    QueryDslPredicateExecutor<ProgramManagerAccount> {
 
   public List<ProgramManagerAccount> findByProgramManagerId(Long programManagerId);
 
@@ -24,7 +23,7 @@ public interface ProgramManagerAccountRepository extends JpaRepository<ProgramMa
 
   public ProgramManagerAccount findByIdAndAccountType(Long id, String accountType);
 
-  public Optional<ProgramManagerAccount> findById(Long id);
+  public ProgramManagerAccount findById(Long id);
 
   public ProgramManagerAccount findByProgramManagerIdAndAccountType(Long programManagerId,
       String accountType);

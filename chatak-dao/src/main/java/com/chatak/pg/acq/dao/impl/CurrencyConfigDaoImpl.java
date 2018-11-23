@@ -24,9 +24,10 @@ import com.chatak.pg.user.bean.CurrencyDTOList;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
+
 /**
  * @Author: Girmiti Software
  * @Date: Nov 24, 2016
@@ -97,32 +98,30 @@ public class CurrencyConfigDaoImpl implements CurrencyConfigDao {
 			limit = currencyDTO.getPageSize();
 		}
 
-		JPAQuery<PGCurrencyConfig> query = new JPAQuery<PGCurrencyConfig>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		QPGCurrencyConfig qpgCurrencyConfig = QPGCurrencyConfig.pGCurrencyConfig;
 
 		List<PGCurrencyConfig> list = query.from(qpgCurrencyConfig)
-				.select(qpgCurrencyConfig)
 				.where(isStatus(currencyDTO.getStatus()),isStatusNotEq(),
 						isCurrencyName(currencyDTO.getCurrencyName()),
 						isCurrencyCodeNumeric(currencyDTO.getCurrencyCodeNumeric()),
 						isCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha()),
 						isCurrencyExponent(currencyDTO.getCurrencyExponent()))
-				.offset(offset).limit(limit).orderBy(orderByIdDesc()).fetch();
+				.offset(offset).limit(limit).orderBy(orderByIdDesc()).list(qpgCurrencyConfig);
 		logger.info("CurrencyConfigDaoImpl | searchCurrencyConfig | Exiting");
 		return list;
 	}
 
 	private int getTotalNumberOfRecords(CurrencyDTO currencyDTO) {
 		logger.info("CurrencyConfigDaoImpl | getTotalNumberOfRecords | Entering");
-		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Long> list = query.from(QPGCurrencyConfig.pGCurrencyConfig)
-				.select(QPGCurrencyConfig.pGCurrencyConfig.id)
 				.where(isStatus(currencyDTO.getStatus()),isStatusNotEq(),
 						isCurrencyName(currencyDTO.getCurrencyName()),
 						isCurrencyCodeNumeric(currencyDTO.getCurrencyCodeNumeric()),
 						isCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha()),
 						isCurrencyExponent(currencyDTO.getCurrencyExponent()))
-				.fetch();
+				.list(QPGCurrencyConfig.pGCurrencyConfig.id);
 		logger.info("CurrencyConfigDaoImpl | getTotalNumberOfRecords | Exiting");
 		return (StringUtil.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
@@ -161,7 +160,7 @@ public class CurrencyConfigDaoImpl implements CurrencyConfigDao {
 	@Override
 	public PGCurrencyConfig findByCurrencyConfigId(Long currencyConfigId) {
 		
-		return currencyConfigRepository.findById(currencyConfigId).orElse(null);
+		return currencyConfigRepository.findById(currencyConfigId);
 	}
 
 	/**

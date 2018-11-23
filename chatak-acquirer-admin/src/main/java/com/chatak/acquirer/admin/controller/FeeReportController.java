@@ -39,6 +39,7 @@ import com.chatak.pg.acq.dao.model.Iso;
 import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.ExportType;
+import com.chatak.pg.model.Bank;
 import com.chatak.pg.model.FeeReportDto;
 import com.chatak.pg.model.FeeReportRequest;
 import com.chatak.pg.model.FeeReportResponse;
@@ -76,10 +77,14 @@ public class FeeReportController implements URLMappingConstants {
 	    if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_FEE_REPORT_FEATURE_ID)) {
 	      return feeReportPermission(session, modelAndView);
 	    }
+	    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
 		try {
+			feeReportRequest.setPageIndex(Constants.ONE);
+			feeReportRequest.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
 			modelAndView.addObject(Constants.FEE_REPORT_REQUEST, feeReportRequest);
 			modelAndView.addObject("flag", false);
 			ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
+			programManagerRequest.setLoginuserType(loginResponse.getUserType());
 			ProgramManagerResponse programManagerResponse = programManagerService
 					.getAllProgramManagers(programManagerRequest);
 			if (!StringUtil.isNull(programManagerResponse)) {
@@ -112,7 +117,7 @@ public class FeeReportController implements URLMappingConstants {
 		}
 		try {
 			feeReportRequest.setPageIndex(Constants.ONE);
-			feeReportRequest.setPageSize(Constants.DEFAULT_PAGE_SIZE);
+			feeReportRequest.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
 			session.setAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA, feeReportRequest);
 			FeeReportResponse feeReportResponse = feeReportService.fetchFeeTransactions(feeReportRequest);
 			if (!StringUtil.isNull(feeReportResponse)
@@ -131,6 +136,16 @@ public class FeeReportController implements URLMappingConstants {
 		}
 
 		modelAndView.addObject("flag", true);
+		logger.info("Exiting :: FeeReportController :: processFeeReport");
+		return modelAndView;
+	}
+	
+	@RequestMapping(value = PREPAID_PROCESS_FEE_REPORT_PAGE, method = RequestMethod.GET)
+	public ModelAndView processFeeReportGetMethod(HttpServletRequest request, HttpServletResponse response,
+			FeeReportRequest feeReportRequest, Merchant merchant, BindingResult bindingResult, Map model,
+			HttpSession session) {
+		logger.info("Entering :: FeeReportController :: processFeeReport");
+		ModelAndView modelAndView = showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
 		logger.info("Exiting :: FeeReportController :: processFeeReport");
 		return modelAndView;
 	}
@@ -272,23 +287,22 @@ public class FeeReportController implements URLMappingConstants {
 			return feeReportPermission(session, modelAndView);
 		}
 		try {
-
+			LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
 			if (userType.equals(Constants.ISO_USER_TYPE)) {
-				Iso iso = isoService.findIsoByIsoId(Long.valueOf(session.getId()));
-				feeReportRequest.setIsoId(iso.getId());
-				iso.getIsoName();
-				feeReportRequest.setIsoName(iso.getIsoName());
-				ProgramManagerRequest programManagerRequest = isoService.findPmByIsoId(Long.valueOf(session.getId()))
-						.get(0);
-				feeReportRequest.setProgramManagerId(programManagerRequest.getId().toString());
-				feeReportRequest.setProgramManagerName(programManagerRequest.getProgramManagerName());
+				List<Iso> iso = isoService.findIsoByIsoId(loginResponse.getEntityId());
+				feeReportRequest.setIsoId(iso.get(0).getId());
+				feeReportRequest.setIsoName(iso.get(0).getIsoName());
 			} else if (userType.equals(Constants.PM_USER_TYPE)) {
-				ProgramManagerRequest programManagerRequest = isoService.findPmByIsoId(Long.valueOf(session.getId()))
-						.get(0);
+				 ProgramManagerRequest programManagerRequest = programManagerService.findbyProgramManagerId(loginResponse.getEntityId());
 				feeReportRequest.setProgramManagerId(programManagerRequest.getId().toString());
 				feeReportRequest.setProgramManagerName(programManagerRequest.getProgramManagerName());
+				List<IsoRequest> isoRequestList = isoService.findIsoByProgramaManagerId(Long.valueOf(feeReportRequest.getProgramManagerId()));
+		            modelAndView.addObject("isoRequestsList", isoRequestList);
+		            session.setAttribute("isoRequestsList", isoRequestList);
+		            model.put("programManagersList", programManagerRequest);
 			} else {
 				ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
+				programManagerRequest.setLoginuserType(userType);
 				ProgramManagerResponse programManagerResponse = programManagerService
 						.getAllProgramManagers(programManagerRequest);
 				if (!StringUtil.isNull(programManagerResponse)) {
@@ -319,13 +333,14 @@ public class FeeReportController implements URLMappingConstants {
 
 		try {
 			feeReportRequest.setPageIndex(Constants.ONE);
-			feeReportRequest.setPageSize(Constants.DEFAULT_PAGE_SIZE);
+			feeReportRequest.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
 			session.setAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA, feeReportRequest);
 			FeeReportResponse feeReportResponse = feeReportService.fetchIsoRevenueTransactions(feeReportRequest);
 			if (!StringUtil.isNull(feeReportResponse)
 					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
 			}
+			modelAndView.addObject("pageSize", feeReportRequest.getPageSize());
 			modelAndView = PaginationUtil.getPagenationModel(modelAndView,
 					feeReportRequest.getNoOfRecords().intValue());
 			showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
@@ -337,6 +352,16 @@ public class FeeReportController implements URLMappingConstants {
 			showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 			logger.error("Error :: FeeReportController :: processIsoRevenueReport : " + e.getMessage(), e);
 		}
+		logger.info("Exiting :: FeeReportController :: processIsoRevenueReport");
+		return modelAndView;
+
+	}
+	
+	@RequestMapping(value = PROCESS_ISO_REVENUE_REPORT_PAGE, method = RequestMethod.GET)
+	public ModelAndView processIsoRevenueReportGetMethod(HttpServletRequest request, HttpServletResponse response,
+			FeeReportRequest feeReportRequest, BindingResult bindingResult, Map model, HttpSession session) {
+		logger.info("Entering :: FeeReportController :: processIsoRevenueReport");
+		ModelAndView modelAndView = showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 		logger.info("Exiting :: FeeReportController :: processIsoRevenueReport");
 		return modelAndView;
 
@@ -389,7 +414,7 @@ public class FeeReportController implements URLMappingConstants {
 				if(!StringUtil.isNull(transactionResponse) && !StringUtil.isNull(transactionResponse.getSettlementEntity().get(0).getIsoId())) {
 				    logger.info("ISO ID : " + transactionResponse.getSettlementEntity().get(0).getIsoId().toString());
 					Long isoId = transactionResponse.getSettlementEntity().get(0).getIsoId();
-					Iso iso = isoService.findIsoByIsoId(isoId);
+					Iso iso = isoService.findIsoByIsoId(isoId).get(0);
 					map.put("ISO :", iso.getIsoName());
 				}
                 
@@ -489,7 +514,7 @@ public class FeeReportController implements URLMappingConstants {
 		try {
 
 			if (userType.equals(Constants.ISO_USER_TYPE)) {
-				Iso iso = isoService.findIsoByIsoId(Long.valueOf(session.getId()));
+				Iso iso = isoService.findIsoByIsoId(Long.valueOf(session.getId())).get(0);
 				feeReportRequest.setIsoId(iso.getId());
 				iso.getIsoName();
 				feeReportRequest.setIsoName(iso.getIsoName());
@@ -556,6 +581,16 @@ public class FeeReportController implements URLMappingConstants {
 		return modelAndView;
 
 	}
+	
+	@RequestMapping(value = PROCESS_MERCHANT_REVENUE_REPORT_PAGE, method = RequestMethod.GET)
+	public ModelAndView processMerchantRevenueReportGetMethod(HttpServletRequest request, HttpServletResponse response,
+			FeeReportRequest feeReportRequest, BindingResult bindingResult, Map model, HttpSession session) {
+		logger.info("Entering :: FeeReportController :: processMerchantRevenueReport");
+		ModelAndView modelAndView = showMerchantRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
+		logger.info("Exiting :: FeeReportController :: processMerchantRevenueReport");
+		return modelAndView;
+
+	}
 
 	@RequestMapping(value = PREPAID_MERCHANT_REPORT_PAGINATION, method = RequestMethod.POST)
 	public ModelAndView getMerchantReportPagination(final HttpSession session,
@@ -593,14 +628,17 @@ public class FeeReportController implements URLMappingConstants {
 		logger.info("Entering :: FeeReportController :: getISOReportPagination");
 		ModelAndView modelAndView = new ModelAndView(ISO_REVENUE_REPORT_PAGE);
 		try {
-			FeeReportRequest feeReportRequest = new FeeReportRequest();
+			FeeReportRequest feeReportRequest = (FeeReportRequest) session
+					.getAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA);
 			model.put(Constants.FEE_REPORT_REQUEST, feeReportRequest);
 			feeReportRequest.setPageIndex(pageNumber);
 			feeReportRequest.setNoOfRecords(totalRecords);
-			FeeReportResponse feeReportResponse = feeReportService.fetchMerchantRevenueTransactions(feeReportRequest);
+			feeReportRequest.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
+			FeeReportResponse feeReportResponse = feeReportService.fetchIsoRevenueTransactions(feeReportRequest);
 			if (!StringUtil.isNull(feeReportResponse)
 					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
+				modelAndView.addObject("pageSize", feeReportRequest.getPageSize());
 				modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
 						feeReportResponse.getTotalNoOfRows());
 				session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
@@ -756,9 +794,14 @@ public class FeeReportController implements URLMappingConstants {
 			return feeReportPermission(session, modelAndView);
 		}
 		try {
+		    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
 			modelAndView.addObject(Constants.FEE_REPORT_REQUEST, feeReportRequest);
 			modelAndView.addObject("flag", false);
 			ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
+			Long entityId = loginResponse.getEntityId();
+		    String loginuserType = loginResponse.getUserType();
+		    programManagerRequest.setEntityId(entityId);
+		    programManagerRequest.setLoginuserType(loginuserType);
 			ProgramManagerResponse programManagerResponse = programManagerService
 					.getAllProgramManagers(programManagerRequest);
 			if (!StringUtil.isNull(programManagerResponse)) {
@@ -785,25 +828,36 @@ public class FeeReportController implements URLMappingConstants {
 		}
 		try {
 			feeReportRequest.setPageIndex(Constants.ONE);
-			feeReportRequest.setPageSize(Constants.DEFAULT_PAGE_SIZE);
+			feeReportRequest.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
 			session.setAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA, feeReportRequest);
 			FeeReportResponse feeReportResponse = feeReportService.fetchPmRevenueTransactions(feeReportRequest);
 			if (!StringUtil.isNull(feeReportResponse)
 					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
 			}
+			modelAndView.addObject("pageSize", feeReportRequest.getPageSize());
 			modelAndView = PaginationUtil.getPagenationModel(modelAndView,
 					feeReportRequest.getNoOfRecords().intValue());
-			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
+			showPmRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 		} catch (ChatakAdminException e) {
-			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
+		  showPmRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 			logger.error("Error :: FeeReportController :: processPmRevenueReport :: ChatakAdminException :: " + e.getMessage(), e);
 		} catch (Exception e) {
-			showFeeReport(request, response, feeReportRequest, bindingResult, model, session);
+		  showPmRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 			logger.error("Error :: FeeReportController :: processPmRevenueReport : " + e.getMessage(), e);
 		}
 
 		modelAndView.addObject("flag", true);
+		logger.info("Exiting :: FeeReportController :: processPmRevenueReport");
+		return modelAndView;
+	}
+	
+	@RequestMapping(value = PROCESS_PM_REVENUE_REPORT_PAGE, method = RequestMethod.GET)
+	public ModelAndView processPmRevenueReportGetMethod(HttpServletRequest request, HttpServletResponse response,
+			FeeReportRequest feeReportRequest, Merchant merchant, BindingResult bindingResult, Map model,
+			HttpSession session) {
+		logger.info("Entering :: FeeReportController :: processPmRevenueReport");
+		ModelAndView modelAndView = showPmRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 		logger.info("Exiting :: FeeReportController :: processPmRevenueReport");
 		return modelAndView;
 	}
@@ -878,16 +932,19 @@ public class FeeReportController implements URLMappingConstants {
 			@FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
 			@FormParam("totalRecords") final Integer totalRecords, Map model) {
 		logger.info("Entering :: FeeReportController :: getPMReportPagination");
-		ModelAndView modelAndView = new ModelAndView(ISO_REVENUE_REPORT_PAGE);
+		ModelAndView modelAndView = new ModelAndView(PM_REVENUE_REPORT_PAGE);
 		try {
-			FeeReportRequest feeReportRequest = new FeeReportRequest();
+			FeeReportRequest feeReportRequest = (FeeReportRequest) session
+					.getAttribute(Constants.FEE_REPORT_REQUEST_LIST_EXPORTDATA);
 			model.put(Constants.FEE_REPORT_REQUEST, feeReportRequest);
 			feeReportRequest.setPageIndex(pageNumber);
 			feeReportRequest.setNoOfRecords(totalRecords);
+			feeReportRequest.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
 			FeeReportResponse feeReportResponse = feeReportService.fetchPmRevenueTransactions(feeReportRequest);
 			if (!StringUtil.isNull(feeReportResponse)
 					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
+				modelAndView.addObject("pageSize", feeReportRequest.getPageSize());
 				modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
 						feeReportResponse.getTotalNoOfRows());
 				session.setAttribute(Constants.PAGE_NUMBER, pageNumber);

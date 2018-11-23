@@ -189,6 +189,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	@Autowired
 	private AsyncService asyncService;
 	
+	@Transactional
 	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) {
 		MDCLoggerUtil.setMDCLoggerParamsAdmin(transactionRequest.getInvoiceNumber());
 		log.info("Entering :: processTransaction :: TxnType :  " + transactionRequest.getTransactionType());
@@ -253,7 +254,6 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	 * @param transactionRequest
 	 * @return
 	 */
-	@Transactional
 	public Response processAuthCapture(TransactionRequest transactionRequest, PGMerchant pgMerchant) {
 
 		log.info("RestService | PGTransactionServiceImpl | processAuthCapture | Entering");
@@ -337,6 +337,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			transactionResponse.setTxnDateTime(System.currentTimeMillis());
 			transactionResponse.setMerchantCode(request.getMerchantCode());
 			transactionResponse.setMerchantName(transactionRequest.getMerchantName());
+			transactionResponse.setTransactionType(purchaseResponse.getTxnType());
 
 			logExit(pgOnlineTxnLog,
 					TransactionStatus.COMPLETED,
@@ -344,9 +345,9 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 					(transactionResponse.getTxnRefNumber() == null ? "0" : transactionResponse.getTxnRefNumber()),
 					purchaseResponse.getErrorMessage(),
 					transactionResponse.getTxnRefNumber());
-			
+	
 			if (purchaseResponse.getErrorCode().equals("00")) {
-				String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() !=null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
+				String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() !=null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "0";
 				if (autoSettlement != null && autoSettlement.equals("1")) {
 					updateSettlementStatus(transactionRequest.getMerchantCode(), transactionRequest.getTerminalId(),
 							purchaseResponse.getTxnRefNum(), "Sale", PGConstants.PG_SETTLEMENT_EXECUTED, "Auto Settlement",
@@ -534,7 +535,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			if(null == pgTransaction) {
 				log.error("RestService | PGTransactionServiceImpl | processVoid |throwing exception");
 				throw new ServiceException(ActionErrorCode.ERROR_CODE_TXN_NULL);
-			} else if(pgTransaction.getMerchantSettlementStatus().equalsIgnoreCase(PGConstants.TXN_TYPE_EXECUTED)) {
+			} else if(pgTransaction.getMerchantSettlementStatus().equalsIgnoreCase(Constants.SETTLEMENT_STATUS)) {
 				log.error("RestService | PGTransactionServiceImpl | processVoid |throwing exception");
 				throw new ServiceException(ActionErrorCode.ERROR_CODE_TXN_EXECUTED);
 			} else if(pgTransaction.getTransactionType().equals(PGConstants.TXN_TYPE_REFUND)) {
@@ -544,6 +545,10 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				reverseSplitSaleIfExists(transactionRequest.getTxnRefNumber(), transactionRequest.getMerchantCode());
 				setCardDataAndTransactionRequestData(transactionRequest, pgTransaction);
 
+				CardProgram cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
+						CommonUtil.getIIN(transactionRequest.getCardData().getCardNumber()), 
+						CommonUtil.getPartnerIINExt(transactionRequest.getCardData().getCardNumber()), 
+						CommonUtil.getIINExt(transactionRequest.getCardData().getCardNumber()));				
 				// Logging into Online txn log
 				pgOnlineTxnLog = logEntry(TransactionStatus.INITATE, transactionRequest);
 				VoidRequest request = new VoidRequest();
@@ -565,9 +570,11 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				request.setTimeZoneOffset(transactionRequest.getTimeZoneOffset());
 				request.setTimeZoneRegion(transactionRequest.getTimeZoneRegion());
 				PGMerchant pgMerchant = merchantUpdateDao.getMerchantByCode(transactionRequest.getMerchantCode());
+				request.setMerchantId(pgMerchant.getId());
 				getMerchantDetails(pgMerchant, request);
+				getMerchantBatchId(request, cardprogram, pgMerchant);
 				
-				VoidResponse voidResponse = new SwitchServiceBroker().voidTransaction(request);
+				VoidResponse voidResponse = new SwitchServiceBroker().voidTransaction(request, pgTransaction);
 
 				transactionResponse.setErrorCode(voidResponse.getErrorCode());
 				transactionResponse.setErrorMessage(voidResponse.getErrorMessage());
@@ -575,7 +582,9 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				transactionResponse.setCgRefNumber(voidResponse.getUpStreamTxnRefNum());
 				transactionResponse.setTxnRefNumber(voidResponse.getTxnRefNum() != null ? voidResponse.getTxnRefNum() : null);
 				transactionResponse.setTxnDateTime(System.currentTimeMillis());
+				transactionResponse.setTotalTxnAmount((voidResponse.getTxnAmount().doubleValue())/Integer.parseInt("100"));
 				transactionResponse.setMerchantCode(request.getMerchantCode());
+				transactionResponse.setTransactionType(voidResponse.getTxnType());
 				logExit(pgOnlineTxnLog,
 						TransactionStatus.COMPLETED,
 						voidResponse.getErrorMessage(),
@@ -697,7 +706,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 
 			if(null != pgTransaction) {
 				
-				if((null != pgTransaction.getRefundStatus() && 1 == pgTransaction.getRefundStatus().intValue()) || (PGConstants.PG_SETTLEMENT_REJECTED.equalsIgnoreCase(pgTransaction.getMerchantSettlementStatus()))) {
+				if(isTxnAlreadyRefunded(pgTransaction)) {
 					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0103.name());
 					transactionResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0103.name(), null, LocaleContextHolder.getLocale()));
 					transactionResponse.setTxnDateTime(System.currentTimeMillis());
@@ -711,7 +720,11 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 					return transactionResponse;
 				}
 				
-				Long refundedAmount=refundTransactionDao.getRefundedAmountOnTxnId(pgTransaction.getTransactionId());
+				if(pgTransaction.getMerchantSettlementStatus().equals(PGConstants.PG_SETTLEMENT_EXECUTED)) {
+					return processVoid(transactionRequest);
+				}
+				
+				Long refundedAmount=refundTransactionDao.getRefundedAmountOnTxnId(pgTransaction.getId().toString());
 				if(null!=refundedAmount&&null!=transactionRequest.getTotalTxnAmount()&&((pgTransaction.getTxnTotalAmount()-refundedAmount)<transactionRequest.getTotalTxnAmount())){
 					throw new ServiceException(ActionErrorCode.REFUND_AMOUNT_EXCEEDS);
 				}
@@ -729,6 +742,10 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				card.setCardType(MethodOfPaymentTypeEnum.valueOf(PGUtils.getCCType()));
 				card.setCardHolderName(pgTransaction.getCardHolderName());
 				transactionRequest.setCardData(card);
+				CardProgram cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
+						CommonUtil.getIIN(transactionRequest.getCardData().getCardNumber()), 
+						CommonUtil.getPartnerIINExt(transactionRequest.getCardData().getCardNumber()), 
+						CommonUtil.getIINExt(transactionRequest.getCardData().getCardNumber()));
 				validateTotalTxnAndMerchantAmount(transactionRequest, pgTransaction);
 				transactionRequest.setInvoiceNumber(pgTransaction.getInvoiceNumber());
 				// Logging into Online txn log
@@ -766,7 +783,9 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				request.setTimeZoneOffset(transactionRequest.getTimeZoneOffset());
 				request.setTimeZoneRegion(transactionRequest.getTimeZoneRegion());
 				PGMerchant pgMerchant = merchantUpdateDao.getMerchantByCode(transactionRequest.getMerchantCode());
+				request.setMerchantId(pgMerchant.getId());
 				getMerchantDetails(pgMerchant, request);
+				getMerchantBatchId(request, cardprogram, pgMerchant);
 				
 				RefundResponse refundResponse = new SwitchServiceBroker().refundTransaction(request);
 
@@ -791,6 +810,10 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 
 	}
 
+  private boolean isTxnAlreadyRefunded(PGTransaction pgTransaction) {
+    return (null != pgTransaction.getRefundStatus() && 1 == pgTransaction.getRefundStatus().intValue()) || (PGConstants.PG_SETTLEMENT_REJECTED.equalsIgnoreCase(pgTransaction.getMerchantSettlementStatus()));
+  }
+
 	private void validateTxnAmount(TransactionRequest transactionRequest, PGAccount pgAccount)
 			throws InvalidRequestException {
 		if(transactionRequest.getTxnAmount() != null && transactionRequest.getTxnAmount() > pgAccount.getCurrentBalance()) {
@@ -809,6 +832,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		transactionResponse.setCgRefNumber(refundResponse.getUpStreamTxnRefNum());
 		transactionResponse.setTotalTxnAmount((refundResponse.getTotalTxnAmount().doubleValue())/Integer.parseInt("100"));
 		transactionResponse.setMerchantCode(request.getMerchantCode());
+		transactionResponse.setTransactionType(refundResponse.getTxnType());
 		logExit(pgOnlineTxnLog,
 				TransactionStatus.COMPLETED,
 				refundResponse.getErrorMessage(),
@@ -1042,7 +1066,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				voidRequest.setCgRefNumber(txnToVoid.getIssuerTxnRefNum());
 				voidRequest.setTransactionType(TransactionType.VOID);
 				voidRequest.setTxnRefNumber(txnToVoid.getTransactionId());
-				splitRejectResponse = processTransaction(voidRequest, merchant);
+				splitRejectResponse = processVoid(voidRequest);
 				if(splitRejectResponse.getErrorCode().equals(PGConstants.SUCCESS)) {
 					TransactionResponse transactionResponse = new TransactionResponse();
 					transactionResponse.setTxnRefNumber(txnToVoid.getTransactionId());
@@ -1062,7 +1086,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	public void reverseSplitSaleIfExists(String transactionId, String merchantId) {
 		PGSplitTransaction pgSplitTransaction = splitTransactionDao.getPGSplitTransactionByMerchantIdAndPgRefTransactionId(merchantId,
 				transactionId);
-		if(null != pgSplitTransaction && pgSplitTransaction.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
+		if(null != pgSplitTransaction && pgSplitTransaction.getStatus().equals(Long.valueOf(PGConstants.STATUS_SUCCESS))) {
 			String splitTransactionId = pgSplitTransaction.getPgRefTransactionId();
 			String splitTxnMerchantId = pgSplitTransaction.getMerchantId();
 			PGTransaction pgTransaction = voidTransactionDao.findTransactionToReversalByMerchantIdAndPGTxnId(splitTxnMerchantId,
@@ -1448,8 +1472,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				if (batchResponse.getStatus() !=null && batchResponse.getStatus().equals(PGConstants.BATCH_STATUS_ASSIGNED)) {
 					request.setBatchId(batchResponse.getBatchId());
 					
-				} else if ((batchResponse.getStatus() !=null && batchResponse.getStatus().equals(PGConstants.BATCH_STATUS_PROCESSING))
-						|| (batchResponse.getStatus() !=null && batchResponse.getStatus().equals(PGConstants.BATCH_STATUS_COMPLETED))) {
+				} else if (isStatusProcessingOrCompleted(batchResponse)) {
 					processCompletedBatchId(request, batchResponse);
 					
 				} else {
@@ -1460,6 +1483,11 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			}
 		log.info("Exiting :: PGTransactionServiceImpl :: getMerchantBatchId");
 	}
+
+  private boolean isStatusProcessingOrCompleted(PGBatch batchResponse) {
+    return (batchResponse.getStatus() !=null && batchResponse.getStatus().equals(PGConstants.BATCH_STATUS_PROCESSING))
+    		|| (batchResponse.getStatus() !=null && batchResponse.getStatus().equals(PGConstants.BATCH_STATUS_COMPLETED));
+  }
 
 	private synchronized void processCompletedBatchId(Request request, PGBatch batch) {
 		long number = Long.parseLong(batch.getBatchId().subSequence(Constants.FIVE, batch.getBatchId().length()).toString()) + 1l;

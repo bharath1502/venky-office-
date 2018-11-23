@@ -4,10 +4,9 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.math.BigInteger;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGBlackListedCard;
 
@@ -20,11 +19,11 @@ import com.chatak.pg.acq.dao.model.PGBlackListedCard;
  *
  */
 public interface BlackListedCardRepository extends JpaRepository<PGBlackListedCard, Long>,
-QuerydslPredicateExecutor<PGBlackListedCard> {
+QueryDslPredicateExecutor<PGBlackListedCard> {
 
 	public PGBlackListedCard findByCardNumber(BigInteger cardNumber);
 
-	public Optional<PGBlackListedCard> findById(Long id);
+	public PGBlackListedCard findById(Long id);
 	
 	public PGBlackListedCard findByCardNumberAndStatusNotLike(BigInteger cardNumber, Integer status);
 }

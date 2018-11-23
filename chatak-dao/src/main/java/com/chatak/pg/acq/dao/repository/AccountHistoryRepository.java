@@ -6,7 +6,7 @@ package com.chatak.pg.acq.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGAccountHistory;
 
@@ -19,7 +19,7 @@ import com.chatak.pg.acq.dao.model.PGAccountHistory;
  */
 public interface AccountHistoryRepository extends
                                          JpaRepository<PGAccountHistory, Long>,
-                                         QuerydslPredicateExecutor<PGAccountHistory> {
+                                         QueryDslPredicateExecutor<PGAccountHistory> {
 
   public List<PGAccountHistory> findByAccountNum(Long accountNum);
   

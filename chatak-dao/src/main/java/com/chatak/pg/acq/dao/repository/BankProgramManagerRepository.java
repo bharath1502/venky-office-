@@ -5,14 +5,14 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
 
 public interface BankProgramManagerRepository extends JpaRepository<BankProgramManagerMap, Long>,
-    QuerydslPredicateExecutor<BankProgramManagerMap> {
+    QueryDslPredicateExecutor<BankProgramManagerMap> {
 
   public Set<BankProgramManagerMap> findByProgramManagerId(Long programManagerId);
 

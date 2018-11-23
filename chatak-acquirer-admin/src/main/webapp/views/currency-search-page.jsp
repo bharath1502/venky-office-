@@ -114,7 +114,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="currency-search-page.label.currencyname" /></label>
 													<form:input cssClass="form-control" path="currencyName"
-														id="currencyName" onblur="clientValidation('currencyName','firstlast_name_notmend','currencyName_Error');" />
+														id="currencyName" onblur="clientValidation('currencyName','firstlast_name_not_mandatory','currencyName_Error');" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="currencyName_Error" class="red-error">&nbsp;</span>
 													</div>

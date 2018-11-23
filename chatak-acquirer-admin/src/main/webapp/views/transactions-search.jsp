@@ -16,8 +16,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+ <link href="../css/rome.css" rel="stylesheet">
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="../js/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
@@ -139,7 +138,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.fromdate" /></label>
 													<div class="input-group focus-field">
 														<form:input path="from_date" id="fromDate"
-															cssClass="form-control effectiveDate" onkeypress="return numbersonly(this,event)" />
+															cssClass="form-control effectiveDate" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -151,7 +150,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.todate" /></label>
 													<div class="input-group focus-field">
 														<form:input path="to_date"
-															cssClass="form-control effectiveDate" id="toDate" onkeypress="return numbersonly(this,event)" />
+															cssClass="form-control effectiveDate" id="toDate" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -272,7 +271,6 @@
 									<spring:message code="common.label.totalcount"/> : <label id="totalCount">${totalRecords}</label>
 										<input type="button" class="txn-button executeAll" value="<spring:message code="reports.label.transactions.executeall" />" />
 										<input type="button" class="txn-button processAll" value="<spring:message code="reports.label.transactions.processall" />" />
-										<input type="button" class="txn-button cancelAll" value="<spring:message code="reports.label.transactions.cancelall" />" />
 										
 								</span>
 								</td>
@@ -341,7 +339,7 @@
 							                      			<td class="alignleft" style="width: 10px;">
 																<c:if test="${transaction.statusMessage == 'Approved' && (transaction.transaction_type=='sale' || transaction.transaction_type=='void') }">
 																	<c:choose>
-																		<c:when test="${transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Executed'}">
+																		<c:when test="${transaction.transaction_type == 'sale' && transaction.merchantSettlementStatus == 'Settled'}">
 																			<button class="txn-button refund" onclick="doTransactonRefund('${transaction.transactionId}','${transaction.merchant_code }')" ><spring:message code="reports.label.refundbutton" /></button>
 																		</c:when>
 																		<c:otherwise>
@@ -349,7 +347,7 @@
 																	</c:choose>
 																</c:if>
 																<c:choose>
-																	<c:when test="${transaction.merchantSettlementStatus == 'Executed' ||transaction.merchantSettlementStatus == 'Declined'||transaction.merchantSettlementStatus == 'Refunded'||transaction.merchantSettlementStatus == 'Cancelled'||transaction.merchantSettlementStatus == 'Rejected'}">
+																	<c:when test="${transaction.merchantSettlementStatus == 'Declined'||transaction.merchantSettlementStatus == 'Refunded'||transaction.merchantSettlementStatus == 'Cancelled'||transaction.merchantSettlementStatus == 'Rejected'}">
 																		<label data-toggle="tooltip" data-placement="top"></label>
 																	</c:when>
 																	<c:otherwise>
@@ -363,8 +361,11 @@
 																					<button class="txn-button process" onclick="process('${transaction.transactionId}','${transaction.merchant_code }','${transaction.terminal_id }','${transaction.transaction_type }','<%=PGConstants.PG_SETTLEMENT_PROCESSING %>')"><spring:message code="reports.label.processbutton" /></button></br>
 																					<button class="txn-button cancel" onclick="process('${transaction.transactionId}','${transaction.merchant_code }','${transaction.terminal_id }','${transaction.transaction_type }','<%=PGConstants.PG_SETTLEMENT_REJECTED %>')"><spring:message code="reports.label.cancelbutton" /></button>
 																			</c:when>
-																			<c:when test="${transaction.merchantSettlementStatus == 'Executed'}">
+																			<c:when test="${transaction.merchantSettlementStatus == 'Settled'}">
 																				<label data-toggle="tooltip" data-placement="top"></label>
+																			</c:when>
+																			<c:when test="${transaction.merchantSettlementStatus == 'Executed'}">
+																					<button class="txn-button cancel" onclick="process('${transaction.transactionId}','${transaction.merchant_code }','${transaction.terminal_id }','${transaction.transaction_type }','<%=PGConstants.PG_SETTLEMENT_REJECTED %>')"><spring:message code="reports.label.cancelbutton" /></button>
 																			</c:when>
 																			<c:otherwise>
 																			</c:otherwise>
@@ -499,7 +500,7 @@
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/sortable.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	 <script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -513,13 +514,14 @@
 			$(".focus-field").click(function() {
 				$(this).children('.effectiveDate').focus();
 			});
-
-			$('.effectiveDate').datetimepicker({
+			rome(fromDate, { time: false });
+			rome(toDate, { time: false });
+			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',
 				formatDate : 'd/m/Y',
 				maxDate:new Date()
-			});
+			}); */
 			
 			$('#my_popup').popup({
 				blur : false

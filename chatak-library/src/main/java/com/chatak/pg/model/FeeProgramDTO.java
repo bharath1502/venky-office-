@@ -48,6 +48,24 @@ public class FeeProgramDTO extends SearchRequest {
   private String cardProgramName;
   
   private Long entityId;
+  
+  private String userType;
+
+  public String getUserType() {
+    return userType;
+  }
+
+  public void setUserType(String userType) {
+    this.userType = userType;
+  }
+
+  public Long getEntityId() {
+    return entityId;
+  }
+
+  public void setEntityId(Long entityId) {
+    this.entityId = entityId;
+  }
 
   /**
    * @return the feeProgramId
@@ -312,14 +330,6 @@ public class FeeProgramDTO extends SearchRequest {
    */
   public void setCardProgramName(String cardProgramName) {
     this.cardProgramName = cardProgramName;
-  }
-
-  public Long getEntityId() {
-    return entityId;
-  }
-
-  public void setEntityId(Long entityId) {
-    this.entityId = entityId;
   }
 
 }

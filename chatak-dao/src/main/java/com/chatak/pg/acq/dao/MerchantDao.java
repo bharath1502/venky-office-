@@ -154,7 +154,7 @@ public interface MerchantDao {
   public Map<String, String> getAllMerchantMap();
 
   public List<Map<String, String>> getMerchantMapByMerchantType(String merchantType);
-
+  
   public FeeProgramNameListDTO getActiveAndCurrentFeePrograms(String feeProgram);
 
   public List<PGMerchant> getMerchantDetailsForAccountCreation(Merchant merchant);

@@ -1,6 +1,7 @@
 package com.chatak.pay.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,7 +13,7 @@ import com.chatak.pay.exception.ChatakPayException;
 public class CryptoExceptionTest {
 
 
-	private static Logger logger = Logger.getLogger(ChatakPayException.class);
+	private static Logger logger = LogManager.getLogger(ChatakPayException.class);
 
 	@Mock
 	Throwable throwable;
@@ -28,8 +29,7 @@ public class CryptoExceptionTest {
 
 	@Test
 	public void testCryptoException() {
-		logger.info("ERROR :: CryptoExceptionTest :: testCryptoException:");
-
+		logger.info("Info :: CryptoExceptionTest :: testCryptoException Method");
 	}
 
 }

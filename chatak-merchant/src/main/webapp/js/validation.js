@@ -1235,8 +1235,8 @@ function email(data, div_id) {
 function confirmemail(data, div_id) {
 	var email = document.getElementById("emailid");
 	if (data == emailid.value) {
-		return true;
 		setDiv(div_id, "");
+		return true;
 	} else {
 		setDiv(div_id, "*The two fields arent the same*");
 		return false;
@@ -1522,8 +1522,6 @@ function validateFromDate(divId, errorMsg) {
 		setDiv(errorMsg, "&nbsp;");
 		return flag;
 	}
-	setDiv(errorMsg, "&nbsp;");
-	return flag;
 }
 
 function validateToDate(divId, errorMsg) {

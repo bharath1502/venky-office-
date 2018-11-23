@@ -25,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.BatchSchedularService;
@@ -143,6 +144,15 @@ public class BatchScheduleReportController implements URLMappingConstants {
     logger.info("Exiting :: BatchScheduleReportController :: getBatchReport method");
     return modelAndView;
   }
+  
+	@RequestMapping(value = CHATAK_ADMIN_GET_BATCH_REPORT, method = RequestMethod.GET)
+	public ModelAndView getBatchReportGetMethod(HttpServletRequest request, HttpServletResponse response,
+			GetBatchReportRequest batchReport, BindingResult bindingResult, Map model, HttpSession session) {
+		logger.info("Entering :: BatchScheduleReportController :: getBatchReportGetMethod method");
+		ModelAndView modelAndView = showBatchReport(session, model, request, response);
+		logger.info("Exiting :: BatchScheduleReportController :: getBatchReportGetMethod method");
+		return modelAndView;
+	}
 
   @RequestMapping(value = CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT, method = RequestMethod.GET)
   public ModelAndView showDailyFundingReport(HttpSession session, Map model,
@@ -172,6 +182,8 @@ public class BatchScheduleReportController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
+    LoginResponse loginResponse =
+	          (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_FUNDING_REPORT_FEATURE_ID)) {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
@@ -183,14 +195,12 @@ public class BatchScheduleReportController implements URLMappingConstants {
     session.setAttribute(Constants.DAILY_FUNDING_REQUEST_OBJECT, dailyFundingReport);
     dailyFundingReport.setPageIndex(Constants.ONE);
     dailyFundingReport.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
-    String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
     List<DailyFundingReport> list = new ArrayList<>();
     try {
-    	if(userType.equalsIgnoreCase(Constants.PM_USER_TYPE)) {
-    		Long pmId= (Long)session.getAttribute(Constants.LOGIN_USER_ID);
-    		dailyFundingReport.setId(pmId);
-    	}
-    	
+      if (loginResponse.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE)
+          || loginResponse.getUserType().equalsIgnoreCase(Constants.ISO_USER_TYPE)) {
+        dailyFundingReport.setId(loginResponse.getEntityId());
+      }  	
       GetDailyFundingReportResponse getReportResponse =
           batchSchedularService.searchDailyFundingReportDetails(dailyFundingReport);
       if (getReportResponse.getDailyFundingReport() != null

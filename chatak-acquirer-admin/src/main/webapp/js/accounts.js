@@ -28,13 +28,13 @@ function doAjaxFetchAccountDetails() {
 				success : function(response) {
 					var obj = JSON.parse(response);
 					if (obj.errorCode === '00') {
-						
+						setDiv("errorMsgDiv", "");
 						get('merchantName').value = obj.merchantName;
 						get('accountNumber').value = obj.accountNumber;
-						get('availableBalance').value = obj.availableBalance/100;
-						currencyId = "availableBalance";
-						get('currentBalance').value = obj.currentBalance/100;
-						currentbalId = "currentBalance";
+						get('availableBalanceString').value = obj.availableBalanceString;
+						currencyId = "availableBalanceString";
+						get('currentBalanceString').value = obj.currentBalanceString;
+						currentbalId = "currentBalanceString";
 						get('availableBalCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
 						get('currentBalCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
 						get('inputAmtCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
@@ -42,11 +42,8 @@ function doAjaxFetchAccountDetails() {
 						currencySeparatorPosition = obj.currencySeparatorPosition;
 						currencyMinorUnit = obj.currencyMinorUnit;
 						currencyThousandsUnit = obj.currencyThousandsUnit;
-						formatNum(currencyId);
-						formatNum(currentbalId);
-						if($("#errorMsgDiv").text() == webMessages.MerchantOrSubMerchantAccountStatusTerminated){
-							setDiv("errorMsgDiv", "");
-						}
+						$("#"+currencyId).val(obj.availableBalanceString);
+						$("#"+currentbalId).val(obj.currentBalanceString);
 						if($("#errorMsgDiv").text() != ""){
 							setDiv("errorMsgDiv", $("#errorMsgDiv").text());
 						}
@@ -54,13 +51,10 @@ function doAjaxFetchAccountDetails() {
 						$("#hideSearchButton").fadeOut();
 						document.getElementById("merchantIdDiv").readOnly = true;
 						} else {
-						setDiv(
-								"errorMsgDiv",
-								webMessages.MerchantOrSubMerchantAccountStatusTerminated);
+						setDiv("errorMsgDiv",obj.errorMessage);
 					}
 				},
 				error : function(e) {
-					alert(e);
 				}
 			});
 }

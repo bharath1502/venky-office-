@@ -32,6 +32,7 @@ function ProgramManagerValidation() {
 	        | !clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')
 	        | !clientValidation('schedulerRunTime','txn_date','pgmmgrschedulerRunTimeerrormsg')
 			| !clientValidation('programMangerName', 'program_manager_name','pgmmgrNameErrormsg')
+			| !validateProgramManagerId('programManagerType','programManagerTypeError')
 			| !validateByPmType()) {
 		clearValidationType();
 		flag = false;
@@ -225,7 +226,6 @@ function editPMValidation() {
 		document.forms["programManagerEditDetailsForm"].submit();
 	}
 	return flag;
-	editProgramManager();
 }
 function editProgramManagerAccountValidation() {
 
@@ -760,7 +760,6 @@ function getIndependentPMDetails(programManagerType) {
 				$("#state").val('');
 				$("#timezone").val('');
 				$("#batchPrefix").val('');
-				$("#schedulerRunTime").val('');
 				$("#LogoDiv").val('');
 				// Remove previous options from the dropdown
 				document.getElementById('acquirerCurrencyName').options.length = 0;
@@ -932,6 +931,19 @@ function doAjaxFetchIssunacePMDetailsById(programManagerId) {
 						$("#bankName").append(newOption);
 					}
 				}
+				document.getElementById('programMangerName').readOnly = true;
+				document.getElementById('companyName').readOnly = true;
+				document.getElementById('businessEntityName').readOnly = true;
+				document.getElementById('contactPerson').readOnly = true;
+				document.getElementById('extension').readOnly = true;
+				document.getElementById('batchPrefix').readOnly = true;
+				document.getElementById('schedulerRunTime').readOnly = true;
+				document.getElementById('contactPhone').readOnly = true;
+				document.getElementById('programManagerEmailId').readOnly = true;
+				$('#currencyName').attr("readonly", "readonly"); 
+				$('#country').attr("readonly", "readonly");
+				$('#state').attr("readonly", "readonly");
+				$('#timezone').attr("readonly", "readonly");
 			}
 		},
 		failure : function(e) {
@@ -952,6 +964,19 @@ function resetAllFields() {
 	document.getElementById('cardprogramId').options.length = 0;
 	document.getElementById('currencyName').options.length = 0;
 	$('#currencyName').text('');
+	document.getElementById('programMangerName').readOnly = false;
+	document.getElementById('companyName').readOnly = false;
+	document.getElementById('businessEntityName').readOnly = false;
+	document.getElementById('contactPerson').readOnly = false;
+	document.getElementById('extension').readOnly = false;
+	document.getElementById('batchPrefix').readOnly = false;
+	document.getElementById('schedulerRunTime').readOnly = false;
+	document.getElementById('contactPhone').readOnly = false;
+	document.getElementById('programManagerEmailId').readOnly = false;
+	$('#currencyName').attr("readonly", false); 
+	$('#country').attr("readonly", false);
+	$('#state').attr("readonly", false);
+	$('#timezone').attr("readonly", false);
 }
 
 function fetchPmCardProgramByPmId(programManagerId) {

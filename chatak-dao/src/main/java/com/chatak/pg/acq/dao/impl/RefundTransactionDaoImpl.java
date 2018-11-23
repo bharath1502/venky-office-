@@ -43,11 +43,11 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.expr.BooleanExpression;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 
 /**
  * @Author: Girmiti Software
@@ -84,7 +84,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
   @Override
   public Integer getRefundStatus(String pgTransactionId) {
     PGTransaction pgTransaction =
-        transactionRepository.findById(new BigInteger(pgTransactionId)).orElse(null);
+        transactionRepository.findById(new BigInteger(pgTransactionId));
     return pgTransaction.getRefundStatus();
   }
 
@@ -106,7 +106,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
     String pgTransactionId =
         accountTransactionsDao.getSaleAccountTransactionId(accountTransactionId, merchantCode);
     if (null != pgTransactionId) {
-    	return transactionRepository.findById(new BigInteger(pgTransactionId)).orElse(null);
+    	return transactionRepository.findById(new BigInteger(pgTransactionId));
     }
     return null;
   }
@@ -204,29 +204,28 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
     PGMerchant pgMerchant =
         merchantRepository.findByMerchantCode(pgAccountTransactions.get(0).getMerchantCode());
     String currencyCodeAlpha = pgMerchant.getLocalCurrency();
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tupleList =
         query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant)
-        	.select(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
-        			QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
-        			QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
-        			QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
-        			QPGTransaction.pGTransaction.feeAmount, QPGTransaction.pGTransaction.merchantFeeAmount,
-        			QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
-        			QPGTransaction.pGTransaction.merchantSettlementStatus,
-        			QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.feeAmount,
-        			QPGTransaction.pGTransaction.posEntryMode, QPGTransaction.pGTransaction.acqChannel,
-        			QPGTransaction.pGTransaction.cardHolderName, QPGTransaction.pGTransaction.updatedDate,
-        			QPGTransaction.pGTransaction.authId, QPGTransaction.pGTransaction.invoiceNumber,
-        			QPGTransaction.pGTransaction.acqTxnMode, QPGTransaction.pGTransaction.txnTotalAmount,
-        			QPGTransaction.pGTransaction.processor, QPGTransaction.pGTransaction.txnMode,
-        			QPGTransaction.pGTransaction.refTransactionId, QPGMerchant.pGMerchant.merchantType,
-        			QPGMerchant.pGMerchant.businessName, QPGTransaction.pGTransaction.deviceLocalTxnTime,
-        			QPGTransaction.pGTransaction.timeZoneOffset,QPGTransaction.pGTransaction.batchId)
             .where(QPGTransaction.pGTransaction.id.eq(new BigInteger(pgTransactionId))
                 .and(QPGTransaction.pGTransaction.merchantId
                     .eq(QPGMerchant.pGMerchant.merchantCode)))
-        .fetch();
+        .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
+            QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
+            QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
+            QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
+            QPGTransaction.pGTransaction.feeAmount, QPGTransaction.pGTransaction.merchantFeeAmount,
+            QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
+            QPGTransaction.pGTransaction.merchantSettlementStatus,
+            QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.feeAmount,
+            QPGTransaction.pGTransaction.posEntryMode, QPGTransaction.pGTransaction.acqChannel,
+            QPGTransaction.pGTransaction.cardHolderName, QPGTransaction.pGTransaction.updatedDate,
+            QPGTransaction.pGTransaction.authId, QPGTransaction.pGTransaction.invoiceNumber,
+            QPGTransaction.pGTransaction.acqTxnMode, QPGTransaction.pGTransaction.txnTotalAmount,
+            QPGTransaction.pGTransaction.processor, QPGTransaction.pGTransaction.txnMode,
+            QPGTransaction.pGTransaction.refTransactionId, QPGMerchant.pGMerchant.merchantType,
+            QPGMerchant.pGMerchant.businessName, QPGTransaction.pGTransaction.deviceLocalTxnTime,
+            QPGTransaction.pGTransaction.timeZoneOffset,QPGTransaction.pGTransaction.batchId);
     if (!CollectionUtils.isEmpty(tupleList)) {
       Tuple tuple = tupleList.get(0);
       txnDto = new TransactionPopUpDataDto();
@@ -360,33 +359,10 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
               PGConstants.DD_MM_YYYY);
         }
 
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query
           .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
               QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
-          .select(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
-        		  QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
-        		  QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
-        		  QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
-        		  QPGTransaction.pGTransaction.feeAmount,
-        		  QPGTransaction.pGTransaction.merchantFeeAmount,
-        		  QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
-        		  QPGTransaction.pGTransaction.merchantSettlementStatus,
-        		  QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.feeAmount,
-        		  QPGTransaction.pGTransaction.posEntryMode, QPGTransaction.pGTransaction.acqChannel,
-        		  QPGTransaction.pGTransaction.cardHolderName, QPGTransaction.pGTransaction.updatedDate,
-        		  QPGTransaction.pGTransaction.authId, QPGTransaction.pGTransaction.invoiceNumber,
-        		  QPGTransaction.pGTransaction.acqTxnMode, QPGTransaction.pGTransaction.txnTotalAmount,
-        		  QPGTransaction.pGTransaction.processor, QPGTransaction.pGTransaction.txnMode,
-        		  QPGTransaction.pGTransaction.refTransactionId, QPGAccount.pGAccount.entityId,
-        		  QPGAccount.pGAccount.entityType, QPGAccount.pGAccount.accountNum,
-        		  QPGMerchant.pGMerchant.firstName, QPGMerchant.pGMerchant.businessName,
-        		  QPGMerchant.pGMerchant.merchantType,
-        		  QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
-        		  QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
-        		  QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.userName,
-        		  QPGTransaction.pGTransaction.deviceLocalTxnTime,
-        		  QPGTransaction.pGTransaction.timeZoneOffset)
           .where(isMerchantIdorParentMerchantId(merchantList),
               isTxnId(getTransactionsListRequest.getTransactionId()),
               isProcessTxnId(getTransactionsListRequest.getProcessCode()),
@@ -407,7 +383,29 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
               isValidDate(startDate, endDate),
               toGetCurrentDayTxns(getTransactionsListRequest.isToGetCurrentDayTxns()))
           .offset(offset).limit(limit).distinct().orderBy(orderByCreatedDateDesc())
-          .fetch();
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
+              QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
+              QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
+              QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
+              QPGTransaction.pGTransaction.feeAmount,
+              QPGTransaction.pGTransaction.merchantFeeAmount,
+              QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
+              QPGTransaction.pGTransaction.merchantSettlementStatus,
+              QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.feeAmount,
+              QPGTransaction.pGTransaction.posEntryMode, QPGTransaction.pGTransaction.acqChannel,
+              QPGTransaction.pGTransaction.cardHolderName, QPGTransaction.pGTransaction.updatedDate,
+              QPGTransaction.pGTransaction.authId, QPGTransaction.pGTransaction.invoiceNumber,
+              QPGTransaction.pGTransaction.acqTxnMode, QPGTransaction.pGTransaction.txnTotalAmount,
+              QPGTransaction.pGTransaction.processor, QPGTransaction.pGTransaction.txnMode,
+              QPGTransaction.pGTransaction.refTransactionId, QPGAccount.pGAccount.entityId,
+              QPGAccount.pGAccount.entityType, QPGAccount.pGAccount.accountNum,
+              QPGMerchant.pGMerchant.firstName, QPGMerchant.pGMerchant.businessName,
+              QPGMerchant.pGMerchant.merchantType,
+              QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
+              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
+              QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.userName,
+              QPGTransaction.pGTransaction.deviceLocalTxnTime,
+              QPGTransaction.pGTransaction.timeZoneOffset);
       if (!CollectionUtils.isEmpty(tupleList)) {
         transactions = new ArrayList<>(tupleList.size());
         for (Tuple tuple : tupleList) {
@@ -543,10 +541,9 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
       merchantList = new ArrayList<>();
       merchantList.add(getTransactionsListRequest.getMerchant_code());
     }
-    JPAQuery<BigInteger> query = new JPAQuery<BigInteger>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<BigInteger> list =
         query.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount)
-        	.select(QPGTransaction.pGTransaction.id)
             .where(isMerchantIdorParentMerchantId(merchantList),
                 isTxnId(getTransactionsListRequest.getTransactionId()),
                 isProcessTxnId(getTransactionsListRequest.getProcessCode()),
@@ -562,7 +559,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
             isMerchantNameLike(getTransactionsListRequest.getMerchantName()),
             isValidDate(startDate, endDate),
             toGetCurrentDayTxns(getTransactionsListRequest.isToGetCurrentDayTxns())).distinct()
-        .fetch();
+        .list(QPGTransaction.pGTransaction.id);
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
@@ -581,15 +578,14 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
 
   @Override
   public List<EFTRefTxnData> getEFTRefTxnDataList(String eftId) {
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<EFTRefTxnData> transactionIdList = null;
     EFTRefTxnData eftRefTxnData = null;
     List<Tuple> list = query.from(QPGTransaction.pGTransaction)
-    	.select(QPGTransaction.pGTransaction.transactionId, QPGTransaction.pGTransaction.createdDate,
-            QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.merchantId,
-            QPGTransaction.pGTransaction.txnTotalAmount)
         .where(QPGTransaction.pGTransaction.eftId.eq(eftId)).orderBy(orderByCreatedDateDesc())
-        .fetch();
+        .list(QPGTransaction.pGTransaction.transactionId, QPGTransaction.pGTransaction.createdDate,
+            QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.merchantId,
+            QPGTransaction.pGTransaction.txnTotalAmount);
 
     if (StringUtil.isListNotNullNEmpty(list)) {
       transactionIdList = new ArrayList<>();
@@ -610,11 +606,10 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
 
   @Override
   public List<String> getTransactionIdsOnEftIds(String eftId) {
-    JPAQuery<String> query = new JPAQuery<String>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     return query.from(QPGTransaction.pGTransaction)
-    	.select(QPGTransaction.pGTransaction.transactionId)
         .where(QPGTransaction.pGTransaction.eftId.eq(eftId)).orderBy(orderByCreatedDateDesc())
-        .fetch();
+        .list(QPGTransaction.pGTransaction.transactionId);
   }
 
   @Override

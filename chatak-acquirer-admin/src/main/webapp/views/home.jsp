@@ -229,7 +229,12 @@
 										<div class="col-sm-12">
 											<div class="col-sm-12">
 												<div class="btn-toolbar" role="toolbar">
-															<a href="show-All-incoming-settlement-report"><input type="button" class="form-control button pull-right dashboard-table-btn" value="<spring:message code="home.label.viewall"/>"></a>
+													<c:if test="${processSettlementDataList gt 10}">
+														<a href="show-All-incoming-settlement-report"><input
+															type="button"
+															class="form-control button pull-right dashboard-table-btn"
+															value="<spring:message code="home.label.viewall"/>"></a>
+													</c:if>
 												</div>
 											</div>
 										</div>
@@ -308,7 +313,12 @@
 										<div class="col-sm-12">
 											<div class="col-sm-12">
 												<div class="btn-toolbar" role="toolbar">
-															<a href="show-all-pending-merchants"><input type="button" class="form-control button pull-right dashboard-table-btn" value="<spring:message code="home.label.viewall"/>"></a>
+													<c:if test="${merchantDataList gt 10}">
+														<a href="show-all-pending-merchants"><input
+															type="button"
+															class="form-control button pull-right dashboard-table-btn"
+															value="<spring:message code="home.label.viewall"/>"></a>
+													</c:if>
 												</div>
 											</div>
 										</div>
@@ -404,15 +414,14 @@
 															<spring:message code="manage.label.sub-merchant.downloadall"/>
 														</a>
 													</div>
-													<c:choose>
-														<c:when test="${executedListSize gt 10}">
-															<a href="executed-transaction-details"><input type="button" class="form-control button pull-right" value="<spring:message code="home.label.viewall"/> "></a>
-														</c:when>
-														<c:otherwise>
-															<input type="button" class="form-control button dashboard-table-btn pull-right" value="<spring:message code="home.label.viewall"/> " disabled="disabled">
-														</c:otherwise>
-													</c:choose>
-												</div>
+														<div class="btn-toolbar" role="toolbar">
+															<c:if test="${executedListSize gt 10}">
+																<a href="executed-transaction-details"><input
+																	type="button" class="form-control button pull-right"
+																	value="<spring:message code="home.label.viewall"/> "></a>
+															</c:if>
+														</div>
+													</div>
 											</div>
 										</div>
 									</td>

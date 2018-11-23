@@ -2,12 +2,11 @@ package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.PGMerchant;
@@ -20,9 +19,9 @@ import com.chatak.pg.acq.dao.model.PGMerchantConfig;
  * @date 01-Jan-2015 4:13:38 PM
  * @version 1.0
  */
-public interface MerchantRepository extends JpaRepository<PGMerchant, Long>, QuerydslPredicateExecutor<PGMerchant> {
+public interface MerchantRepository extends JpaRepository<PGMerchant, Long>, QueryDslPredicateExecutor<PGMerchant> {
 
-  public Optional<PGMerchant> findById(Long id);
+  public PGMerchant findById(Long id);
 
   public PGMerchant findByMerchantCode(String merchantCode);
 

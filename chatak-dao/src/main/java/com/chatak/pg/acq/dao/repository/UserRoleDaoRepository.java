@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.UserRole;
 
-public interface UserRoleDaoRepository extends JpaRepository<UserRole,Long>,QuerydslPredicateExecutor<UserRole>{
+public interface UserRoleDaoRepository extends JpaRepository<UserRole,Long>,QueryDslPredicateExecutor<UserRole>{
 	
 	/**
 	 * @param userRoleId

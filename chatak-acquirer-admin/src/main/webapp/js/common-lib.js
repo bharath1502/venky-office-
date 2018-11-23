@@ -244,9 +244,7 @@ function validateToDate(divId, errorMsg) {
 		setDiv(divId, "&nbsp;");
 		return flag;
 	}
-	setDiv(divId, "&nbsp;");
-	return flag;
-}
+	}
 function validateEndDate(divId, errorMsg) {
 
 	var flag = true;
@@ -438,7 +436,6 @@ function validatePopupDesc() {
 		return true;
 	}
 
-	$('#my_popup').popup('hide');
 }
 
 function clearPopupDesc() {
@@ -1126,7 +1123,7 @@ function disableRightClick(data){
 		return true;
 	}else{
 		window.oncontextmenu = function () {
-			alert(webMessages.RIGHT_CLICK_NOT_ALLOWED);
+			showAlertPopup(webMessages.RIGHT_CLICK_NOT_ALLOWED);
 			return false;
 	 };
 	}

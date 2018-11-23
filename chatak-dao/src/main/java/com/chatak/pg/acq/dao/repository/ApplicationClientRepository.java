@@ -1,11 +1,10 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
@@ -20,7 +19,7 @@ import com.chatak.pg.acq.dao.model.PGApplicationClient;
  */
 public interface ApplicationClientRepository extends
                                             JpaRepository<PGApplicationClient, Long>,
-                                            QuerydslPredicateExecutor<PGApplicationClient> {
+                                            QueryDslPredicateExecutor<PGApplicationClient> {
 
   /**
    * DAO method to find Application Client on Primary Key
@@ -28,7 +27,7 @@ public interface ApplicationClientRepository extends
    * @param id
    * @return
    */
-  public Optional<PGApplicationClient> findById(Long id);
+  public List<PGApplicationClient> findById(Long id);
 
   /**
    * DAO method to find Application Client on Client ID and Client Access

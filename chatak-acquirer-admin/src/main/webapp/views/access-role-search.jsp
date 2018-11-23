@@ -166,7 +166,7 @@
 														</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="roles.label.rolename"/></label>
-													<form:input path="roleName" id="roleName" cssClass="form-control" onblur="clientValidation('roleName','firstlast_name_notmend','roleNameError')"/>
+													<form:input path="roleName" id="roleName" cssClass="form-control" onblur="clientValidation('roleName','firstlast_name_not_mandatory','roleNameError')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="roleNameError" class="red-error">&nbsp;</span>
 													</div>

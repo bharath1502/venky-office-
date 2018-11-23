@@ -1,7 +1,6 @@
 package com.chatak.acquirer.admin.util;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +11,6 @@ import java.util.TimeZone;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.session.SessionInformation;
 
-import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
@@ -303,7 +301,7 @@ public class DateUtils {
 		Timestamp timestamp = getSqlDateFromDateStr(endDate);
 		Timestamp timestampval = getSqlDateFromDateStr(startDate);
 		if((endingYear == 0) || (timestamp != null && timestamp.before(currentDate)) || (timestampval != null && !timestampval.before(getSqlDateFromDateStr(formatTranDate(endDate))))) {
-			validFlag = false;
+			return validFlag;
 		}
 		return validFlag;
 	}
@@ -532,13 +530,6 @@ public class DateUtils {
 	    return convertedTime;
 	  }
 
-	public static String getFormatLastLoginTime(LoginDetails loginDetails) throws ParseException {
-		Date today = new Date();
-		DateFormat df = new SimpleDateFormat(Constants.TIMEZONE_DATE_FORMAT);
-		df.setTimeZone(TimeZone.getTimeZone(loginDetails.getTimeZoneRegion()));
-		return df.format(today);
-	  }
-	
 	public static String convertSchedulerTimeToSystemTime(String schedulerDate, String serverOffSet) {
 	    String format = "HH:mm:ss";
 	    Date date=null;

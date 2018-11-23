@@ -262,7 +262,7 @@
 															code="common.label.primarycontactname" /><span
 														class="required-field">*</span></label>
 													<form:input path="contactPersonName" id="contactName"
-														cssClass="form-control" onkeypress="return numbersonly(this,event)"
+														cssClass="form-control"
 														onblur="this.value=this.value.trim();validContactPersonName()"
 														maxlength="<%=Constants.CONTACT_PERSON_NAME.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
@@ -274,21 +274,21 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.contactmobilenumber" /></label>
 													<form:input path="contactPersonCell" id="bankMobile"
-														cssClass="form-control" onkeypress="return numbersonly(this,event)" onblur="this.value=this.value.trim();validContactPersonCell()"
+														cssClass="form-control" onblur="this.value=this.value.trim();validContactPersonCell()"
 														maxlength="<%=Constants.PHONE.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
 														<span class="red-error" id="bankMobileEr">&nbsp;</span>
 													</div>
 												</fieldset>
-												<fieldset class="col-md-3">
+												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.contactphonenumber" /><span
 														class="required-field">*</span></label>
-													<form:input path="contactPersonPhone" maxlength="<%=Constants.PHONE.toString()%>"
-														cssClass="form-control" id="bankPhone"
-														onkeypress="return numbersonly(this,event)"
-														onblur="this.value=this.value.trim();validContactPersonPhone()" />
+													<form:input path="contactPersonPhone" id="bankPhone"
+														cssClass="form-control"
+														onblur="this.value=this.value.trim();validContactPersonPhone()"
+														maxlength="<%=Constants.PHONE.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
 														<span class="red-error" id="bankPhoneEr">&nbsp;</span>

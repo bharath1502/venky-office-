@@ -32,14 +32,6 @@ public class IssuanceSettlementTransactions {
   
   private String txnType;
   
-  public String getTxnType() {
-    return txnType;
-  }
-
-  public void setTxnType(String txnType) {
-    this.txnType = txnType;
-  }
-
   public String getTerminalId() {
     return terminalId;
   }
@@ -94,6 +86,14 @@ public class IssuanceSettlementTransactions {
 
   public void setIssuanceSettlementEntityId(BigInteger issuanceSettlementEntityId) {
     this.issuanceSettlementEntityId = issuanceSettlementEntityId;
+  }
+
+  public String getTxnType() {
+    return txnType;
+  }
+
+  public void setTxnType(String txnType) {
+    this.txnType = txnType;
   }
   
 }

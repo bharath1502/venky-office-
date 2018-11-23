@@ -1,11 +1,10 @@
 package com.chatak.pg.acq.dao.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.PGAccount;
@@ -20,7 +19,7 @@ import com.chatak.pg.acq.dao.model.PGAccount;
  *
  */
 public interface AccountRepository extends JpaRepository<PGAccount, Long>,
-                                      QuerydslPredicateExecutor<PGAccount> {
+                                      QueryDslPredicateExecutor<PGAccount> {
   
   
   
@@ -40,7 +39,7 @@ public interface AccountRepository extends JpaRepository<PGAccount, Long>,
   @Query("select t from PGAccount t where t.autoTransferDay LIKE :autoTransferDay% and t.availableBalance >0L ")
   public List<PGAccount> findByPayoutFrequency(@Param("autoTransferDay")  String payoutFrequency);
 
-  public Optional<PGAccount> findById(Long accountId);
+  public PGAccount findById(Long accountId);
 
   public PGAccount findByEntityIdAndCategory(String merchantCode, String primaryAccount);
   

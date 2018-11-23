@@ -16,8 +16,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+<link href="../css/jquery-datepicker.css" rel="stylesheet">
 </head>
 <body>
 <!--Body Wrapper block Start -->
@@ -78,11 +77,14 @@
 						
 						<form:form action="processIsoRevenueReport" modelAttribute="feeReportRequest" method="post">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
-												<c:if test="${feeReportRequest.getEntityType() eq 'ISO' || feeReportRequest.getEntityType() eq 'Program Manager'}">
+												<c:if test="${feeReportRequest.getEntityType() eq 'Program Manager'}">
 												<fieldset class="col-md-3 col-sm-6">
-												<td><fmt:formatNumber value="${transaction.pmAmount/100}"/></td>
+												<%-- <td><fmt:formatNumber value="${transaction.pmAmount/100}"/></td> --%>
 													<label><spring:message code="fee-report.label.pm.name" /></label>
-													<form:input id="programManagerId" cssClass="form-control" path="programManagerName" readonly="true" />
+													<form:select id="programManagerId" path="programManagerId" onclick="validatePM()" onchange="getIso(this.value)"
+														cssClass="form-control" >
+														<form:option value="${programManagersList.id}" >${programManagersList.programManagerName}</form:option>
+													</form:select>
 													<div class="discriptionErrorMsg">
 														<span class="red-error">&nbsp;</span>
 													</div>
@@ -135,9 +137,9 @@
 												</c:if>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.manualtransactions.selectdaterange.fromdate" /><span class="required-field">*</span></label>
-													<div class="input-group focus-field">
+													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="fromDate" id="transFromDate" onblur="return clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')"
-															cssClass="form-control effectiveDate" />
+															cssClass="form-control effectiveDate jquery-datepicker__input" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -148,8 +150,8 @@
 												
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.manualtransactions.selectdaterange.todate" /><span class="required-field">*</span></label>
-													<div class="input-group focus-field">
-														<form:input path="toDate" cssClass="form-control effectiveDate" id="transToDate"
+													<div class="input-group focus-field jquery-datepicker">
+														<form:input path="toDate" cssClass="form-control effectiveDate jquery-datepicker__input" id="transToDate"
 														onblur="return clientValidation('transToDate', 'endDate','transToDateErrorDiv');" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
@@ -309,7 +311,7 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/utils.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	 <script src="../js/jquery-datepicker.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -321,15 +323,17 @@
 	$(document).ready(function() {
 		$("#navListId4").addClass("active-background");
 		$(".focus-field").click(function() {
-			$(this).children('.effectiveDate').focus();
+			 $(this).children('.effectiveDate').focus();
+			 $('.jquery-datepicker').datepicker();
 		});
-
-		$('.effectiveDate').datetimepicker({
+		/* rome(transFromDate, { time: false });
+		rome(transToDate, { time: false }); */
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'd/m/Y',
 			maxDate:new Date()
-		});
+		}); */
 		
 		 if ("${transactionDiv}" == "true"){
 			 $('#checkb').show();
@@ -378,7 +382,6 @@
 		setDiv('errorDiv','');
 		if(!clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
 				| !clientValidation('transToDate', 'endDate','transToDateErrorDiv') 
-				| !validatePM()
 				| !validateISO()){
 			return false;
 		}

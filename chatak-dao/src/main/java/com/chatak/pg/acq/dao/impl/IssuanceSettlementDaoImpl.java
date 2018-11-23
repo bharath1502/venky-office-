@@ -27,9 +27,9 @@ import com.chatak.pg.bean.settlement.IssuanceSettlementTransactionEntity;
 import com.chatak.pg.bean.settlement.IssuanceSettlementTransactions;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.exception.PrepaidAdminException;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -58,7 +58,7 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
 		// Save all individual transactions into IssuanceSettlementTransactions
 		
 		//Commented for Batch Inserts
-		/*issuanceSettlementEntityRepository.save(entity);*/
+		/*issuanceSettlementEntityRepository.save(entity)*/
 		
 		//JPA batch processing start
 		entityManager.setFlushMode(FlushModeType.COMMIT);
@@ -93,10 +93,11 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
 		logger.info("Entering :: IssuanceSettlementDaoImpl :: getAllMatchedTransactions");
 		List<IssuanceSettlementTransactionEntity> settlementEntityList = new ArrayList<>();
         
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
         List<Tuple> tupleList = query
                 .from(QPGSettlementEntity.pGSettlementEntity)
-                .select(QPGSettlementEntity.pGSettlementEntity.id,QPGSettlementEntity.pGSettlementEntity.merchantId,
+				.where(isProgramManagerIdEq(pmId), QPGSettlementEntity.pGSettlementEntity.batchid.isNotNull())
+                .list(QPGSettlementEntity.pGSettlementEntity.id,QPGSettlementEntity.pGSettlementEntity.merchantId,
                         QPGSettlementEntity.pGSettlementEntity.acqSaleAmount,
                         QPGSettlementEntity.pGSettlementEntity.issSaleAmount,
                         QPGSettlementEntity.pGSettlementEntity.acqPmId, QPGSettlementEntity.pGSettlementEntity.issPmId,
@@ -104,9 +105,7 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
                         QPGSettlementEntity.pGSettlementEntity.batchFileDate,
                         QPGSettlementEntity.pGSettlementEntity.batchFileProcessedDate,
                         QPGSettlementEntity.pGSettlementEntity.status, QPGSettlementEntity.pGSettlementEntity.pmAmount,
-                        QPGSettlementEntity.pGSettlementEntity.merchantAmount)
-				.where(isProgramManagerIdEq(pmId), QPGSettlementEntity.pGSettlementEntity.batchid.isNotNull())
-                .fetch();
+                        QPGSettlementEntity.pGSettlementEntity.merchantAmount);
 		
 		
         logger.info("PGSettlementEntity size : " + tupleList.size());

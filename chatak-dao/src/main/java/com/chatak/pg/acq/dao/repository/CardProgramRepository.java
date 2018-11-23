@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.CardProgram;
@@ -20,7 +20,7 @@ import com.chatak.pg.acq.dao.model.CardProgram;
  * @Comments: 
  *
  */
-public interface CardProgramRepository extends JpaRepository<CardProgram, Long>,QuerydslPredicateExecutor<CardProgram> {
+public interface CardProgramRepository extends JpaRepository<CardProgram, Long>,QueryDslPredicateExecutor<CardProgram> {
 
 	public CardProgram findByCardProgramId(Long cardProgramId);
 	public CardProgram findByIssuanceCradProgramId(Long issuanceCardProgramId);	

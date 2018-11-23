@@ -2,18 +2,17 @@ package com.chatak.pg.acq.dao.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import com.chatak.pg.acq.dao.model.ProgramManager;
 
 public interface ProgramManagerRepository
-    extends JpaRepository<ProgramManager, Long>, QuerydslPredicateExecutor<ProgramManager> {
+    extends JpaRepository<ProgramManager, Long>, QueryDslPredicateExecutor<ProgramManager> {
 
   @Modifying
   @Query("UPDATE ProgramManager pm" + " SET pm.status = :status," + " pm.reason = :reason,"
@@ -29,7 +28,7 @@ public interface ProgramManagerRepository
       @Param("defaultProgramManager") Boolean defaultProgramManager,
       @Param("defaultValue") Boolean defaultValue);
 
-  public Optional<ProgramManager> findById(Long id);
+  public ProgramManager findById(Long id);
   
   public List<ProgramManager> findByAccountCurrencyAndStatusLike(String currencyId, String status);
   
@@ -39,4 +38,7 @@ public interface ProgramManagerRepository
   
   @Query("select pm from ProgramManager pm where pm.pmSystemConvertedTime like %:pmSystemConvertedTime%")
   public List<ProgramManager> findByBatchTime(@Param("pmSystemConvertedTime")String pmSystemConvertedTime);
+  
+//  @Query("select batchPrefix from ProgramManager pm where pm.id = :id")
+//  public String findBatchPrefixByProgramManagerId(@Param("id")Long id);
 }

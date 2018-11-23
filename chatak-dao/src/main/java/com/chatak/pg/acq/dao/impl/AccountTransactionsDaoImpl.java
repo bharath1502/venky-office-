@@ -39,10 +39,10 @@ import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.RandomGenerator;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -100,7 +100,7 @@ public class AccountTransactionsDaoImpl implements AccountTransactionsDao {
  */
 @Override
   public List<PGAccountTransactions> createOrUpdate(PGAccountTransactions... pgAccountTransactions) {
-    return accountTransactionsRepository.saveAll(Arrays.asList(pgAccountTransactions));
+    return accountTransactionsRepository.save(Arrays.asList(pgAccountTransactions));
   }
 
   /**
@@ -195,12 +195,23 @@ public class AccountTransactionsDaoImpl implements AccountTransactionsDao {
         limit = getTransactionsListRequest.getPageSize();
       }
       List<Tuple> tupleList = null;
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
           && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
           && getTransactionsListRequest.getAcqChannel() == "web") {
         tupleList = query.from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
-        	 .select(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+            .where(
+                QPGAccountTransactions.pGAccountTransactions.merchantCode
+                    .eq(QPGAccount.pGAccount.entityId),
+                QPGAccountTransactions.pGAccountTransactions.transactionCode
+                    .in(getTransactionsListRequest.getTransactionCodeList())
+                    .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+                        AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
+                isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+                isMerchantCode(getTransactionsListRequest.getMerchant_code()),
+                isDateLike(fromDate, toDate))
+            .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
+            .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
                 QPGAccountTransactions.pGAccountTransactions.processedTime,
                 QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
                 QPGAccountTransactions.pGAccountTransactions.transactionType,
@@ -215,38 +226,11 @@ public class AccountTransactionsDaoImpl implements AccountTransactionsDao {
                 QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
                 QPGAccount.pGAccount.currency,
                 QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
-                QPGAccountTransactions.pGAccountTransactions.timeZoneOffset)
-            .where(
-                QPGAccountTransactions.pGAccountTransactions.merchantCode
-                    .eq(QPGAccount.pGAccount.entityId),
-                QPGAccountTransactions.pGAccountTransactions.transactionCode
-                    .in(getTransactionsListRequest.getTransactionCodeList())
-                    .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
-                        AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
-                isStatusLike(getTransactionsListRequest.getSettlementStatus()),
-                isMerchantCode(getTransactionsListRequest.getMerchant_code()),
-                isDateLike(fromDate, toDate))
-            .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
-            .fetch();
+                QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
       } else {
         tupleList = query
             .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount,
                 QPGTransaction.pGTransaction)
-            .select(QPGAccountTransactions.pGAccountTransactions.transactionTime,
-                QPGAccountTransactions.pGAccountTransactions.processedTime,
-                QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
-                QPGAccountTransactions.pGAccountTransactions.transactionType,
-                QPGAccountTransactions.pGAccountTransactions.description,
-                QPGAccountTransactions.pGAccountTransactions.debit,
-                QPGAccountTransactions.pGAccountTransactions.merchantCode,
-                QPGAccountTransactions.pGAccountTransactions.transactionCode,
-                QPGAccountTransactions.pGAccountTransactions.credit,
-                QPGAccountTransactions.pGAccountTransactions.currentBalance,
-                QPGAccountTransactions.pGAccountTransactions.status,
-                QPGAccountTransactions.pGAccountTransactions.id,
-                QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
-                QPGAccount.pGAccount.currency,QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
-                QPGAccountTransactions.pGAccountTransactions.timeZoneOffset)
             .where(
                 QPGAccountTransactions.pGAccountTransactions.merchantCode
                     .eq(QPGAccount.pGAccount.entityId)
@@ -265,7 +249,21 @@ public class AccountTransactionsDaoImpl implements AccountTransactionsDao {
                 isValidDate(fromDate, toDate),
                 isMerchantCode(getTransactionsListRequest.getMerchant_code()))
             .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
-            .fetch();
+            .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+                QPGAccountTransactions.pGAccountTransactions.processedTime,
+                QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
+                QPGAccountTransactions.pGAccountTransactions.transactionType,
+                QPGAccountTransactions.pGAccountTransactions.description,
+                QPGAccountTransactions.pGAccountTransactions.debit,
+                QPGAccountTransactions.pGAccountTransactions.merchantCode,
+                QPGAccountTransactions.pGAccountTransactions.transactionCode,
+                QPGAccountTransactions.pGAccountTransactions.credit,
+                QPGAccountTransactions.pGAccountTransactions.currentBalance,
+                QPGAccountTransactions.pGAccountTransactions.status,
+                QPGAccountTransactions.pGAccountTransactions.id,
+                QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
+                QPGAccount.pGAccount.currency,QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
+                QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
       }
       if (!CollectionUtils.isEmpty(tupleList)) {
         getTransactionsListResponse = validateListAndSetAccountTransactionDTO(totalRecords, tupleList);
@@ -370,10 +368,9 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
       if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
           && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
           && getTransactionsListRequest.getAcqChannel() == "web") {
-        JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+        JPAQuery query = new JPAQuery(entityManager);
         List<Long> list = query.from(QPGAccountTransactions.pGAccountTransactions,QPGAccount.pGAccount)
-        		.select(QPGAccountTransactions.pGAccountTransactions.id)
-        		.where(
+            .where(
                 QPGAccountTransactions.pGAccountTransactions.merchantCode.eq(QPGAccount.pGAccount.entityId),
                 QPGAccountTransactions.pGAccountTransactions.transactionCode
                     .in(getTransactionsListRequest.getTransactionCodeList())
@@ -382,15 +379,14 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
             isStatusLike(getTransactionsListRequest.getSettlementStatus()),
             isMerchantCode(getTransactionsListRequest.getMerchant_code()))
             .orderBy(orderByCreatedDateDescVirtualAcc())
-            .fetch();
+            .list(QPGAccountTransactions.pGAccountTransactions.id);
         log.info("Exiting ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearch ");
         return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
       } else {
-        JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+        JPAQuery query = new JPAQuery(entityManager);
         List<Long> list = query
             .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount,
                 QPGTransaction.pGTransaction)
-            .select(QPGAccountTransactions.pGAccountTransactions.id)
             .where(
                 QPGAccountTransactions.pGAccountTransactions.merchantCode
                     .eq(QPGAccount.pGAccount.entityId)
@@ -408,7 +404,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
                 isStatusLike(getTransactionsListRequest.getSettlementStatus()),
                 isMerchantCode(getTransactionsListRequest.getMerchant_code()))
             .orderBy(orderByCreatedDateDescVirtualAcc())
-            .fetch();
+            .list(QPGAccountTransactions.pGAccountTransactions.id);
         log.info("Exiting ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearch ");
         return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
       }
@@ -481,24 +477,8 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
     GetTransactionsListResponse getTransactionsListResponse = null;
     List<AccountTransactionDTO> accountTransactionDTOs = null;
     try {
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query.from(QPGAccountTransactions.pGAccountTransactions)
-    	  .select(QPGAccountTransactions.pGAccountTransactions.transactionTime,
-                  QPGAccountTransactions.pGAccountTransactions.processedTime,
-                  QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
-                  QPGAccountTransactions.pGAccountTransactions.transactionType,
-                  QPGAccountTransactions.pGAccountTransactions.description,
-                  QPGAccountTransactions.pGAccountTransactions.debit,
-                  QPGAccountTransactions.pGAccountTransactions.merchantCode,
-                  QPGAccountTransactions.pGAccountTransactions.transactionCode,
-                  QPGAccountTransactions.pGAccountTransactions.credit,
-                  QPGAccountTransactions.pGAccountTransactions.currentBalance,
-                  QPGAccountTransactions.pGAccountTransactions.status,
-                  QPGAccountTransactions.pGAccountTransactions.id,
-                  QPGAccountTransactions.pGAccountTransactions.createdDate,
-                  QPGAccountTransactions.pGAccountTransactions.updatedTime,
-                  QPGAccountTransactions.pGAccountTransactions.accountNumber,
-                  QPGAccountTransactions.pGAccountTransactions.pgTransactionId)
           .where(
               QPGAccountTransactions.pGAccountTransactions.transactionCode
                   .in(getTransactionsListRequest.getTransactionCodeList()),
@@ -507,7 +487,22 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
           .offset(offset).limit(limit)
           .orderBy(orderByVirtualAccDate(getTransactionsListRequest.getSettlementStatus()),
               QPGAccountTransactions.pGAccountTransactions.id.desc())
-          .fetch();
+          .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+              QPGAccountTransactions.pGAccountTransactions.processedTime,
+              QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
+              QPGAccountTransactions.pGAccountTransactions.transactionType,
+              QPGAccountTransactions.pGAccountTransactions.description,
+              QPGAccountTransactions.pGAccountTransactions.debit,
+              QPGAccountTransactions.pGAccountTransactions.merchantCode,
+              QPGAccountTransactions.pGAccountTransactions.transactionCode,
+              QPGAccountTransactions.pGAccountTransactions.credit,
+              QPGAccountTransactions.pGAccountTransactions.currentBalance,
+              QPGAccountTransactions.pGAccountTransactions.status,
+              QPGAccountTransactions.pGAccountTransactions.id,
+              QPGAccountTransactions.pGAccountTransactions.createdDate,
+              QPGAccountTransactions.pGAccountTransactions.updatedTime,
+              QPGAccountTransactions.pGAccountTransactions.accountNumber,
+              QPGAccountTransactions.pGAccountTransactions.pgTransactionId);
       if (!CollectionUtils.isEmpty(tupleList)) {
         Map<String, String> merchantMap = merchantDao.getAllMerchantMap();
         getTransactionsListResponse = new GetTransactionsListResponse();
@@ -650,10 +645,21 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
         merchantCode = Arrays.asList(merchant);
       }
 
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query
           .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
-          .select(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+          .where(
+              QPGAccountTransactions.pGAccountTransactions.merchantCode
+                  .eq(QPGAccount.pGAccount.entityId),
+              QPGAccountTransactions.pGAccountTransactions.transactionCode
+                  .in(getTransactionsListRequest.getTransactionCodeList())
+                  .and(QPGAccountTransactions.pGAccountTransactions.merchantCode.in(merchantCode))
+                  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+                      AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
+              isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+              isValidDate(fromDate, toDate))
+          .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
+          .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
               QPGAccountTransactions.pGAccountTransactions.processedTime,
               QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
               QPGAccountTransactions.pGAccountTransactions.transactionType,
@@ -668,19 +674,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
               QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
               QPGAccount.pGAccount.currency,
               QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
-              QPGAccountTransactions.pGAccountTransactions.timeZoneOffset)
-          .where(
-              QPGAccountTransactions.pGAccountTransactions.merchantCode
-                  .eq(QPGAccount.pGAccount.entityId),
-              QPGAccountTransactions.pGAccountTransactions.transactionCode
-                  .in(getTransactionsListRequest.getTransactionCodeList())
-                  .and(QPGAccountTransactions.pGAccountTransactions.merchantCode.in(merchantCode))
-                  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
-                      AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
-              isStatusLike(getTransactionsListRequest.getSettlementStatus()),
-              isValidDate(fromDate, toDate))
-          .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
-          .fetch();
+              QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
 
       if (!CollectionUtils.isEmpty(tupleList)) {
         getTransactionsListResponse = validateListAndSetAccountTransactionDTO(totalRecords, tupleList);
@@ -704,10 +698,9 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
           merchantCode = Arrays.asList(merchant);
         }
 
-        JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+        JPAQuery query = new JPAQuery(entityManager);
         List<Long> list =
             query.from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
-            	.select(QPGAccountTransactions.pGAccountTransactions.id)
                 .where(QPGAccountTransactions.pGAccountTransactions.merchantCode
                     .eq(QPGAccount.pGAccount.entityId),
                 QPGAccountTransactions.pGAccountTransactions.transactionCode
@@ -717,7 +710,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
                         AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
                 isStatusLike(getTransactionsListRequest.getSettlementStatus()))
             .orderBy(orderByCreatedDateDescVirtualAcc())
-            .fetch();
+            .list(QPGAccountTransactions.pGAccountTransactions.id);
         log.info("Exiting :: AccountTransactionsDaoImpl :: getTotalNumberOfRecordsOnManulSearch ");
         return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
       }
@@ -786,12 +779,24 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 			  limit = getTransactionsListRequest.getPageSize();
 		  }
 		  List<Tuple> tupleList = null;
-		  JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		  JPAQuery query = new JPAQuery(entityManager);
 		  if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
 				  && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
 				  && getTransactionsListRequest.getAcqChannel() == "web") {
 			  tupleList = query.from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
-					  .select(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+					  .where(
+							  QPGAccountTransactions.pGAccountTransactions.merchantCode
+							  .eq(QPGAccount.pGAccount.entityId),
+							  QPGAccountTransactions.pGAccountTransactions.transactionCode
+							  .in(getTransactionsListRequest.getTransactionCodeList())
+							  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+									  AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
+							  isEntityId(userType, entityId),
+							  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+							  isMerchantCode(getTransactionsListRequest.getMerchant_code()),
+							  isDateLike(fromDate, toDate))
+					  .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
+					  .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
 							  QPGAccountTransactions.pGAccountTransactions.processedTime,
 							  QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
 							  QPGAccountTransactions.pGAccountTransactions.transactionType,
@@ -806,39 +811,11 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 							  QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
 							  QPGAccount.pGAccount.currency,
 							  QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
-							  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset)
-					  .where(
-							  QPGAccountTransactions.pGAccountTransactions.merchantCode
-							  .eq(QPGAccount.pGAccount.entityId),
-							  QPGAccountTransactions.pGAccountTransactions.transactionCode
-							  .in(getTransactionsListRequest.getTransactionCodeList())
-							  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
-									  AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
-							  isEntityId(userType, entityId),
-							  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
-							  isMerchantCode(getTransactionsListRequest.getMerchant_code()),
-							  isDateLike(fromDate, toDate))
-					  .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
-					  .fetch();
+							  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
 		  } else {
 			  tupleList = query
 					  .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount,
 							  QPGTransaction.pGTransaction)
-					  .select(QPGAccountTransactions.pGAccountTransactions.transactionTime,
-							  QPGAccountTransactions.pGAccountTransactions.processedTime,
-							  QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
-							  QPGAccountTransactions.pGAccountTransactions.transactionType,
-							  QPGAccountTransactions.pGAccountTransactions.description,
-							  QPGAccountTransactions.pGAccountTransactions.debit,
-							  QPGAccountTransactions.pGAccountTransactions.merchantCode,
-							  QPGAccountTransactions.pGAccountTransactions.transactionCode,
-							  QPGAccountTransactions.pGAccountTransactions.credit,
-							  QPGAccountTransactions.pGAccountTransactions.currentBalance,
-							  QPGAccountTransactions.pGAccountTransactions.status,
-							  QPGAccountTransactions.pGAccountTransactions.id,
-							  QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
-							  QPGAccount.pGAccount.currency,QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
-							  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset)
 					  .where(
 							  QPGAccountTransactions.pGAccountTransactions.merchantCode
 							  .eq(QPGAccount.pGAccount.entityId)
@@ -858,7 +835,21 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 							  isValidDate(fromDate, toDate),
 							  isMerchantCode(getTransactionsListRequest.getMerchant_code()))
 					  .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
-					  .fetch();
+					  .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+							  QPGAccountTransactions.pGAccountTransactions.processedTime,
+							  QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
+							  QPGAccountTransactions.pGAccountTransactions.transactionType,
+							  QPGAccountTransactions.pGAccountTransactions.description,
+							  QPGAccountTransactions.pGAccountTransactions.debit,
+							  QPGAccountTransactions.pGAccountTransactions.merchantCode,
+							  QPGAccountTransactions.pGAccountTransactions.transactionCode,
+							  QPGAccountTransactions.pGAccountTransactions.credit,
+							  QPGAccountTransactions.pGAccountTransactions.currentBalance,
+							  QPGAccountTransactions.pGAccountTransactions.status,
+							  QPGAccountTransactions.pGAccountTransactions.id,
+							  QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
+							  QPGAccount.pGAccount.currency,QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
+							  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
 		  }
 		  if (!CollectionUtils.isEmpty(tupleList)) {
 			  getTransactionsListResponse = validateListAndSetAccountTransactionDTO(totalRecords, tupleList);
@@ -876,9 +867,8 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 		  if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
 				  && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
 				  && getTransactionsListRequest.getAcqChannel() == "web") {
-			  JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+			  JPAQuery query = new JPAQuery(entityManager);
 			  List<Long> list = query.from(QPGAccountTransactions.pGAccountTransactions,QPGAccount.pGAccount)
-					  .select(QPGAccountTransactions.pGAccountTransactions.id)
 					  .where(
 							  QPGAccountTransactions.pGAccountTransactions.merchantCode.eq(QPGAccount.pGAccount.entityId),
 							  QPGAccountTransactions.pGAccountTransactions.transactionCode
@@ -889,15 +879,14 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 							  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
 							  isMerchantCode(getTransactionsListRequest.getMerchant_code()))
 					  .orderBy(orderByCreatedDateDescVirtualAcc())
-					  .fetch();
+					  .list(QPGAccountTransactions.pGAccountTransactions.id);
 			  log.info("Exiting ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearch ");
 			  return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 		  } else {
-			  JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+			  JPAQuery query = new JPAQuery(entityManager);
 			  List<Long> list = query
 					  .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount,
 							  QPGTransaction.pGTransaction)
-					  .select(QPGAccountTransactions.pGAccountTransactions.id)
 					  .where(
 							  QPGAccountTransactions.pGAccountTransactions.merchantCode
 							  .eq(QPGAccount.pGAccount.entityId)
@@ -916,7 +905,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 							  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
 							  isMerchantCode(getTransactionsListRequest.getMerchant_code()))
 					  .orderBy(orderByCreatedDateDescVirtualAcc())
-					  .fetch();
+					  .list(QPGAccountTransactions.pGAccountTransactions.id);
 			  log.info("Exiting ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearchForEntity ");
 			  return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 		  }
@@ -963,10 +952,22 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 		  merchantCode = Arrays.asList(merchant);
 	  }
 
-	  JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+	  JPAQuery query = new JPAQuery(entityManager);
 	  List<Tuple> tupleList = query
 			  .from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
-			  .select(QPGAccountTransactions.pGAccountTransactions.transactionTime,
+			  .where(
+					  QPGAccountTransactions.pGAccountTransactions.merchantCode
+					  .eq(QPGAccount.pGAccount.entityId),
+					  QPGAccountTransactions.pGAccountTransactions.transactionCode
+					  .in(getTransactionsListRequest.getTransactionCodeList())
+					  .and(QPGAccountTransactions.pGAccountTransactions.merchantCode.in(merchantCode))
+					  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
+							  AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
+					  isEntityId(userType, entityId),
+					  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
+					  isValidDate(fromDate, toDate))
+			  .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
+			  .list(QPGAccountTransactions.pGAccountTransactions.transactionTime,
 					  QPGAccountTransactions.pGAccountTransactions.processedTime,
 					  QPGAccountTransactions.pGAccountTransactions.accountTransactionId,
 					  QPGAccountTransactions.pGAccountTransactions.transactionType,
@@ -981,20 +982,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 					  QPGAccountTransactions.pGAccountTransactions.pgTransactionId,
 					  QPGAccount.pGAccount.currency,
 					  QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime,
-					  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset)
-			  .where(
-					  QPGAccountTransactions.pGAccountTransactions.merchantCode
-					  .eq(QPGAccount.pGAccount.entityId),
-					  QPGAccountTransactions.pGAccountTransactions.transactionCode
-					  .in(getTransactionsListRequest.getTransactionCodeList())
-					  .and(QPGAccountTransactions.pGAccountTransactions.merchantCode.in(merchantCode))
-					  .and(QPGAccountTransactions.pGAccountTransactions.transactionType.in(
-							  AccountTransactionCode.MANUAL_CREDIT, AccountTransactionCode.MANUAL_DEBIT)),
-					  isEntityId(userType, entityId),
-					  isStatusLike(getTransactionsListRequest.getSettlementStatus()),
-					  isValidDate(fromDate, toDate))
-			  .offset(offset).limit(limit).orderBy(orderByCreatedDateDescVirtualAcc())
-			  .fetch();
+					  QPGAccountTransactions.pGAccountTransactions.timeZoneOffset);
 
 	  if (!CollectionUtils.isEmpty(tupleList)) {
 		  getTransactionsListResponse = validateListAndSetAccountTransactionDTO(totalRecords, tupleList);
@@ -1015,10 +1003,9 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 			  merchantCode = Arrays.asList(merchant);
 		  }
 
-		  JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+		  JPAQuery query = new JPAQuery(entityManager);
 		  List<Long> list =
 				  query.from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
-				  .select(QPGAccountTransactions.pGAccountTransactions.id)
 				  .where(QPGAccountTransactions.pGAccountTransactions.merchantCode
 						  .eq(QPGAccount.pGAccount.entityId),
 						  QPGAccountTransactions.pGAccountTransactions.transactionCode
@@ -1029,7 +1016,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 						  isEntityId(userType, entityId),
 						  isStatusLike(getTransactionsListRequest.getSettlementStatus()))
 				  .orderBy(orderByCreatedDateDescVirtualAcc())
-				  .fetch();
+				  .list(QPGAccountTransactions.pGAccountTransactions.id);
 		  log.info("Exiting :: AccountTransactionsDaoImpl :: getTotalNumberOfRecordsOnManulSearchForEntityId ");
 		  return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	  }

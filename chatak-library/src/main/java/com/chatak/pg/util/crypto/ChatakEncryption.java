@@ -29,6 +29,7 @@ public interface ChatakEncryption {
   String ALG_TYPE_HASH_SHA_256 = "SHA-256";
   String ALG_TYPE_AES = "AES";
   String ALG_CBC_PAD_AES = "AES/CBC/PKCS5Padding";
+  String ALG_GCM_NOPADDING = "AES/GCM/NoPadding";
   String ALG_PROVIDER_BC = "SunJCE";
   String KEYSTORE_TYPE = "JCEKS";
   String HMAC_SHA = "PBKDF2WithHmacSHA1";

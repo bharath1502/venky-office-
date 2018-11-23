@@ -72,8 +72,8 @@
 													<!--Success and Failure Message Start-->
 													<div class="col-xs-12">
 														<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error">${error}</span> <span
-																class="green-error">${sucess}</span>
+															<span class="red-error"  id="errorDiv" >${error}</span> <span
+																class="green-error" id="sucessDiv" >${sucess}</span>
 														</div>
 													</div>
 
@@ -446,7 +446,7 @@
 									<!--Panel Action Button End -->
 									<div class="col-sm-12 button-content" id="myEdit">
 										<fieldset class="col-sm-7 pull-right">
-											<input type="button" value='<spring:message code="common.label.edit"/>'
+											<input type="button" value='<spring:message code="common.label.edit"/>' onclick="clearMsg()" 
 												class="form-control button pull-right pos-next">
 											<input type="button" class="form-control button pull-right"
 												value='<spring:message code="common.label.back"/>' onclick="return backTodashBoard();">

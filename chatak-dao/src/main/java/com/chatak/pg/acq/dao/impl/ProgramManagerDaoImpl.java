@@ -49,10 +49,10 @@ import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 @Repository
@@ -147,7 +147,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 
   @Override
   public ProgramManagerAccount findByAccountId(Long accountId) {
-    return programManagerAccountRepository.findById(accountId).orElse(null);
+    return programManagerAccountRepository.findById(accountId);
   }
 
   @Override
@@ -160,13 +160,13 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 
   @Override
   public List<ProgramManager> findByProgramManagerName(String programManagerName) {
-    JPAQuery<ProgramManager> query = new JPAQuery<ProgramManager>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<ProgramManager> list =
         query
-            .from(QProgramManager.programManager).select(QProgramManager.programManager)
+            .from(QProgramManager.programManager)
             .where(
                 QProgramManager.programManager.programManagerName.toLowerCase().equalsIgnoreCase(
-                    programManagerName.toLowerCase())).fetch();
+                    programManagerName.toLowerCase())).list(QProgramManager.programManager);
     return (StringUtil.isListNotNullNEmpty(list) ? list : null);
   }
 
@@ -177,24 +177,24 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
     List<ProgramManager> programManagers = null;
     
    if(programManagerRequest.getLoginuserType().equals(Constants.ADMIN_USER_TYPE)){ 
-    JPAQuery<ProgramManager> query = new JPAQuery<ProgramManager>(entityManager);
-    programManagers = query.from(QProgramManager.programManager).select(QProgramManager.programManager)
+    JPAQuery query = new JPAQuery(entityManager);
+    programManagers = query.from(QProgramManager.programManager)
         .where(isProgramManagerStatuses(programManagerRequest.getStatuses()),
             isDefaultProgramManager(programManagerRequest.getDefaultProgramManager()),
             nonSystemProgramManager(), isProgramManagerId(programManagerRequest.getId()),
             isprogramManagerIdIn(programManagerRequest.getProgramManagerIds()))
         .orderBy(QProgramManager.programManager.programManagerName.asc())
-        .fetch();
+        .list(QProgramManager.programManager);
   } else if(programManagerRequest.getLoginuserType().equals(Constants.PM_USER_TYPE)) {
-    JPAQuery<ProgramManager> query = new JPAQuery<ProgramManager>(entityManager);
-    programManagers = query.from(QProgramManager.programManager).select(QProgramManager.programManager)
+    JPAQuery query = new JPAQuery(entityManager);
+    programManagers = query.from(QProgramManager.programManager)
         .where(QProgramManager.programManager.id.eq(programManagerRequest.getEntityId()),
             isProgramManagerStatuses(programManagerRequest.getStatuses()),
             isDefaultProgramManager(programManagerRequest.getDefaultProgramManager()),
             nonSystemProgramManager(), isProgramManagerId(programManagerRequest.getId()),
             isprogramManagerIdIn(programManagerRequest.getProgramManagerIds()))
         .orderBy(QProgramManager.programManager.programManagerName.asc())
-        .fetch();
+        .list(QProgramManager.programManager);
   }
     if (StringUtil.isListNotNullNEmpty(programManagers)) {
       try {
@@ -225,7 +225,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
     ProgramManagerRequest programManagerRequest2 = null;
     try {
       ProgramManager programManager =
-          programManagerRepository.findById(programManagerRequest.getId()).orElse(null);
+          programManagerRepository.findOne(programManagerRequest.getId());
       if (StringUtil.isNull(programManager)) {
         return programManagerRequest2;
       }
@@ -255,12 +255,11 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
       }
 
       
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> pmBanks = query.from(QPGBank.pGBank,QBankProgramManagerMap.bankProgramManagerMap)
-    	  .select(QPGBank.pGBank.id,QPGBank.pGBank.bankName)
           .where(QBankProgramManagerMap.bankProgramManagerMap.programManagerId.eq(programManagerRequest.getId())
         		  .and(QBankProgramManagerMap.bankProgramManagerMap.bankId.eq(QPGBank.pGBank.id)))
-          .fetch();
+          .list(QPGBank.pGBank.id,QPGBank.pGBank.bankName);
       
       List<BankRequest> bankRequest = new ArrayList<>(0);
       BankRequest bank;
@@ -278,10 +277,9 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
       
       query = new JPAQuery(entityManager);
       List<Tuple> pmCardProgram = query.from(QPmCardProgamMapping.pmCardProgamMapping,QCardProgram.cardProgram)
-    	  .select(QCardProgram.cardProgram.cardProgramId,QCardProgram.cardProgram.cardProgramName)
           .where(QPmCardProgamMapping.pmCardProgamMapping.programManagerId.eq(programManagerRequest.getId())
         		  .and(QPmCardProgamMapping.pmCardProgamMapping.cardProgramId.eq(QCardProgram.cardProgram.cardProgramId)))
-          .fetch();
+          .list(QCardProgram.cardProgram.cardProgramId,QCardProgram.cardProgram.cardProgramName);
       
       List<CardProgramMappingRequest> cardProgramMappingRequest = new ArrayList<>(0);
       CardProgramMappingRequest cardProgramMapping;
@@ -310,14 +308,14 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 
   @Override
   public ProgramManager searchSystemProgramManager(ProgramManagerRequest programManagerRequest) {
-    JPAQuery<ProgramManager> query = new JPAQuery<ProgramManager>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<ProgramManager> programManagersList =
         query
-            .from(QProgramManager.programManager).select(QProgramManager.programManager)
+            .from(QProgramManager.programManager)
             .where(
                 QProgramManager.programManager.programManagerName
                     .equalsIgnoreCase(Constants.SYSTEM_PROGRAM_MANAGER))
-            .fetch();
+            .list(QProgramManager.programManager);
     return programManagersList.get(0);
   }
 
@@ -343,14 +341,10 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
       limit = programManagerRequest.getPageSize();
     }
 
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tupleList = query
         .from(QProgramManager.programManager, QBankProgramManagerMap.bankProgramManagerMap,
             QPGBank.pGBank)
-        .select(QProgramManager.programManager.id, QProgramManager.programManager.programManagerName,
-            QProgramManager.programManager.defaultProgramManager,
-            QProgramManager.programManager.companyName, QProgramManager.programManager.businessName,
-            QProgramManager.programManager.status, QProgramManager.programManager.accountCurrency)
         .where(isCompanyNameLike(programManagerRequest.getCompanyName()),
             isProgramManagerNameLike(programManagerRequest.getProgramManagerName()),
             isProgramManagerId(programManagerRequest.getId()),
@@ -361,7 +355,10 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
                 .eq(QBankProgramManagerMap.bankProgramManagerMap.programManagerId),
             QBankProgramManagerMap.bankProgramManagerMap.bankId.eq(QPGBank.pGBank.id))
         .offset(offset).limit(limit).orderBy(orderByIdDesc()).distinct()
-        .fetch();
+        .list(QProgramManager.programManager.id, QProgramManager.programManager.programManagerName,
+            QProgramManager.programManager.defaultProgramManager,
+            QProgramManager.programManager.companyName, QProgramManager.programManager.businessName,
+            QProgramManager.programManager.status, QProgramManager.programManager.accountCurrency);
 
     try {
       ProgramManagerRequest pmRequest = null;
@@ -390,11 +387,10 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   }
 
   private int getTotalNumberOfRecords(ProgramManagerRequest programManagerRequest) {
-    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Long> programManagers = query
         .from(QProgramManager.programManager, QBankProgramManagerMap.bankProgramManagerMap,
             QPGBank.pGBank)
-        .select(QProgramManager.programManager.id)
         .where(isCompanyNameLike(programManagerRequest.getCompanyName()),
             isProgramManagerNameLike(programManagerRequest.getProgramManagerName()),
             isProgramManagerId(programManagerRequest.getId()),
@@ -403,7 +399,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
             QProgramManager.programManager.id
                 .eq(QBankProgramManagerMap.bankProgramManagerMap.programManagerId),
             QBankProgramManagerMap.bankProgramManagerMap.bankId.eq(QPGBank.pGBank.id))
-        .distinct().fetch();
+        .distinct().list(QProgramManager.programManager.id);
 
     return (StringUtil.isListNotNullNEmpty(programManagers) ? programManagers.size() : 0);
   }
@@ -474,18 +470,18 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   @Override
   public List<BankRequest> getAllBanksForProgramManager(ProgramManagerRequest programManagerRequest) {
     List<BankRequest> bankRequests = new ArrayList<>();
-    JPAQuery<PGBank> query = new JPAQuery<PGBank>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<PGBank> banks =
         query
             .from(QProgramManager.programManager, QBankProgramManagerMap.bankProgramManagerMap,
-                QPGBank.pGBank).select(QPGBank.pGBank)
+                QPGBank.pGBank)
             .where(
                 isProgramManagerId(programManagerRequest.getId()),
                 isBankStatuses(programManagerRequest.getStatuses()),
                 QProgramManager.programManager.id
                     .eq(QBankProgramManagerMap.bankProgramManagerMap.programManagerId),
                 QBankProgramManagerMap.bankProgramManagerMap.bankId.eq(QPGBank.pGBank.id))
-            .orderBy(orderByBankNameAsc()).distinct().fetch();
+            .orderBy(orderByBankNameAsc()).distinct().list(QPGBank.pGBank);
 
     if (StringUtil.isListNotNullNEmpty(banks)) {
       for (PGBank bank : banks) {
@@ -504,7 +500,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 
   @Override
   public ProgramManagerAccount getProgramManagerAccountById(Long programManagerAccountId) {
-    return programManagerAccountRepository.findById(programManagerAccountId).orElse(null);
+    return programManagerAccountRepository.findOne(programManagerAccountId);
   }
 
   @Override
@@ -524,17 +520,16 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   @Override
   public List<Long> getProgramManagerAllAccountsByPmId(Long programManagerId) {
 
-    JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Long> programAccounts =
         query
             .from(QProgramManager.programManager, QProgramManagerAccount.programManagerAccount)
-            .select(QProgramManagerAccount.programManagerAccount.accountNumber)
             .where(
                 QProgramManager.programManager.status.eq(Constants.ACTIVE),
                 QProgramManager.programManager.id.eq(programManagerId),
                 QProgramManager.programManager.id
                     .eq(QProgramManagerAccount.programManagerAccount.programManagerId)).distinct()
-            .fetch();
+            .list(QProgramManagerAccount.programManagerAccount.accountNumber);
     return programAccounts;
   }
 
@@ -705,21 +700,20 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   @Override
   public ProgramManagerAccountRequest findBankDetailsByPMId(
       ProgramManagerAccountRequest programManagerAccountRequest) {
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     Map<Long, String> mappedBanks = new HashMap<Long, String>();
     List<Tuple> results =
         query
             .from(QProgramManager.programManager, QBankProgramManagerMap.bankProgramManagerMap,
                 QPGBank.pGBank)
-            .select(QProgramManager.programManager.programManagerName, QPGBank.pGBank.id,
-                QPGBank.pGBank.bankName)
             .where(
                 QProgramManager.programManager.id.eq(programManagerAccountRequest
                     .getProgramManagerId()),
                 QBankProgramManagerMap.bankProgramManagerMap.programManagerId
                     .eq(QProgramManager.programManager.id),
                 QBankProgramManagerMap.bankProgramManagerMap.bankId.eq(QPGBank.pGBank.id))
-            .fetch();
+            .list(QProgramManager.programManager.programManagerName, QPGBank.pGBank.id,
+                QPGBank.pGBank.bankName);
 
     for (Tuple tuple3 : results) {
       mappedBanks.put(tuple3.get(QPGBank.pGBank.id), tuple3.get(QPGBank.pGBank.bankName));
@@ -730,17 +724,17 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 
   @Override
   public List<ProgramManager> findAllProgramManagerDetails() {
-    JPAQuery<ProgramManager> query = new JPAQuery<ProgramManager>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<ProgramManager> list =
-        query.from(QProgramManager.programManager).where(nonSystemProgramManager()).select(QProgramManager.programManager)
-            .fetch();
+        query.from(QProgramManager.programManager).where(nonSystemProgramManager())
+            .list(QProgramManager.programManager);
     return (StringUtil.isListNotNullNEmpty(list) ? list : null);
   }
 
   @Override
   public ProgramManagerRequest findProgramManagerById(Long id) {
     ProgramManagerRequest response = new ProgramManagerRequest();
-    ProgramManager result = programManagerRepository.findById(id).orElse(null);
+    ProgramManager result = programManagerRepository.findById(id);
     if (!StringUtil.isNull(result)) {
       try {
     	  response.setId(result.getId());
@@ -764,6 +758,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
     	  response.setState(result.getState());
     	  response.setPmTimeZone(result.getPmTimeZone());
     	  response.setSchedulerRunTime(result.getSchedulerRunTime());
+    	  response.setPmSystemConvertedTime(result.getPmSystemConvertedTime());
       } catch (Exception e) {
         logger.error(
             className + " : findProgramManagerById : Error in retrieving the program manager.", e);
@@ -928,7 +923,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   
   @Override
   public ProgramManager findByProgramManagerId(Long pmId) {
-	  return programManagerRepository.findById(pmId).orElse(null);
+	  return programManagerRepository.findById(pmId);
   }
 
   @Override

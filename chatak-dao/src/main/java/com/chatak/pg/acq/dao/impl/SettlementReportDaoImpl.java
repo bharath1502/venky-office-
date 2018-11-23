@@ -5,6 +5,7 @@ package com.chatak.pg.acq.dao.impl;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,9 +44,9 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -100,32 +101,10 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
         endDate = DateUtil.getEndDayTimestamp(getTransactionsListRequest.getTo_date(),
             PGConstants.DD_MM_YYYY);
       }
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query
           .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
               QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
-          .select(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
-              QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
-              QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
-              QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
-              QPGTransaction.pGTransaction.feeAmount,
-              QPGTransaction.pGTransaction.merchantFeeAmount,
-              QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
-              QPGTransaction.pGTransaction.merchantSettlementStatus,
-              QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.posEntryMode,
-              QPGTransaction.pGTransaction.acqChannel, QPGTransaction.pGTransaction.cardHolderName,
-              QPGTransaction.pGTransaction.updatedDate, QPGTransaction.pGTransaction.authId,
-              QPGTransaction.pGTransaction.txnTotalAmount, QPGTransaction.pGTransaction.acqTxnMode,
-              QPGTransaction.pGTransaction.invoiceNumber, QPGTransaction.pGTransaction.processor,
-              QPGTransaction.pGTransaction.txnMode, QPGMerchant.pGMerchant.firstName,
-              QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.merchantType,
-              QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.entityType,
-              QPGTransaction.pGTransaction.refTransactionId, QPGTransaction.pGTransaction.batchId,
-              QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
-              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
-              QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.userName,
-              QPGTransaction.pGTransaction.deviceLocalTxnTime,
-              QPGTransaction.pGTransaction.timeZoneOffset)
           .where(isMerchantId(getTransactionsListRequest.getMerchant_code()),
               isTxnId(getTransactionsListRequest.getTransactionId()),
               isProcessTxnId(getTransactionsListRequest.getProcessCode()),
@@ -149,7 +128,28 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
               isMerchantBusinessNameLike(getTransactionsListRequest.getMerchantBusinessName()),
               isValidDate(startDate, endDate))
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .fetch();
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+              QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
+              QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
+              QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
+              QPGTransaction.pGTransaction.feeAmount,
+              QPGTransaction.pGTransaction.merchantFeeAmount,
+              QPGTransaction.pGTransaction.txnDescription, QPGTransaction.pGTransaction.status,
+              QPGTransaction.pGTransaction.merchantSettlementStatus,
+              QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.posEntryMode,
+              QPGTransaction.pGTransaction.acqChannel, QPGTransaction.pGTransaction.cardHolderName,
+              QPGTransaction.pGTransaction.updatedDate, QPGTransaction.pGTransaction.authId,
+              QPGTransaction.pGTransaction.txnTotalAmount, QPGTransaction.pGTransaction.acqTxnMode,
+              QPGTransaction.pGTransaction.invoiceNumber, QPGTransaction.pGTransaction.processor,
+              QPGTransaction.pGTransaction.txnMode, QPGMerchant.pGMerchant.firstName,
+              QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.merchantType,
+              QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.entityType,
+              QPGTransaction.pGTransaction.refTransactionId, QPGTransaction.pGTransaction.batchId,
+              QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
+              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
+              QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.userName,
+              QPGTransaction.pGTransaction.deviceLocalTxnTime,
+              QPGTransaction.pGTransaction.timeZoneOffset);
       if (!CollectionUtils.isEmpty(tupleList)) {
         transactions = new ArrayList<>();
         Transaction transactionResp = null;
@@ -301,11 +301,25 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
         endDate =
             DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
       }
-      JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+      JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query
           .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
               QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
-          .select(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
+          .where(
+              isMerchantId(batchReportRequest.getMerchantCode(),
+                  batchReportRequest.getSubMerchantCode()),
+              QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
+              QPGTransaction.pGTransaction.merchantSettlementStatus
+                  .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED, Constants.SETTLEMENT_STATUS),
+              QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
+              QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
+                  .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
+              QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
+              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
+                  .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+              isValidDate(startDate, endDate))
+          .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -326,22 +340,7 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
               QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
               QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.batchDate,
               QPGTransaction.pGTransaction.deviceLocalTxnTime,
-              QPGTransaction.pGTransaction.timeZoneOffset)
-          .where(
-              isMerchantId(batchReportRequest.getMerchantCode(),
-                  batchReportRequest.getSubMerchantCode()),
-              QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
-              QPGTransaction.pGTransaction.merchantSettlementStatus
-                  .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED, Constants.SETTLEMENT_STATUS),
-              QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
-              QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
-                  .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
-              QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
-              QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
-                  .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
-              isValidDate(startDate, endDate))
-          .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .fetch();
+              QPGTransaction.pGTransaction.timeZoneOffset);
       if (!CollectionUtils.isEmpty(tupleList)) {
         transactions = new ArrayList<>();
         Transaction transactionResp = null;
@@ -374,11 +373,24 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
     if (!CommonUtil.isNullAndEmpty(batchReportRequest.getToDate())) {
       endDate = DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
     }
-    JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+    JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> list = query
         .from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
             QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
-        .select(QPGTransaction.pGTransaction.merchantId,
+        .where(
+            isMerchantId(batchReportRequest.getMerchantCode(),
+                batchReportRequest.getSubMerchantCode()),
+            QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
+            QPGTransaction.pGTransaction.merchantSettlementStatus
+                .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED, Constants.SETTLEMENT_STATUS),
+            QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
+            QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
+                .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
+            QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
+            QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
+                .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+            isValidDate(startDate, endDate))
+        .orderBy(orderByCreatedDateDesc()).list(QPGTransaction.pGTransaction.merchantId,
             QPGTransaction.pGTransaction.id,
             QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
             QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
@@ -398,21 +410,7 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
             QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
             QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
             QPGTransaction.pGTransaction.deviceLocalTxnTime,
-            QPGTransaction.pGTransaction.timeZoneOffset)
-        .where(
-            isMerchantId(batchReportRequest.getMerchantCode(),
-                batchReportRequest.getSubMerchantCode()),
-            QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
-            QPGTransaction.pGTransaction.merchantSettlementStatus
-                .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED, Constants.SETTLEMENT_STATUS),
-            QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
-            QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
-                .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
-            QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
-            QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
-                .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
-            isValidDate(startDate, endDate))
-        .orderBy(orderByCreatedDateDesc()).fetch();
+            QPGTransaction.pGTransaction.timeZoneOffset);
 
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
@@ -537,8 +535,8 @@ private void setTxnsDetails(List<SettlementEntity> settlementEntityList, Object[
 	feeReportDto.setMerchantId(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
 	feeReportDto.setTerminalId(StringUtil.isNull(objs[1]) ? null : String.valueOf((Integer) objs[1]));
 	feeReportDto.setPgTxnId(StringUtil.isNull(objs[Integer.parseInt("2")]) ? null : ((String) objs[Integer.parseInt("2")]));
-	feeReportDto.setTxnDate(StringUtil.isNull(objs[Integer.parseInt("3")]) ? null : ((Timestamp) objs[Integer.parseInt("3")]));
-	feeReportDto.setDeviceLocalTxnTime(StringUtil.isNull(objs[Integer.parseInt("4")]) ? null : DateUtil.toDateStringFormat( ((Timestamp) objs[Integer.parseInt("4")]),Constants.DATE_TIME_FORMAT));
+	feeReportDto.setTxnDate(StringUtil.isNull(objs[Integer.parseInt("3")]) ? null : DateUtil.toTimestamp(DateUtil.toDateStringFormat((Timestamp)(objs[Integer.parseInt("3")]),Constants.DATE_TIME_FORMAT), Constants.DATE_TIME_FORMAT));
+	feeReportDto.setDeviceLocalTxnTime(StringUtil.isNull(objs[Integer.parseInt("4")]) ? null : DateUtil.toDateStringFormat(((Timestamp) objs[Integer.parseInt("4")]),Constants.DATE_TIME_FORMAT));
 	feeReportDto.setTxnType(StringUtil.isNull(objs[Integer.parseInt("5")]) ? null : ((String) objs[Integer.parseInt("5")]));
 	feeReportDto.setProgramManagerName(StringUtil.isNull(objs[Integer.parseInt("6")]) ? null : ((String) objs[Integer.parseInt("6")]));
 	feeReportDto.setIsoName(StringUtil.isNull(objs[Integer.parseInt("7")]) ? null : ((String) objs[Integer.parseInt("7")]));
@@ -561,14 +559,13 @@ private void setTxnsDetails(List<SettlementEntity> settlementEntityList, Object[
 		log.info("SettlementReportDaoImpl | fetchMerchantDetails | Entering");
 		List<SettlementMerchantDetails> list = new ArrayList<>();
 		try {
-			JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+			JPAQuery query = new JPAQuery(entityManager);
 			List<Tuple> tupleList = query.from(QPGMerchant.pGMerchant, QPGMerchantBank.pGMerchantBank)
-					.select(QPGMerchant.pGMerchant.businessName, QPGMerchantBank.pGMerchantBank.bankName,
-							QPGMerchantBank.pGMerchantBank.bankAccNum, QPGMerchantBank.pGMerchantBank.routingNumber,
-							QPGMerchant.pGMerchant.localCurrency, QPGMerchant.pGMerchant.merchantCode)
 					.where(QPGMerchant.pGMerchant.merchantCode.eq(merchantCode)
 							.and(QPGMerchant.pGMerchant.merchantCode.eq(QPGMerchantBank.pGMerchantBank.merchantId)))
-					.fetch();
+					.list(QPGMerchant.pGMerchant.businessName, QPGMerchantBank.pGMerchantBank.bankName,
+							QPGMerchantBank.pGMerchantBank.bankAccNum, QPGMerchantBank.pGMerchantBank.routingNumber,
+							QPGMerchant.pGMerchant.localCurrency, QPGMerchant.pGMerchant.merchantCode);
 			if (!CollectionUtils.isEmpty(tupleList)) {
 				SettlementMerchantDetails merchantDetails = new SettlementMerchantDetails();
 				for (Tuple tuple : tupleList) {

@@ -445,6 +445,35 @@
 			if(issuancePmId == null || issuancePmId == ''){
 				$('#refresh').hide();
 			}
+			if ('${programManagerRequest.programManagerType}' == 'onboarded') {
+				document.getElementById('programManagerName').readOnly = true;
+				document.getElementById('companyName').readOnly = true;
+				document.getElementById('businessEntityName').readOnly = true;
+				document.getElementById('contactPerson').readOnly = true;
+				document.getElementById('extension').readOnly = true;
+				document.getElementById('batchPrefix').readOnly = true;
+				document.getElementById('schedulerRunTime').readOnly = true;
+				document.getElementById('contactPhone').readOnly = true;
+				document.getElementById('programManagerEmailId').readOnly = true;
+				$('#currencyName').attr("disabled", true); 
+				$('#country').attr("disabled", true);
+				$('#state').attr("disabled", true);
+				$('#timezone').attr("disabled", true);
+			} else {
+				document.getElementById('programManagerName').readOnly = false;
+				document.getElementById('companyName').readOnly = false;
+				document.getElementById('businessEntityName').readOnly = false;
+				document.getElementById('contactPerson').readOnly = false;
+				document.getElementById('extension').readOnly = false;
+				document.getElementById('batchPrefix').readOnly = false;
+				document.getElementById('schedulerRunTime').readOnly = false;
+				document.getElementById('contactPhone').readOnly = false;
+				document.getElementById('programManagerEmailId').readOnly = false;
+				$('#currencyName').attr("disabled", false); 
+				$('#country').attr("disabled", false);
+				$('#state').attr("disabled", false);
+				$('#timezone').attr("disabled", false);
+			}
 		});
 	</script>
 			 

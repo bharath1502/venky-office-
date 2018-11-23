@@ -99,7 +99,7 @@ public class VirtualTerminalPreAuthController implements URLMappingConstants {
           modelAndView.addObject(Constants.SUCESS, preAuthResponse.getErrorMessage());
           modelAndView.addObject(Constants.VIRTUAL_TERMINAL_PRE_AUTH, new VirtualTerminalPreAuthDTO());
         } else {
-          modelAndView = setPreAuthError(modelAndView, preAuthResponse);
+          setPreAuthError(modelAndView, preAuthResponse);
           modelAndView.addObject(Constants.VIRTUAL_TERMINAL_PRE_AUTH, virtualTerminalPreAuthDTO);
         }
       } catch (ChatakPayException e) {
@@ -196,7 +196,7 @@ public class VirtualTerminalPreAuthController implements URLMappingConstants {
           modelAndView.addObject(Constants.SUCESS, adjustmentResponse.getErrorMessage());
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_ADJUST, new VirtualTerminalAdjustmentDTO());
         } else {
-          modelAndView = setAdjustmentError(modelAndView, adjustmentResponse);
+          setAdjustmentError(modelAndView, adjustmentResponse);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_ADJUST, terminalAdjustmentDTO);
         }
       } catch (ChatakPayException e) {

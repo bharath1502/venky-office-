@@ -66,6 +66,7 @@
 						</form:form>
 								<form:form action="show-incoming-settlement-report" name="getSettlementDetails" method="post">
 									<input type="hidden" id="programViewId" name="programViewId" />
+									<input type="hidden" id="batchDate" name="batchDate" />
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>		
 			
@@ -97,7 +98,7 @@
 										<c:forEach items="${settlementDataList}" var="settlementData">
 											<tr>
 												<td class="tbl-text-align-center"><a 
-												href="javascript:getDetailsOnPMId(${settlementData.programManagerId})"
+												href="javascript:getDetailsOnPMId('${settlementData.programManagerId}','${settlementData.batchDate}')"
 												style="text-decoration: underline;">${settlementData.programManagerName}
 											    </a></td>
 												<td>${settlementData.batchDate}</td>
@@ -174,8 +175,9 @@
 					});
 			});
 			});
-		function getDetailsOnPMId(programManagerId) {
+		function getDetailsOnPMId(programManagerId, batchDate) {
 			get('programViewId').value = programManagerId;
+			get('batchDate').value = batchDate;
 			document.forms["getSettlementDetails"].submit();
 		}
 		</script>

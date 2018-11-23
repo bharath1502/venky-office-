@@ -58,7 +58,9 @@
 							<!-- Page Form Start -->
 							<form:form modelAttribute="virtualTeminalVoid" action="processTransactionVoid" id="txnForm" method="post">
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
-								<div class="col-sm-12" id="hideAllFields">
+									<input type="hidden" id="timeZoneOffset" name="timeZoneOffset" />
+									<input type="hidden" id="timeZoneRegion" name="timeZoneRegion" />
+									<div class="col-sm-12" id="hideAllFields">
 									<div class="row">
 										<div class="field-element-row">
 										
@@ -204,11 +206,11 @@
 										<br>
 										<table>
 										<tr>
-													<td><span class="black-text">&nbsp;<spring:message code="virtual-terminal-sale.label.transactionstatus"/>:</span></td>
-													<td><span class="green-error">&nbsp;: ${success}</span></td>
+													<td><span class="black-text">&nbsp;<spring:message code="virtual-terminal-sale.label.transactionstatus"/></span></td>
+													<td><span class="green-error">&nbsp;: ${sucess}</span></td>
 												</tr>
 												<tr>
-													<td><span class="green-error">&nbsp;<spring:message code="virtual-terminal-sale.label.pleasenotebelowdetails"/></span></td>
+													<td><span class="green-error">&nbsp;<spring:message code="virtual-terminal-sale.label.pleasenote"/></span></td>
 												</tr>
 											<tr>
 												<td><span class="black-text">&nbsp;<spring:message code="virtual-terminal-sale.label.authid"/></span></td>
@@ -216,8 +218,7 @@
 														${txnRefNum.authId}</span></td>
 											</tr>
 											<tr>
-												<td><span class="black-text">&nbsp;<spring:message code="virtual-terminal-sale.label.transactionid"/>
-														</span></td>
+												<td><span class="black-text">&nbsp;<spring:message code="virtual-terminal-sale.label.transactionid"/></span></td>
 												<td><span class="green-error">&nbsp;
 														:${txnRefNum.txnRefNumber}</span></td>
 											</tr>
@@ -262,6 +263,11 @@
 			 if("${virtualTerminalVoidDTO.successDiv}" == "true"){
 				$("#hideAllFields").hide();
 				}
+			 
+			var timeZoneRegion = jstz.determine().name();
+			var offset = new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
+			$('#timeZoneOffset').val(offset);
+			$('#timeZoneRegion').val(timeZoneRegion);
 		});
 
 		function highlightMainContent() {
@@ -277,11 +283,11 @@
 			}
 		}
 		/* Fetch Content Functionality End */
-		$(document).ready( function() {
+		$(document).ready(function() {
 			highlightMainContent('navListId6');
-			
+
 			/*  $("#search-result-table").hide(); */
-		});	
+		});
 	</script>
 	<script src="../js/backbutton.js"></script>
 </body>

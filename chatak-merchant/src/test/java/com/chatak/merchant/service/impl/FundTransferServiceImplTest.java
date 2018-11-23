@@ -307,7 +307,7 @@ public class FundTransferServiceImplTest {
 
 	}
 
-	@Test(expected = ChatakMerchantException.class)
+	@Test
 	public void testProcessAccountTransferIf() throws ChatakMerchantException {
 		AccountTransferRequest accountTransferRequest = new AccountTransferRequest();
 		PGAccount sourceAccount = new PGAccount();
@@ -317,7 +317,7 @@ public class FundTransferServiceImplTest {
 		accountTransferRequest.setTransferAmount(Double.parseDouble("1230"));
 		sourceAccount.setCurrentBalance(0l);
 		sourceAccount.setEntityId("12");
-		sourceAccount.setAvailableBalance(Long.parseLong("12"));
+		sourceAccount.setAvailableBalance(Long.parseLong("1200000"));
 		destinationAccount.setEntityId("12");
 		String parentMerchantCode = "12";
 		sourceAccount.setAccountNum(Long.parseLong("12"));

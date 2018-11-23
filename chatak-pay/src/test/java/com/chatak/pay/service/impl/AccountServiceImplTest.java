@@ -44,12 +44,6 @@ public class AccountServiceImplTest {
 	}
 
 	@Test
-	public void testValidateException() throws ChatakPayException {
-		Mockito.when(accountDao.getAccountonAccountNumber(Matchers.anyLong())).thenThrow(new NullPointerException());
-		accountServiceImpl.validate(Long.parseLong("43"));
-	}
-
-	@Test
 	public void testBalanceInquiry() throws ChatakPayException {
 		AccountBalanceInquiryRequest accountBalanceInquiryRequest = new AccountBalanceInquiryRequest();
 		accountServiceImpl.balanceInquiry(accountBalanceInquiryRequest);
@@ -66,17 +60,6 @@ public class AccountServiceImplTest {
 	}
 
 	@Test
-	public void testBalanceInquiryException() throws ChatakPayException {
-		AccountBalanceInquiryRequest accountBalanceInquiryRequest = new AccountBalanceInquiryRequest();
-		List<Long> accounts = new ArrayList<>();
-		Long long1 =Long.valueOf("243");
-		accounts.add(long1);
-		accountBalanceInquiryRequest.setAccountNumbers(accounts);
-		Mockito.when(accountDao.getAccDetailsOnAccNums(Matchers.anyList())).thenThrow(new NullPointerException());
-		accountServiceImpl.balanceInquiry(accountBalanceInquiryRequest);
-	}
-
-	@Test
 	public void testGetAccountHistory() throws ChatakPayException {
 		GetTransactionsListResponse transResponse = new GetTransactionsListResponse();
 		Mockito.when(accountTransactionDao.getAccountAllTransactions(Matchers.any(GetTransactionsListRequest.class)))
@@ -87,13 +70,6 @@ public class AccountServiceImplTest {
 	@Test
 	public void testGetAccountHistoryNull() throws ChatakPayException {
 		accountServiceImpl.getAccountHistory(null);
-	}
-
-	@Test
-	public void testGetAccountHistoryException() throws ChatakPayException {
-		Mockito.when(accountTransactionDao.getAccountAllTransactions(Matchers.any(GetTransactionsListRequest.class)))
-				.thenThrow(new NullPointerException());
-		accountServiceImpl.getAccountHistory(Long.parseLong("43"));
 	}
 
 }

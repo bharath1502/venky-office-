@@ -110,7 +110,7 @@
 													<td class="tbl-text-align-left">${isoTxns.txnDate}</td>
 													<td>${isoTxns.deviceLocalTxnTime}
 													</td>
-													<td class="tbl-text-align-right">${isoTxns.isoAmount}</td>
+													<td class="tbl-text-align-right"><fmt:formatNumber value="${isoTxns.isoAmount/100.0}"/></td>
 												</tr>
 											</c:forEach>
 										</c:when>

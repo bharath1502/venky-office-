@@ -34,10 +34,10 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.StringUtils;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @Author: Girmiti Software
@@ -199,7 +199,6 @@ public class FeeReportDaoImpl implements FeeReportDao {
 	@Override
 	public FeeReportResponse fetchISORevenueTransactions(FeeReportRequest feeReportRequest) {
 		logger.info("Entering :: FeeReportDaoImpl :: fetchISORevenueTransactions");
-		
 		Timestamp startDate = null;
 		Timestamp endDate = null;
 		Integer pageIndex = feeReportRequest.getPageIndex();
@@ -229,20 +228,19 @@ public class FeeReportDaoImpl implements FeeReportDao {
 			if (!CommonUtil.isNullAndEmpty(feeReportRequest.getToDate())) {
 				endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
 			}
-			JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+			JPAQuery query = new JPAQuery(entityManager);
 			List<Tuple> infoList = query.from(QPGSettlementEntityHistory.pGSettlementEntityHistory, QPGSettlementTransactionHistory.pGSettlementTransactionHistory)
-					.select(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
-							QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
-							QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
-							QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
-							QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount,QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)
 					.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
 							.eq(Long.valueOf(feeReportRequest.getProgramManagerId()))
 							.and(isValidDate(startDate, endDate))
 							.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)),
 							 isIsoIdEq(feeReportRequest.getIsoId()))
 							.offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-					.fetch();
+					.list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
+							QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount,QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId);
 			if (StringUtil.isListNotNullNEmpty(infoList)) {
 				for (Tuple tuple : infoList) {
 					SettlementEntity settlementEntity = new SettlementEntity();
@@ -291,19 +289,18 @@ public class FeeReportDaoImpl implements FeeReportDao {
 		if (!CommonUtil.isNullAndEmpty(feeReportRequest.getToDate())) {
 			endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
 		}
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> list = query.from(QPGSettlementEntityHistory.pGSettlementEntityHistory, QPGSettlementTransactionHistory.pGSettlementTransactionHistory)
-				.select(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
-						QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
-						QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
-						QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
-						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount,QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)
 				.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
 						.eq(Long.valueOf(feeReportRequest.getProgramManagerId()))
 						.and(isValidDate(startDate, endDate))
 						.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)),
 						 isIsoIdEq(feeReportRequest.getIsoId()))
-				.fetch();
+				.list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
+						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount,QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId);
 		logger.info("Exiting :: FeeReportDaoImpl :: getTotalNumberOfIsoRevenueReportRecords");
 		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	}
@@ -323,11 +320,15 @@ public class FeeReportDaoImpl implements FeeReportDao {
 	public List<SettlementEntity> getAllMatchedTxnsByEntityId(Long issuanceSettlementEntityId) {
 		logger.info("Entering :: FeeReportDaoImpl :: getAllMatchedTxnsByEntityId");
 		List<SettlementEntity> feeReportList = new ArrayList<>();
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		logger.info(String.valueOf(issuanceSettlementEntityId));
 		List<Tuple> infoList = query
 				.from(QPGSettlementTransactionHistory.pGSettlementTransactionHistory, QPGTransaction.pGTransaction, QPGSettlementEntityHistory.pGSettlementEntityHistory)
-				.select(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.terminalId,
+				.where(isIssuanceSettlementEntityIdIdEq(issuanceSettlementEntityId)
+						.and(QPGTransaction.pGTransaction.id.stringValue()
+								.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId))
+						.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)))
+				.list(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.terminalId,
 						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId,
 						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuerTxnID,
 						QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoAmount,
@@ -341,12 +342,7 @@ public class FeeReportDaoImpl implements FeeReportDao {
 						QPGTransaction.pGTransaction.txnCurrencyCode, QPGTransaction.pGTransaction.panMasked,
 						QPGTransaction.pGTransaction.settlementBatchStatus, QPGTransaction.pGTransaction.acqTxnMode,
 						QPGTransaction.pGTransaction.acqChannel, QPGTransaction.pGTransaction.transactionType,
-						QPGTransaction.pGTransaction.invoiceNumber, QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId, QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoId)
-				.where(isIssuanceSettlementEntityIdIdEq(issuanceSettlementEntityId)
-						.and(QPGTransaction.pGTransaction.id.stringValue()
-								.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId))
-						.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)))
-				.fetch();
+						QPGTransaction.pGTransaction.invoiceNumber, QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId, QPGSettlementTransactionHistory.pGSettlementTransactionHistory.isoId);
 		if (StringUtil.isListNotNullNEmpty(infoList)) {
 			for (Tuple tuple : infoList) {
 				SettlementEntity settlementEntity = new SettlementEntity();
@@ -530,18 +526,17 @@ public class FeeReportDaoImpl implements FeeReportDao {
 			if (!CommonUtil.isNullAndEmpty(feeReportRequest.getToDate())) {
 				endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
 			}
-			JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+			JPAQuery query = new JPAQuery(entityManager);
 			List<Tuple> infoList = query.from(QPGSettlementEntityHistory.pGSettlementEntityHistory)
-					.select(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
-							QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
-							QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
-							QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
-							QPGSettlementEntityHistory.pGSettlementEntityHistory.pmAmount, QPGSettlementEntityHistory.pGSettlementEntityHistory.id)
 					.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
 							.eq(Long.valueOf(feeReportRequest.getProgramManagerId()))
 							.and(isValidDate(startDate, endDate)))
 					 .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-					.fetch();
+					.list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid,
+							QPGSettlementEntityHistory.pGSettlementEntityHistory.pmAmount, QPGSettlementEntityHistory.pGSettlementEntityHistory.id);
 			if (StringUtil.isListNotNullNEmpty(infoList)) {
 				for (Tuple tuple : infoList) {
 					SettlementEntity settlementEntity = new SettlementEntity();
@@ -575,17 +570,16 @@ public class FeeReportDaoImpl implements FeeReportDao {
 		if (!CommonUtil.isNullAndEmpty(feeReportRequest.getToDate())) {
 			endDate = DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
 		}
-		JPAQuery<Tuple> query = new JPAQuery<Tuple>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> list = query
 				.from(QPGSettlementEntityHistory.pGSettlementEntityHistory)
-				.select(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
+				.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
+						.eq(Long.valueOf(feeReportRequest.getProgramManagerId())).and(isValidDate(startDate, endDate)))
+				.orderBy(orderByCreatedDateDesc()).list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
 						QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
 						QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
 						QPGSettlementEntityHistory.pGSettlementEntityHistory.batchid, QPGSettlementEntityHistory.pGSettlementEntityHistory.pmAmount,
-						QPGSettlementEntityHistory.pGSettlementEntityHistory.id)
-				.where(QPGSettlementEntityHistory.pGSettlementEntityHistory.acqPmId
-						.eq(Long.valueOf(feeReportRequest.getProgramManagerId())).and(isValidDate(startDate, endDate)))
-				.orderBy(orderByCreatedDateDesc()).fetch();
+						QPGSettlementEntityHistory.pGSettlementEntityHistory.id);
 		logger.info("Exiting :: FeeReportDaoImpl :: getTotalNumberOfPmRevenueReportRecords");
 		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	}

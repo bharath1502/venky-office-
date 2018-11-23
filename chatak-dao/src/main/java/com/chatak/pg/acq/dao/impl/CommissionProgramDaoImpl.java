@@ -20,9 +20,9 @@ import com.chatak.pg.acq.dao.repository.OtherCommissionRepository;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.CommissionDTO;
 import com.chatak.pg.util.Constants;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.BooleanExpression;
 
 @Repository("commissionDao")
 public class CommissionProgramDaoImpl implements CommissionDao
@@ -63,17 +63,16 @@ public class CommissionProgramDaoImpl implements CommissionDao
             offset = (commissionDTO.getPageIndex()-1) * commissionDTO.getPageSize();
             limit = commissionDTO.getPageSize();
         }
-		JPAQuery<PGCommission> query = new JPAQuery<PGCommission>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
 		 QPGCommission qpgcommission = QPGCommission.pGCommission;
 			List<PGCommission> tupleCardList = query
 					.from(qpgcommission)
-					.select(qpgcommission)
 					.where(isCommissionProgramName(commissionDTO.getCommissionName()),
 							isStatusEq(commissionDTO.getStatus()))
 							.offset(offset)
 							.limit(limit)
 							.orderBy(orderByCreatedDateDesc())
-							.fetch();
+							.list(qpgcommission);
 			for (PGCommission tuple : tupleCardList) {
 				PGCommission commissionDTO1 = new PGCommission();
 				commissionDTO1.setCommissionName(tuple.getCommissionName());
@@ -89,14 +88,13 @@ public class CommissionProgramDaoImpl implements CommissionDao
 	}
 
 	private int getTotalNumberOfRecords(CommissionDTO commissionDTO) {
-		JPAQuery<Long> query = new JPAQuery<Long>(entityManager);
+		JPAQuery query = new JPAQuery(entityManager);
         QPGCommission qpgcommission = QPGCommission.pGCommission;
 		List<Long> tupleCardList = query
 				.from(qpgcommission)
-				.select(qpgcommission.commissionProgramId)
 				.where(isCommissionProgramName(commissionDTO.getCommissionName()),
 						isStatusEq(commissionDTO.getStatus()))
-						.fetch();
+						.list(qpgcommission.commissionProgramId);
 		return (StringUtil.isListNotNullNEmpty(tupleCardList) ? tupleCardList.size() : 0);
 	}
 		
@@ -131,7 +129,7 @@ public class CommissionProgramDaoImpl implements CommissionDao
 
 	@Override
 	public void removeOthCommission(List<PGOtherCommission> othCommission) {
-		otherCommissionRepository.deleteAll(othCommission);
+		otherCommissionRepository.delete(othCommission);
 	}
 }
 	

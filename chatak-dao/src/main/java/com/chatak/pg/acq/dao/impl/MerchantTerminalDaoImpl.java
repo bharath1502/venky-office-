@@ -56,7 +56,7 @@ public class MerchantTerminalDaoImpl implements MerchantTerminalDao {
 
 	@Override
 	public PGMerchantTerminal findById(Long id) throws DataAccessException {
-		return merchantTerminalRepository.findById(id).orElse(null);
+		return merchantTerminalRepository.findById(id);
 	}
 
 	@Override

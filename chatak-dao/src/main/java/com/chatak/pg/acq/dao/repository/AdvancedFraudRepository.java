@@ -1,7 +1,7 @@
 package com.chatak.pg.acq.dao.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.chatak.pg.acq.dao.model.PGMerchantAdvancedFraud;
 
@@ -15,7 +15,7 @@ import com.chatak.pg.acq.dao.model.PGMerchantAdvancedFraud;
  */
 public interface AdvancedFraudRepository extends
 		JpaRepository<PGMerchantAdvancedFraud, Long>,
-		QuerydslPredicateExecutor<PGMerchantAdvancedFraud> {
+		QueryDslPredicateExecutor<PGMerchantAdvancedFraud> {
 
 	/**
 	 * @param id

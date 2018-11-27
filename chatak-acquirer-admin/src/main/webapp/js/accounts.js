@@ -107,13 +107,6 @@ function validateDebit() {
 }
 
 function convertToLongValue() {
-	var availableBal = (get('availableBalance').value);
-	availableBal = availableBal.replace(/[,.']+/g,"");
-	get('availableBal').value = Math.trunc(availableBal);
-	var currentBal = (get('currentBalance').value);
-	currentBal = currentBal.replace(/[,.']+/g,"");
-	get('currentBal').value = Math.trunc(currentBal);
-	//var inputVal = (get('inputAmount').value);
 	var globalInput = (get('inputAmount').value);
 	globalInput = globalInput.replace(/[,.']+/g,"");
 	get('inputAmt').value = Math.trunc(globalInput);
@@ -123,7 +116,7 @@ function convertToLongValue() {
 
 function validInputDebitAmount(id, divId) {
 	var val = getVal(id);
-	var availableBal = get('availableBalance').value;
+	var availableBal = get('availableBalanceString').value;
 	var regex = /^[0-9]*\.[0-9]{2}$/;
 
 	if (isEmpty(val)) {
@@ -193,14 +186,7 @@ function formatNum(testid) {
 }
 function amountFmt()
 {
-	var amtval = $("#avlamt").val();
-	var curamt = $("#curamt").val();
-	
-	if(null != amtval && amtval != "" && null != curamt && curamt != ""){
-		formatNum("avlamt");
-		formatNum("curamt");
-		$("#hideAllFields").hide();
-	}
+	$("#hideAllFields").hide();
 	
 }
 

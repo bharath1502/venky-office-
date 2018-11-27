@@ -1,6 +1,6 @@
 function validateBankName() {
 	var bankName = get('bankName').value.trim();
-	var spaceRegx = /^[a-zA-Z]+(\s{0,1}[a-zA-Z])*$/;
+	var spaceRegx = /^[a-zA-Z0-9]+(\s{0,1}[a-zA-Z0-9])*$/;
 
 	if (isEmpty(bankName)) {
 		setError(get('bankName'), webMessages.pleaseEnterBankName);

@@ -60,6 +60,7 @@ function doAjaxFetchAccountDetails() {
 }
 
 function validInputAmount(id, divId) {
+	var regex = /^\d{1,10}(\.\d{1,2})?$/;
 	var val = getVal(id);
 	if (isEmpty(val)) {
 		setDiv(divId, webMessages.validationthisfieldismandatory);
@@ -68,11 +69,12 @@ function validInputAmount(id, divId) {
 	} else if (val == 0) {
 		setDiv(divId, webMessages.shouldbegreaterthanzero);
 		return false;
-	}
-	
-	else {
-		setDiv(divId, "");
+	} else if(regex.test(val)){
+		setDiv(divId, "");		
 		return true;
+	} else {
+		setDiv(divId, webMessages.InvalidAmount);		
+		return false;
 	}
 }
 
@@ -108,8 +110,8 @@ function validateDebit() {
 
 function convertToLongValue() {
 	var globalInput = (get('inputAmount').value);
-	globalInput = globalInput.replace(/[,.']+/g,"");
-	get('inputAmt').value = Math.trunc(globalInput);
+	//Convert input amount in cents
+	get('inputAmt').value = globalInput * 100;
 	return true;
 
 }

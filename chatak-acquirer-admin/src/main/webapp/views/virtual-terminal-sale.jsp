@@ -487,7 +487,6 @@
 	<script src="../js/messages.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<script src="../js/validation.js"></script>
-	<script src="../js/accounts.js"></script>
 	<script src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script>

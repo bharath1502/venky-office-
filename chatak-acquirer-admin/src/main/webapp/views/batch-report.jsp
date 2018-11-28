@@ -350,7 +350,6 @@
 			$("#navListId4").addClass("active-background");
 			$(".focus-field").click(function() {
 				 $(this).children('.effectiveDate').focus();
-				 /* $('.jquery-datepicker').datepicker(); */
 			});
 			 rome(fromDate, { time: false });
 			rome(toDate, { time: false }); 

@@ -22,6 +22,7 @@
 <script src="../js/utils.js"></script>
  <script src="../js/jquery.cookie.js"></script>
 <script src="../js/common-lib.js"></script>
+<script src="../js/accounts.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js'></script>
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -150,9 +151,9 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.merchantcode"/><span class="required-field">*</span></label>
 													<form:input path="merchantCode" cssClass="form-control"
-														id="merchantIdDiv" maxlength="15" onblur="this.value=this.value.trim();validMerchantCode('merchantIdDiv','merchantIdErrorDiv');fetchMerchantCurrency()" />
+														id="merchantIdDiv" maxlength="15" onblur="this.value=this.value.trim();validMerchantCode('merchantIdDiv','errorMsgDiv');fetchMerchantCurrency();doAjaxFetchAccountDetails()" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="merchantIdErrorDiv">&nbsp;</span>
+														<span class="red-error" id="errorMsgDiv">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -486,6 +487,7 @@
 	<script src="../js/messages.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<script src="../js/validation.js"></script>
+	<script src="../js/accounts.js"></script>
 	<script src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script>

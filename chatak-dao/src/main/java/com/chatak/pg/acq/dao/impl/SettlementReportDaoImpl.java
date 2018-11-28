@@ -295,11 +295,11 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
       Timestamp startDate = null;
       if (!CommonUtil.isNullAndEmpty(batchReportRequest.getFromDate())) {
         startDate =
-            DateUtil.getStartDayTimestamp(batchReportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
+            DateUtil.getStartDayTimestamp(batchReportRequest.getFromDate(), PGConstants.YYYY_MM_DD);
       }
       if (!CommonUtil.isNullAndEmpty(batchReportRequest.getToDate())) {
         endDate =
-            DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
+            DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.YYYY_MM_DD);
       }
       JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query
@@ -368,10 +368,10 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
     Timestamp endDate = null;
     if (!CommonUtil.isNullAndEmpty(batchReportRequest.getFromDate())) {
       startDate =
-          DateUtil.getStartDayTimestamp(batchReportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
+          DateUtil.getStartDayTimestamp(batchReportRequest.getFromDate(), PGConstants.YYYY_MM_DD);
     }
     if (!CommonUtil.isNullAndEmpty(batchReportRequest.getToDate())) {
-      endDate = DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
+      endDate = DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.YYYY_MM_DD);
     }
     JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> list = query

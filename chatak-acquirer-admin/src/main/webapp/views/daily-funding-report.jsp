@@ -19,6 +19,7 @@
 <!-- <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" /> -->
 	   <link href="../css/jquery-datepicker.css" rel="stylesheet">
+	   <link href="../css/rome.css" rel="stylesheet">
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="../js/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
@@ -321,6 +322,7 @@
 	<script src="../js/sortable.js"></script>
 	 <script src="../js/jquery-datepicker.js"></script>
 	<script src="../js/reports.js"></script>
+	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/messages.js"></script>
@@ -334,10 +336,10 @@
 			$("#navListId8").addClass("active-background");
 			$(".focus-field").click(function() {
 				 $(this).children('.effectiveDate').focus();
-				 $('.jquery-datepicker').datepicker();
+				 /* $('.jquery-datepicker').datepicker(); */
 			});
-			/* rome(fromDate, { time: false });
-			rome(toDate, { time: false }); */
+			 rome(fromDate, { time: false });
+			rome(toDate, { time: false }); 
 			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',

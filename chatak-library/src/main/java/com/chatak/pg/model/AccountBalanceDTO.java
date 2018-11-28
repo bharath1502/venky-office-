@@ -39,6 +39,8 @@ public class AccountBalanceDTO extends Response implements Serializable {
   private String deviceLocalTxnTime;
   private String availableBalanceString;
   private String currentBalanceString;
+  private Long accountNum;
+  private String entityId;
   /**
    * @return the currencyMinorUnit
    */
@@ -216,4 +218,16 @@ public class AccountBalanceDTO extends Response implements Serializable {
   public void setCurrentBalanceString(String currentBalanceString) {
     this.currentBalanceString = currentBalanceString;
   }  
+  public Long getAccountNum() {
+    return accountNum;
+  }
+  public void setAccountNum(Long accountNum) {
+    this.accountNum = accountNum;
+  }
+  public String getEntityId() {
+    return entityId;
+  }
+  public void setEntityId(String entityId) {
+    this.entityId = entityId;
+  }
 }

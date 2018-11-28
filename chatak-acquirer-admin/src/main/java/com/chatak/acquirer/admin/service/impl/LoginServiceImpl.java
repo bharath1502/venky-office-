@@ -166,7 +166,6 @@ public class LoginServiceImpl implements LoginService {
 			}
 		} else {
 			loginResponse.setStatus(false);
-		//	loginResponse.setMessage(Properties.getProperty("admin.service.login.inactive.error.message"));
 			loginResponse.setMessage(messageSource.getMessage("admin.service.login.inactive.user.err.msg", null,
 					LocaleContextHolder.getLocale()));
 		}

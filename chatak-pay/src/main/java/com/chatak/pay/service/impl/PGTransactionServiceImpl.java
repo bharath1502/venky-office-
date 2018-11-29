@@ -259,11 +259,15 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		log.info("RestService | PGTransactionServiceImpl | processAuthCapture | Entering");
 		TransactionResponse transactionResponse = new TransactionResponse();
 		PGOnlineTxnLog pgOnlineTxnLog = null;
+		CardProgram cardprogram=null;
 		try {
+			PurchaseRequest request = new PurchaseRequest();
+			Long feeAmount = 0l;
 			// Logging into Online txn log
 			pgOnlineTxnLog = logEntry(TransactionStatus.INITATE, transactionRequest);
 			// PERF >> Replaced with card program id
-			CardProgram cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
+			if(!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
 					CommonUtil.getIIN(transactionRequest.getCardData().getCardNumber()), 
 					CommonUtil.getPartnerIINExt(transactionRequest.getCardData().getCardNumber()), 
 					CommonUtil.getIINExt(transactionRequest.getCardData().getCardNumber()));
@@ -277,15 +281,21 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			
 			Double totalTxnAmount = StringUtil.getLong(transactionRequest.getTotalTxnAmount()) / 100d;
             Double percentage = StringUtil.getDouble(feeValues.get(0).getFeePercentageOnly());
-            Long feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
+            feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
             feeAmount = feeAmount + feeValues.get(0).getFlatFee();
 			
             if(feeAmount.compareTo(transactionRequest.getTotalTxnAmount()) > 0){
               transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0117.name());
               transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0117.value());
               return transactionResponse;
-            }
-			PurchaseRequest request = new PurchaseRequest();
+            } 
+            request.setTxnFee(feeAmount);
+			request.setTxnAmount(transactionRequest.getTotalTxnAmount() - feeAmount);
+			} else {
+				request.setTxnAmount(transactionRequest.getTotalTxnAmount());
+				request.setAccountNumber(transactionRequest.getAccountNumber());
+			}
+			request.setEntryMode(transactionRequest.getEntryMode());
 			request.setCardNum(transactionRequest.getCardData().getCardNumber());
 			request.setExpDate(transactionRequest.getCardData().getExpDate());
 			request.setCvv(transactionRequest.getCardData().getCvv());
@@ -295,8 +305,6 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			request.setInvoiceNumber(transactionRequest.getInvoiceNumber());
 			request.setTrack2(transactionRequest.getCardData().getTrack2());
 			request.setTotalTxnAmount(transactionRequest.getTotalTxnAmount());
-			request.setTxnFee(feeAmount);
-			request.setTxnAmount(transactionRequest.getTotalTxnAmount() - feeAmount);
 			request.setCardHolderName(transactionRequest.getCardData().getCardHolderName());
 			request.setPosEntryMode(transactionRequest.getPosEntryMode()+"0");
 			request.setDescription(transactionRequest.getDescription());
@@ -318,7 +326,9 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			request.setTimeZoneRegion(transactionRequest.getTimeZoneRegion());
             getMerchantDetails(pgMerchant, request);
 			request.setUid(transactionRequest.getCardData().getUid());
-			getMerchantBatchId(request, cardprogram, pgMerchant);
+			if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+				getMerchantBatchId(request, cardprogram, pgMerchant);
+			}
 
 			PurchaseResponse purchaseResponse = new SwitchServiceBroker().purchaseTransaction(request, pgMerchant);
 
@@ -903,9 +913,14 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		}
 		pgOnlineTxnLog.setMerchantAmount(transactionRequest.getMerchantAmount());
 		pgOnlineTxnLog.setMerchantId(transactionRequest.getMerchantCode());
-
 		pgOnlineTxnLog.setPanData(EncryptionUtil.encrypt(transactionRequest.getCardData().getCardNumber()));
-		pgOnlineTxnLog.setPanMasked(StringUtils.getMaskedString(transactionRequest.getCardData().getCardNumber(), Integer.parseInt("5"), Integer.parseInt("4")));
+		
+		if(transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			pgOnlineTxnLog.setPanMasked(transactionRequest.getAccountNumber());
+		} else {
+			pgOnlineTxnLog.setPanMasked(StringUtils.getMaskedString(transactionRequest.getCardData().getCardNumber(), Integer.parseInt("5"), Integer.parseInt("4")));
+		}
+		
 		pgOnlineTxnLog.setCardHolderName(transactionRequest.getCardData().getCardHolderName());
 		pgOnlineTxnLog.setPosTxnDate(null);// TODO-need to add
 		pgOnlineTxnLog.setTxnState(txnState.name());

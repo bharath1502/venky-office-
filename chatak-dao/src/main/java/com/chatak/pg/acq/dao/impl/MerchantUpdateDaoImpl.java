@@ -901,7 +901,8 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 								.and(QPGMerchant.pGMerchant.status.in(1, Integer.parseInt("4"))))
 				.list(QPGMerchant.pGMerchant);
 	}
-	  @Override
+
+	@Override
 	public PGMerchant getMerchantOnCodeAndEntityDetails(String merchantCode, String entityType, Long entityId) {
 		PGMerchant merchant = new PGMerchant();
 		Query qry = null;
@@ -917,21 +918,21 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 					" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID PMEM.ENTITY_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode");
 
 		} else {
-	      return merchantRepository.findByMerchantCode(merchantCode);
-	    }
-	    qry = entityManager.createNativeQuery(query.toString());
-	    qry.setParameter("entityId", entityId);
-	    qry.setParameter("merchantCode", merchantCode);
-	    List<Object> list = qry.getResultList();
-	    if (StringUtil.isListNotNullNEmpty(list)) {
-	      Iterator it = list.iterator();
-	      while (it.hasNext()) {
-	        Object[] objs = (Object[]) it.next();
-	        merchant.setMerchantCode(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
-	        merchant.setId(StringUtil.isNull(objs[1]) ? null : ((BigInteger) objs[1]).longValue());
-	        return merchant;
-	      }
-	    }
-	    return null;
-	  }
+			return merchantRepository.findByMerchantCode(merchantCode);
+		}
+		qry = entityManager.createNativeQuery(query.toString());
+		qry.setParameter("entityId", entityId);
+		qry.setParameter("merchantCode", merchantCode);
+		List<Object> list = qry.getResultList();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			Iterator it = list.iterator();
+			while (it.hasNext()) {
+				Object[] objs = (Object[]) it.next();
+				merchant.setMerchantCode(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
+				merchant.setId(StringUtil.isNull(objs[1]) ? null : ((BigInteger) objs[1]).longValue());
+				return merchant;
+			}
+		}
+		return null;
+	}
 }

@@ -33,7 +33,8 @@ public enum NationalPOSEntryModeEnum {
   PAN_SCAN_QR_DE58("00000004250"),//Adding dummy vlaues for demo purpose default unspecified
   PAN_SCAN_BLE_DE58("00000004250"),//Adding dummy vlaues for demo purpose default unspecified
   QR_SALE_DE58("00000004033"), 
-  CARD_TAP_DE58("00000004034");
+  CARD_TAP_DE58("00000004034"),
+  ACCOUNT_PAY_DE58("00000004035");
   private final String value;
 
   NationalPOSEntryModeEnum(String v) {

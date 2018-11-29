@@ -134,6 +134,16 @@ public class Request implements Serializable {
 
   private String address;
 
+  private String accountNumber;
+  
+  public String getAccountNumber() {
+    return accountNumber;
+  }
+
+  public void setAccountNumber(String accountNumber) {
+    this.accountNumber = accountNumber;
+  }
+  
   public String getCurrencyCode() {
     return currencyCode;
   }

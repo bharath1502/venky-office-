@@ -55,6 +55,7 @@ import com.chatak.pg.bean.VoidResponse;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.ActionCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.ProcessorType;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.util.CommonUtil;
@@ -415,7 +416,9 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     PGTransaction pgTransaction = null;
     try {
       // validation of Request
+     if(!purchaseRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
       validateRequest(purchaseRequest);
+     }
       // Create Transaction record
       pgTransaction = populatePGTransaction(purchaseRequest, PGConstants.TXN_TYPE_SALE);
       pgTransaction.setPaymentMethod(PGConstants.PAYMENT_METHOD_DEBIT);

@@ -249,7 +249,6 @@ public abstract class BaseController {
     }
 
     if (CommonUtil.isNullAndEmpty(transactionRequest.getInvoiceNumber())
-        || CommonUtil.isNullAndEmpty(transactionRequest.getRegisterNumber())
         || CommonUtil.isNullAndEmpty(transactionRequest.getOrderId())
         || (!StringUtils.isAlphanumeric(transactionRequest.getOrderId()))
         || (!StringUtils.isAlphanumeric(transactionRequest.getInvoiceNumber()))
@@ -403,6 +402,8 @@ public abstract class BaseController {
           break;
         case MAGNETIC_STRIP:
           validateMagStripCardData(transactionRequest);
+          break;
+        case ACCOUNT_PAY:
           break;
         default:
           throw new InvalidRequestException(ChatakPayErrorCode.TXN_0993.name(),

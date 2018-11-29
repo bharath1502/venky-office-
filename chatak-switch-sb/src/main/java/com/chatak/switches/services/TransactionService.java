@@ -209,10 +209,10 @@ public abstract class TransactionService extends AccountTransactionService {
       throws Exception, ServiceException {
     logger.info("Entering :: TransactionService :: populatePGTransaction");
     if(!request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
-    if (txnType.equalsIgnoreCase(TransactionType.SALE.toString())
-        && (request.getTotalTxnAmount() < (request.getTxnAmount() + request.getTxnFee()))) {
-      throw new ServiceException(ActionCode.ERROR_CODE_12);
-    }
+		if (txnType.equalsIgnoreCase(TransactionType.SALE.toString())
+				&& (request.getTotalTxnAmount() < (request.getTxnAmount() + request.getTxnFee()))) {
+			throw new ServiceException(ActionCode.ERROR_CODE_12);
+		}
     }
     
     PGTransaction pgTransaction = new PGTransaction();

@@ -417,7 +417,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     try {
       // validation of Request
      if(!purchaseRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
-      validateRequest(purchaseRequest);
+				validateRequest(purchaseRequest);
      }
       // Create Transaction record
       pgTransaction = populatePGTransaction(purchaseRequest, PGConstants.TXN_TYPE_SALE);

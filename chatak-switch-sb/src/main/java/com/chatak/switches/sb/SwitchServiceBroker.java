@@ -416,9 +416,9 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     PGTransaction pgTransaction = null;
     try {
       // validation of Request
-     if(!purchaseRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
-				validateRequest(purchaseRequest);
-     }
+     if (!purchaseRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+		 validateRequest(purchaseRequest);
+	 }
       // Create Transaction record
       pgTransaction = populatePGTransaction(purchaseRequest, PGConstants.TXN_TYPE_SALE);
       pgTransaction.setPaymentMethod(PGConstants.PAYMENT_METHOD_DEBIT);

@@ -60,6 +60,7 @@ function doAjaxFetchAccountDetails() {
 }
 
 function validInputAmount(id, divId) {
+	var regex = /^\d{1,10}(\.\d{1,2})?$/;
 	var val = getVal(id);
 	if (isEmpty(val)) {
 		setDiv(divId, webMessages.validationthisfieldismandatory);
@@ -68,11 +69,12 @@ function validInputAmount(id, divId) {
 	} else if (val == 0) {
 		setDiv(divId, webMessages.shouldbegreaterthanzero);
 		return false;
-	}
-	
-	else {
-		setDiv(divId, "");
+	} else if(regex.test(val)){
+		setDiv(divId, "");		
 		return true;
+	} else {
+		setDiv(divId, webMessages.InvalidAmount);		
+		return false;
 	}
 }
 
@@ -107,23 +109,16 @@ function validateDebit() {
 }
 
 function convertToLongValue() {
-	var availableBal = (get('availableBalance').value);
-	availableBal = availableBal.replace(/[,.']+/g,"");
-	get('availableBal').value = Math.trunc(availableBal);
-	var currentBal = (get('currentBalance').value);
-	currentBal = currentBal.replace(/[,.']+/g,"");
-	get('currentBal').value = Math.trunc(currentBal);
-	//var inputVal = (get('inputAmount').value);
 	var globalInput = (get('inputAmount').value);
-	globalInput = globalInput.replace(/[,.']+/g,"");
-	get('inputAmt').value = Math.trunc(globalInput);
+	//Convert input amount in cents
+	get('inputAmt').value = globalInput * 100;
 	return true;
 
 }
 
 function validInputDebitAmount(id, divId) {
 	var val = getVal(id);
-	var availableBal = get('availableBalance').value;
+	var availableBal = get('availableBalanceString').value;
 	var regex = /^[0-9]*\.[0-9]{2}$/;
 
 	if (isEmpty(val)) {
@@ -193,14 +188,7 @@ function formatNum(testid) {
 }
 function amountFmt()
 {
-	var amtval = $("#avlamt").val();
-	var curamt = $("#curamt").val();
-	
-	if(null != amtval && amtval != "" && null != curamt && curamt != ""){
-		formatNum("avlamt");
-		formatNum("curamt");
-		$("#hideAllFields").hide();
-	}
+	$("#hideAllFields").hide();
 	
 }
 

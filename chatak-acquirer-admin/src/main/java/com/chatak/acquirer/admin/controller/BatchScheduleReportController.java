@@ -628,7 +628,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-txnType", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transaction-file-exportutil-status", null,
+        messageSource.getMessage("transaction-file-exportutil-txnStatus", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-merchantTXNAmount", null,
             LocaleContextHolder.getLocale())};
@@ -645,8 +645,8 @@ public class BatchScheduleReportController implements URLMappingConstants {
       Object[] rowData =
           {transaction.getBatchId(), transaction.getBatchDate(), transaction.getTransactionDate(),
               transaction.getDeviceLocalTxnTime()+transaction.getTimeZoneOffset(),
-            Long.parseLong(transaction.getTransactionId()), transaction.getMerchantBusinessName(),
-            Long.parseLong( transaction.getMerchant_code()), transaction.getAccountNumber(),
+              transaction.getTransactionId() != null ? Long.parseLong(transaction.getTransactionId()) : "", transaction.getMerchantBusinessName(),
+    		  Long.parseLong( transaction.getMerchant_code()), transaction.getAccountNumber(),
               transaction.getTxnDescription(), transaction.getLocalCurrency(),
               transaction.getTxn_total_amount()/Double.parseDouble("100"), transaction.getRef_transaction_id(),
               Long.parseLong(transaction.getMaskCardNumber()), transaction.getTransaction_type().toUpperCase(),
@@ -693,7 +693,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-txnType", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transaction-file-exportutil-status", null,
+        messageSource.getMessage("transaction-file-exportutil-txnStatus", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("login.label.username", null, LocaleContextHolder.getLocale())};
     return new ArrayList<String>(Arrays.asList(headerArr));

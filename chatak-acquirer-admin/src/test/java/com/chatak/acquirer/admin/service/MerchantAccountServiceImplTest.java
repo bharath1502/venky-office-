@@ -33,6 +33,7 @@ import com.chatak.pg.acq.dao.model.PGMerchantBank;
 import com.chatak.pg.acq.dao.model.PGMerchantConfig;
 import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
+import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.model.AccountBalanceReportDTO;
 import com.chatak.pg.model.Merchant;
@@ -119,7 +120,7 @@ public class MerchantAccountServiceImplTest {
 	}
 
 	@Test(expected = ChatakAdminException.class)
-	public void testGetAccountBalanceDTO() throws ChatakAdminException {
+	public void testGetAccountBalanceDTO() throws ChatakAdminException, PrepaidAdminException {
 		PGMerchant pgMerchant = new PGMerchant();
 		PGAccount pgAccount = new PGAccount();
 		PGCurrencyConfig pgCurrencyConfig = new PGCurrencyConfig();
@@ -131,7 +132,7 @@ public class MerchantAccountServiceImplTest {
 	}
 
 	@Test
-	public void testProcessMerchantAccountBalanceUpdate() {
+	public void testProcessMerchantAccountBalanceUpdate() throws PrepaidAdminException {
 		AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
 		PGMerchant pgMerchant = new PGMerchant();
 		PGAccount pgAccount = new PGAccount();
@@ -349,7 +350,7 @@ public class MerchantAccountServiceImplTest {
 	}
 
 	@Test
-	public void testLogManualAccountTransactionManualCredit() {
+	public void testLogManualAccountTransactionManualCredit() throws PrepaidAdminException {
 		PGAccount account = new PGAccount();
 		account.setAccountNum(Long.parseLong("4234"));
 		AccountBalanceDTO accountBalanceDTO = getAccountBalanceDTO();
@@ -369,7 +370,7 @@ public class MerchantAccountServiceImplTest {
 	}
 
 	@Test
-	public void testLogManualAccountTransactionManualDebit() {
+	public void testLogManualAccountTransactionManualDebit() throws PrepaidAdminException {
 		PGAccount account = new PGAccount();
 		AccountBalanceDTO accountBalanceDTO = getAccountBalanceDTO();
 		account.setAccountNum(Long.parseLong("4234"));
@@ -378,7 +379,7 @@ public class MerchantAccountServiceImplTest {
 	}
 
 	@Test
-	public void testLogManualAccountTransactionDefault() {
+	public void testLogManualAccountTransactionDefault() throws PrepaidAdminException {
 		PGAccount account = new PGAccount();
 		AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
 		account.setAccountNum(Long.parseLong("4234"));

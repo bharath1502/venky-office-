@@ -121,8 +121,8 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
 		if(reportRequest.getId() != null) {
 			merchantFeeReportParam.setParameter("entityId", reportRequest.getId());
 	    }
-		merchantFeeReportParam.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
-		merchantFeeReportParam.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.DD_MM_YYYY));
+		merchantFeeReportParam.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.YYYY_MM_DD));
+		merchantFeeReportParam.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.YYYY_MM_DD));
 		merchantFeeReportParam.setParameter("offset", offset);
 		merchantFeeReportParam.setParameter("limit", limit);
 		List<Object> objectList = merchantFeeReportParam.getResultList();
@@ -183,8 +183,8 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
 	 if(reportRequest.getId() != null) {
 		 dailyFundingReportList.setParameter("entityId", reportRequest.getId());
 	 }
-	dailyFundingReportList.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
-	dailyFundingReportList.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.DD_MM_YYYY));
+	dailyFundingReportList.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.YYYY_MM_DD));
+	dailyFundingReportList.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.YYYY_MM_DD));
 	List<Object> list = dailyFundingReportList.getResultList();
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }

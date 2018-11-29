@@ -908,10 +908,12 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 	    Query qry = null;
 	    StringBuilder query = null;
 	    if (entityType.equals(Constants.PM_USER_TYPE)) {
-			query = new StringBuilder(" select a.MERCHANT_CODE,a.ID from ( select PGM.MERCHANT_CODE,PGM.ID ")
-					.append(" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING PMEM ON PGM.ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID=:entityId AND PGM.MERCHANT_CODE=:merchantCode ")
-					.append(" union ").append(" select PGM.MERCHANT_CODE,PGM.ID ")
-					.append(" from PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID")
+			query = new StringBuilder(" select a.MERCHANT_CODE,a.ID,a.PARENT_MERCHANT_ID from ( select PGM.MERCHANT_CODE,PGM.ID, PGM.PARENT_MERCHANT_ID ")
+					.append(" FROM PG_MERCHANT as PGM ")
+					.append(" INNER JOIN PG_MERCHANT_ENTITY_MAPPING PMEM ON (PGM.ID = PMEM.MERCHANT_ID or PGM.PARENT_MERCHANT_ID = PMEM.MERCHANT_ID)")
+					.append(" AND PMEM.ENTITY_ID=:entityId AND PGM.MERCHANT_CODE=:merchantCode ")
+					.append(" union ").append(" select PGM.MERCHANT_CODE,PGM.ID, PGM.PARENT_MERCHANT_ID ")
+					.append(" from PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID or PGM.PARENT_MERCHANT_ID = PMEM.MERCHANT_ID ")
 					.append(" INNER JOIN PG_PM_ISO_MAPPING AS PMIM ON PMEM.ENTITY_ID = PMIM.ISO_ID AND PMIM.PM_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode ")
 					.append(" )a ");
 	    } else if (entityType.equals(Constants.ISO_USER_TYPE)) {

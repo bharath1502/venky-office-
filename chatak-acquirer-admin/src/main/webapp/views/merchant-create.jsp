@@ -415,11 +415,11 @@
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-		$('.effectiveDate').datetimepicker({
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'm/d/Y',
 			formatDate : 'Y/m/d',
-		});
+		}); */
 
 		/* DatePicker Javascript End*/
 		$(

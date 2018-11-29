@@ -794,11 +794,11 @@ Include all compiled plugins (below), or include individual files as needed
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-		$('.effectiveDate').datetimepicker({
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'm/d/Y',
 			formatDate : 'Y/m/d',
-		});
+		}); */
 		/* DatePicker Javascript End*/
 		$(
 				".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content")

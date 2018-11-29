@@ -5,6 +5,7 @@ package com.chatak.merchant.service;
 
 import com.chatak.merchant.exception.ChatakMerchantException;
 import com.chatak.pg.acq.dao.model.PGAccount;
+import com.chatak.pg.model.CurrencyDTO;
 
 /**
  *
@@ -17,5 +18,7 @@ import com.chatak.pg.acq.dao.model.PGAccount;
 public interface AccountService {
   
   public PGAccount getAccountDetailsByEntityId(String entityId) throws ChatakMerchantException;
+  
+  public CurrencyDTO getCurrencyConfigOnCurrencyCodeAlpha(String currency);
 
 }

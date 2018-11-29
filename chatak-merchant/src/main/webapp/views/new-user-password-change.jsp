@@ -47,7 +47,7 @@
 							</div>
 							<!--Success and Failure Message End-->
 							<!-- Page Form Start -->
-							<form:form action="new-user-password-change" commandName="changePasswordRequest" method="post">
+							<form:form action="new-user-password-change" modelAttribute="changePasswordRequest" method="post">
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-9 login-elements-holder"  style="width: 72%;">
 								<fieldset class="col-sm-5"></fieldset>

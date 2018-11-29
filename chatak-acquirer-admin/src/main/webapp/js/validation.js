@@ -24,10 +24,10 @@ var ValidationRules = {
 
 	},
 	
-	firstlast_name_notmend : {
+	firstlast_name_not_mandatory : {
 		type : "alphanumericDotAndSpace",
 		min : "",
-		max : "20",
+		max : "30",
 		mandatory : false
 	},
 
@@ -1346,8 +1346,8 @@ function alphanumericDotAndSpace(data,div_id) {
 	function confirmemail(data,div_id) {
 		var email =document.getElementById("emailid");
 		if(data==emailid.value){
-		return true;
 		setDiv(div_id,"");
+		return true;
 		}else{
 			setDiv(div_id,"*The two fields arent the same*");
 		return false;
@@ -1625,8 +1625,6 @@ function specialchar(data,div_id)  {
 			setDiv(errorMsg, "&nbsp;");
 			return flag;
 		}
-		setDiv(errorMsg, "&nbsp;");
-		return flag;
 	}
 
 	function validateToDate(divId, errorMsg) {

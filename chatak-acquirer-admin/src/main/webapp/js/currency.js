@@ -250,7 +250,7 @@ function validateCurrencyNumeric() {
 }
 
 function validateSearchData() {
-	if (!validateCurrencyAlpha() | !validateCurrencyNumeric() | !clientValidation('currencyName','firstlast_name_notmend','currencyName_Error') | !clientValidation('currencyExponent','amount_False','currencyExponentEr')) {
+	if (!validateCurrencyAlpha() | !validateCurrencyNumeric() | !clientValidation('currencyName','firstlast_name_not_mandatory','currencyName_Error') | !clientValidation('currencyExponent','amount_False','currencyExponentEr')) {
 		return false;
 	}
 	return true;

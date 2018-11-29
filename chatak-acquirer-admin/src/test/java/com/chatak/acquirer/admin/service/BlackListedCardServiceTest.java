@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.impl.BlackListedCardServiceImpl;
 import com.chatak.pg.acq.dao.BlackListedCardDao;
@@ -21,7 +22,6 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.BlackListedCard;
 import com.chatak.pg.user.bean.BlackListedCardRequest;
 import com.chatak.pg.user.bean.BlackListedCardResponse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BlackListedCardServiceTest {
@@ -87,8 +87,8 @@ public class BlackListedCardServiceTest {
     PGBlackListedCard pgBlackListedCard = Mockito.mock(PGBlackListedCard.class);
     BlackListedCardResponse addBlackListedResponse = Mockito.mock(BlackListedCardResponse.class);
 
-    Mockito.when(blackListedCardDao.getBlackListedCardInfoById(Constants.TWO_LONG)).thenReturn(pgBlackListedCard);
-    addBlackListedRequest = blackListedCardService.getBlackListedCardInfoById(Constants.TWO_LONG);
+    Mockito.when(blackListedCardDao.getBlackListedCardInfoById(TestConstants.TWO_LONG)).thenReturn(pgBlackListedCard);
+    addBlackListedRequest = blackListedCardService.getBlackListedCardInfoById(TestConstants.TWO_LONG);
     Assert.assertNotNull(addBlackListedResponse);
   }
 }

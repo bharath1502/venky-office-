@@ -129,7 +129,7 @@ Include all compiled plugins (below), or include individual files as needed
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createSubMerchant" commandName="subMerchant"
+								<form:form action="createSubMerchant" modelAttribute="subMerchant"
 									name="subMerchant">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">

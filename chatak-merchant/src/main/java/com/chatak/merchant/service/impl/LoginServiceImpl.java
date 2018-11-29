@@ -7,15 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.mailsender.exception.PrepaidNotificationException;
 import com.chatak.mailsender.service.MailServiceManagement;
+import com.chatak.merchant.constants.URLMappingConstants;
 import com.chatak.merchant.controller.model.LoginDetails;
 import com.chatak.merchant.controller.model.LoginResponse;
 import com.chatak.merchant.controller.model.ResetPasswordData;
@@ -198,7 +202,7 @@ public class LoginServiceImpl implements LoginService {
 
         } else {
           loginResponse.setStatus(false);
-          loginResponse.setUserId(Long.valueOf(merchantUsers.getId()));
+          loginResponse.setUserId(merchantUsers.getId());
           loginResponse.setErrorCode(Constants.SUCCESS_CODE);
           loginResponse.setErrorMessage(Properties
               .getProperty("chatak.merchant.login.password.expiration.error.message"));
@@ -223,8 +227,8 @@ public class LoginServiceImpl implements LoginService {
     loginResponse.setStatus(Boolean.TRUE);
     loginResponse.setEmail(merchantUsers.getEmail());
     List<PGMerchant> pgMerchant =
-        merchantUserDao.getMerchant(Long.valueOf(merchantUsers.getId()));
-    loginResponse.setUserId(Long.valueOf(merchantUsers.getId()));
+        merchantUserDao.getMerchant(merchantUsers.getId());
+    loginResponse.setUserId(merchantUsers.getId());
     loginResponse.setUserRoleId(
         null != merchantUsers.getUserRoleId() ? merchantUsers.getUserRoleId() : 0L);
     loginResponse.setUserType(merchantUsers.getUserRoleType());
@@ -241,7 +245,7 @@ public class LoginServiceImpl implements LoginService {
     }
     loginResponse.setExistingFeature(featureIdList);
     loginResponse.setParentMerchantId(pgMerchant.get(0).getParentMerchantId());
-    loginResponse.setUserMerchantId(Long.valueOf(merchantUsers.getPgMerchantId()));
+    loginResponse.setUserMerchantId(merchantUsers.getPgMerchantId());
     loginResponse.setUserName(merchantUsers.getUserName());
   }
 
@@ -271,7 +275,7 @@ public class LoginServiceImpl implements LoginService {
               LocaleContextHolder.getLocale())));
       if (pgMerchantUsers.getEmailVerified().equals(Constants.ZERO)
           || pgMerchantUsers.getStatus().equals(1)) {
-        pgMerchantUsers.setEmailVerified(PGConstants.ONE.intValue());
+        pgMerchantUsers.setEmailVerified(PGConstants.ONE);
         pgMerchantUsers.setStatus(PGConstants.ZERO.intValue());
       }
       pgMerchantUsers.setMerPassword(encryptionPassword);
@@ -303,7 +307,7 @@ public class LoginServiceImpl implements LoginService {
 
       if (pgMerchantUsers != null) {
         PGMerchant pgMerchant =
-            merchantProfileDao.getMerchantById(Long.valueOf(pgMerchantUsers.getPgMerchantId()));
+            merchantProfileDao.getMerchantById(pgMerchantUsers.getPgMerchantId());
         userProfileRequest.setEmailId(pgMerchantUsers.getEmail());
         userProfileRequest.setFirstName(pgMerchantUsers.getFirstName());
         userProfileRequest.setLastName(pgMerchantUsers.getLastName());
@@ -353,7 +357,7 @@ public class LoginServiceImpl implements LoginService {
 
   private void processUpdateUserName(UserProfileRequest userProfileRequest,
       PGMerchantUsers pgMerchantUsers) {
-    if (pgMerchantUsers.getId().equals(Long.valueOf(pgMerchantUsers.getPgMerchantId()))) {
+    if (pgMerchantUsers.getId().equals(pgMerchantUsers.getPgMerchantId())) {
       PGMerchant pgMerchant = merchantProfileDao.getMerchantById(pgMerchantUsers.getId());
       if (null != pgMerchant) {
         pgMerchant.setUserName(userProfileRequest.getUserName());
@@ -503,5 +507,15 @@ public class LoginServiceImpl implements LoginService {
       pgMerchantUsers.setPreviousPasswords(Constants.SAPARETOR + newPassword + Constants.SAPARETOR
           + pgMerchantUsers.getMerPassword() + Constants.SAPARETOR);
     }
+  }
+
+  @Override
+  public boolean checkUserActive(HttpSession session) {
+    String userName = (String) session.getAttribute(URLMappingConstants.CHATAK_ADMIN_USER_NAME);
+    PGMerchantUsers merchantUsers = merchantUserDao.getMerchantUserByStatus(userName);
+      if(merchantUsers == null) {
+        return false;
+      }
+    return true;
   }
 }

@@ -11,6 +11,7 @@ import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,6 +25,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class HttpConfig {
 
+  private static Logger logger = Logger.getLogger(HttpConfig.class);
+  
 	private static final int DEFAULT_MAX_TOTAL_CONNECTIONS = Integer.parseInt(Properties.getProperty("thread.pool.size"));
 
 	private static final int DEFAULT_MAX_CONNECTIONS_PER_ROUTE = Integer.parseInt(Properties.getProperty("thread.max.per.route"));
@@ -78,8 +81,9 @@ public class HttpConfig {
 	}
 
 	private CloseableHttpClient httpClient() {
-		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+	  CloseableHttpClient defaultHttpClient = null;
     try {
+      PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
       connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONNECTIONS);
       connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
       URI uri = null;
@@ -112,16 +116,27 @@ public class HttpConfig {
         host = (uri.getPort() > 0) ? new HttpHost(uri.getHost(), uri.getPort()) : new HttpHost(uri.getHost());
         connectionManager.setMaxPerRoute(new HttpRoute(host), DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
       }
-
-    } catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-      e.printStackTrace();
+      if(!StringUtils.isNullAndEmpty(Properties.getProperty("chatak-tms.base.service.url"))) {
+        uri = new URI(Properties.getProperty("chatak-tms.base.service.url"));
+        host = (uri.getPort() > 0) ? new HttpHost(uri.getHost(), uri.getPort()) : new HttpHost(uri.getHost());
+        connectionManager.setMaxPerRoute(new HttpRoute(host), DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
+      }
+      if(!StringUtils.isNullAndEmpty(Properties.getProperty("chatak-tms.rest.service.url"))) {
+        uri = new URI(Properties.getProperty("chatak-tms.rest.service.url"));
+        host = (uri.getPort() > 0) ? new HttpHost(uri.getHost(), uri.getPort()) : new HttpHost(uri.getHost());
+        connectionManager.setMaxPerRoute(new HttpRoute(host), DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
+      }
+      RequestConfig config = RequestConfig.custom().setConnectTimeout(DEFAULT_READ_TIMEOUT_MILLISECONDS).build();
+      defaultHttpClient = HttpClientBuilder.create().setConnectionManager(connectionManager)
+          .setDefaultRequestConfig(config).build();
+    }
+    catch(NumberFormatException e) {
+      logger.error("ERROR:: HttpConfig :: NumberFormatException Exception", e);
+    }
+    catch(URISyntaxException e) {
+      logger.error("ERROR:: HttpConfig :: URISyntaxException Exception", e);
     }
 		
-		RequestConfig config = RequestConfig.custom().setConnectTimeout(DEFAULT_READ_TIMEOUT_MILLISECONDS).build();
-		CloseableHttpClient defaultHttpClient = HttpClientBuilder.create().setConnectionManager(connectionManager)
-				.setDefaultRequestConfig(config).build();
 		return defaultHttpClient;
 	}
 

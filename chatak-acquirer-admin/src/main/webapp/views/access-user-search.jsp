@@ -240,6 +240,7 @@
 														<form:option value="1000">1000</form:option>
 													</form:select>
 												</fieldset>
+												<c:if test="${userData.userType == 'Merchant'}">
 												<fieldset class="col-sm-3" id="merchantDivId">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="accounts-manual-credit.label.merchantorsubmerchantcode" /></label>
@@ -250,7 +251,7 @@
 														<span class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-
+                                               </c:if>	
 											</div>
 										</div>
 										<!--Panel Action Button Start -->

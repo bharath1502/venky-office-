@@ -187,6 +187,7 @@ public class BankServiceImpl implements BankService, PGConstants {
         bankRespObj.setBankCode(pgBank.getBankCode());
         bankRespObj.setContactPersonEmail(pgBank.getContactPersonEmail());
         bankRespObj.setStatus(pgBank.getStatus());
+        bankRespObj.setLoginuserType(bank.getLoginuserType());
         CurrencyDTO currencyDTO =
             currencyConfigService.getCurrencyConfigById(pgBank.getCurrencyId());
         bankRespObj.setCurrencyCodeAlpha(currencyDTO.getCurrencyCodeAlpha());
@@ -405,7 +406,7 @@ public class BankServiceImpl implements BankService, PGConstants {
 		}
 		
 		timeZoneResponse.setListOfTimeZoneRequests(timeZoneRequestList);
-		timeZoneResponse = (TimeZoneResponse) getSuccessResponse(timeZoneResponse);
+		getSuccessResponse(timeZoneResponse);
 		logger.info("Exiting:: CountryHandlerImpl:: searchAllTimeZone method: ");
 		return timeZoneResponse;
 	}
@@ -423,7 +424,7 @@ public class BankServiceImpl implements BankService, PGConstants {
 		List<TimeZoneRequest> timeZoneRequestList = new ArrayList<>();
 		timeZoneRequestList.add(timeZoneRequest);
 		timeZoneResponse.setListOfTimeZoneRequests(timeZoneRequestList);
-		timeZoneResponse = (TimeZoneResponse) getSuccessResponse(timeZoneResponse);
+		getSuccessResponse(timeZoneResponse);
 		logger.info("Exiting:: CountryHandlerImpl:: getTimeZone method: ");
 		return timeZoneResponse;
 	}

@@ -411,6 +411,29 @@ public class IsoServiceImpl implements IsoService{
 	}
 	
 	@Override
+	public Response findIsoNameByProgramManagerId(Long pmId) {
+		logger.info("Entering :: IsoServiceImpl :: findIsoNameByProgramManagerId");
+		IsoResponse isoResponse = isoServiceDao.getIsoNameByProgramManagerId(pmId);
+		Response response = new Response();
+		if (isoResponse != null && !StringUtil.isNull(isoResponse.getIsoRequest())) {
+			List<Option> options = new ArrayList<>(isoResponse.getIsoRequest().size());
+			Option option = null;
+			for (IsoRequest isoRequest : isoResponse.getIsoRequest()) {
+				option = new Option();
+				option.setValue(isoRequest.getId().toString());
+				option.setLabel(isoRequest.getIsoName());
+				options.add(option);
+			}
+			response.setResponseList(options);
+			response.setErrorCode(PGConstants.SUCCESS);
+			response.setTotalNoOfRows(options.size());
+
+		}
+		logger.info("Exiting :: IsoServiceImpl :: findIsoNameByProgramManagerId");
+		return response;
+	}
+	
+	@Override
 	public IsoResponse changeStatus(IsoRequest isoRequest) throws  ChatakAdminException {
 		logger.info("Entering :: IsoServiceImpl :: changeStatus");
 		IsoResponse response = new IsoResponse();
@@ -461,4 +484,28 @@ public class IsoServiceImpl implements IsoService{
 		return isoServiceDao.findPmByIsoId(isoId);
 	}
 
+	@Override
+	public Response findIsoNameAndIdByEntityId(Long pmId) {
+		List<Response> list = isoServiceDao.findIsoNameAndIdByEntityId(pmId);
+		Response response = new Response();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			List<Option> options = new ArrayList<>(list.size());
+			Option option = null;
+			for (Response isoRequest : list) {
+				option = new Option();
+				option.setValue(isoRequest.getIsoId().toString());
+				option.setLabel(isoRequest.getIsoName());
+				options.add(option);
+			}
+			response.setResponseList(options);
+			response.setErrorCode(PGConstants.SUCCESS);
+			response.setTotalNoOfRows(options.size());
+
+		} else {
+			response.setErrorCode(ActionCode.ERROR_CODE_99);
+			response.setErrorMessage(StatusConstants.STATUS_MESSAGE_FAILED);
+		}
+		logger.info("Exiting :: IsoServiceImpl :: findIsoNameByCurrencyAndId");
+		return response;
+	}
 }

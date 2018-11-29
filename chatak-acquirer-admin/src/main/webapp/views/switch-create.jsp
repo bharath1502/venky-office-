@@ -75,7 +75,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createSwitch" commandName="switch" name="switch">
+								<form:form action="createSwitch" modelAttribute="switch" name="switch">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">	
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

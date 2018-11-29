@@ -83,7 +83,7 @@
 							<!--Success and Failure Message End-->
 							<!-- Page Form Start -->
 							<form:form action="do-virtual-terminal-adjust"
-								commandName="virtualTeminalAdjust" id="txnForm">
+								modelAttribute="virtualTeminalAdjust" id="txnForm">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12">
 									<div class="row">

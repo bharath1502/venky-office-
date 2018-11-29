@@ -124,7 +124,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createMerchant" commandName="merchant" name="merchant">
+								<form:form action="createMerchant" modelAttribute="merchant" name="merchant">
 								<input type="hidden" id="currencyCode" name="currencyCode">
 								<input type="hidden" id="cardProgramIds" name="cardProgramIds">
 								<input type="hidden" id="entitiesId" name="entitiesId">
@@ -648,6 +648,7 @@
 						getCardProgramByPmId(SelID);
 						entitiesId.push(SelID);
 						entityNameArr.push(SelText);
+						setDiv('programManagerNameIdEr', '');
 					}
 				}				
 			}else if(action == 'REMOVE'){
@@ -707,6 +708,7 @@
 			var selectedId = 'cpId' + cardProgramId + entityId;
 			
 			if($('#' + selectedId).is(":checked")){
+				$('#ambiguityFlag').text('');
 				cardProgramIdList.push(cardProgramId+'@'+entityId);
 				cardProgramArr.push(cardProgramName);
 				selectedCpId.push(parseInt(cardProgramId));

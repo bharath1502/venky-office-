@@ -706,6 +706,17 @@ public class ReportsController implements URLMappingConstants {
     logger.info("Exiting:: ReportsController:: showGlobalManualTransactionReport method");
     return modelAndView;
   }
+  
+	@RequestMapping(value = GLOBAL_MANUAL_TRANSACTION_REPORT, method = RequestMethod.GET)
+	public ModelAndView showGlobalManualTransactionReportGetMethod(HttpServletRequest request,
+			HttpServletResponse response, GetTransactionsListRequest getTransactionsListRequest,
+			BindingResult bindingResult, Map model, HttpSession session) {
+		logger.info("Entering:: ReportsController:: showGlobalManualTransactionReport method");
+		ModelAndView modelAndView = showGlobalManualTransReportsDates(request, response, getTransactionsListRequest, bindingResult,
+				model, session);
+		logger.info("Exiting:: ReportsController:: showGlobalManualTransactionReport method");
+		return modelAndView;
+	}
 
   @RequestMapping(value = GLOBAL_PENDING_TRANS_REPORT_DATES, method = RequestMethod.GET)
   public ModelAndView showAllPendingTransDate(HttpServletRequest request,

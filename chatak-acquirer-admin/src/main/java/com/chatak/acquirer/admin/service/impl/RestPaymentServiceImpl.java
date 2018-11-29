@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.exception.ChatakPayException;
 import com.chatak.acquirer.admin.service.RestPaymentService;
@@ -428,20 +429,20 @@ public class RestPaymentServiceImpl implements RestPaymentService {
           getTransactionResponse.setCardNum(EncryptionUtil.decrypt(pgTransaction.getPan()));
           getTransactionResponse.setCardNumMasked(pgTransaction.getPanMasked());
           Long refundedAmount =
-              refundTransactionDao.getRefundedAmountOnTxnId(pgTransaction.getTransactionId());
-          getTransactionResponse = getAmountOnRefundAmount(pgTransaction, getTransactionResponse, refundedAmount);
+              refundTransactionDao.getRefundedAmountOnTxnId(pgTransaction.getId().toString());
+          getAmountOnRefundAmount(pgTransaction, getTransactionResponse, refundedAmount);
           getTransactionResponse.setInvoiceNumber(pgTransaction.getInvoiceNumber());
           getTransactionResponse.setMerchantId(pgTransaction.getMerchantId());
           getTransactionResponse.setTerminalId(pgTransaction.getTerminalId());
 
-          getTransactionResponse = getTxnDoubleAmount(pgTransaction, getTransactionResponse, refundedAmount);
+          getTxnDoubleAmount(pgTransaction, getTransactionResponse, refundedAmount);
           
           getTransactionResponse
               .setTaxAmt(CommonUtil.getDoubleAmount(pgTransaction.getTxnAmount()));
           getTransactionResponse.setCardHolderName(pgTransaction.getCardHolderName());
           getTransactionResponse.setExpDate(
               pgTransaction.getExpDate() == null ? "" : pgTransaction.getExpDate().toString());
-          getTransactionResponse.setTxnRefNum(pgTransaction.getTransactionId());
+          getTransactionResponse.setTxnRefNum(pgTransaction.getId().toString());
           getTransactionResponse.setCgRefNumber(pgTransaction.getIssuerTxnRefNum());
           getTransactionResponse
               .setFeeAmount(CommonUtil.getDoubleAmount(pgTransaction.getFeeAmount()));
@@ -529,7 +530,7 @@ public class RestPaymentServiceImpl implements RestPaymentService {
         refundTransactionDao.getTransactionForVoidOrRefundByAccountTransactionId(
             transactionRequest.getAccountTransactionId(), transactionRequest.getMerchantId().toString());
     if (null != pgTransaction) {
-      transactionRequest.setTxnRefNumber(pgTransaction.getTransactionId());
+      transactionRequest.setTxnRefNumber(pgTransaction.getId().toString());
       transactionRequest.setOriginChannel(OriginalChannelEnum.ADMIN_WEB.value());
       transactionRequest.setCgRefNumber(pgTransaction.getIssuerTxnRefNum());
       transactionRequest.setTerminalId(pgTransaction.getTerminalId());
@@ -583,7 +584,7 @@ public class RestPaymentServiceImpl implements RestPaymentService {
           PGTransaction pgRefundTransaction = transactionDao.getTransaction(merchantId,
               merchantId.substring(merchantId.length() - Constants.EIGHT, merchantId.length()), refId);
           
-          getTransactionResponse = getTxnSubTotal(pgTransaction, getTransactionResponse, refundedAmount,
+          getTxnSubTotal(pgTransaction, getTransactionResponse, refundedAmount,
               pgRefundTransaction);
           
           getTransactionResponse.setAuthId(pgTransaction.getAuthId());
@@ -635,4 +636,27 @@ public class RestPaymentServiceImpl implements RestPaymentService {
     return getTransactionResponse;
   }
 
+  @Override
+  public GetMerchantDetailsResponse getMerchantIdAndTerminalIdOnEntityType(String merchantCode, String entityType, Long entityId) {
+	PGMerchant pgMerchant = merchantUpdateDao.getMerchantOnCodeAndEntityDetails(merchantCode, entityType, entityId);
+    GetMerchantDetailsResponse merchantDetailsResponse = new GetMerchantDetailsResponse();
+    if (!StringUtil.isNull(pgMerchant)) {
+      PGTerminal pgTerminal = terminalDao.getTerminalonMerchantCode(pgMerchant.getId());
+      if (pgTerminal != null) {
+        merchantDetailsResponse.setMerchantId(pgMerchant.getMerchantCode());
+        merchantDetailsResponse.setTerminalId(pgTerminal.getTerminalId().toString());
+        merchantDetailsResponse.setErrorCode(Constants.SUCCESS_CODE);
+      } else {
+        merchantDetailsResponse.setErrorCode(Constants.ERROR_CODE);
+        merchantDetailsResponse.setErrorMessage(
+            messageSource.getMessage("chatak.admin.virtual.terminal.invalid.merchant", null,
+                LocaleContextHolder.getLocale()));
+      }
+    } else {
+      merchantDetailsResponse.setErrorCode(Constants.ERROR_CODE);
+      merchantDetailsResponse.setErrorMessage(messageSource.getMessage(
+          "chatak.admin.virtual.terminal.invalid.merchant", null, LocaleContextHolder.getLocale()));
+    }
+    return merchantDetailsResponse;
+  }
 }

@@ -123,10 +123,7 @@ public abstract class BaseController {
         .info("validateProcessRequest :: origin channel: " + transactionRequest.getOriginChannel());
 
     PGMerchant pgMerchant = null;
-    if (transactionRequest.getOriginChannel() != null
-        && (transactionRequest.getOriginChannel().equals(OriginalChannelEnum.ADMIN_WEB.value())
-            || transactionRequest.getOriginChannel()
-                .equals(OriginalChannelEnum.MERCHANT_WEB.value()))) {
+    if (isRequestFromWeb(transactionRequest)) {
       logger.info("validateProcessRequest :: origin channel: VT");
 
       pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
@@ -137,17 +134,18 @@ public abstract class BaseController {
       String mock = Properties.getProperty("tms.mock");
       logger.info(">>>>>>> Issuance Mock Flag: " + mock);
       if ("true".equals(mock)) {
-    	  pgMerchant = getMerchantOnCode(transactionRequest, pgMerchant, null);
+    	  pgMerchant = getMerchantOnCode(transactionRequest,null);
       } else {
     	  
         TSMRequest request = new TSMRequest();
         request.setMerchantCode(transactionRequest.getMerchantCode());
         request.setTid(transactionRequest.getTerminalId());
+        request.setDeviceSerial(transactionRequest.getDeviceSerial());
   
         String output = (String) JsonUtil.sendToTSM(String.class, request,
                 Properties.getProperty("chatak-tsm.service.fetch.merchant.tid"));
         TSMResponse tsmResponse =mapper.readValue(output, TSMResponse.class);
-        pgMerchant = getMerchantOnCode(transactionRequest, pgMerchant, tsmResponse);
+        pgMerchant = getMerchantOnCode(transactionRequest,tsmResponse);
       }
     }
 
@@ -197,25 +195,33 @@ public abstract class BaseController {
     return pgMerchant;
   }
 
-  private PGMerchant getMerchantOnCode(TransactionRequest transactionRequest, PGMerchant pgMerchant,
-      TSMResponse tsmResponse) throws InvalidRequestException {
+  private boolean isRequestFromWeb(TransactionRequest transactionRequest) {
+    return transactionRequest.getOriginChannel() != null && (transactionRequest.getOriginChannel()
+        .equals(OriginalChannelEnum.ADMIN_WEB.value())
+        || transactionRequest.getOriginChannel().equals(OriginalChannelEnum.MERCHANT_WEB.value()));
+  }
 
+  private PGMerchant getMerchantOnCode(TransactionRequest transactionRequest,
+      TSMResponse tsmResponse) throws InvalidRequestException {
+	  PGMerchant pgMerchant = null;
 	  String mock = Properties.getProperty("tms.mock");
       logger.info(">>>>>>> Issuance Mock Flag: "+mock);
       if ("true".equals(mock)) {
     	  pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
     	  
       } else {
-			if (tsmResponse.getErrorCode() != null && tsmResponse.getErrorCode().equals("0")
-					&& tsmResponse.getErrorMessage() != null
-					&& tsmResponse.getErrorMessage().equalsIgnoreCase("success")) {
-				pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
-				logger.info("validateProcessRequest :: validated mPOS");
+			if(tsmResponse!=null){
+				if (tsmResponse.getErrorCode() != null && tsmResponse.getErrorCode().equals("0")
+						&& tsmResponse.getErrorMessage() != null
+						&& tsmResponse.getErrorMessage().equalsIgnoreCase("success")) {
+					pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
+					logger.info("validateProcessRequest :: validated mPOS");
 
-			} else {
-				logger.info("Invalid Merchant/Terminal ID: " + transactionRequest.getMerchantCode());
-				throw new InvalidRequestException(ChatakPayErrorCode.TXN_0114.name(),
-						ChatakPayErrorCode.TXN_0114.value());
+				} else {
+					logger.info("Invalid Merchant/Terminal ID: " + transactionRequest.getMerchantCode());
+					throw new InvalidRequestException(ChatakPayErrorCode.TXN_0114.name(),
+							ChatakPayErrorCode.TXN_0114.value());
+				}
 			}
       }
 	  

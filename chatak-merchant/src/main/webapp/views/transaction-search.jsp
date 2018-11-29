@@ -64,7 +64,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="searchTransaction" commandName="transaction"  name="transaction">
+								<form:form action="searchTransaction" modelAttribute="transaction"  name="transaction">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

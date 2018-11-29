@@ -535,4 +535,16 @@ public class TransactionServiceImpl implements TransactionService {
       GetTransactionsListRequest getTransactionsListRequest) {
     return accountTransactionsDao.getManulAccountTransactions(getTransactionsListRequest);
   }
+
+  @Override
+  public GetTransactionsListResponse searchAccountTransactionsForEntityId(
+		  GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType) {
+	  return accountTransactionsDao.searchAccountTransactionsForEntityId(getTransactionsListRequest, entityId, userType);
+  }
+
+  @Override
+  public GetTransactionsListResponse searchManualAccountTransactionsForEntityId(
+		  GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType) {
+	  return accountTransactionsDao.searchManualAccountTransactionsForEntityId(getTransactionsListRequest, entityId, userType);
+  }
 }

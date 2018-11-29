@@ -91,7 +91,7 @@
 							</div>
 						</div>
 					</div>
-					<form:form action="process-transfer-action" commandName="fundTransferActionModel" name="fundTransferActionModel" method="post">
+					<form:form action="process-transfer-action" modelAttribute="fundTransferActionModel" name="fundTransferActionModel" method="post">
 						<form:hidden path="pgTransfersId" id="pgTransfersId" />
 						<form:hidden path="action" id="action" />
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
@@ -107,7 +107,7 @@
 					</form>
 					
 					<form:form action="process-dash-board-settlement-action"
-						commandName="settlementDto" name="processAction" method="post">
+						modelAttribute="settlementDto" name="processAction" method="post">
 						<form:hidden path="merchantId" id="merchantId" />
 						<form:hidden path="terminalId" id="terminalId" />
 						<form:hidden path="txnId" id="txnId" />
@@ -401,20 +401,20 @@
 		}
 		/* Common Navigation Include End */
 		/* DatePicker Javascript Strat*/
-	/* 	$(document).ready(function() {
+		$(document).ready(function() {
 			$(".focus-field").click(function() {
 				$(this).children('.effectiveDate').focus();
 			});
 
-			$('.effectiveDate').datetimepicker({
+			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',
 				formatDate : 'Y/m/d',
-			});
+			}); */
 			$('#my_popup').popup({
 				blur : false
 			});
-		}); */
+		}); 
 
 
 
@@ -423,11 +423,13 @@
 			$(".focus-field").click(function() {
 				$(this).children('.effectiveDate').focus();
 			});
-			$('.effectiveDate').datetimepicker({
+			/* rome(transFromDate, { time: false });
+			rome(transToDate, { time: false }); */
+			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'm/d/Y',
 				formatDate : 'Y/m/d',
-			});
+			}); */
 			$('#my_popup').popup({
 				blur : false
 			});

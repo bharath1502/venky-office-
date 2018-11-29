@@ -18,8 +18,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+ <link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -94,7 +93,7 @@
 					<%-- <form action="editMerchant" name="editMercahntForm" method="post">
 						<input type="hidden" id="getMerchantId" name="getMerchantId" />
 					</form> --%>
-					<form:form action="process-eft-dash-board-settlement-action" commandName="litleEFTDTO" name="processAction" method="post">
+					<form:form action="process-eft-dash-board-settlement-action" modelAttribute="litleEFTDTO" name="processAction" method="post">
 						<form:hidden path="merchantCode" id="merchantId" />
 						<form:hidden path="transactionId" id="transactionId" />
 						<form:hidden path="amount" id="amount" />
@@ -264,7 +263,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
 	<script src="../js/sortable.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	  <script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
@@ -285,12 +284,13 @@
 			$(".focus-field").click(function() {
 				$(this).children('.effectiveDate').focus();
 			});
-			$("#navListId5").addClass("active-background");
+		/* 	rome(startDate, { time: false }); */
+			/* $("#navListId5").addClass("active-background");
 			$('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'm/d/Y',
 				formatDate : 'Y/m/d',
-			});
+			}); */
 			
 			$('#my_popup').popup({
 				blur : false

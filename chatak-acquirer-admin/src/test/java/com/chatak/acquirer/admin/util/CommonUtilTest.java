@@ -1,32 +1,47 @@
 package com.chatak.acquirer.admin.util;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.Properties;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CommonUtilTest {
 
 	@InjectMocks
 	CommonUtil commonUtil;
 
+	@Mock
+	Constants constants;
+
+	@Before
+	public void init() {
+		java.util.Properties propsExportedLocal = new java.util.Properties();
+		propsExportedLocal.setProperty("max.download.limit", "12");
+		Properties.mergeProperties(propsExportedLocal);
+	}
+	
 	@Test
 	public void testIsNullAndEmpty() {
 		commonUtil.isNullAndEmpty("54");
 	}
 
 	@Test
-	public void testGenerateRandomNumber() {
+	public void testGenerateRandomNumber() throws NoSuchAlgorithmException {
 		commonUtil.generateRandomNumber(1);
 	}
 
 	public void testIsListNotNullAndEmpty() {
-		List list = new ArrayList();
+        List list = new ArrayList();
 		commonUtil.isListNotNullAndEmpty(list);
 	}
 
@@ -47,7 +62,7 @@ public class CommonUtilTest {
 	}
 
 	@Test
-	public void testGenerateRandNumeric() {
+	public void testGenerateRandNumeric() throws NoSuchAlgorithmException {
 		commonUtil.generateRandNumeric(1);
 	}
 
@@ -66,14 +81,8 @@ public class CommonUtilTest {
 		commonUtil.getCurrentDate();
 	}
 
-	@Test(expected=NumberFormatException.class)
-	public void testGenerateNumericString() {
-		commonUtil.generateNumericString(Integer.parseInt("534"));
-
-	}
-
 	@Test
-	public void testGenerateAlphaNumericString() {
+	public void testGenerateAlphaNumericString() throws NumberFormatException, NoSuchAlgorithmException {
 		commonUtil.generateAlphaNumericString(Integer.parseInt("534"));
 
 	}

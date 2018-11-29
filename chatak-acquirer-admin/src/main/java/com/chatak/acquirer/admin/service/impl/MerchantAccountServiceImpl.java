@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import com.chatak.pg.acq.dao.AccountTransactionsDao;
 import com.chatak.pg.acq.dao.CurrencyConfigDao;
 import com.chatak.pg.acq.dao.CurrencyDao;
 import com.chatak.pg.acq.dao.MerchantDao;
+import com.chatak.pg.acq.dao.MerchantEntityMapDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
@@ -37,6 +39,7 @@ import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.model.AccountBalanceReportDTO;
 import com.chatak.pg.model.Merchant;
@@ -94,6 +97,9 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
   @Autowired
   MerchantUpdateDao merchantUpdateDao;
   
+  @Autowired
+  MerchantEntityMapDao merchantEntityMapDao;
+  
   @Override
   public Merchant getMerchantAccountDetails(String merchantCode) throws ChatakAdminException {
     Merchant merchant = new Merchant();
@@ -125,9 +131,15 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
   }
 
   @Override
-  public AccountBalanceDTO getAccountBalanceDTO(String merchantId) {
+  public AccountBalanceDTO getAccountBalanceDTO(String merchantId, Long entityId, String userType) throws NoSuchMessageException, ChatakAdminException, PrepaidAdminException {
     logger.info("Entering:: MerchantServiceImpl:: getAccountBalanceDTO method");
-    PGMerchant pgMerchant = merchantUpdateDao.getMerchant(merchantId);
+    PGMerchant pgMerchant = null;
+     pgMerchant = merchantUpdateDao.getMerchantOnCodeAndEntityDetails(merchantId, userType, entityId);
+      if (StringUtils.isNull(pgMerchant)) {
+        throw new ChatakAdminException(Constants.MERCHANT_NOT_ASSOCIATED,messageSource.getMessage(Constants.MERCHANT_NOT_ASSOCIATED, null, LocaleContextHolder.getLocale()));
+      }
+    
+    pgMerchant = merchantUpdateDao.getMerchant(merchantId);
     PGAccount pgAccount = accountDao.getPgAccount(merchantId);
     PGCurrencyConfig pgCurrencyConfig =
         currencyConfigDao.getCurrencyCodeNumeric(pgMerchant.getLocalCurrency());
@@ -156,19 +168,30 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
             .setCurrencySeparatorPosition(pgCurrencyConfig.getCurrencySeparatorPosition());
         accountBalanceDTO.setCurrencyMinorUnit(pgCurrencyConfig.getCurrencyMinorUnit());
         accountBalanceDTO.setCurrencyThousandsUnit(pgCurrencyConfig.getCurrencyThousandsUnit());
+        accountBalanceDTO
+		.setAvailableBalanceString(CommonUtil.formatAmountOnCurrency(pgAccount.getAvailableBalance().toString(),
+				pgCurrencyConfig.getCurrencyExponent(), pgCurrencyConfig.getCurrencySeparatorPosition(),
+				pgCurrencyConfig.getCurrencyMinorUnit(), pgCurrencyConfig.getCurrencyThousandsUnit()));
+        accountBalanceDTO
+		.setCurrentBalanceString(CommonUtil.formatAmountOnCurrency(pgAccount.getCurrentBalance().toString(),
+				pgCurrencyConfig.getCurrencyExponent(), pgCurrencyConfig.getCurrencySeparatorPosition(),
+				pgCurrencyConfig.getCurrencyMinorUnit(), pgCurrencyConfig.getCurrencyThousandsUnit()));
       } else {
         accountBalanceDTO.setErrorCode(Constants.ERROR_CODE);
         accountBalanceDTO.setErrorMessage(
             Properties.getProperty("chatak.admin.virtual.terminal.invalid.merchant"));
       }
       logger.info("Exiting:: MerchantServiceImpl:: getAccountBalanceDTO method");
+    } else {
+      accountBalanceDTO.setErrorCode(Constants.ERROR_CODE);
+      accountBalanceDTO.setErrorMessage(messageSource.getMessage("chatak.admin.virtual.terminal.invalid.merchant", null, LocaleContextHolder.getLocale()));
     }
     return accountBalanceDTO;
   }
 
   @Override
   public Response processMerchantAccountBalanceUpdate(
-      AccountBalanceDTO accountBalanceDTO, String type) {
+      AccountBalanceDTO accountBalanceDTO, String type) throws PrepaidAdminException {
     logger.info("Entering:: MerchantServiceImpl:: processMerchantAccountBalanceUpdate method");
     PGMerchant pgMerchant = merchantUpdateDao.getMerchant(accountBalanceDTO.getMerchantCode());
     PGAccount pgAccount = accountDao.getPgAccount(accountBalanceDTO.getMerchantCode());
@@ -212,7 +235,7 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
   }
 
 private Response processsPGAccount(AccountBalanceDTO accountBalanceDTO, String type, PGAccount pgAccount,
-		Response response) {
+		Response response) throws PrepaidAdminException {
 	if (pgAccount.getAvailableBalance() >= accountBalanceDTO.getInputAmount()) {
 	    pgAccount.setAvailableBalance(
 	        pgAccount.getAvailableBalance() - accountBalanceDTO.getInputAmount());
@@ -510,7 +533,7 @@ private void getMerchantAccountDto(Map<String, String> merchantDataMap,
   }
 
   public void logManualAccountTransaction(PGAccount account, Long amountToTransfer,
-      String transactionCode, AccountBalanceDTO accountBalanceDTO) {
+      String transactionCode, AccountBalanceDTO accountBalanceDTO) throws PrepaidAdminException {
     logger.info("Entering:: MerchantServiceImpl:: logManualAccountTransaction method");
     Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
     PGAccountTransactions pgAccountTransactions = new PGAccountTransactions();
@@ -549,15 +572,38 @@ private void getMerchantAccountDto(Map<String, String> merchantDataMap,
     accountTransactionsDao.createOrUpdate(pgAccountTransactions);
   }
 
-private String setTxnDescription(AccountBalanceDTO accountBalanceDTO, String amount) {
-	return CommonUtil.getCurrencyPattern(amount,
-			accountBalanceDTO.getCurrencySeparatorPosition(), accountBalanceDTO.getCurrencyThousandsUnit(),
-			accountBalanceDTO.getCurrencyExponent(), accountBalanceDTO.getCurrencyMinorUnit());
-}
+  private String setTxnDescription(AccountBalanceDTO accountBalanceDTO, String amount) throws PrepaidAdminException {
+	  return CommonUtil.formatAmountOnCurrency(amount, 
+			  accountBalanceDTO.getCurrencyExponent(),
+			  accountBalanceDTO.getCurrencySeparatorPosition(), 
+			  accountBalanceDTO.getCurrencyMinorUnit(),
+			  accountBalanceDTO.getCurrencyThousandsUnit());
+  }
 
   @Override
   public Map<String, String> getMerchantMapByMerchantType(String merchantType) {
     List<Map<String, String>> merchantList = merchantDao.getMerchantMapByMerchantType(merchantType);
+    Map<String, String> merchantMap = new HashMap<String, String>();
+    if (StringUtil.isListNotNullNEmpty(merchantList)) {
+      for (Map<String, String> map : merchantList) {
+        merchantMap.put(String.valueOf(map.get("0")), map.get("1"));
+      }
+    }
+    return merchantMap;
+  }
+  
+  @Override
+  public Map<String, String> getMerchantDataMapByMerchantType(String merchantType, Long entityId,
+      String loginUserType) {
+    List<Map<String, String>> merchantList = null;
+    if (loginUserType.equals(Constants.ADMIN_USER_TYPE)) {
+      merchantList = merchantDao.getMerchantMapByMerchantType(merchantType);
+    } else {
+      Map<String, String> merchantCodeListForPMOrIso =
+          merchantEntityMapDao.getMerchantCodeForPMOrIso(entityId, loginUserType);
+      return merchantCodeListForPMOrIso;
+    }
+
     Map<String, String> merchantMap = new HashMap<String, String>();
     if (StringUtil.isListNotNullNEmpty(merchantList)) {
       for (Map<String, String> map : merchantList) {

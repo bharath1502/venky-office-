@@ -54,12 +54,12 @@
 								class="glyphicon glyphicon-play icon-font-size"></span> <span
 								class="breadcrumb-text"><spring:message code="fund-transfer-check.label.sendfundsbycheck"/></span>
 						</div>
-						<form:form commandName="fundTransferDTO"
+						<form:form modelAttribute="fundTransferDTO"
 							action="check-process-fund-transfer" method="post">
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 
 
-							<%-- <form:form commandName="" action="chatak_merchant_myprofile"
+							<%-- <form:form modelAttribute="" action="chatak_merchant_myprofile"
 							method="post"> --%>
 							<!--  -->
 							<!-- modelAttribute="userProfileRequest" -->

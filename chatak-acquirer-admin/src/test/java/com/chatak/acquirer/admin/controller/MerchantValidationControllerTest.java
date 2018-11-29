@@ -703,7 +703,7 @@ public class MerchantValidationControllerTest {
     merchantsData.add(merchantData);
     merchantSearchResponse.setMerchants(merchantsData);
     try {
-      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(merchantSearchResponse);
       Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class),
           Matchers.any(Locale.class))).thenReturn("abc");
@@ -725,7 +725,7 @@ public class MerchantValidationControllerTest {
     merchantsData.add(merchantData);
     merchantSearchResponse.setMerchants(merchantsData);
     try {
-      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(merchantSearchResponse);
       Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class),
           Matchers.any(Locale.class))).thenReturn("abc");
@@ -740,7 +740,7 @@ public class MerchantValidationControllerTest {
   @Test
   public void testDownloadMerchantReportException() {
     try {
-      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_REPORT)
           .sessionAttr(Constants.LOGIN_USER_TYPE, "superAdmin").sessionAttr("merchants", merchant));

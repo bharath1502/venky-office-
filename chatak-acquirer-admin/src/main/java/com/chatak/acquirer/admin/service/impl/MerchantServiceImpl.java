@@ -152,13 +152,13 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     addMerchantRequest.setPayOutAt(merchant.getPayOutAt());
     addMerchantRequest.setAllowAdvancedFraudFilter(merchant.getAllowAdvancedFraudFilter());
     
-    addMerchantRequest = getMerchantBankId(merchant, addMerchantRequest);
+    getMerchantBankId(merchant, addMerchantRequest);
     
     addMerchantRequest.setMcc(merchant.getMcc());
     addMerchantRequest.setDccEnable(merchant.getDccEnable());
     addMerchantRequest.setLocalCurrency(merchant.getLocalCurrency());
 
-    addMerchantRequest = getAutoTransferDetails(merchant, addMerchantRequest);
+    getAutoTransferDetails(merchant, addMerchantRequest);
 
     if (ProcessorType.LITLE.name().equals(merchant.getProcessor())) {
       addMerchantRequest.setLitleMID(merchant.getLitleMID());
@@ -314,7 +314,7 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     updateMerchantRequest.setMerchantCategory(merchant.getMerchantCategory());
     updateMerchantRequest.setPayOutAt(merchant.getPayOutAt());
     //END
-    updateMerchantRequest = getBankIdForMerchantUpdate(merchant, updateMerchantRequest);
+    getBankIdForMerchantUpdate(merchant, updateMerchantRequest);
     updateMerchantRequest.setResellerId(merchant.getResellerId());
     updateMerchantRequest.setProcessor(merchant.getProcessor());
     updateMerchantRequest.setRefunds(merchant.getRefunds());
@@ -332,12 +332,12 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     if (ProcessorType.LITLE.name().equals(merchant.getProcessor())) {
       updateMerchantRequest.setLitleMID(merchant.getLitleMID());
     }
-    updateMerchantRequest = getAutoTransaferDetailsForUpdate(merchant, updateMerchantRequest);
+    getAutoTransaferDetailsForUpdate(merchant, updateMerchantRequest);
     updateMerchantRequest.setCategory(
         (null == merchant.getCategory()) ? PGConstants.PRIMARY_ACCOUNT : merchant.getCategory());
     updateMerchantRequest.setMerchantCallBackURL(merchant.getMerchantCallBackURL());
     String password = PasswordHandler.getSystemGeneratedPassword(Constants.EIGHT);
-    updateMerchantRequest = setMerchantUserPassword(updateMerchantRequest, password);
+    setMerchantUserPassword(updateMerchantRequest, password);
     updateMerchantRequest.setBankAccountType(merchant.getBankAccountType());
     updateMerchantRequest.setBankAccountNumber(merchant.getBankAccountNumber());
     updateMerchantRequest.setBankCode(null);

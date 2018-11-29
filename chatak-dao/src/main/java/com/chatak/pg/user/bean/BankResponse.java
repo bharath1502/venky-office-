@@ -5,6 +5,10 @@ package com.chatak.pg.user.bean;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * @Author: Girmiti Software
  * @Date: Aug 1, 2016
@@ -13,6 +17,8 @@ import java.util.List;
  * @Comments:
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value=Include.NON_NULL)
 public class BankResponse extends Response {
 
   /**

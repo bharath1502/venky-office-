@@ -322,7 +322,7 @@ public class ReportGlobalController implements URLMappingConstants {
       merchant.setPageIndex(pageNumber);
       merchant.setNoOfRecords(totalRecords);
       merchant.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
-      modelAndView = paginationReport(pageNumber, modelAndView, merchant);
+      paginationReport(pageNumber, modelAndView, merchant);
     } catch (Exception e) {
       logger.error("ERROR:: MerchantController:: getStatementPaginationList method", e);
       modelAndView.addObject(Constants.ERROR,
@@ -652,11 +652,11 @@ public class ReportGlobalController implements URLMappingConstants {
     transactionsListRequest.setTo_date(toDate);
     transactionsListRequest.setSettlementStatus(Constants.EXECUTED_STATUS);
     transactionsListRequest.setEntryMode(revenueType);
-    transactionsListRequest = setMerchantCode(merchantCode, transactionsListRequest);
+    setMerchantCode(merchantCode, transactionsListRequest);
     try {
       List<ReportsDTO> revenueGeneratedReportList =
           transactionService.getAllExecutedAccTransFeeOnDate(transactionsListRequest);
-      modelAndView = setRevenueReportModel(session, currency,
+      setRevenueReportModel(session, currency,
           modelAndView, revenueGeneratedReportList, transactionsListRequest);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
@@ -692,7 +692,7 @@ public class ReportGlobalController implements URLMappingConstants {
 
         reportsDto.setTxnJsonString(JsonUtil.convertObjectToJSON(reportsDto.getTxnPopupDto()));
       }
-      modelAndView = setRevenueType(request.getEntryMode(), modelAndView);
+      setRevenueType(request.getEntryMode(), modelAndView);
       session.setAttribute(Constants.REVENUE_GENERATED_REPORT_LIST, revenueGeneratedReportList);
       modelAndView.addObject(Constants.TRANSACTION_DIV, Boolean.TRUE);
       modelAndView.addObject("startDate", request.getFrom_date());

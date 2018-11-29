@@ -76,4 +76,8 @@ public interface MerchantUpdateDao {
   public List<PGMerchantEntityMap> findByEntityIdAndEntitytype(Long entityId, String entityType);
   
   public PGMerchant getMerchantAutoSettlementByCode(String merchantCode);
+  
+  public List<PGMerchant> getPmMerchantByEntityIdandEntityType(Long entityId, String entityType);
+
+  public PGMerchant getMerchantOnCodeAndEntityDetails(String merchantCode, String entityType, Long entityId);
 }

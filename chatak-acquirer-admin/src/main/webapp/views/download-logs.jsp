@@ -19,7 +19,6 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/split-fee-program.css" rel="stylesheet">
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -139,6 +138,7 @@
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
+	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/feeprogram.js"></script>
 	<script src="../js/validation.js"></script>

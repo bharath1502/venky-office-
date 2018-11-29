@@ -73,7 +73,7 @@
 							</div>
 							<!--Success and Failure Message End-->
 							<!-- Page Form Start -->
-							<form:form action="authenticate" commandName="loginDetails"
+							<form:form action="authenticate" modelAttribute="loginDetails"
 								name="loginDetails">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<form:hidden id="timeZoneRegion" path="timeZoneRegion" />

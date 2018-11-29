@@ -56,7 +56,7 @@
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder padding0">
-						<form:form action="updateAdvancedFraud" commandName="advancedFraudDTO" name="advancedFraudDTO" method="post">
+						<form:form action="updateAdvancedFraud" modelAttribute="advancedFraudDTO" name="advancedFraudDTO" method="post">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 						<form:hidden path="id"/>
 						<form:hidden path="merchantCode"/>

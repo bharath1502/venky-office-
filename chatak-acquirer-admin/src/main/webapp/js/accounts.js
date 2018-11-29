@@ -28,13 +28,13 @@ function doAjaxFetchAccountDetails() {
 				success : function(response) {
 					var obj = JSON.parse(response);
 					if (obj.errorCode === '00') {
-						
+						setDiv("errorMsgDiv", "");
 						get('merchantName').value = obj.merchantName;
 						get('accountNumber').value = obj.accountNumber;
-						get('availableBalance').value = obj.availableBalance/100;
-						currencyId = "availableBalance";
-						get('currentBalance').value = obj.currentBalance/100;
-						currentbalId = "currentBalance";
+						get('availableBalanceString').value = obj.availableBalanceString;
+						currencyId = "availableBalanceString";
+						get('currentBalanceString').value = obj.currentBalanceString;
+						currentbalId = "currentBalanceString";
 						get('availableBalCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
 						get('currentBalCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
 						get('inputAmtCurrencyAlpha').innerHTML = obj.merchantCurrencyAlpha;
@@ -42,11 +42,8 @@ function doAjaxFetchAccountDetails() {
 						currencySeparatorPosition = obj.currencySeparatorPosition;
 						currencyMinorUnit = obj.currencyMinorUnit;
 						currencyThousandsUnit = obj.currencyThousandsUnit;
-						formatNum(currencyId);
-						formatNum(currentbalId);
-						if($("#errorMsgDiv").text() == webMessages.MerchantOrSubMerchantAccountStatusTerminated){
-							setDiv("errorMsgDiv", "");
-						}
+						$("#"+currencyId).val(obj.availableBalanceString);
+						$("#"+currentbalId).val(obj.currentBalanceString);
 						if($("#errorMsgDiv").text() != ""){
 							setDiv("errorMsgDiv", $("#errorMsgDiv").text());
 						}
@@ -54,18 +51,16 @@ function doAjaxFetchAccountDetails() {
 						$("#hideSearchButton").fadeOut();
 						document.getElementById("merchantIdDiv").readOnly = true;
 						} else {
-						setDiv(
-								"errorMsgDiv",
-								webMessages.MerchantOrSubMerchantAccountStatusTerminated);
+						setDiv("errorMsgDiv",obj.errorMessage);
 					}
 				},
 				error : function(e) {
-					alert(e);
 				}
 			});
 }
 
 function validInputAmount(id, divId) {
+	var regex = /^\d{1,10}(\.\d{1,2})?$/;
 	var val = getVal(id);
 	if (isEmpty(val)) {
 		setDiv(divId, webMessages.validationthisfieldismandatory);
@@ -74,11 +69,12 @@ function validInputAmount(id, divId) {
 	} else if (val == 0) {
 		setDiv(divId, webMessages.shouldbegreaterthanzero);
 		return false;
-	}
-	
-	else {
-		setDiv(divId, "");
+	} else if(regex.test(val)){
+		setDiv(divId, "");		
 		return true;
+	} else {
+		setDiv(divId, webMessages.InvalidAmount);		
+		return false;
 	}
 }
 
@@ -113,23 +109,16 @@ function validateDebit() {
 }
 
 function convertToLongValue() {
-	var availableBal = (get('availableBalance').value);
-	availableBal = availableBal.replace(/[,.']+/g,"");
-	get('availableBal').value = Math.trunc(availableBal);
-	var currentBal = (get('currentBalance').value);
-	currentBal = currentBal.replace(/[,.']+/g,"");
-	get('currentBal').value = Math.trunc(currentBal);
-	//var inputVal = (get('inputAmount').value);
 	var globalInput = (get('inputAmount').value);
-	globalInput = globalInput.replace(/[,.']+/g,"");
-	get('inputAmt').value = Math.trunc(globalInput);
+	//Convert input amount in cents
+	get('inputAmt').value = globalInput * 100;
 	return true;
 
 }
 
 function validInputDebitAmount(id, divId) {
 	var val = getVal(id);
-	var availableBal = get('availableBalance').value;
+	var availableBal = get('availableBalanceString').value;
 	var regex = /^[0-9]*\.[0-9]{2}$/;
 
 	if (isEmpty(val)) {
@@ -199,14 +188,7 @@ function formatNum(testid) {
 }
 function amountFmt()
 {
-	var amtval = $("#avlamt").val();
-	var curamt = $("#curamt").val();
-	
-	if(null != amtval && amtval != "" && null != curamt && curamt != ""){
-		formatNum("avlamt");
-		formatNum("curamt");
-		$("#hideAllFields").hide();
-	}
+	$("#hideAllFields").hide();
 	
 }
 

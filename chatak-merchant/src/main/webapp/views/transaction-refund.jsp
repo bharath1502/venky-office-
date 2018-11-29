@@ -74,7 +74,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="process-transaction-refund" commandName="virtualTeminalRefund" id="txnForm">
+								<form:form action="process-transaction-refund" modelAttribute="virtualTeminalRefund" id="txnForm">
 								<input type="hidden" id="timeZoneOffset" name="timeZoneOffset"/>
 								<input type="hidden" id="timeZoneRegion" name="timeZoneRegion"/>
 								<input type="hidden" name="CSRFToken" value="${tokenval}">

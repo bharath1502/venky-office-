@@ -43,7 +43,7 @@ public class OAuthToken implements Serializable {
   
   private List<String> scope;
   
-  private Map additionalInformation;
+  private transient Map additionalInformation;
   
   private Boolean expired;
   

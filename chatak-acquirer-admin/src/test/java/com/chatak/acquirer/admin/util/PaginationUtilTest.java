@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.servlet.ModelAndView;
 
+@SuppressWarnings({"static-access"})
 @RunWith(MockitoJUnitRunner.class)
 public class PaginationUtilTest {
 

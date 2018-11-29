@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -39,7 +40,6 @@ import com.chatak.pg.model.BinDTO;
 import com.chatak.pg.model.BinResponse;
 import com.chatak.pg.user.bean.SwitchRequest;
 import com.chatak.pg.user.bean.SwitchResponse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BinControllerTest {
@@ -121,7 +121,7 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testShowBinSearch | Exception ", e);
@@ -135,7 +135,7 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BinControllerTest | testShowBinSearchException | Exception ", e);
@@ -149,8 +149,8 @@ public class BinControllerTest {
     Mockito.when(binService.searchBins(Matchers.any(BinDTO.class))).thenReturn(binResponseList);
     try {
       mockMvc
-          .perform(post("/" + URLMappingConstants.ONUS_BIN_SEARCH).sessionAttr(Constants.EXISTING_FEATURES,
-              Constants.EXISTING_FEATURES))
+          .perform(post("/" + URLMappingConstants.ONUS_BIN_SEARCH).sessionAttr(TestConstants.EXISTING_FEATURES,
+              TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testProcessBinSearch | Exception ", e);
@@ -163,8 +163,8 @@ public class BinControllerTest {
         .thenThrow(nullPointerException);
     try {
       mockMvc
-          .perform(post("/" + URLMappingConstants.ONUS_BIN_SEARCH).sessionAttr(Constants.EXISTING_FEATURES,
-              Constants.EXISTING_FEATURES))
+          .perform(post("/" + URLMappingConstants.ONUS_BIN_SEARCH).sessionAttr(TestConstants.EXISTING_FEATURES,
+              TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testProcessBinSearchException | Exception ", e);
@@ -178,7 +178,7 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.ONUS_BIN_CREATE_SHOW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CREATE));
     } catch (Exception e) {
       logger.error("BankControllerTest | testSaveBin | Exception ", e);
@@ -192,7 +192,7 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.ONUS_BIN_CREATE_SHOW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CREATE));
     } catch (Exception e) {
       logger.error("BankControllerTest | testSaveBinException | Exception ", e);
@@ -207,7 +207,7 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_SAVE_PROCESS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testSaveBinProcess | Exception ", e);
@@ -222,7 +222,7 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_SAVE_PROCESS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testSaveBinProcessElse | Exception ", e);
@@ -238,7 +238,7 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_SAVE_PROCESS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testSaveBinProcessException | Exception ", e);
@@ -255,8 +255,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_EDIT));
     } catch (Exception e) {
       logger.error("BankControllerTest | testEditBin | Exception ", e);
@@ -270,8 +270,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_EDIT));
     } catch (Exception e) {
       logger.error("BankControllerTest | testEditBinException | Exception ", e);
@@ -288,8 +288,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_VIEW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testEditView | Exception ", e);
@@ -303,8 +303,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_VIEW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testEditViewException | Exception ", e);
@@ -319,8 +319,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_UPDATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testUpdateBin | Exception ", e);
@@ -335,8 +335,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_UPDATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testUpdateBinElse | Exception ", e);
@@ -352,8 +352,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_UPDATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testUpdateBinException | Exception ", e);
@@ -369,8 +369,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_DELETE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testBinDelete | Exception ", e);
@@ -386,8 +386,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_DELETE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testBinDeleteElse | Exception ", e);
@@ -403,8 +403,8 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_DELETE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(GET_BIN_ID,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(GET_BIN_ID,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testBinDeleteException | Exception ", e);
@@ -415,18 +415,18 @@ public class BinControllerTest {
   public void testGetPaginationList() throws ChatakAdminException {
     binResponseList = new BinResponse();
     binResponseList.setBins(bins);
-    binDTO.setPageSize(Constants.TEN);
-    binResponseList.setNoOfRecords(Constants.TEN);
+    binDTO.setPageSize(TestConstants.TEN);
+    binResponseList.setNoOfRecords(TestConstants.TEN);
     Mockito.when(binService.searchBins(Matchers.any(BinDTO.class))).thenReturn(binResponseList);
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.GET_BINS_FOR_PAGINATIONS)
-              .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.TOTAL_RECORDS, Constants.TEN.toString())
-              .param(GET_BIN_ID, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
-              .param("pageNumber", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
+              .param(GET_BIN_ID, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
+              .param("pageNumber", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testGetPaginationList | Exception ", e);
@@ -439,12 +439,12 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.GET_BINS_FOR_PAGINATIONS)
-              .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.TOTAL_RECORDS, Constants.TEN.toString())
-              .param(GET_BIN_ID, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
-              .param("pageNumber", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
+              .param(GET_BIN_ID, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
+              .param("pageNumber", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
       logger.error("BankControllerTest | testGetPaginationListException | Exception ", e);
@@ -455,15 +455,15 @@ public class BinControllerTest {
   public void testDownloadBinReport() throws ChatakAdminException {
     binResponseList = new BinResponse();
     binResponseList.setBins(bins);
-    binDTO.setPageSize(Constants.TEN);
-    binResponseList.setNoOfRecords(Constants.TEN);
+    binDTO.setPageSize(TestConstants.TEN);
+    binResponseList.setNoOfRecords(TestConstants.TEN);
     Mockito.when(binService.searchBins(Matchers.any(BinDTO.class))).thenReturn(binResponseList);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.GET_BIN_REPORT)
-          .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true")
-          .param("downLoadPageNumber", "1").param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true")
+          .param("downLoadPageNumber", "1").param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error("BankControllerTest | testDownloadBinReport | Exception ", e);
     }
@@ -473,15 +473,15 @@ public class BinControllerTest {
   public void testDownloadBinReportPDF() throws ChatakAdminException {
     binResponseList = new BinResponse();
     binResponseList.setBins(bins);
-    binDTO.setPageSize(Constants.TEN);
-    binResponseList.setNoOfRecords(Constants.TEN);
+    binDTO.setPageSize(TestConstants.TEN);
+    binResponseList.setNoOfRecords(TestConstants.TEN);
     Mockito.when(binService.searchBins(Matchers.any(BinDTO.class))).thenReturn(binResponseList);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.GET_BIN_REPORT)
-          .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true")
-          .param("downLoadPageNumber", "1").param(Constants.DOWNLOAD_TYPE, "PDF"));
+          .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true")
+          .param("downLoadPageNumber", "1").param(TestConstants.DOWNLOAD_TYPE, "PDF"));
     } catch (Exception e) {
       logger.error("BankControllerTest | testDownloadBinReportPDF | Exception ", e);
     }
@@ -492,10 +492,10 @@ public class BinControllerTest {
     Mockito.when(binService.searchBins(Matchers.any(BinDTO.class))).thenThrow(nullPointerException);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.GET_BIN_REPORT)
-          .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true")
-          .param("downLoadPageNumber", "1").param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true")
+          .param("downLoadPageNumber", "1").param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error("BankControllerTest | testDownloadBinReportException | Exception ", e);
     }
@@ -506,9 +506,9 @@ public class BinControllerTest {
     Mockito.when(binService.validateBin(Matchers.anyLong())).thenReturn(reBinResponse);
     try {
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_UNIQUE_BIN_VALIDATE)
-          .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param("binId", Constants.ONE.toString()));
+          .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param("binId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("BankControllerTest | testValidateUniqueBinId | Exception ", e);
     }
@@ -519,9 +519,9 @@ public class BinControllerTest {
     Mockito.when(binService.validateBin(Matchers.anyLong())).thenThrow(nullPointerException);
     try {
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_UNIQUE_BIN_VALIDATE)
-          .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param("binId", Constants.ONE.toString()));
+          .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param("binId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("BankControllerTest | testValidateUniqueBinIdException | Exception ", e);
     }
@@ -536,9 +536,9 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.PAGE_NUMBER, Constants.ONE).param("suspendActiveId", "1")
+              .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.PAGE_NUMBER, TestConstants.ONE).param("suspendActiveId", "1")
               .param("suspendActiveStatus", "Active").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
@@ -555,9 +555,9 @@ public class BinControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.ONUS_BIN_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.PAGE_NUMBER, Constants.ONE).param("suspendActiveId", "1")
+              .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.PAGE_NUMBER, TestConstants.ONE).param("suspendActiveId", "1")
               .param("suspendActiveStatus", "Active").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.ONUS_BIN_CONFIGURATION_SHOW));
     } catch (Exception e) {
@@ -570,10 +570,10 @@ public class BinControllerTest {
     Mockito.when(binService.searchBins(Matchers.any(BinDTO.class))).thenThrow(nullPointerException);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.ONUS_BIN_ACTIVATION_SUSPENTION)
-          .sessionAttr(Constants.SEARCH_BIN_INFO, binDTO)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true")
-          .param("downLoadPageNumber", "1").param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.SEARCH_BIN_INFO, binDTO)
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true")
+          .param("downLoadPageNumber", "1").param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error("BankControllerTest | testChangeBinStatusException | Exception ", e);
     }

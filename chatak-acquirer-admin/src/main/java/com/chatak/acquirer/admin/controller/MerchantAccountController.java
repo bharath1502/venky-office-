@@ -3,6 +3,7 @@ package com.chatak.acquirer.admin.controller;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.MerchantAccountSearchResponse;
@@ -121,7 +123,7 @@ public class MerchantAccountController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
 
       merchantAccountService.getMerchantConfigDetailsForAccountCreate(merchant);
 
@@ -156,7 +158,7 @@ public class MerchantAccountController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
 
       setListOfOption(session, modelAndView);
 
@@ -456,12 +458,11 @@ public class MerchantAccountController implements URLMappingConstants {
         merchantAccountService.getMerchantConfigDetailsForAccountCreate(merchant);
         List<Option> countryList = merchantUpdateService.getCountries();
         modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-        session.setAttribute(Constants.COUNTRY_LIST, countryList);
+        session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
 
         Response stateList = merchantUpdateService.getStatesByCountry(merchant.getBankCountry());
         modelAndView.addObject("bankStateList", stateList.getResponseList());
-        session.setAttribute("bankStateList", stateList.getResponseList());
-
+        session.setAttribute("bankStateList", new ArrayList(stateList.getResponseList()));
         setListOfOption(session, modelAndView);
       }
 
@@ -478,11 +479,11 @@ public class MerchantAccountController implements URLMappingConstants {
   private void setListOfOption(HttpSession session, ModelAndView modelAndView) throws ChatakAdminException {
 	List<Option> options = merchantValidateService.getFeeProgramNames();
 	modelAndView.addObject("feeprogramnames", options);
-	session.setAttribute("feeprogramnames", options);
+	session.setAttribute("feeprogramnames", new ArrayList(options));
 
 	List<Option> processorNames = merchantValidateService.getProcessorNames();
 	modelAndView.addObject("processorNames", processorNames);
-	session.setAttribute("processorNames", processorNames);
+	session.setAttribute("processorNames",new ArrayList(processorNames));
   }
 
   @RequestMapping(value = CHATAK_MERCHANT_ACCOUNT_SEARCH_REPORT, method = RequestMethod.POST)
@@ -562,7 +563,13 @@ public class MerchantAccountController implements URLMappingConstants {
       @FormParam("totalRecords") final Integer totalRecords) {
     logger.info("Entering:: MerchantController:: showAllPendingMerchants method");
     ModelAndView modelAndView = new ModelAndView(SHOW_ALL_PENDING_MERCHANTS);
-    List<Merchant> merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute("loginResponse");
+    List<Merchant> merchants = new ArrayList<>();
+    if(loginResponse != null && loginResponse.getUserType().equals(PGConstants.ADMIN)){
+    	merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+    } else if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+    	merchants = merchantUpdateService.getPmMerchantByEntityIdandEntityType(loginResponse.getEntityId(), loginResponse.getUserType());
+	}
     modelAndView.addObject("pendingMerchants", merchants);
     session.setAttribute("totalRecords", merchants.size());
     return modelAndView;
@@ -590,8 +597,7 @@ public class MerchantAccountController implements URLMappingConstants {
       Map<String, String> merchantDataMap =
           merchantAccountService.getMerchantMapByMerchantType(PGConstants.MERCHANT);
       modelAndView.addObject("merchantDataMap", merchantDataMap);
-      session.setAttribute("merchantDataMap", merchantDataMap);
-
+      session.setAttribute("merchantDataMap", new HashMap(merchantDataMap));
       MerchantAccountSearchResponse searchResponse =
           merchantAccountService.searchMerchantAccount(merchantAccountSearchDto, merchantDataMap);
       modelAndView.addObject("searchResponse", searchResponse);
@@ -630,7 +636,7 @@ public class MerchantAccountController implements URLMappingConstants {
 
       if (null == merchantDataMap) {
         merchantDataMap = merchantAccountService.getMerchantMapByMerchantType(PGConstants.MERCHANT);
-        session.setAttribute("merchantDataMap", merchantDataMap);
+        session.setAttribute("merchantDataMap", new HashMap(merchantDataMap));
       }
 
       modelAndView.addObject("merchantDataMap", merchantDataMap);

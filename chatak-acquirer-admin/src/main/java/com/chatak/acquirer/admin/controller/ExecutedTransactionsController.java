@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.model.TransactionResponse;
 import com.chatak.acquirer.admin.service.RestPaymentService;
 import com.chatak.acquirer.admin.service.TransactionService;
@@ -67,8 +68,14 @@ public class ExecutedTransactionsController implements URLMappingConstants {
       transaction.setPageIndex(PGConstants.ONE);
       transaction.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
       transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-      GetTransactionsListResponse executedTxnList =
-          transactionService.searchAccountTransactions(transaction);
+      GetTransactionsListResponse executedTxnList = null;
+      LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+      if (loginResponse.getUserType().equals(Constants.PM_USER_TYPE)
+    		  || loginResponse.getUserType().equals(Constants.ISO_USER_TYPE)) {
+    	  executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, loginResponse.getEntityId(), loginResponse.getUserType());
+      } else {
+    	  executedTxnList = transactionService.searchAccountTransactions(transaction);
+      }
       if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
 
         setTransactionResponse(session, modelAndView, transactionResponse, executedTxnList);
@@ -110,6 +117,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_EXECUTED_TRANSACTIONS);
     GetTransactionsListRequest transaction = new GetTransactionsListRequest();
     TransactionResponse transactionResponse = new TransactionResponse();
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     try {
       transaction.setPageIndex(pageNumber);
       transaction.setNoOfRecords(totalRecords);
@@ -119,8 +127,14 @@ public class ExecutedTransactionsController implements URLMappingConstants {
 
       transaction.setTransactionCodeList(txnCodeList);
       transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-      GetTransactionsListResponse executedTxnList =
-          transactionService.searchAccountTransactions(transaction);
+      
+      GetTransactionsListResponse executedTxnList = null;
+      if (loginResponse.getUserType().equals(Constants.PM_USER_TYPE)
+    		  || loginResponse.getUserType().equals(Constants.ISO_USER_TYPE)) {
+    	  executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, loginResponse.getEntityId(), loginResponse.getUserType());
+      } else {
+    	  executedTxnList = transactionService.searchAccountTransactions(transaction);
+      }
       if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
 
         setTransactionResponse(session, modelAndView, transactionResponse, executedTxnList);
@@ -163,8 +177,8 @@ public class ExecutedTransactionsController implements URLMappingConstants {
     logger.info("Entering :: ExecutedTransactionsController :: executedTransactionsReport method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_EXECUTED_TRANSACTIONS);
 
-
-    List<AccountTransactionDTO> executedTxnsList = null;
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+    List<AccountTransactionDTO> executedTxnsList = new ArrayList<>();
     try {
       GetTransactionsListRequest transaction = null;
       TransactionResponse transactionResponse = null;
@@ -183,6 +197,8 @@ public class ExecutedTransactionsController implements URLMappingConstants {
         validateTxnCodeList(txnCodeList);
         transaction.setTransactionCodeList(txnCodeList);
         transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
+        transaction.setUserType(loginResponse.getUserType());
+        transaction.setEntityId(loginResponse.getEntityId());
         executedTxnsList = getTotalRecords(totalRecords, downloadAllRecords, executedTxnsList, transaction,
 				transactionResponse);
         ExportDetails exportDetails = new ExportDetails();
@@ -392,17 +408,21 @@ public class ExecutedTransactionsController implements URLMappingConstants {
       transaction.setPageIndex(Constants.ONE);
       transaction.setPageSize(totalRecords);
     }
-      GetTransactionsListResponse executedTxnList =
-          transactionService.searchAccountTransactions(transaction);
-      if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
-
-        transactionResponse.setAccountTxnList(executedTxnList.getAccountTransactionList());
-        transactionResponse.setErrorCode(executedTxnList.getErrorCode());
-        transactionResponse.setErrorMessage(executedTxnList.getErrorMessage());
-        transactionResponse.setTotalNoOfRows(executedTxnList.getTotalResultCount());
-        processingTxnList = transactionResponse.getAccountTxnList() != null
-            ? transactionResponse.getAccountTxnList() : new ArrayList<AccountTransactionDTO>();
-      }
+    GetTransactionsListResponse executedTxnList = null;
+    if (transaction.getUserType().equals(Constants.PM_USER_TYPE)
+    		|| transaction.getUserType().equals(Constants.ISO_USER_TYPE)) {
+    	executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, transaction.getEntityId(), transaction.getUserType());
+    } else {
+    	executedTxnList = transactionService.searchAccountTransactions(transaction);
+    }
+    if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
+    	transactionResponse.setAccountTxnList(executedTxnList.getAccountTransactionList());
+    	transactionResponse.setErrorCode(executedTxnList.getErrorCode());
+    	transactionResponse.setErrorMessage(executedTxnList.getErrorMessage());
+    	transactionResponse.setTotalNoOfRows(executedTxnList.getTotalResultCount());
+    	processingTxnList = transactionResponse.getAccountTxnList() != null
+    			? transactionResponse.getAccountTxnList() : new ArrayList<AccountTransactionDTO>();
+    }
     return processingTxnList;
   }
 
@@ -450,7 +470,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
           transaction.getCurrency(), transaction.getType(), transaction.getDescription().replace("\n" , " "),
           (!"".equals(transaction.getDebit())) ? Double.parseDouble(transaction.getDebit()) : transaction.getDebit(), 
           (!"".equals(transaction.getCredit())) ? Double.parseDouble(transaction.getCredit()) : transaction.getCredit(), 
-          Double.parseDouble(transaction.getCurrentBalance()),
+          (!"".equals(transaction.getCurrentBalance())) ? Double.parseDouble(transaction.getCurrentBalance()) : transaction.getCurrentBalance(), 
           transaction.getStatus()
 
       };

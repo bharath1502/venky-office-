@@ -7,7 +7,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pay.service.ChatakPayService;
@@ -31,10 +30,5 @@ public class ChatakServiceAccessUserDetailsServiceTest {
 		 Mockito.when(chatakPayService.getApplicationClient(Matchers.anyString())).thenReturn(pgApplicationClient);
 		chatakServiceAccessUserDetailsService.loadUserByUsername("54321");
 	}
-	
-	@Test(expected=UsernameNotFoundException.class)
-	public void testLoadUserByUsernameException() throws ChatakPayException{
-		Mockito.when(chatakPayService.getApplicationClient(Matchers.anyString())).thenThrow(ChatakPayException.class);
-		chatakServiceAccessUserDetailsService.loadUserByUsername("abcd");
-	}
+
 }

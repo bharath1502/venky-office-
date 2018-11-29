@@ -6,8 +6,8 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -34,10 +34,11 @@ public class EncryptionUtil {
    * 
    * @param length
    * @return String - random pin
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generatePin(int length) {
+  public static String generatePin(int length){
     String charString = "0123456789";
-    Random rnd = new Random();
+    SecureRandom rnd =new SecureRandom();
     StringBuilder sb = new StringBuilder(length);
     for(int i = 0; i < length; i++) {
       sb.append(charString.charAt(rnd.nextInt(charString.length())));
@@ -65,10 +66,11 @@ public class EncryptionUtil {
    * 
    * @param length
    * @return String
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generatePassword(int length) {
+  public static String generatePassword(int length){
     String charString = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    Random rnd = new Random();
+    SecureRandom rnd = new SecureRandom();
     StringBuilder sb = new StringBuilder(length);
     for(int i = 0; i < length; i++) {
       sb.append(charString.charAt(rnd.nextInt(charString.length())));
@@ -81,9 +83,10 @@ public class EncryptionUtil {
    * 
    * @param length
    * @return String
+   * @throws NoSuchAlgorithmException 
    */
-  public static String generateRandNumeric(int length) {
-    Random randomObj = new Random();
+  public static String generateRandNumeric(int length){
+    SecureRandom randomObj = new SecureRandom();
     String finalRandString = "";
     for(int j = 0; j < length; j++) {
       int rand_int = randomObj.nextInt(Constants.SEVENTYTWO);

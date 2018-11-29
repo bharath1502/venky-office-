@@ -23,6 +23,16 @@ public class GetMerchantDetailsResponse extends Response {
 	
 	private String businessName;
 	
+	private String createdBy;
+	
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	
 	/**
 	 * @return the merchantId
 	 */

@@ -59,6 +59,9 @@ public class PGSettlementTransaction implements Serializable {
 	@Column(name = "ISO_AMOUNT")
 	 private Long isoAmount;
 	
+	@Column(name = "TXN_TYPE")
+	 private String transactionType;
+	
 	public Long getId() {
 		return id;
 	}
@@ -121,6 +124,14 @@ public class PGSettlementTransaction implements Serializable {
 
 	public void setIssuanceSettlementEntityId(Long issuanceSettlementEntityId) {
 		this.issuanceSettlementEntityId = issuanceSettlementEntityId;
+	}
+
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
 	}
 
 }

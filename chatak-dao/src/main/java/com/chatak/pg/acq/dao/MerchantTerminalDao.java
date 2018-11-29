@@ -25,6 +25,6 @@ public interface MerchantTerminalDao {
 	 * @param merchantId
 	 * @return
 	 */
-	public PGMerchant validateMerchantId(String merchantId);
+	public PGMerchant validateMerchantId(String merchantId, Long entityId, String userType);
 	
 }

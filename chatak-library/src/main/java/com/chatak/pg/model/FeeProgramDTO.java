@@ -46,6 +46,26 @@ public class FeeProgramDTO extends SearchRequest {
   private double isoShare;
   
   private String cardProgramName;
+  
+  private Long entityId;
+  
+  private String userType;
+
+  public String getUserType() {
+    return userType;
+  }
+
+  public void setUserType(String userType) {
+    this.userType = userType;
+  }
+
+  public Long getEntityId() {
+    return entityId;
+  }
+
+  public void setEntityId(Long entityId) {
+    this.entityId = entityId;
+  }
 
   /**
    * @return the feeProgramId

@@ -60,4 +60,9 @@ public class AccountTransactionCode {
   
   public static final String CC_ISO_FEE_CREDIT = "CC_ISO_FEE_CREDIT";
   
+  public static final String CC_PM_FEE_DEBIT = "CC_PM_FEE_DEBIT";
+  
+  public static final String CC_ISO_FEE_DEBIT = "CC_ISO_FEE_DEBIT";
+
+  
 }

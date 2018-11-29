@@ -208,6 +208,18 @@ public class BlackListedCardController implements URLMappingConstants {
     logger.info("Exiting:: BlackListedCardController:: searchBlackListedCardInfo method");
     return modelAndView;
   }
+  
+	@RequestMapping(value = CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD, method = RequestMethod.GET)
+	public ModelAndView searchBlackListedCardInfoGetMethod(HttpServletRequest request, HttpServletResponse response,
+			BlackListedCardRequest searchBlackListedCardRequest, BindingResult bindingResult, Map model,
+			HttpSession session) {
+		logger.info("Entering:: BlackListedCardController:: searchBlackListedCardInfo method");
+		BindingResult bindingResultResp = null;
+		ModelAndView modelAndView = showSearchBlackListedCardPage(request, response, searchBlackListedCardRequest, bindingResultResp,
+				model, session);
+		logger.info("Exiting:: BlackListedCardController:: searchBlackListedCardInfo method");
+		return modelAndView;
+	}
 
   @RequestMapping(value = CHATAK_ADMIN_SHOW_EDIT_BLACKLISTED_CARD, method = RequestMethod.POST)
   public ModelAndView showEditBlackListedCard(HttpServletRequest request,

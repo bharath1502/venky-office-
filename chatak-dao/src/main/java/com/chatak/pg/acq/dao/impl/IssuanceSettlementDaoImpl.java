@@ -58,7 +58,7 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
 		// Save all individual transactions into IssuanceSettlementTransactions
 		
 		//Commented for Batch Inserts
-		/*issuanceSettlementEntityRepository.save(entity);*/
+		/*issuanceSettlementEntityRepository.save(entity)*/
 		
 		//JPA batch processing start
 		entityManager.setFlushMode(FlushModeType.COMMIT);
@@ -149,6 +149,7 @@ public class IssuanceSettlementDaoImpl implements IssuanceSettlementDao {
 	              issuanceSettlementTxns.setPgTransactionId(settlementTransaction.getPgTransactionId());
 	              issuanceSettlementTxns.setTerminalId(settlementTransaction.getTerminalId());
 	              issuanceSettlementTxns.setTxnDate(settlementTransaction.getTxnDate());
+	              issuanceSettlementTxns.setTxnType(settlementTransaction.getTransactionType());
 	              
 	              issuanceSettlementTransactions.add(issuanceSettlementTxns);           
 	          }

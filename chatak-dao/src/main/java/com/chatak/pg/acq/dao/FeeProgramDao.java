@@ -89,4 +89,6 @@ public interface FeeProgramDao {
 	
 	public List<PGAcquirerFeeValue> getAcquirerFeeValueByCardProgramId(Long cardProgramId);
 	
+	public List<FeeProgramDTO> fetchFeeProgramForPM(FeeProgramDTO feeProgramDTO) throws DataAccessException;
+	
 }

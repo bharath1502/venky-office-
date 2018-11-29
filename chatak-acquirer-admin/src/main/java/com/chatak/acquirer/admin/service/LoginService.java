@@ -10,6 +10,7 @@ import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.ResetPasswordData;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.UserProfileRequest;
+import com.chatak.pg.exception.PrepaidAdminUserNotActiveException;
 
 /**
  *
@@ -36,7 +37,7 @@ public interface LoginService {
  * @return
  * @throws ChatakAdminException
  */
-public Boolean changdPassword(Long userId,String currentPassword,String newPassword)throws ChatakAdminException;
+public Boolean changdPassword(Long userId,String currentPassword,String newPassword)throws ChatakAdminException, PrepaidAdminUserNotActiveException;
 
 /**
  * get User profile

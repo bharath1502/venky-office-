@@ -1,10 +1,12 @@
 package com.chatak.pg.acq.dao.impl;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,9 @@ import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.acq.dao.repository.MerchantTerminalRepository;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.util.CommonUtil;
-import com.mysema.query.jpa.impl.JPAQuery;
+import com.chatak.pg.util.Constants;
 
 @Repository("merchantTerminalDao")
 public class MerchantTerminalDaoImpl implements MerchantTerminalDao {
@@ -101,15 +104,45 @@ public class MerchantTerminalDaoImpl implements MerchantTerminalDao {
 	 * @return
 	 */
 	@Override
-	public PGMerchant validateMerchantId(String merchantId) {
-		List<PGMerchant> merchants = merchantRepository
-			      .findByMerchantCodeAndStatus(merchantId,
-			                                   PGConstants.STATUS_SUCCESS);
-		PGMerchant merchant = merchants.get(0);
+	public PGMerchant validateMerchantId(String merchantId, Long entityId, String userType) {
+		PGMerchant merchant = new PGMerchant();
+		Query qry = null;
+		StringBuilder query = null;
+		if (userType.equals(Constants.PM_USER_TYPE)) {
+			query = new StringBuilder(" select a.MERCHANT_CODE,a.BUSINESS_NAME from ( select PGM.MERCHANT_CODE,PGM.BUSINESS_NAME ")
+					.append(" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING PMEM ON PGM.ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID=:entityId AND PGM.MERCHANT_CODE=:merchantCode AND PGM.STATUS=:status ")
+					.append(" union ").append(" select PGM.MERCHANT_CODE,PGM.BUSINESS_NAME ")
+					.append(" from PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID")
+					.append(" INNER JOIN PG_PM_ISO_MAPPING AS PMIM ON PMEM.ENTITY_ID = PMIM.ISO_ID AND PMIM.PM_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode AND PGM.STATUS=:status ")
+					.append(" )a ");
+			qry = entityManager.createNativeQuery(query.toString());
+			qry.setParameter("entityId", entityId);
+			qry.setParameter("merchantCode", merchantId);
+			qry.setParameter("status", PGConstants.STATUS_SUCCESS);
+			List<Object> list = qry.getResultList();
+			if (StringUtil.isListNotNullNEmpty(list)) {
+				Iterator it = list.iterator();
+				while (it.hasNext()) {
+					Object[] objs = (Object[]) it.next();
+					merchant.setMerchantCode(getMerchantCode(objs));
+					merchant.setBusinessName(getBusinessName(objs));
+				}
+			}
+		} else {
+			List<PGMerchant> merchants = merchantRepository.findByMerchantCodeAndStatus(merchantId,
+					PGConstants.STATUS_SUCCESS);
+			if (StringUtil.isListNotNullNEmpty(merchants)) {
+				merchant = merchants.get(0);
+			}
+		}
 		return merchant;
 	}
 
-	/**
-	 * @return
-	 */
+  private String getBusinessName(Object[] objs) {
+    return StringUtil.isNull(objs[1]) ? null : ((String) objs[1]);
+  }
+
+  private String getMerchantCode(Object[] objs) {
+    return StringUtil.isNull(objs[0]) ? null : ((String) objs[0]);
+  }
 }

@@ -86,7 +86,7 @@ public class RecurringServiceImpl implements RecurringService {
       recurringCustomerInfo = recurringServicesDao
           .findByRecurringCustomerInfoId(recurringCustomerInfoDTO.getRecurringCustInfoId());
       if (recurringCustomerInfo != null
-          && Status.INACTIVE.equals(recurringCustomerInfo.getStatus())) {
+          && (Status.INACTIVE).toString().equals(recurringCustomerInfo.getStatus())) {
         throw new ChatakPayException();
       }
 
@@ -482,7 +482,7 @@ public class RecurringServiceImpl implements RecurringService {
       recurringContractInfo = recurringServicesDao
           .findByRecurringContractInfoId(recurringContractInfoDTO.getRecurringContractInfoId());
       if (recurringContractInfo != null
-          && Status.INACTIVE.equals(recurringContractInfo.getStatus())) {
+          && (Status.INACTIVE).toString().equals(recurringContractInfo.getStatus())) {
         throw new ChatakPayException();
       }
       if (recurringContractInfo != null) {

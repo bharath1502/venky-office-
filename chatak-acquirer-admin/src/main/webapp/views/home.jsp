@@ -46,14 +46,14 @@
 								class="green-error">&nbsp;${sucess} </span>
 						</div>
 					<span>
-					<form:form action="searchMerchant" commandName="merchant" name="searchMerchant" method="post">
+					<form:form action="searchMerchant" modelAttribute="merchant" name="searchMerchant" method="post">
 							<form:hidden path="status" id="merchantStatus"/> 
 					</form:form>
-					<form:form action="sub-merchant-search" commandName="merchant" name="searchSubMerchant" method="post">
+					<form:form action="sub-merchant-search" modelAttribute="merchant" name="searchSubMerchant" method="post">
 							<form:hidden path="status" id="subMerchantStatus"/> 
 					</form:form>
 					<form:form action="searchTransactionBySettlementStatus"
-						commandName="transaction" name="transaction">
+						modelAttribute="transaction" name="transaction">
 						<form:hidden path="settlementStatus" id="settlementStatus" />
 					</form:form>
 					
@@ -229,7 +229,12 @@
 										<div class="col-sm-12">
 											<div class="col-sm-12">
 												<div class="btn-toolbar" role="toolbar">
-															<a href="show-All-incoming-settlement-report"><input type="button" class="form-control button pull-right dashboard-table-btn" value="<spring:message code="home.label.viewall"/>"></a>
+													<c:if test="${processSettlementDataList gt 10}">
+														<a href="show-All-incoming-settlement-report"><input
+															type="button"
+															class="form-control button pull-right dashboard-table-btn"
+															value="<spring:message code="home.label.viewall"/>"></a>
+													</c:if>
 												</div>
 											</div>
 										</div>
@@ -308,7 +313,12 @@
 										<div class="col-sm-12">
 											<div class="col-sm-12">
 												<div class="btn-toolbar" role="toolbar">
-															<a href="show-all-pending-merchants"><input type="button" class="form-control button pull-right dashboard-table-btn" value="<spring:message code="home.label.viewall"/>"></a>
+													<c:if test="${merchantDataList gt 10}">
+														<a href="show-all-pending-merchants"><input
+															type="button"
+															class="form-control button pull-right dashboard-table-btn"
+															value="<spring:message code="home.label.viewall"/>"></a>
+													</c:if>
 												</div>
 											</div>
 										</div>
@@ -404,15 +414,14 @@
 															<spring:message code="manage.label.sub-merchant.downloadall"/>
 														</a>
 													</div>
-													<c:choose>
-														<c:when test="${executedListSize gt 10}">
-															<a href="executed-transaction-details"><input type="button" class="form-control button pull-right" value="<spring:message code="home.label.viewall"/> "></a>
-														</c:when>
-														<c:otherwise>
-															<input type="button" class="form-control button dashboard-table-btn pull-right" value="<spring:message code="home.label.viewall"/> " disabled="disabled">
-														</c:otherwise>
-													</c:choose>
-												</div>
+														<div class="btn-toolbar" role="toolbar">
+															<c:if test="${executedListSize gt 10}">
+																<a href="executed-transaction-details"><input
+																	type="button" class="form-control button pull-right"
+																	value="<spring:message code="home.label.viewall"/> "></a>
+															</c:if>
+														</div>
+													</div>
 											</div>
 										</div>
 									</td>

@@ -122,7 +122,7 @@ public class AESEncryption implements ChatakEncryption {
                                                     InvalidKeyException,
                                                     InvalidAlgorithmParameterException,
                                                     InvalidKeySpecException {
-    Cipher c = Cipher.getInstance(ALG_CBC_PAD_AES);
+    Cipher c = Cipher.getInstance(ALG_GCM_NOPADDING);
     byte[] iv = getBytes(PASSWORD);
     c.init(mode, generateKey(saltKey), new IvParameterSpec(iv));
     return c;

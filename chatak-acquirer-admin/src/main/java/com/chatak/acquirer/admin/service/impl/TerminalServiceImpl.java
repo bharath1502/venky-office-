@@ -96,7 +96,7 @@ public class TerminalServiceImpl implements TerminalService {
         terminalData = new Terminals();
         terminalData.setId(pgTerminal.getId());
         terminalData.setMerchantCode(pgTerminal.getMerchantId());
-        terminalData.setTerminalCode(Long.valueOf(pgTerminal.getTerminalId()));
+        terminalData.setTerminalCode(pgTerminal.getTerminalId());
         terminalData.setStatus(Status.valueOf(pgTerminal.getStatus()));
         terminals.add(terminalData);
       }

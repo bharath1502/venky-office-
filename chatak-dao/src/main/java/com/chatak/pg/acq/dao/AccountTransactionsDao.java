@@ -44,11 +44,12 @@ public interface AccountTransactionsDao {
   
   public GetTransactionsListResponse getAccountAllTransactions(GetTransactionsListRequest getTransactionsListRequest);
 
-/**
- * @param transferAccountCreditLog
- */
-public PGAccountHistory saveAccountHistory(PGAccountHistory pgActHistory);
+  public PGAccountHistory saveAccountHistory(PGAccountHistory pgActHistory);
 
-public GetTransactionsListResponse getManulAccountTransactions(GetTransactionsListRequest getTransactionsListRequest);
+  public GetTransactionsListResponse getManulAccountTransactions(GetTransactionsListRequest getTransactionsListRequest);
+
+  public GetTransactionsListResponse searchAccountTransactionsForEntityId(GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType);
+
+  public GetTransactionsListResponse searchManualAccountTransactionsForEntityId(GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType);
   
 }

@@ -27,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.acquirer.admin.constants.FeatureConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.controller.model.SettlementDataRequest;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
@@ -130,10 +131,11 @@ public class DashboardController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_HOME);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
     String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute("loginResponse");
     if ("admin".equalsIgnoreCase(userType)) {
       modelAndView = showLoginCondition(session, modelAndView, existingFeature, userType);
     }
-    List<Merchant> merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+    List<Merchant> merchants = getMerchantsOnUserType(loginResponse);
     setMerchantSubList(modelAndView, merchants);
     GetTransactionsListRequest transaction = new GetTransactionsListRequest();
     TransactionResponse transactionResponse = new TransactionResponse();
@@ -151,7 +153,6 @@ public class DashboardController implements URLMappingConstants {
       txnCodeList.add(AccountTransactionCode.EFT_DEBIT);
       txnCodeList.add(AccountTransactionCode.FT_BANK);
       txnCodeList.add(AccountTransactionCode.FT_CHECK);
-
       transaction.setTransactionCodeList(txnCodeList);
 
       transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_PROCESSING);
@@ -159,8 +160,7 @@ public class DashboardController implements URLMappingConstants {
           transactionService.searchAccountTransactions(transaction);
 
       transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-      GetTransactionsListResponse executedTxnList =
-          transactionService.searchAccountTransactions(transaction);
+      GetTransactionsListResponse executedTxnList = getExecutedTxnList(loginResponse, transaction);
 
       if (null != processingTxnList && null != processingTxnList.getAccountTransactionList()) {
 
@@ -202,6 +202,28 @@ public class DashboardController implements URLMappingConstants {
     return modelAndView;
   }
 
+  private GetTransactionsListResponse getExecutedTxnList(LoginResponse loginResponse,
+      GetTransactionsListRequest transaction) {
+    GetTransactionsListResponse executedTxnList = null;
+    if (loginResponse.getUserType().equals(Constants.PM_USER_TYPE)
+    	  || loginResponse.getUserType().equals(Constants.ISO_USER_TYPE)) {
+      executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, loginResponse.getEntityId(), loginResponse.getUserType());
+    } else {
+      executedTxnList = transactionService.searchAccountTransactions(transaction);
+    }
+    return executedTxnList;
+  }
+
+  private List<Merchant> getMerchantsOnUserType(LoginResponse loginResponse) {
+    List<Merchant> merchants = new ArrayList<>();
+    if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.ADMIN)) {
+        merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+	} else if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+		merchants = merchantUpdateService.getPmMerchantByEntityIdandEntityType(loginResponse.getEntityId(), loginResponse.getUserType());
+	}
+    return merchants;
+  }
+
   private void setMerchantSubList(ModelAndView modelAndView, List<Merchant> merchants) {
     if (CommonUtil.isListNotNullAndEmpty(merchants) && merchants.size() > Constants.TEN) {
       modelAndView.addObject("merchantSubList", merchants.subList(0, Constants.TEN));
@@ -235,7 +257,6 @@ public class DashboardController implements URLMappingConstants {
 
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject("countryList", countryList);
-      session.setAttribute("countryList", countryList);
       merchant.setId(merchantViewId);
       merchant = merchantValidateService.getMerchant(merchant);
       if (null == merchant) {
@@ -245,7 +266,6 @@ public class DashboardController implements URLMappingConstants {
         List<Option> options =
             merchantValidateService.getFeeProgramNamesForEdit(merchant.getFeeProgram());
         modelAndView.addObject("feeprogramnames", options);
-        session.setAttribute("feeprogramnames", options);
 
         fetchState(session, modelAndView, merchant);
 
@@ -256,7 +276,7 @@ public class DashboardController implements URLMappingConstants {
         Response agentnamesList = merchantUpdateService.getAgentNames(merchant.getLocalCurrency());
         if (agentnamesList != null) {
           modelAndView.addObject("agentnamesList", agentnamesList.getResponseList());
-          session.setAttribute("agentnamesList", agentnamesList.getResponseList());
+          session.setAttribute("agentnamesList", new ArrayList(agentnamesList.getResponseList()));
         }
         session.setAttribute("updateMerchantId", merchantViewId);
         merchant.setMerchantFlag(true);
@@ -273,7 +293,9 @@ public class DashboardController implements URLMappingConstants {
     }
     modelAndView.addObject("processorNames", processorNames);
     model.put("merchant", merchant);
-    session.setAttribute("parentMerchantId", merchant.getParentMerchantId());
+    if(merchant != null) {
+    	session.setAttribute("parentMerchantId", merchant.getParentMerchantId());
+    }
     logger.info("EXITING :: MerchantController :: showViewSubMerchant");
     return modelAndView;
   }
@@ -309,15 +331,15 @@ private void validateMerchant(Map model, Merchant merchant) {
   private void fetchState(HttpSession session, ModelAndView modelAndView, Merchant merchant) throws ChatakAdminException {
 	Response stateList = merchantUpdateService.getStatesByCountry(merchant.getCountry());
 	modelAndView.addObject("stateList", stateList.getResponseList());
-	session.setAttribute("stateList", stateList.getResponseList());
+	session.setAttribute("stateList", new ArrayList(stateList.getResponseList()));
 
 	stateList = merchantUpdateService.getStatesByCountry(merchant.getBankCountry());
 	modelAndView.addObject("bankStateList", stateList.getResponseList());
-	session.setAttribute("bankStateList", stateList.getResponseList());
+	session.setAttribute("bankStateList", new ArrayList(stateList.getResponseList()));
 
 	stateList = merchantUpdateService.getStatesByCountry(merchant.getLegalCountry());
 	modelAndView.addObject("legalStateList", stateList.getResponseList());
-	session.setAttribute("legalStateList", stateList.getResponseList());
+	session.setAttribute("legalStateList", new ArrayList(stateList.getResponseList()));
   }
 
   @RequestMapping(value = CHATAK_ADMIN_UNBLOCK_USERS, method = RequestMethod.GET)
@@ -379,6 +401,16 @@ private void validateMerchant(Map model, Merchant merchant) {
     return modelAndView;
 
   }
+  
+	@RequestMapping(value = CHATAK_ADMIN_UNBLOCK_USERS_SEARCH, method = RequestMethod.GET)
+	public ModelAndView searchAdminUserGetMethod(HttpServletRequest request, HttpServletResponse response, Map model,
+			HttpSession session, GenericUserDTO userDataDto, BindingResult bindingResult) {
+		logger.info("Entering :: DashboardController :: searchAdminUser method");
+		ModelAndView modelAndView = showUnblockUsers(request, model, session, userDataDto);
+		logger.info("Exit :: DashboardController :: searchAdminUser method");
+		return modelAndView;
+
+	}
 
   @RequestMapping(value = CHATAK_ADMIN_DO_UNBLOCK_USERS, method = RequestMethod.POST)
   public ModelAndView unblockUser(HttpServletRequest request, HttpServletResponse response,
@@ -467,23 +499,33 @@ private void validateMerchant(Map model, Merchant merchant) {
 			HttpSession session, @FormParam("totalRecords") final Integer totalRecords) {
 		logger.info("Entering:: DashboardController:: showAllPendingSettlementDetails method");
 		ModelAndView modelAndView = new ModelAndView(SHOW_ALL_PENDING_SETTLEMENT_DATA);
-		List<PGIssSettlementData> list = issSettlementDataDao.getAllPendingPM();
-		List<PGIssSettlementData> settlementData = new ArrayList<>();
+		List<PGIssSettlementData> list = null;
+		 LoginResponse loginResponse = (LoginResponse) session.getAttribute("loginResponse");
+		if(loginResponse != null && loginResponse.getUserType().equals(PGConstants.ADMIN)){
+		     list = issSettlementDataDao.getAllPendingPM();
+		} else if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+			list = issSettlementDataDao.findByProgramManagerIdByStatus(loginResponse.getEntityId(), PGConstants.S_STATUS_PENDING);
+		}
+		processIssSettlementData(session, modelAndView, list);
+		logger.info("EXITING :: DashboardController :: showAllPendingSettlementDetails");
+		return modelAndView;
+	}
+
+	private void processIssSettlementData(HttpSession session, ModelAndView modelAndView,
+			List<PGIssSettlementData> list) {
+		List<SettlementDataRequest> settlementData = new ArrayList<>();
 		if (StringUtil.isListNotNullNEmpty(list)) {
 			for (PGIssSettlementData data : list) {
-				PGIssSettlementData issSettlementData = new PGIssSettlementData();
-				issSettlementData.setProgramManagerId(Long.valueOf(data.getAcqPmId()));
-				issSettlementData.setProgramManagerName(data.getProgramManagerName());
-				issSettlementData.setBatchDate(data.getBatchDate());
-				issSettlementData.setTotalAmount(data.getTotalAmount());
-				issSettlementData.setTotalTxnCount(data.getTotalTxnCount());
-				settlementData.add(issSettlementData);
+				SettlementDataRequest settlementDataRequest = new SettlementDataRequest();
+				settlementDataRequest.setProgramManagerId(data.getAcqPmId());
+				settlementDataRequest.setProgramManagerName(data.getProgramManagerName());
+				settlementDataRequest.setBatchDate(data.getBatchDate());
+				settlementDataRequest.setTotalAmount(new BigDecimal(data.getTotalAmount()).divide(PGConstants.BIG_DECIMAL_HUNDRED));
+				settlementDataRequest.setTotalTxnCount(data.getTotalTxnCount());
+				settlementData.add(settlementDataRequest);
 			}
 			modelAndView.addObject("settlementDataList", settlementData);
 			session.setAttribute("totalRecords", settlementData.size());
-
 		}
-		logger.info("EXITING :: DashboardController :: showAllPendingSettlementDetails");
-		return modelAndView;
 	}
 }

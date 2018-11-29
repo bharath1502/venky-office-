@@ -98,7 +98,6 @@ var C_MERCHANT_MSG = {
 		virtualTerminalTransactionId : "Please enter Transaction ID",
 		virtualTerminalCardNumber : "Please enter Card Number",
 		virtualTerminalNumericUpto19 : "Should be numeric and 19 digit",
-		virtualTerminalNotEmpty : "Should not be empty",
 		virtualTerminalCV2 : "Please enter CV2",
 		virtualTerminalInvalidCV2 : "Invalid CV2",
 		virtualTerminalCardHolderName : "Please enter Card Holder Name",
@@ -156,7 +155,6 @@ var C_MERCHANT_MSG = {
 		pleaseSelectRoleType : "Please select Role Type",
 		pleaseEnterFirstName : "Please enter First Name",
 		pleaseEnterLastName : "Please enter Last Name",
-		pleaseEnterAddress : "Please enter Address",
 		invalidAddressLength : "Invalid Address Length",
 		emailidAlreadyinUse : "Email id already in use",
 		pleaseSelectMerchant : "Please select Merchant!",
@@ -183,8 +181,6 @@ var C_MERCHANT_MSG = {
 		invalidCardNumber : "Invalid Card Number",
 		pleaseEnterPaymentSchemeName : "Please Enter Payment Scheme Name",
 		invalidPaymentSchemeName : "Invalid Payment Scheme Name",
-		pleaseEnterContactName : "Please Enter Contact Name",
-		invalidContactName : "Invalid Contact Name",
 		pleaseSelectTypeofCard : "Please Select Type of Card",
 		pleaseEnterRID : "Please Enter RID",
 		pleaseEnterValidRID : "Please Enter Valid RID",
@@ -365,7 +361,9 @@ var C_MERCHANT_MSG = {
 		RIGHT_CLICK_NOT_ALLOWED : "Right click is not allowed",
 		shouldContainNumericAndAlphabets : "Should contain numeric and alpbhabets",
 		maximumownloadLimit : "Max of 5000 records can be downloaded. Please contact system support for more records.",
-		address_should_contains_message : 'Only # , . / and alphanumerics are allowed'
+		address_should_contains_message : 'Only # , . / and alphanumerics are allowed',
+		merchantNotAssociatedToCurrentPM :"Merchant Code Not Associated To current Entity",
+		InvalidAmount : "Invalid Amount"
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",
@@ -466,7 +464,6 @@ var C_MERCHANT_MSG = {
 		virtualTerminalTransactionId : "Por favor, Introduzca el ID de transacción",
 		virtualTerminalCardNumber : "Por favor, introduzca Número de tarjeta",
 		virtualTerminalNumericUpto19 : "Debe ser numérico de 19 dígitos",
-		virtualTerminalNotEmpty : "No debería estar vacío",
 		virtualTerminalCV2 : "Por favor, introduzca Codigo de verificación de la tarjeta (reverso)",
 		virtualTerminalInvalidCV2 : "Codigo verificación de la tarjeta inválido",
 		virtualTerminalCardHolderName : "Por favor, introduzca Nombre del titular de la tarjeta",
@@ -499,7 +496,6 @@ var C_MERCHANT_MSG = {
 		pleaseEnterAddress : "Por favor, introduzca la dirección",
 		invalidAddressLength : "Longitud de la dirección inválida",
 		pleaseEnterAddress1 : "Por favor ingrese la dirección1",
-		pleaseEnterAddress : "Por favor ingrese la dirección",
 		invalidAddress1Length : "Longitud de la dirección inválida 1",
 		pleaseSelectCountry : "Por favor, seleccione País",
 		pleaseEnterCity : "Por favor, introduzca la ciudad",
@@ -553,8 +549,6 @@ var C_MERCHANT_MSG = {
 		invalidCardNumber : "Numero de tarjeta invalido",
 		pleaseEnterPaymentSchemeName : "Por favor, introduzca Nombre de esquema de pago",
 		invalidPaymentSchemeName : "Nombre del esquema de pago inválido",
-		pleaseEnterContactName : "Por favor, introduzca Nombre de Contacto",
-		invalidContactName : "Nombre de contacto inválido",
 		pleaseSelectTypeofCard : "Por favor, seleccione Tipo de tarjeta",
 		pleaseEnterRID : "Por favor, Introduzca RID",
 		pleaseEnterValidRID : "Por favor, Introduzca Válido RID",
@@ -736,6 +730,8 @@ var C_MERCHANT_MSG = {
 		shouldContainNumericAndAlphabets : "Debe contener numérico y alpbhabets",
 		maximumownloadLimit : "Se puede descargar un máximo de 5000 registros. Por favor, póngase en contacto con el soporte del sistema para obtener más registros.",
 		address_should_contains_message : 'Solamente # , . / y alfanuméricos están permitidos',
+		merchantNotAssociatedToCurrentPM :"Merchant Code no asociado al Entity actual",
+		InvalidAmount : "Monto invalido"
 	}
 };
 

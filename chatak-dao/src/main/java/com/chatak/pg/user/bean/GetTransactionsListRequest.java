@@ -61,7 +61,27 @@ public class GetTransactionsListRequest implements Serializable
 
   private String batchID;
   
-  /**
+  private String userType;
+  
+  private Long entityId;
+  
+  public String getUserType() {
+	  return userType;
+  }
+
+  public Long getEntityId() {
+	  return entityId;
+  }
+
+  public void setUserType(String userType) {
+	  this.userType = userType;
+  }
+
+  public void setEntityId(Long entityId) {
+	  this.entityId = entityId;
+  }
+
+/**
    * @return the noOfRecords
    */
   public Integer getNoOfRecords() {

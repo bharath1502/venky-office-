@@ -4,6 +4,8 @@
 package com.chatak.pg.acq.dao.impl;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -171,7 +173,7 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
   }
 
   private String getSettlementReportTransactionsExisting(Transaction transactionResp, Tuple tuple) {
-    transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.transactionId));
+    transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.id).toString());
     transactionResp.setTransactionAmount(
         (StringUtils.amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))));
     transactionResp.setTransactionDate(DateUtil.toDateStringFormat(
@@ -293,11 +295,11 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
       Timestamp startDate = null;
       if (!CommonUtil.isNullAndEmpty(batchReportRequest.getFromDate())) {
         startDate =
-            DateUtil.getStartDayTimestamp(batchReportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
+            DateUtil.getStartDayTimestamp(batchReportRequest.getFromDate(), PGConstants.YYYY_MM_DD);
       }
       if (!CommonUtil.isNullAndEmpty(batchReportRequest.getToDate())) {
         endDate =
-            DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
+            DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.YYYY_MM_DD);
       }
       JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query
@@ -308,7 +310,7 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
                   batchReportRequest.getSubMerchantCode()),
               QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
               QPGTransaction.pGTransaction.merchantSettlementStatus
-                  .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED),
+                  .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED, Constants.SETTLEMENT_STATUS),
               QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
               QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
                   .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
@@ -317,7 +319,7 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
                   .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
               isValidDate(startDate, endDate))
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -366,10 +368,10 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
     Timestamp endDate = null;
     if (!CommonUtil.isNullAndEmpty(batchReportRequest.getFromDate())) {
       startDate =
-          DateUtil.getStartDayTimestamp(batchReportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
+          DateUtil.getStartDayTimestamp(batchReportRequest.getFromDate(), PGConstants.YYYY_MM_DD);
     }
     if (!CommonUtil.isNullAndEmpty(batchReportRequest.getToDate())) {
-      endDate = DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.DD_MM_YYYY);
+      endDate = DateUtil.getEndDayTimestamp(batchReportRequest.getToDate(), PGConstants.YYYY_MM_DD);
     }
     JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> list = query
@@ -380,7 +382,7 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
                 batchReportRequest.getSubMerchantCode()),
             QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
             QPGTransaction.pGTransaction.merchantSettlementStatus
-                .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED),
+                .in(PGConstants.PG_SETTLEMENT_EXECUTED, PGConstants.PG_TXN_REFUNDED, Constants.SETTLEMENT_STATUS),
             QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
             QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
                 .and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
@@ -389,7 +391,7 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
                 .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
             isValidDate(startDate, endDate))
         .orderBy(orderByCreatedDateDesc()).list(QPGTransaction.pGTransaction.merchantId,
-            QPGTransaction.pGTransaction.transactionId,
+            QPGTransaction.pGTransaction.id,
             QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
             QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
             QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -480,9 +482,9 @@ public PGSettlementReport save(PGSettlementReport pgSettlementReport) {
 					" pgAccTxn.DEVICE_LOCAL_TXN_TIME, pgAccTxn.TRANSACTION_TYPE, pm.PROGRAM_MANAGER_NAME, iso.ISO_NAME, iso.BANK_ACC_NUM, iso.ROUTING_NUMBER");
 			Query qry = entityManager.createNativeQuery(matchedBuilder.toString());
 			qry.setParameter("pgTxnIds", Arrays.asList(txnIdsArr));
-			qry.setParameter("merchantCode", AccountTransactionCode.CC_AMOUNT_CREDIT);
-			qry.setParameter("pmCode", AccountTransactionCode.CC_PM_FEE_CREDIT);
-			qry.setParameter("isoCode", AccountTransactionCode.CC_ISO_FEE_CREDIT);
+			qry.setParameter("merchantCode", Arrays.asList(AccountTransactionCode.CC_AMOUNT_CREDIT, AccountTransactionCode.CC_AMOUNT_DEBIT));
+			qry.setParameter("pmCode", Arrays.asList(AccountTransactionCode.CC_PM_FEE_CREDIT, AccountTransactionCode.CC_PM_FEE_DEBIT));
+			qry.setParameter("isoCode", Arrays.asList(AccountTransactionCode.CC_ISO_FEE_CREDIT, AccountTransactionCode.CC_ISO_FEE_DEBIT));
 			List<Object> objectList = qry.getResultList();
 			log.info("Retrieved txns size" + objectList.size());
 			if (StringUtil.isListNotNullNEmpty(objectList)) {
@@ -500,19 +502,22 @@ public PGSettlementReport save(PGSettlementReport pgSettlementReport) {
 		matchedBuilder.append(" pgAccTxn.TRANSACTION_TIME,pgAccTxn.DEVICE_LOCAL_TXN_TIME,pgAccTxn.TRANSACTION_TYPE,");
 		matchedBuilder.append(" pm.PROGRAM_MANAGER_NAME,iso.ISO_NAME, iso.BANK_ACC_NUM, iso.ROUTING_NUMBER, ");
 		matchedBuilder.append(
-				" SUM(CASE WHEN pgAccTxn.TRANSACTION_CODE= :merchantCode THEN pgAccTxn.CREDIT END) AS 'MerchantAmt',");
+				" IFNULL(SUM(CASE WHEN pgAccTxn.TRANSACTION_CODE IN (:merchantCode) THEN pgAccTxn.CREDIT END),0)+ ");
+		matchedBuilder.append(" IFNULL(SUM(CASE WHEN pgAccTxn.TRANSACTION_CODE IN (:merchantCode) THEN pgAccTxn.DEBIT END),0) AS 'MerchantCreditAmt', ");
 		matchedBuilder
-				.append(" SUM( CASE WHEN pgAccTxn.TRANSACTION_CODE= :pmCode THEN pgAccTxn.CREDIT END) AS 'PmAmt',");
+				.append(" IFNULL(SUM( CASE WHEN pgAccTxn.TRANSACTION_CODE IN (:pmCode) THEN pgAccTxn.CREDIT END),0)+ ");
+		matchedBuilder.append(" IFNULL (SUM( CASE WHEN pgAccTxn.TRANSACTION_CODE IN (:pmCode) THEN pgAccTxn.DEBIT END),0) AS 'PmCreditAmt', ");
 		matchedBuilder
-				.append(" SUM( CASE WHEN pgAccTxn.TRANSACTION_CODE= :isoCode THEN pgAccTxn.CREDIT END) AS 'IsoAmt'");
+				.append(" IFNULL(SUM( CASE WHEN pgAccTxn.TRANSACTION_CODE IN (:isoCode) THEN pgAccTxn.CREDIT END),0)+ ");
+		matchedBuilder.append(" IFNULL(SUM( CASE WHEN pgAccTxn.TRANSACTION_CODE IN (:isoCode) THEN pgAccTxn.DEBIT END),0) AS 'IsoCreditAmt' ");
 		matchedBuilder.append(" FROM PG_TRANSACTION pgTxn");
 		matchedBuilder.append(" LEFT JOIN PG_ACCOUNT_TRANSACTIONS pgAccTxn");
-		matchedBuilder.append(" ON pgTxn.TRANSACTION_ID=pgAccTxn.PG_TRANSACTION_ID");
+		matchedBuilder.append(" ON pgTxn.ID=pgAccTxn.PG_TRANSACTION_ID");
 		matchedBuilder.append(" LEFT JOIN PG_PROGRAM_MANAGER pm ON pm.ID=pgTxn.PM_ID");
 		matchedBuilder.append(" LEFT JOIN PG_ISO iso ON iso.id = pgTxn.ISO_ID ");
-		matchedBuilder.append(" WHERE pgTxn.TRANSACTION_ID    IN(:pgTxnIds)");
+		matchedBuilder.append(" WHERE pgTxn.ID    IN(:pgTxnIds)");
 		matchedBuilder.append(
-				" AND pgAccTxn.TRANSACTION_CODE IN('CC_AMOUNT_CREDIT','CC_PM_FEE_CREDIT','CC_ISO_FEE_CREDIT')");
+				" AND pgAccTxn.TRANSACTION_CODE IN('CC_AMOUNT_CREDIT','CC_PM_FEE_CREDIT','CC_ISO_FEE_CREDIT', 'CC_AMOUNT_DEBIT', 'CC_PM_FEE_DEBIT','CC_ISO_FEE_DEBIT')");
 		matchedBuilder.append(
 				" GROUP BY pgTxn.MERCHANT_ID, pgTxn.TERMINAL_ID, pgAccTxn.PG_TRANSACTION_ID, pgAccTxn.TRANSACTION_TIME,");
 	}
@@ -530,8 +535,8 @@ private void setTxnsDetails(List<SettlementEntity> settlementEntityList, Object[
 	feeReportDto.setMerchantId(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
 	feeReportDto.setTerminalId(StringUtil.isNull(objs[1]) ? null : String.valueOf((Integer) objs[1]));
 	feeReportDto.setPgTxnId(StringUtil.isNull(objs[Integer.parseInt("2")]) ? null : ((String) objs[Integer.parseInt("2")]));
-	feeReportDto.setTxnDate(StringUtil.isNull(objs[Integer.parseInt("3")]) ? null : ((Timestamp) objs[Integer.parseInt("3")]));
-	feeReportDto.setDeviceLocalTxnTime(StringUtil.isNull(objs[Integer.parseInt("4")]) ? null : DateUtil.toDateStringFormat( ((Timestamp) objs[Integer.parseInt("4")]),Constants.DATE_TIME_FORMAT));
+	feeReportDto.setTxnDate(StringUtil.isNull(objs[Integer.parseInt("3")]) ? null : DateUtil.toTimestamp(DateUtil.toDateStringFormat((Timestamp)(objs[Integer.parseInt("3")]),Constants.DATE_TIME_FORMAT), Constants.DATE_TIME_FORMAT));
+	feeReportDto.setDeviceLocalTxnTime(StringUtil.isNull(objs[Integer.parseInt("4")]) ? null : DateUtil.toDateStringFormat(((Timestamp) objs[Integer.parseInt("4")]),Constants.DATE_TIME_FORMAT));
 	feeReportDto.setTxnType(StringUtil.isNull(objs[Integer.parseInt("5")]) ? null : ((String) objs[Integer.parseInt("5")]));
 	feeReportDto.setProgramManagerName(StringUtil.isNull(objs[Integer.parseInt("6")]) ? null : ((String) objs[Integer.parseInt("6")]));
 	feeReportDto.setIsoName(StringUtil.isNull(objs[Integer.parseInt("7")]) ? null : ((String) objs[Integer.parseInt("7")]));

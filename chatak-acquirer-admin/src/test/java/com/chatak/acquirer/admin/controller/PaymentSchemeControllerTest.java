@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -38,7 +39,6 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.PaymentScheme;
 import com.chatak.pg.user.bean.PaymentSchemeRequest;
 import com.chatak.pg.user.bean.PaymentSchemeResponse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentSchemeControllerTest {
@@ -111,7 +111,7 @@ public class PaymentSchemeControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_SHOW_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_SHOW_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testShowCreatePaymentSchemePage | Exception ", e);
@@ -128,8 +128,8 @@ public class PaymentSchemeControllerTest {
           .thenReturn(addPaymentSchemeResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testCreatePaymentScheme | Exception ", e);
@@ -146,8 +146,8 @@ public class PaymentSchemeControllerTest {
           .thenReturn(addPaymentSchemeResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_SHOW_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testCreatePaymentSchemeElse | Exception ", e);
@@ -162,8 +162,8 @@ public class PaymentSchemeControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_SHOW_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testCreatePaymentSchemeException | Exception ",
@@ -174,7 +174,7 @@ public class PaymentSchemeControllerTest {
   @Test
   public void testSearchPaymentSchemeAccount() {
     addPaymentSchemeResponse = new PaymentSchemeResponse();
-    addPaymentSchemeResponse.setTotalNoOfRows(Constants.TEN);
+    addPaymentSchemeResponse.setTotalNoOfRows(TestConstants.TEN);
     addPaymentSchemeResponse.setPaymentSchemesRequest(paymentSchemesRequestList);
     try {
       Mockito
@@ -182,8 +182,8 @@ public class PaymentSchemeControllerTest {
           .thenReturn(addPaymentSchemeResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_ACTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testSearchPaymentSchemeAccount | Exception ", e);
@@ -198,8 +198,8 @@ public class PaymentSchemeControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_ACTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -214,8 +214,8 @@ public class PaymentSchemeControllerTest {
           .thenReturn(paymentSchemesRequest);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_EDIT_PAYMENT_SCHEME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_EDIT_PAYMENT_SCHEME));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testShowEditPaymentSchemes | Exception ", e);
@@ -229,8 +229,8 @@ public class PaymentSchemeControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_EDIT_PAYMENT_SCHEME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_EDIT_PAYMENT_SCHEME));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testShowEditPaymentSchemesException | Exception ",
@@ -245,9 +245,9 @@ public class PaymentSchemeControllerTest {
           .thenReturn(paymentSchemesRequest);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_VIEW_PAYMENT_SCHEME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getpaymentschemeId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getpaymentschemeId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_VIEW_PAYMENT_SCHEME));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testShowViewPaymentSchemes | Exception ", e);
@@ -261,9 +261,9 @@ public class PaymentSchemeControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_VIEW_PAYMENT_SCHEME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getpaymentschemeId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getpaymentschemeId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_VIEW_PAYMENT_SCHEME));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testShowViewPaymentSchemesException | Exception ",
@@ -282,9 +282,9 @@ public class PaymentSchemeControllerTest {
           .thenReturn(addPaymentSchemeResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_PAYMENT_SCHEME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getpaymentschemeId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getpaymentschemeId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testUpdatePaymentScheme | Exception ", e);
@@ -302,9 +302,9 @@ public class PaymentSchemeControllerTest {
           .thenReturn(addPaymentSchemeResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_PAYMENT_SCHEME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getpaymentschemeId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getpaymentschemeId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_EDIT_PAYMENT_SCHEME));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testUpdatePaymentSchemeElse | Exception ", e);
@@ -320,9 +320,9 @@ public class PaymentSchemeControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_PAYMENT_SCHEME)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getpaymentschemeId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getpaymentschemeId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_EDIT_PAYMENT_SCHEME));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testUpdatePaymentSchemeException | Exception ",
@@ -336,8 +336,8 @@ public class PaymentSchemeControllerTest {
       Mockito.when(paymentSchemeService.validateEmailId(Matchers.anyString()))
           .thenReturn(responseval);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_UNIQUE_PAYMENT_SCHEME_EMAIL_ID)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testValidateUniqueEmailId | Exception ", e);
     }
@@ -349,8 +349,8 @@ public class PaymentSchemeControllerTest {
       Mockito.when(paymentSchemeService.validateEmailId(Matchers.anyString()))
           .thenThrow(nullPointerException);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_UNIQUE_PAYMENT_SCHEME_EMAIL_ID)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testValidateUniqueEmailIdException | Exception ",
           e);
@@ -368,9 +368,9 @@ public class PaymentSchemeControllerTest {
           .thenReturn(addPaymentSchemeResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_PAGE));
     } catch (Exception e) {
@@ -383,7 +383,7 @@ public class PaymentSchemeControllerTest {
     addPaymentSchemeResponse = new PaymentSchemeResponse();
     addPaymentSchemeResponse.setErrorCode(ActionErrorCode.ERROR_CODE_01);
     addPaymentSchemeResponse.setPaymentSchemesRequest(paymentSchemesRequestList);
-    addPaymentSchemeResponse.setTotalNoOfRows(Constants.TEN);
+    addPaymentSchemeResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(paymentSchemeService.changePaymentSchemeStatus(
@@ -394,10 +394,10 @@ public class PaymentSchemeControllerTest {
           .thenReturn(addPaymentSchemeResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .sessionAttr(Constants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .sessionAttr(TestConstants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_PAGE));
     } catch (Exception e) {
@@ -411,7 +411,7 @@ public class PaymentSchemeControllerTest {
     addPaymentSchemeResponse = new PaymentSchemeResponse();
     addPaymentSchemeResponse.setErrorCode(ActionErrorCode.ERROR_CODE_01);
     addPaymentSchemeResponse.setPaymentSchemesRequest(paymentSchemesRequestList);
-    addPaymentSchemeResponse.setTotalNoOfRows(Constants.TEN);
+    addPaymentSchemeResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(paymentSchemeService.changePaymentSchemeStatus(
@@ -422,10 +422,10 @@ public class PaymentSchemeControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .sessionAttr(Constants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
-              .param("suspendActiveId", Constants.ONE.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .sessionAttr(TestConstants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
+              .param("suspendActiveId", TestConstants.ONE.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_PAGE));
     } catch (Exception e) {
@@ -442,8 +442,8 @@ public class PaymentSchemeControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_PAYMENT_SCHEME_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -461,10 +461,10 @@ public class PaymentSchemeControllerTest {
           .when(paymentSchemeService.searchPaymentScheme(Matchers.any(PaymentSchemeRequest.class)))
           .thenReturn(addPaymentSchemeResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_REPORT_PAYMENT_SCHEME)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadAllRecords", "true")
-          .param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadAllRecords", "true")
+          .param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testdownloadPaymentShemeReport | Exception ", e);
     }
@@ -479,10 +479,10 @@ public class PaymentSchemeControllerTest {
           .when(paymentSchemeService.searchPaymentScheme(Matchers.any(PaymentSchemeRequest.class)))
           .thenReturn(addPaymentSchemeResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_REPORT_PAYMENT_SCHEME)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadAllRecords", "true")
-          .param(Constants.DOWNLOAD_TYPE, "PDF"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadAllRecords", "true")
+          .param(TestConstants.DOWNLOAD_TYPE, "PDF"));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testdownloadPaymentShemeReportPDF | Exception ",
           e);
@@ -497,10 +497,10 @@ public class PaymentSchemeControllerTest {
       Mockito.when(paymentSchemeService.validatePaymentSchemeName(Matchers.anyString()))
           .thenReturn(paymentSchemeNameResponse);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_PAYMENT_SCHEME_VALIDATE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadAllRecords", "true")
-          .param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.PAYMENT_SCHEME_INFO, paymentSchemesRequest)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadAllRecords", "true")
+          .param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error("PaymentSchemeControllerTest | testValidatepaymentSchemeName | Exception ", e);
     }

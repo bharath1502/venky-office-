@@ -222,7 +222,7 @@ function submitEditData() {
 	var obj = document.getElementsByClassName("checkboxCustom checkedCustom");
 	if (!validPermission(obj.length, 'errorData', webMessages.atleastOnePermissionhastobeChosenforRole)
 			| !validRoleDescription('description', 'roleDescription', webMessages.pleaseEntertheDescription, webMessages.pleaseEntertheValidDescription)
-			| !validRoleName('roleName', 'roleDiv', webMessages.pleaseEntertheRoleName,webMessages.pleaseEntertheValidRoleName)) {
+			| !validRoleName()) {
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -344,7 +344,7 @@ function hasDoubleSpace(val) {
  * @returns {Boolean}
  */
 function validRoleData() {
-	if (!validRoleName('roleName', 'roleDiv', webMessages.pleaseEntertheRoleName,webMessages.pleaseEntertheValidRoleName)	
+	if (!validRoleName()	
 			| !validRoleDescription('description', 'roleDescription',webMessages.pleaseEntertheDescription,webMessages.pleaseEntertheValidDescription))
 	{
 		loadMsgTitleText();
@@ -732,7 +732,7 @@ function doAjaxRoleNameDuplicate() {
 }
 
 function searchRoleName(){
-	if(!clientValidation('roleName','firstlast_name_notmend','roleNameError')){
+	if(!clientValidation('roleName','firstlast_name_not_mandatory','roleNameError')){
 		return false;
 	}
 	return true;

@@ -27,6 +27,8 @@ import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
 import com.chatak.pg.acq.dao.model.QBankProgramManagerMap;
 import com.chatak.pg.acq.dao.model.QCardProgram;
 import com.chatak.pg.acq.dao.model.QPGBank;
+import com.chatak.pg.acq.dao.model.QPGMerchant;
+import com.chatak.pg.acq.dao.model.QPGMerchantEntityMap;
 import com.chatak.pg.acq.dao.model.QPmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.QProgramManager;
 import com.chatak.pg.acq.dao.model.QProgramManagerAccount;
@@ -34,6 +36,7 @@ import com.chatak.pg.acq.dao.repository.BankProgramManagerRepository;
 import com.chatak.pg.acq.dao.repository.PmCardProgramMappingRepository;
 import com.chatak.pg.acq.dao.repository.ProgramManagerAccountRepository;
 import com.chatak.pg.acq.dao.repository.ProgramManagerRepository;
+import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.exception.PrepaidAdminException;
@@ -171,14 +174,28 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   public List<ProgramManagerRequest> getAllProgramManagers(
       ProgramManagerRequest programManagerRequest)  {
     List<ProgramManagerRequest> programManagerRequests = new ArrayList<>();
+    List<ProgramManager> programManagers = null;
+    
+   if(programManagerRequest.getLoginuserType().equals(Constants.ADMIN_USER_TYPE)){ 
     JPAQuery query = new JPAQuery(entityManager);
-    List<ProgramManager> programManagers = query.from(QProgramManager.programManager)
+    programManagers = query.from(QProgramManager.programManager)
         .where(isProgramManagerStatuses(programManagerRequest.getStatuses()),
             isDefaultProgramManager(programManagerRequest.getDefaultProgramManager()),
             nonSystemProgramManager(), isProgramManagerId(programManagerRequest.getId()),
             isprogramManagerIdIn(programManagerRequest.getProgramManagerIds()))
         .orderBy(QProgramManager.programManager.programManagerName.asc())
         .list(QProgramManager.programManager);
+  } else if(programManagerRequest.getLoginuserType().equals(Constants.PM_USER_TYPE)) {
+    JPAQuery query = new JPAQuery(entityManager);
+    programManagers = query.from(QProgramManager.programManager)
+        .where(QProgramManager.programManager.id.eq(programManagerRequest.getEntityId()),
+            isProgramManagerStatuses(programManagerRequest.getStatuses()),
+            isDefaultProgramManager(programManagerRequest.getDefaultProgramManager()),
+            nonSystemProgramManager(), isProgramManagerId(programManagerRequest.getId()),
+            isprogramManagerIdIn(programManagerRequest.getProgramManagerIds()))
+        .orderBy(QProgramManager.programManager.programManagerName.asc())
+        .list(QProgramManager.programManager);
+  }
     if (StringUtil.isListNotNullNEmpty(programManagers)) {
       try {
         programManagerRequests =
@@ -741,6 +758,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
     	  response.setState(result.getState());
     	  response.setPmTimeZone(result.getPmTimeZone());
     	  response.setSchedulerRunTime(result.getSchedulerRunTime());
+    	  response.setPmSystemConvertedTime(result.getPmSystemConvertedTime());
       } catch (Exception e) {
         logger.error(
             className + " : findProgramManagerById : Error in retrieving the program manager.", e);
@@ -932,5 +950,27 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 	  }
       return response;
   }
-  
+
+	@Override
+	public Response findProgramManagerNameAndIdByEntityId(Long entityId, Long merchantId) {
+		Response response = new Response();
+		StringBuilder query = new StringBuilder(
+				" SELECT distinct pgpm.PROGRAM_MANAGER_NAME,pgpm.ID FROM PG_MERCHANT_ENTITY_MAPPING pgmp ")
+						.append(" join PG_PROGRAM_MANAGER pgpm on pgpm.ID=pgmp.ENTITY_ID")
+						.append(" where pgpm.ID not in (select ENTITY_ID from PG_MERCHANT_ENTITY_MAPPING where ENTITY_ID=:entityId)")
+		                .append(" and pgmp.ENTITY_ID=:entityId ");
+		Query qry = entityManager.createNativeQuery(query.toString());
+		qry.setParameter("entityId", entityId);
+		List<Object> list = qry.getResultList();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			Iterator<Object> itr = list.iterator();
+			while (itr.hasNext()) {
+				Object[] object = (Object[]) itr.next();
+				response = new Response();
+				response.setProgramManagerName(object[0].toString());
+				response.setId(((BigInteger) object[1]).longValue());
+			}
+		}
+		return response;
+	}
 }

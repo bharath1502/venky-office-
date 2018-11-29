@@ -10,6 +10,7 @@ import com.chatak.pg.acq.dao.model.Iso;
 import com.chatak.pg.acq.dao.model.IsoAccount;
 import com.chatak.pg.acq.dao.model.IsoPmMap;
 import com.chatak.pg.acq.dao.model.PGAccount;
+import com.chatak.pg.bean.Response;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.IsoRequest;
@@ -45,6 +46,7 @@ public interface IsoServiceDao {
 	public List<IsoRequest> getAllIso(IsoRequest isoRequest);
 	public List<IsoPmMap> findByPmId(Long pmId);
 	public MerchantResponse getIsoNameByCurrencyAndId(Long id,String currencyId);
+	public IsoResponse getIsoNameByProgramManagerId(Long pmId);
 	public MerchantResponse findCardProgramByMerchantId(Long merchantId);
 	public CardProgramResponse fetchIsoCardProgramByMerchantId(Long merchantId);
 
@@ -63,4 +65,6 @@ public interface IsoServiceDao {
 	public String findISOStatusById(Long isoId);
 	
 	public int updateISOStatusById(Long isoId, String reason, String updatedBy, Timestamp updatedDate, String status);
+	
+	public List<Response> findIsoNameAndIdByEntityId(Long pmId);
 }

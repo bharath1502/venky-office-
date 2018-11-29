@@ -96,7 +96,8 @@ public class ExportUtil {
       MessageSource messageSource) throws IOException {		
 
 	    String headerMsgProp = exportDetails.getHeaderMessageProperty();
-	    HSSFWorkbook wb = new HSSFWorkbook();
+	    
+	    try (HSSFWorkbook wb = new HSSFWorkbook()) {
 	    HSSFSheet sheet =wb.createSheet(
 		        messageSource.getMessage(headerMsgProp, null, LocaleContextHolder.getLocale()));
 	    Font font = wb.createFont();
@@ -112,14 +113,8 @@ public class ExportUtil {
 	    CellUtil.createCell(sheet.createRow(2), 0, messageSource.getMessage("userList-file-exportutil-reportdate", null,
 		        LocaleContextHolder.getLocale()) + headerDate);
 	    
-			Map<String, String> map = null;
-			if (exportDetails.getMap() != null) {
-				map = exportDetails.getMap();
-				int cellCount = CELL_COUNT;
-				for (Map.Entry  MapColummn : map.entrySet()) {
-					sheet.createRow(cellCount++).createCell(0).setCellValue(MapColummn.getKey() + "" + MapColummn.getValue());
-				}
-			}
+	    Map<String, String> map = null;
+		isCheckNull(exportDetails, sheet);
 		
 	    int rowNum = TABLE_ROW_NUM;
 	    if (exportDetails.getExcelStartRowNumber() != null) {
@@ -150,7 +145,7 @@ public class ExportUtil {
 	        } else if (rowElement instanceof Date) {
 	        	dataRow.createCell(i++).setCellValue((Date)rowElement);
 	        } else if (rowElement instanceof Boolean) {
-	            dataRow.createCell(i++).setCellValue((Boolean)rowElement + "");
+	        	dataRow.createCell(i++).setCellValue((Boolean)rowElement + "");
 	        } else if (rowElement instanceof Long) {
 	        	dataRow.createCell(i++).setCellValue((Long)rowElement);
 	        } else if (rowElement instanceof Integer) {
@@ -166,9 +161,21 @@ public class ExportUtil {
 	    }
 
 	    wb.write(response.getOutputStream());
-	    wb.close();
 	  }
+  }
 
+  private static void isCheckNull(ExportDetails exportDetails, HSSFSheet sheet)  {
+	  
+	  Map<String, String> map = null;
+	if (exportDetails.getMap() != null) {
+		map = exportDetails.getMap();
+		int cellCount = CELL_COUNT;
+		for (Map.Entry  MapColummn : map.entrySet()) {
+			sheet.createRow(cellCount++).createCell(0).setCellValue(MapColummn.getKey() + "" + MapColummn.getValue());
+		}
+	}}
+
+  
   private static double processDoubleAmount(Object rowElement) {
     return (!"".equals(rowElement)) ? Double.parseDouble(rowElement.toString()): 0d;
   }

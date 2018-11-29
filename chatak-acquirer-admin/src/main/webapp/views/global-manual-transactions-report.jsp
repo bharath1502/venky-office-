@@ -17,8 +17,8 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+  <link href="../css/jquery-datepicker.css" rel="stylesheet">
+   
 </head>
 <body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
@@ -71,13 +71,13 @@
 							<input type="hidden" id="totalRecordsId" name="totalRecords" />
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 						</form:form>
-						<form:form action="showGlobalManualTransferReport" commandName="getTransactionsListRequest" method="post">
+						<form:form action="showGlobalManualTransferReport" modelAttribute="getTransactionsListRequest" method="post">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.manualtransactions.selectdaterange.fromdate" /><span class="required-field">*</span></label>
-													<div class="input-group focus-field">
+													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="from_date" id="transFromDate" onblur="return clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')"
-															cssClass="form-control effectiveDate" />
+															cssClass="form-control effectiveDate jquery-datepicker__input" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -88,8 +88,8 @@
 												
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.manualtransactions.selectdaterange.todate" /><span class="required-field">*</span></label>
-													<div class="input-group focus-field">
-														<form:input path="to_date" cssClass="form-control effectiveDate" id="transToDate"
+													<div class="input-group focus-field jquery-datepicker">
+														<form:input path="to_date" cssClass="form-control effectiveDate jquery-datepicker__input" id="transToDate"
 														onblur="return clientValidation('transToDate', 'endDate','transToDateErrorDiv');" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
@@ -258,9 +258,9 @@
 	<script src="../js/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
-<script src="../js/utils.js"></script>
+	<script src="../js/utils.js"></script>
 	<script src="../js/sortable.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	<script src="../js/jquery-datepicker.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -274,15 +274,18 @@
 	$(document).ready(function() {
 		$("#navListId4").addClass("active-background");
 		$(".focus-field").click(function() {
-			$(this).children('.effectiveDate').focus();
+			 $(this).children('.effectiveDate').focus();
+			 $('.jquery-datepicker').datepicker();
 		});
-
-		$('.effectiveDate').datetimepicker({
+		/* rome(transFromDate, { time: false });
+		rome(transToDate, { time: false }); */
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'd/m/Y',
 			maxDate:new Date()
-		});
+		}); */
+		
 		
 		  if ("${transactionDiv}" == "true"){
 			 $('#checkb').show();

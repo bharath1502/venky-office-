@@ -67,7 +67,7 @@
 								</div>
 								<!-- Page Form Start -->
 								<form:form action="processChatakAquirerFeeEdit"
-									commandName="pgAcquirerFeeCode" method="post">
+									modelAttribute="pgAcquirerFeeCode" method="post">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<form:hidden path="merchantCode" />
 									<form:hidden path="partnerId" />

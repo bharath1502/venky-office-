@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.TransactionResponse;
+import com.chatak.pg.acq.dao.model.PGIssSettlementData;
 import com.chatak.pg.acq.dao.model.settlement.PGSettlementEntityHistory;
 import com.chatak.pg.bean.settlement.SettlementMerchantDetails;
 import com.chatak.pg.model.FeeReportRequest;
@@ -20,7 +21,7 @@ public interface SettlementReportService {
   public GetTransactionsListResponse searchBatchReportTransactions(
       GetBatchReportRequest batchReportRequest) throws ChatakAdminException;
 
-  public TransactionResponse calculateSettlementAmounts(Long pmId);
+  public TransactionResponse calculateSettlementAmounts(Long pmId, Timestamp batchDate);
   
   public TransactionResponse executeSettlement(Long pmId, String timeZoneOffset, String timeZoneRegion);
   
@@ -30,6 +31,6 @@ public interface SettlementReportService {
   
   public void insertDataFromIssuanceSettlementTransaction();
  
-  public PGSettlementEntityHistory findByBatchFileDateandAcqpmid(Long pmId, Timestamp date);
+  public List<PGIssSettlementData> findByAcqPmIdAndBatchDate(Long pmId, Timestamp date);
 
 }

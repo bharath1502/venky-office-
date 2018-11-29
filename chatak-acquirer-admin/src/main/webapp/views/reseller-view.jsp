@@ -69,7 +69,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="#" commandName="resellerData" name="resellerData">
+								<form:form action="#" modelAttribute="resellerData" name="resellerData">
 				      			 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

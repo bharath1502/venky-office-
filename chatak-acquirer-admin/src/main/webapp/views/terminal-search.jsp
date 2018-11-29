@@ -13,7 +13,7 @@
     <!-- Bootstrap -->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
-    <link href="../css/jquery.datetimepicker.css" rel="stylesheet" type="text/css">
+    <link href="../css/rome.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -70,7 +70,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="searchTerminal" commandName="terminal"  name="terminal" id="terminal">
+								<form:form action="searchTerminal" modelAttribute="terminal"  name="terminal" id="terminal">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">	
 									<div class="col-sm-12">
 										<div class="row">
@@ -275,7 +275,7 @@
 		<!--Container block End -->
 	</div>
 	<!--Body Wrapper block End -->	
-	<script src="../js/jquery.datetimepicker.js"></script>
+	 <script src="../js/rome.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/sortable.js"></script>
 	<script src="../js/terminal.js"></script>
@@ -290,12 +290,14 @@
 		});
 		$(document).ready( function() {
 			highlightMainContent('navListId3');
+			rome(fromDate, { time: false });
+			rome(toDate, { time: false });
 			/* DatePicker Javascript Strat*/
-			$('.effectiveDate').datetimepicker({
+			/* $('.effectiveDate').datetimepicker({
 				timepicker:false,
 				format : 'm/d/Y',
 				formatDate:'Y/m/d',
-			});
+			}); */
 			/* DatePicker Javascript End*/
 		});	
 		

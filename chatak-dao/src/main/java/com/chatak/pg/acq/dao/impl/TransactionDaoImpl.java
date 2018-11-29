@@ -104,7 +104,7 @@ public class TransactionDaoImpl implements TransactionDao {
     log.debug("TransactionDaoImpl | getTransaction | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist =
-        transactionRepository.findByMerchantIdAndTransactionId(merchantId, txnId);
+        transactionRepository.findByMerchantIdAndId(merchantId, new BigInteger(txnId));
     transaction = getPGTransaction(pgTxnlist);
     log.debug("TransactionDaoImpl | getTransaction | Exiting");
     return transaction;
@@ -219,7 +219,7 @@ public class TransactionDaoImpl implements TransactionDao {
               isMerchantNameLike(getTransactionsListRequest.getMerchantName()),
               isValidDate(startDate, endDate))
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -327,7 +327,7 @@ public class TransactionDaoImpl implements TransactionDao {
                 .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
             isMerchantNameLike(getTransactionsListRequest.getMerchantName()),
             isValidDate(startDate, endDate)).orderBy(orderByCreatedDateDesc())
-        .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+        .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
             QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
             QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
             QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -406,7 +406,7 @@ public class TransactionDaoImpl implements TransactionDao {
 
   protected BooleanExpression isTxnId(String transactionId) {
     return (transactionId != null && !"".equals(transactionId))
-        ? QPGTransaction.pGTransaction.transactionId.eq(transactionId) : null;
+        ? QPGTransaction.pGTransaction.id.eq(new BigInteger(transactionId)) : null;
   }
 
   protected BooleanExpression isAcqChannel(String acqChannel) {
@@ -443,8 +443,9 @@ public class TransactionDaoImpl implements TransactionDao {
     log.debug("TransactionDaoImpl | getTransactionOnTxnIdAndTxnType | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist =
-        transactionRepository.findByMerchantIdAndTerminalIdAndTransactionIdAndTransactionType(
-            merchantId, terminalId, txnId, txnType);
+        transactionRepository.findByMerchantIdAndTerminalIdAndIdAndTransactionType(
+            merchantId, terminalId, new BigInteger(txnId), txnType);
+            
 
     transaction = getPGTransaction(pgTxnlist);
     log.debug("TransactionDaoImpl | getTransactionOnTxnIdAndTxnType | Exiting");
@@ -483,7 +484,7 @@ public class TransactionDaoImpl implements TransactionDao {
   }
 
   @Override
-  public List<Transaction> getTransactions(GetTransactionsListRequest getTransactionsListRequest) {
+  public List<Transaction> getTransactions(GetTransactionsListRequest getTransactionsListRequest, Long entityId) {
     log.info("TransactionDaoImpl | getTransactions | Entering");
     List<Transaction> transactions = null;
     try {
@@ -492,7 +493,7 @@ public class TransactionDaoImpl implements TransactionDao {
       Integer totalRecords = getTransactionsListRequest.getNoOfRecords();
       if (getTransactionsListRequest.getPageIndex().intValue() == 1 
     		  || getTransactionsListRequest.getPageIndex() == null) {
-        totalRecords = getTotalNumberOfRecordsOnSearch(getTransactionsListRequest);
+        totalRecords = getTotalNumberOfTxnRecordsForPM(getTransactionsListRequest, entityId);
         getTransactionsListRequest.setNoOfRecords(totalRecords);
       }
       getTransactionsListRequest.setNoOfRecords(totalRecords);
@@ -539,9 +540,9 @@ public class TransactionDaoImpl implements TransactionDao {
               QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
                   .eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
                   isMerchantBusinessNameLike(getTransactionsListRequest.getMerchantBusinessName()),
-              isValidDate(startDate, endDate))
+              isValidDate(startDate, endDate), isEntityIdLike(entityId))
           .offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
-          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.transactionId,
+          .list(QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.id,
               QPGTransaction.pGTransaction.issuerTxnRefNum, QPGTransaction.pGTransaction.procCode,
               QPGTransaction.pGTransaction.panMasked, QPGTransaction.pGTransaction.createdDate,
               QPGTransaction.pGTransaction.transactionType, QPGTransaction.pGTransaction.txnAmount,
@@ -587,7 +588,7 @@ public class TransactionDaoImpl implements TransactionDao {
   }
 
   protected String getTransactionstTupleList(Transaction transactionResp, Tuple tuple) {
-    transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.transactionId));
+    transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.id).toString());
     transactionResp.setTransactionAmount((StringUtils.amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))));
     transactionResp.setTransactionDate(DateUtil.toDateStringFormat(
         tuple.get(QPGTransaction.pGTransaction.createdDate), PGConstants.DATE_FORMAT));
@@ -761,11 +762,10 @@ public class TransactionDaoImpl implements TransactionDao {
 		List<Tuple> tupleList = query.distinct()
 				.from(QPGMerchant.pGMerchant, QPGMerchantCardProgramMap.pGMerchantCardProgramMap,
 						QCardProgram.cardProgram)
-				.where(isMerchantCodeEq(transactionData.getMerchantCode())
-						.and(QPGMerchant.pGMerchant.id
-								.eq(QPGMerchantCardProgramMap.pGMerchantCardProgramMap.merchantId))
+				.where(QPGMerchant.pGMerchant.id.eq(QPGMerchantCardProgramMap.pGMerchantCardProgramMap.merchantId)
 						.and(QPGMerchantCardProgramMap.pGMerchantCardProgramMap.cardProgramId
-								.eq(QCardProgram.cardProgram.cardProgramId)))
+								.eq(QCardProgram.cardProgram.cardProgramId))
+						.and(isMerchantCodeEq(transactionData.getMerchantCode())))
 				.list(QCardProgram.cardProgram.iin, QCardProgram.cardProgram.iinExt,
 						QCardProgram.cardProgram.partnerIINCode);
 		if (!CollectionUtils.isEmpty(tupleList)) {
@@ -818,8 +818,9 @@ public class TransactionDaoImpl implements TransactionDao {
 		List<Tuple> tuples = query.from(QPGTransaction.pGTransaction,QPGAccountTransactions.pGAccountTransactions)
 				.where(isTerminalIdEq(terminalId), isTransactionIdEq(transactionId),
 						isIssuanceIdEq(issuerTxnRefNum), isMerchantIdEq(merchantId),
-						(QPGAccountTransactions.pGAccountTransactions.pgTransactionId.eq(QPGTransaction.pGTransaction.transactionId)))
-				.list(QPGTransaction.pGTransaction.transactionId, QPGTransaction.pGTransaction.txnTotalAmount,
+						isSettlementBatchStatus()
+						.and(QPGAccountTransactions.pGAccountTransactions.pgTransactionId.eq(transactionId)))
+				.list(QPGTransaction.pGTransaction.id, QPGTransaction.pGTransaction.txnTotalAmount,
 						QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.issuerTxnRefNum,
 						QPGTransaction.pGTransaction.createdDate, QPGTransaction.pGTransaction.updatedDate,
 						QPGTransaction.pGTransaction.merchantId, QPGTransaction.pGTransaction.batchId,
@@ -827,7 +828,8 @@ public class TransactionDaoImpl implements TransactionDao {
 						QPGTransaction.pGTransaction.pmId, QPGTransaction.pGTransaction.batchDate,
 						QPGAccountTransactions.pGAccountTransactions.entityId,
 						QPGAccountTransactions.pGAccountTransactions.entityType,
-						QPGAccountTransactions.pGAccountTransactions.credit, QPGTransaction.pGTransaction.settlementBatchStatus);
+						QPGAccountTransactions.pGAccountTransactions.credit, QPGTransaction.pGTransaction.settlementBatchStatus,
+						QPGAccountTransactions.pGAccountTransactions.debit, QPGAccountTransactions.pGAccountTransactions.transactionType);
 
 		log.info("TransactionDaoImpl | getPgTransactions :: List: " + tuples.size());
 		
@@ -839,7 +841,7 @@ public class TransactionDaoImpl implements TransactionDao {
 			  log.info("TransactionDaoImpl | getPgTransactions :: Reading first row: " + tuple.get((QPGTransaction.pGTransaction.transactionId))
 			      + ", Entity: " + tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType));
 			  
-				settlementEntity.setPgTxnId(tuple.get((QPGTransaction.pGTransaction.transactionId)));
+				settlementEntity.setPgTxnId(tuple.get((QPGTransaction.pGTransaction.id)).toString());
 				settlementEntity.setAcquirerAmount(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount)!=null ? 
 				    tuple.get(QPGTransaction.pGTransaction.txnTotalAmount).toString() : "0");
 				settlementEntity.setTerminalId(tuple.get(QPGTransaction.pGTransaction.terminalId));
@@ -852,17 +854,24 @@ public class TransactionDaoImpl implements TransactionDao {
 				settlementEntity.setAcqPmId(tuple.get(QPGTransaction.pGTransaction.pmId).toString());
 				settlementEntity.setBatchDate(tuple.get(QPGTransaction.pGTransaction.batchDate));
 				settlementEntity.setSettlementBatchStatus(tuple.get(QPGTransaction.pGTransaction.settlementBatchStatus));
+				settlementEntity.setTransactionType(tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionType));
 				
 				settlementEntityAmoutAndId(settlementEntity, tuple);
 				
-				if(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
-				    && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.PM_USER_TYPE)){
+				if(isSaleWithPmEntityType(tuple)){
 					settlementEntity.setPmAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.credit)));
+				} else if (isRefundWithPmEntityType(tuple)) {
+					settlementEntity.setPmAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.debit)));
 				}
 				
-				if(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
-				    && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(PGConstants.MERCHANT)){
+				if(isSaleWithEntityTypeMerchant(tuple)){
 					settlementEntity.setMerchantAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.credit)));
+				} else if (tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType) != null
+						&& tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)
+								.equals(PGConstants.MERCHANT)
+						&& tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionType)
+								.equalsIgnoreCase(Constants.REFUND)) {
+					settlementEntity.setMerchantAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.debit)));
 				}
 								  
 			}
@@ -873,10 +882,35 @@ public class TransactionDaoImpl implements TransactionDao {
 		return list;
 	}
 
+  private boolean isSaleWithEntityTypeMerchant(Tuple tuple) {
+    return tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
+        && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(PGConstants.MERCHANT) 
+        &&  tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionType).equalsIgnoreCase(Constants.SALE);
+  }
+
+  private boolean isRefundWithPmEntityType(Tuple tuple) {
+    return tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
+        && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.PM_USER_TYPE) && 
+        tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionType).equalsIgnoreCase(Constants.REFUND);
+  }
+
+  private boolean isSaleWithPmEntityType(Tuple tuple) {
+    return tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType)!=null 
+        && tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.PM_USER_TYPE) && 
+        tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionType).equalsIgnoreCase(Constants.SALE);
+  }
+
 	private void settlementEntityAmoutAndId(SettlementEntity settlementEntity, Tuple tuple) {
 		if (tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType) != null
-				&& tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.ISO_USER_TYPE)) {
+				&& tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.ISO_USER_TYPE)
+				&&  tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionType).equalsIgnoreCase(Constants.SALE)) {
 			settlementEntity.setIsoAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.credit)));
+			settlementEntity.setIsoId(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityId));
+		} else if (tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType) != null
+				&& tuple.get(QPGAccountTransactions.pGAccountTransactions.entityType).equals(Constants.ISO_USER_TYPE)
+				&& tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionType)
+						.equalsIgnoreCase(Constants.REFUND)) {
+			settlementEntity.setIsoAmount((tuple.get(QPGAccountTransactions.pGAccountTransactions.debit)));
 			settlementEntity.setIsoId(tuple.get(QPGAccountTransactions.pGAccountTransactions.entityId));
 		}
 	}
@@ -890,7 +924,7 @@ public class TransactionDaoImpl implements TransactionDao {
 	private BooleanExpression isTransactionIdEq(String transactionId) {
 
 		return (transactionId != null && !"".equals(transactionId))
-				? QPGTransaction.pGTransaction.transactionId.eq(transactionId) : null;
+				? QPGTransaction.pGTransaction.id.eq(new BigInteger(transactionId)) : null;
 	}
 
 	private BooleanExpression isIssuanceIdEq(String issuerTxnRefNum) {
@@ -914,12 +948,14 @@ public class TransactionDaoImpl implements TransactionDao {
 		List<PGTransaction> pgTransactionList = new ArrayList<>();
 		StringBuilder sb = new StringBuilder();
 		sb.append(
-				" select TRANSACTION_ID, MERCHANT_ID, TERMINAL_ID, TXN_AMOUNT, ISSUER_TXN_REF_NUM,  CREATED_DATE, BATCH_ID from PG_TRANSACTION ");
+				" select ID, MERCHANT_ID, TERMINAL_ID, TXN_AMOUNT, ISSUER_TXN_REF_NUM,  CREATED_DATE, BATCH_ID, MERCHANT_SETTLEMENT_STATUS from PG_TRANSACTION ");
 		sb.append(" where BATCH_ID=:batchId ");
-		sb.append(" and TRANSACTION_ID not in (:pg_Txnid) ");
+		sb.append(" and ID not in (:pg_Txnid) ");
+		sb.append(" and MERCHANT_SETTLEMENT_STATUS not like (:Status) ");
 		Query pgTransactionReportParam = entityManager.createNativeQuery(sb.toString());
 		pgTransactionReportParam.setParameter("batchId", batchId);
 		pgTransactionReportParam.setParameter("pg_Txnid", pgTxnIds);
+		pgTransactionReportParam.setParameter("Status", PGConstants.PG_TXN_VOIDED);
 		List<Object> listOfReport = pgTransactionReportParam.getResultList();
 
 		if (StringUtil.isListNotNullNEmpty(listOfReport)) {
@@ -958,11 +994,14 @@ public class TransactionDaoImpl implements TransactionDao {
 	public void saveorUpdate(List<String> pgTxnIdsList) {
 		log.info("Entering :: TransactionDaoImpl :: saveorUpdate");
 		StringBuilder sb = new StringBuilder();
-		sb.append(" update PG_TRANSACTION set SETTLEMENT_BATCH_STATUS = :status ");
-		sb.append(" where TRANSACTION_ID  in (:pg_Txnid) ");
+		sb.append(" update PG_TRANSACTION, PG_ACCOUNT_TRANSACTIONS set PG_TRANSACTION.SETTLEMENT_BATCH_STATUS = :status, ");
+		sb.append(" PG_TRANSACTION.MERCHANT_SETTLEMENT_STATUS = :merchantSettlementStatus , PG_ACCOUNT_TRANSACTIONS.STATUS = :status ");
+		sb.append(" where PG_TRANSACTION.ID  in (:pg_Txnid) ");
+		sb.append(" and PG_ACCOUNT_TRANSACTIONS.PG_TRANSACTION_ID in (:pg_Txnid) ");
 		Query qry = entityManager.createNativeQuery(sb.toString());
 		qry.setParameter("pg_Txnid", pgTxnIdsList);
 		qry.setParameter("status", Constants.EXECUTED_STATUS);
+		qry.setParameter("merchantSettlementStatus", Constants.SETTLEMENT_STATUS);
 		qry.executeUpdate();
 		log.info("Exiting :: TransactionDaoImpl :: saveorUpdate :: Updated Successfully");
 	}
@@ -979,4 +1018,72 @@ public class TransactionDaoImpl implements TransactionDao {
 		return transRefNumber;
 	}
 	
+	private BooleanExpression isSettlementBatchStatus() {
+		return  QPGTransaction.pGTransaction.settlementBatchStatus.isNull();
+	}
+	
+	protected Integer getTotalNumberOfTxnRecordsForPM(GetTransactionsListRequest getTransactionsListRequest,
+			Long entityId) {
+		Timestamp startDate = null;
+		Timestamp endDate = null;
+		if (!CommonUtil.isNullAndEmpty(getTransactionsListRequest.getFrom_date())) {
+			startDate = DateUtil.getStartDayTimestamp(getTransactionsListRequest.getFrom_date(),
+					PGConstants.DD_MM_YYYY);
+		}
+		if (!CommonUtil.isNullAndEmpty(getTransactionsListRequest.getTo_date())) {
+			endDate = DateUtil.getEndDayTimestamp(getTransactionsListRequest.getTo_date(), PGConstants.DD_MM_YYYY);
+		}
+		JPAQuery query = new JPAQuery(entityManager);
+		List<Tuple> list = query
+				.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
+						QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
+				.where(isMerchantId(getTransactionsListRequest.getMerchant_code()),
+						isTxnId(getTransactionsListRequest.getTransactionId()),
+						isProcessTxnId(getTransactionsListRequest.getProcessCode()),
+						isCardNumberLike(getTransactionsListRequest.getCardNumber()),
+						isTxnTypeLike(getTransactionsListRequest.getTransaction_type()),
+						isTxnStatusLike(getTransactionsListRequest.getStatus()),
+						isEntryModeLike(getTransactionsListRequest.getEntryMode()),
+						isAcqChannel(getTransactionsListRequest.getAcqChannel()),
+						isCardHolderNameLike(getTransactionsListRequest.getCardHolderName()),
+						isMerchantSettlementStatus(getTransactionsListRequest.getMerchantSettlementStatus()),
+						isMerchantBusinessNameLike(getTransactionsListRequest.getMerchantBusinessName()),
+						isValidTxn(getTransactionsListRequest.getFromAmtRange(),
+								getTransactionsListRequest.getToAmtRange()),
+						QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
+						QPGTransaction.pGTransaction.merchantId.eq(QPGAccount.pGAccount.entityId),
+						QPGAccount.pGAccount.status.eq(Constants.ACTIVE)
+								.and(QPGAccount.pGAccount.category.eq(PGConstants.PRIMARY_ACCOUNT)),
+						QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
+						QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
+								.eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+						isMerchantNameLike(getTransactionsListRequest.getMerchantName()),
+						isValidDate(startDate, endDate),isEntityIdLike(entityId))
+				.orderBy(orderByCreatedDateDesc()).list(QPGTransaction.pGTransaction.merchantId,
+						QPGTransaction.pGTransaction.id, QPGTransaction.pGTransaction.issuerTxnRefNum,
+						QPGTransaction.pGTransaction.procCode, QPGTransaction.pGTransaction.panMasked,
+						QPGTransaction.pGTransaction.createdDate, QPGTransaction.pGTransaction.transactionType,
+						QPGTransaction.pGTransaction.txnAmount, QPGTransaction.pGTransaction.feeAmount,
+						QPGTransaction.pGTransaction.merchantFeeAmount, QPGTransaction.pGTransaction.txnDescription,
+						QPGTransaction.pGTransaction.status, QPGTransaction.pGTransaction.merchantSettlementStatus,
+						QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.posEntryMode,
+						QPGTransaction.pGTransaction.acqChannel, QPGTransaction.pGTransaction.cardHolderName,
+						QPGTransaction.pGTransaction.updatedDate, QPGTransaction.pGTransaction.authId,
+						QPGTransaction.pGTransaction.txnTotalAmount, QPGTransaction.pGTransaction.acqTxnMode,
+						QPGTransaction.pGTransaction.invoiceNumber, QPGTransaction.pGTransaction.processor,
+						QPGTransaction.pGTransaction.txnMode, QPGMerchant.pGMerchant.firstName,
+						QPGMerchant.pGMerchant.businessName, QPGMerchant.pGMerchant.merchantType,
+						QPGAccount.pGAccount.accountNum, QPGAccount.pGAccount.entityType,
+						QPGTransaction.pGTransaction.refTransactionId,
+						QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
+						QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
+						QPGTransaction.pGTransaction.deviceLocalTxnTime, QPGTransaction.pGTransaction.timeZoneOffset);
+
+		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
+	}
+	
+	protected BooleanExpression isEntityIdLike(Long entityId) {
+		return (entityId != null)
+				? QPGTransaction.pGTransaction.pmId.eq(entityId) : null;
+	}
 }

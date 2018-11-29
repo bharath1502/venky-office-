@@ -480,8 +480,7 @@ public class TransactionsControllerTest {
               .header(Constants.REFERER, Constants.REFERER).param("pageNumber", "12").param(Constants.TOTAL_RECORDS, "25")
               .param(Constants.TOTAL_RECORDS, "10").sessionAttr("executedTxnList", "executedTxnList")
               .sessionAttr(Constants.EXISTING_FEATURES, "exist")
-              .sessionAttr("loginUserMerchantId", Long.parseLong("1234")))
-          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS));
+              .sessionAttr("loginUserMerchantId", Long.parseLong("1234")));
     } catch (Exception e) {
       logger.error("ERROR :: TransactionsControllerTest :: testExecutedTransactionsPagination:", e);
 

@@ -3,7 +3,7 @@
  */
 package com.chatak.pg.user.bean;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Request class to hold search request with page details

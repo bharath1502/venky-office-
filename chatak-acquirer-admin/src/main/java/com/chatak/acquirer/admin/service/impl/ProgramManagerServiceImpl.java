@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
@@ -60,6 +59,8 @@ import com.chatak.pg.user.bean.ProgramManagerResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.Properties;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
@@ -127,7 +128,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     
     ProgramManager pmResponse = programManagerDao.saveOrUpdateProgramManager(pManager);
     PGCurrencyConfig pGCurrencyCode = null ;
-    pGCurrencyCode = setPGCurrencyCode(programManagerRequest, pGCurrencyCode);
+    pGCurrencyCode = setPGCurrencyCode(programManagerRequest);
 			if (StringUtil.isNull(pGCurrencyCode)) {
 				ProgramManagerRequest currencyList = new ProgramManagerRequest();
 				currencyList.setProgramManagerId(programManagerRequest.getProgramManagerId());
@@ -196,13 +197,11 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     fetchIssuanceCardProgramByPM(partnerGroupPartnerMapRequest, pManager.getAccountCurrency(),
         programManagerRequest.getCreatedBy(),selectedCardProgramIds,pmResponse.getId());
 	} else {
-				BankResponse bankResp = null;
 				String[] arrayList = programManagerRequest.getAcquirerBankName().split(",");
-				setBankResponse(arrayList, bankResp, pmResponse, response);
+				setBankResponse(arrayList, pmResponse, response);
 
-				CardProgram cardProgramReq = null;
 				String[] cardProgramArrayLists = programManagerRequest.getAcquirerCardProgramIds().split(",");
-				setCardProgramRequest(cardProgramReq, cardProgramArrayLists, pmResponse, response);
+				setCardProgramRequest(cardProgramArrayLists, pmResponse, response);
 			}
     
       if (StringUtil.isNull(programManagerRequest.getId())) {
@@ -264,8 +263,8 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 		return bankList;
 	}
 	
-	private PGCurrencyConfig setPGCurrencyCode(ProgramManagerRequest programManagerRequest,
-			PGCurrencyConfig pGCurrencyCode) {
+	private PGCurrencyConfig setPGCurrencyCode(ProgramManagerRequest programManagerRequest) {
+		PGCurrencyConfig pGCurrencyCode = null;
 		if (programManagerRequest.getProgramManagerType().equals(Constants.CREATE_INDEPENDENT)) {
 			pGCurrencyCode = currencyConfigDao.getCurrencyCodeNumeric(programManagerRequest.getAcquirerCurrencyName());
 		} else {
@@ -378,10 +377,9 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 		}
 	}
 	
-	private void setBankResponse(String[] arrayList, BankResponse bankResp, ProgramManager pmResponse,
-			Response response) throws ReflectiveOperationException, ChatakAdminException {
+	private void setBankResponse(String[] arrayList,ProgramManager pmResponse,Response response) throws ReflectiveOperationException, ChatakAdminException {
 		for (int i = 0; i < arrayList.length; i++) {
-			bankResp = new BankResponse();
+			BankResponse bankResp = new BankResponse();
 			if (arrayList[i] != null) {
 				bankResp.setBankid(Long.parseLong(arrayList[i]));
 				savePMBankMappingData(bankResp, pmResponse, response);
@@ -389,10 +387,9 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 		}
 	}
 	
-	private void setCardProgramRequest(CardProgram cardProgramReq, String[] cardProgramArrayLists,
-			ProgramManager pmResponse, Response response) throws ReflectiveOperationException, ChatakAdminException {
+	private void setCardProgramRequest(String[] cardProgramArrayLists,ProgramManager pmResponse, Response response) throws ReflectiveOperationException, ChatakAdminException {
 		for (int i = 0; i < cardProgramArrayLists.length; i++) {
-			cardProgramReq = new CardProgram();
+			CardProgram cardProgramReq = new CardProgram();
 			if (cardProgramArrayLists[i] != null) {
 				cardProgramReq.setCardProgramId(Long.parseLong(cardProgramArrayLists[i]));
 				savePMCardProgramMappingData(cardProgramReq, pmResponse, response);
@@ -413,7 +410,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 	}
   
   @Transactional
-  private void savePMBankMappingData(BankResponse bankResponse, ProgramManager pmResponse, Response response) throws ReflectiveOperationException , ChatakAdminException{
+  public void savePMBankMappingData(BankResponse bankResponse, ProgramManager pmResponse, Response response) throws ReflectiveOperationException , ChatakAdminException{
       try{
           BankProgramManagerMap bankProgramManagerMap = new BankProgramManagerMap();
           bankProgramManagerMap.setBankId(bankResponse.getBankid());
@@ -632,6 +629,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
   public Response updateProgramManager(ProgramManagerRequest programManagerRequest)
       throws ChatakAdminException {
     logger.info("Entering:: ProgramManagerServiceImpl :: updateProgramManager method: ");
+    CountryRequest countryRequest = null;
     Response response = new Response();
     Timestamp currentTimeStamp = getCurrentTimeStamp(programManagerRequest);
 
@@ -646,8 +644,18 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     }
 
     try {
-      CountryRequest countryRequest = countryDao.findCountryByID(Long.valueOf(programManagerRequest.getCountry()));
-      programManagerRequest.setCountry(countryRequest.getName());
+    	if (programManagerRequest.getProgramManagerType().equalsIgnoreCase(Constants.ONBOARDED)) {
+    		CountryRequest countryName =  countryDao.getCountryByName(existingProgramManager.getCountry());
+    		countryRequest = countryDao.findCountryByID(countryName.getId());
+    		programManagerRequest.setCountry(countryRequest.getName());
+    		programManagerRequest.setState(existingProgramManager.getState());
+    		programManagerRequest.setPmTimeZone(existingProgramManager.getPmTimeZone());
+    		programManagerRequest.setPmSystemConvertedTime(existingProgramManager.getPmSystemConvertedTime());
+    	} else {
+    		countryRequest = countryDao.findCountryByID(Long.valueOf(programManagerRequest.getCountry()));
+    		 programManagerRequest.setCountry(countryRequest.getName());
+    	}
+     
       setUpdatedValues(programManagerRequest, existingProgramManager);
       ProgramManager programManager =
           CommonUtil.copyBeanProperties(existingProgramManager, ProgramManager.class);
@@ -659,8 +667,6 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 
       programManager.setUpdatedBy(programManagerRequest.getUpdatedBy());
       programManager.setUpdatedDate(currentTimeStamp);
-
-
       logger.info(
           "info:: ProgramManagerServiceImpl ::before updateProgramManager ::createOrUpdateProgramManager method: ");
       programManagerDao.saveOrUpdateProgramManager(programManager);
@@ -1271,4 +1277,9 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
       throw e;
     }
   }
+
+	@Override
+	public Response findProgramManagerNameAndIdByEntityId(Long entityId, Long merchantId) {
+		return programManagerDao.findProgramManagerNameAndIdByEntityId(entityId, merchantId);
+	}
 }

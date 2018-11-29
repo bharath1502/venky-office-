@@ -33,16 +33,20 @@ import com.chatak.merchant.service.TransactionService;
 import com.chatak.merchant.util.ExportUtil;
 import com.chatak.merchant.util.PaginationUtil;
 import com.chatak.merchant.util.ProcessorConfig;
+import com.chatak.pg.acq.dao.AdminUserDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
 import com.chatak.pg.acq.dao.PGParamsDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
+import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGParams;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
+import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.model.AccountTransactionDTO;
+import com.chatak.pg.model.CurrencyDTO;
 import com.chatak.pg.model.ReportsDTO;
 import com.chatak.pg.user.bean.GetAccountHistoryListResponse;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
@@ -82,6 +86,9 @@ public class DashBoardController implements URLMappingConstants {
 
   @Autowired
   MerchantProfileDao merchantProfileDao;
+  
+  @Autowired
+  private AdminUserDao adminUserDao;
 
   @PostConstruct
   private void loadConfiguration() {
@@ -123,10 +130,22 @@ public class DashBoardController implements URLMappingConstants {
 
       try {
         merchantDetailsResponse = paymentService.getMerchantIdAndTerminalId(merchantId.toString());
-        PGAccount accountDetails =
+        PGAccount account =
             accountService.getAccountDetailsByEntityId(merchantDetailsResponse.getMerchantId());
+        AccountBalanceDTO accountDetails = new AccountBalanceDTO();
+        accountDetails.setEntityId(account.getEntityId());
+        accountDetails.setAccountNum(account.getAccountNum());
+        CurrencyDTO currencyConfig = accountService.getCurrencyConfigOnCurrencyCodeAlpha(account.getCurrency());
+        accountDetails.setAvailableBalanceString(
+        		CommonUtil.formatAmountOnCurrency(account.getAvailableBalance().toString(),
+        				currencyConfig.getCurrencyExponent(), currencyConfig.getCurrencySeparatorPosition(),
+        				currencyConfig.getCurrencyMinorUnit(), currencyConfig.getCurrencyThousandsUnit()));
+        accountDetails.setCurrentBalanceString(
+        		CommonUtil.formatAmountOnCurrency(account.getCurrentBalance().toString(),
+        				currencyConfig.getCurrencyExponent(), currencyConfig.getCurrencySeparatorPosition(),
+        				currencyConfig.getCurrencyMinorUnit(), currencyConfig.getCurrencyThousandsUnit()));
         modelAndView.addObject("accountDetails", accountDetails);
-        modelAndView.addObject("currencyAlpha", accountDetails.getCurrency());
+        modelAndView.addObject("currencyAlpha", account.getCurrency());
         modelAndView.addObject(Constants.MERCHANT_BUSINESS_NAME,
             merchantDetailsResponse.getBusinessName());
         session.setAttribute("accountDetails", accountDetails);
@@ -148,10 +167,25 @@ public class DashBoardController implements URLMappingConstants {
         transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_PROCESSING);
         GetTransactionsListResponse processingTxnList =
             transactionService.searchAccountTransactions(transaction);
+        
+        //fetching entityId and entityType
+        PGAdminUser pgAdminUser  = adminUserDao.findByAdminUserId(Long.valueOf(merchantDetailsResponse.getCreatedBy()));
+        if(null != pgAdminUser){
+        	transaction.setEntityId(pgAdminUser.getEntityId());
+        	transaction.setUserType(pgAdminUser.getUserType());
+        }
 
         transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-        GetTransactionsListResponse executedTxnList =
-            transactionService.searchAccountTransactions(transaction);
+        GetTransactionsListResponse executedTxnList = null;
+
+        if (transaction.getUserType().equals(Constants.PM_USER_TYPE)
+        		|| transaction.getUserType().equals(Constants.ISO_USER_TYPE)) {
+        	logger.info("LoginController:: fetching executed txn for entityType");
+        	executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, transaction.getEntityId(), transaction.getUserType());
+        } else {
+        	logger.info("LoginController:: fetching executed txn for Merchant");
+        	executedTxnList = transactionService.searchAccountTransactions(transaction);
+        }
 
         transactionList = fetchProcessingTxnList(session, modelAndView, transactionResponse, transactionList,
 				processingTxnList, executedTxnList);
@@ -163,9 +197,16 @@ public class DashBoardController implements URLMappingConstants {
         manualTransactionRequest.setTransactionCodeList(manualTxnCodeList);
 
         manualTransactionRequest.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-
-        GetTransactionsListResponse manualTransactionsReportList =
-            transactionService.searchAccountTransactions(manualTransactionRequest);
+        GetTransactionsListResponse manualTransactionsReportList = null;
+        
+        if (transaction.getUserType().equals(Constants.PM_USER_TYPE)
+        		|| transaction.getUserType().equals(Constants.ISO_USER_TYPE)) {
+        	logger.info("LoginController:: fetching manual txn for entityType");
+        	manualTransactionsReportList = transactionService.searchAccountTransactionsForEntityId(manualTransactionRequest, transaction.getEntityId(), transaction.getUserType());
+        } else {
+        	logger.info("LoginController:: fetching manual txn for Merchant");
+        	manualTransactionsReportList = transactionService.searchAccountTransactions(manualTransactionRequest);
+        }
 
         PGMerchant parentMerchant = merchantProfileDao.getMerchantById(merchantId);
         List<PGMerchant> subMerchantList = merchantDao.findById(merchantId);
@@ -596,7 +637,7 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
           transaction.getAccountNumber(),
           transaction.getTxnDescription() != null ? transaction.getTxnDescription() : "",
           transaction.getLocalCurrency(), Double.parseDouble(transaction.getTransactionAmount()),
-          transaction.getFee_amount(), transaction.getTxn_total_amount(),
+          transaction.getFee_amount(), String.format("%.2f",transaction.getTxn_total_amount()),
           transaction.getRef_transaction_id(), Long.parseLong(transaction.getMaskCardNumber()),
           transaction.getTransaction_type() != null
               ? transaction.getTransaction_type().toUpperCase() : "",

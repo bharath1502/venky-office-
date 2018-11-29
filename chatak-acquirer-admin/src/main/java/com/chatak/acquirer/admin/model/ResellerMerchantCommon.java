@@ -1,6 +1,10 @@
 package com.chatak.acquirer.admin.model;
 
-public class ResellerMerchantCommon  {
+import java.io.Serializable;
+
+public class ResellerMerchantCommon implements Serializable {
+
+  private static final long serialVersionUID = 7696507173340010443L;
 
   private String address1;
 

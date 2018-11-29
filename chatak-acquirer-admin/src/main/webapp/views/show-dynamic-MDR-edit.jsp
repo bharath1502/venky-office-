@@ -64,7 +64,7 @@
 									</div>
 								</div>
 								<!--Success and Failure Message End-->
-								<form:form action="process-dynamic-MDR-update" commandName="dynamicMDRDTO" name="dynamicMDRDTO">
+								<form:form action="process-dynamic-MDR-update" modelAttribute="dynamicMDRDTO" name="dynamicMDRDTO">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<input type="hidden" id="id"  name="id" value="${dynamicMDRDTO.id}" />
 									<div class="col-sm-12 paddingT20">

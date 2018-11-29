@@ -4,13 +4,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+
 import com.chatak.pg.acq.dao.TerminalDao;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTerminal;
@@ -303,8 +306,8 @@ public class TerminalDaoImpl implements TerminalDao {
         for (Tuple tuple : tupleList) {
           terminal = new PGTerminal();
           terminal.setId(tuple.get(QPGTerminal.pGTerminal.id));
-          terminal.setTerminalId(Long.valueOf(tuple.get(QPGTerminal.pGTerminal.terminalId)));
-          terminal.setMerchantId(Long.valueOf(tuple.get(QPGTerminal.pGTerminal.merchantId)));
+          terminal.setTerminalId(tuple.get(QPGTerminal.pGTerminal.terminalId));
+          terminal.setMerchantId(tuple.get(QPGTerminal.pGTerminal.merchantId));
           terminal.setStatus(tuple.get(QPGTerminal.pGTerminal.status));
           terminalList.add(terminal);
         }

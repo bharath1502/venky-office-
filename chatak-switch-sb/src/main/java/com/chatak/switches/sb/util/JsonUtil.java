@@ -14,10 +14,7 @@ import org.apache.http.Header;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
+
 
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.exception.PrepaidAdminException;
@@ -26,6 +23,10 @@ import com.chatak.pg.util.HttpClient;
 import com.chatak.pg.util.Properties;
 import com.chatak.switches.sb.exception.ChatakSwitchException;
 import com.chatak.switches.sb.exception.ServiceException;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JsonUtil {
 
@@ -151,8 +152,12 @@ private static String getValidOAuth2TokenForFee() {
 	          
 	        	@Override
 	            public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1) throws CertificateException {
-	             
-	        		// need to implement based on requirement
+	        		try {
+						arg0[0].checkValidity();
+					} catch (CertificateException e) {
+						logger.info("Error:: JsonUtil:: checkServerTrusted method ");
+						throw new CertificateException("Certificate not valid or trusted.");
+					}
 	            }
 	        	
 	          @Override
@@ -165,14 +170,19 @@ private static String getValidOAuth2TokenForFee() {
 	          
 	          @Override
 	          public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1) throws CertificateException {
-	        	// need to implement based on requirement
+	        	  try {
+						arg0[0].checkValidity();
+					} catch (CertificateException e) {
+						logger.info("Error:: JsonUtil:: checkClientTrusted method ");
+						throw new CertificateException("Certificate not valid or trusted.");
+					}
 	          }
 	        } };
 	        
 
 	      // Install the all-trusting trust manager
 	      try {
-	          SSLContext sc = SSLContext.getInstance("TLS");
+	          SSLContext sc = SSLContext.getInstance("TLSv1.2");
 	          sc.init(null, trustAllCerts, new SecureRandom());
 	          HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 	      } catch (Exception e) {

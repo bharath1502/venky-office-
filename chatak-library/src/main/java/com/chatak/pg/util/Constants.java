@@ -969,15 +969,15 @@ public class Constants {
 
   public static final String APP_CLIENT_COUNTRY = "INDIA";
 
-  public static final String APP_CLIENT_ID = "WALLETUSER";
+  public static final String APP_CLIENT_ID = "WALLETUSER";//Need to change to mpos if required
 
-  public static final String APP_CLIENT_ACCESS = "WALLETPASS";
+  public static final String APP_CLIENT_ACCESS = "WALLETPASS";//Need to change to mpos if required
 
-  public static final String APP_CLIENT_NAME = "WALLET";
+  public static final String APP_CLIENT_NAME = "WALLET";//Need to change to mpos if required
 
   public static final String APP_CLIENT_PHONE = "9876543210";
 
-  public static final String APP_CLIENT_ROLE = "WALLET_ADMIN";
+  public static final String APP_CLIENT_ROLE = "WALLET_ADMIN";//Need to change to mpos if required
 
   public static final String APP_CLIENT_ZIP = "560037";
 
@@ -989,12 +989,24 @@ public class Constants {
 
   public static final String APP_STATUS = "Active";
 
-  public static final Integer MAX_DOWNLOAD_LIMIT = Integer.parseInt(Properties.getProperty("max.download.limit"));
-  
   public static final String SCHEDULER_ENABLE_FLAG = Properties.getProperty("settlement.scheduler.enabled");
   
   public static final String SETTLEMENT_DATE_FORMAT = "MM-dd-yyyy";
   
   public static final String TIMEZONE_DATE_FORMAT = "dd-MM-yyyy HH:mm:ss z";
   
+  public static final String SETTLEMENT_STATUS = "Settled";
+  
+  public static final String SALE = "sale";
+  
+  public static final String POS_PURCHASE = "POS Purchase";
+
+  public static final String MERCHANT_NOT_ASSOCIATED = "CEC_1548";
+  
+  public static final String POS_REFUND = "POS Refund";
+
+  public static final String JSESSIONID = "JSESSIONID";
+  
+  public static final String SETTELEMENT_AMOUNT_FORMAT ="#,##0.00";
+
 }

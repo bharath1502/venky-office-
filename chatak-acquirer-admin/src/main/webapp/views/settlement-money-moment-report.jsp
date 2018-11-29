@@ -86,7 +86,7 @@
 									<fieldset class="col-md-3 col-sm-6">
 										<label><spring:message code="admin.label.pmamount" /><span
 											class="required-field">*</span></label>
-											<span >${pmDebitAmount}</span>
+											<span ><fmt:formatNumber value="${pmDebitAmount}" pattern="<%=Constants.SETTELEMENT_AMOUNT_FORMAT %>"/></span>
 									</fieldset>
 
 									<div class="search-results-table">
@@ -117,7 +117,7 @@
 									            <td>${isoDetails.bankName}</td>
 									            <td>${isoDetails.bankAccNum}</td>
 									            <td>${isoDetails.routingNumber}</td>
-									            <td>${isoDetails.amount}</td>
+									            <td><fmt:formatNumber value ="${isoDetails.amount}" pattern="<%=Constants.SETTELEMENT_AMOUNT_FORMAT %>"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>
@@ -156,7 +156,7 @@
 									            <td>${isoMappedTxn.bankNmae}</td>
 									            <td>${isoMappedTxn.bankAccountNumber}</td>
 									            <td>${isoMappedTxn.bankRoutingNumber}</td>
-									            <td>${isoMappedTxn.entityTotalRevenueAmount}</td>
+									            <td><fmt:formatNumber value="${isoMappedTxn.entityTotalRevenueAmount}" pattern = "<%=Constants.SETTELEMENT_AMOUNT_FORMAT%>"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>
@@ -195,7 +195,7 @@
 												<td>${pmMappedTxn.bankNmae}</td>
 												<td>${pmMappedTxn.bankAccountNumber}</td>
 												<td>${pmMappedTxn.bankRoutingNumber}</td>
-												<td>${pmMappedTxn.entityTotalRevenueAmount}</td>
+												<td><fmt:formatNumber value = "${pmMappedTxn.entityTotalRevenueAmount}" pattern = "<%=Constants.SETTELEMENT_AMOUNT_FORMAT%>"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>

@@ -201,7 +201,9 @@ public class SettlementReportDaoImpl extends TransactionDaoImpl implements Settl
     transactionResp.setMerchantType(tuple.get(QPGAccount.pGAccount.entityType));
     transactionResp.setAcqChannel(tuple.get(QPGTransaction.pGTransaction.acqChannel));
     transactionResp.setMerchantName(tuple.get(QPGMerchant.pGMerchant.firstName));
-    transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	transactionResp.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), Constants.HYPHEN_DATE_FORMAT),
+		PGConstants.DATE_FORMAT));
     transactionResp.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
     transactionResp.setTxn_ref_num(
         getSettlementReportTransactionsRefTransactionId(tuple));

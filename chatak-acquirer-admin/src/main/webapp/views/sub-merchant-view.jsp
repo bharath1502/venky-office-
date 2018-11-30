@@ -644,7 +644,7 @@
 														<input type="button"
 															class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="goToMerchantSearch()">
+															onclick="goToSubMerchantSearch()">
 													</fieldset>
 												</div>
 												<div class="col-sm-12 button-content subMerchantDiv1"

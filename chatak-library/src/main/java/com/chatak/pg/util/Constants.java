@@ -1008,5 +1008,7 @@ public class Constants {
   public static final String JSESSIONID = "JSESSIONID";
   
   public static final String SETTELEMENT_AMOUNT_FORMAT ="#,##0.00";
+  
+  public static final String HYPHEN_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 }

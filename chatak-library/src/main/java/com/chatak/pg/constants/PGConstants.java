@@ -452,4 +452,7 @@ public interface PGConstants {
    String TXN_0177 = "TXN_0177";
    String TXN_0178 = "TXN_0178";
    String TXN_0179 = "TXN_0179";
+   
+   String TXN_DATE_FORMAT = "dd/MM/yyyy HH:mm:ss";
+
 }

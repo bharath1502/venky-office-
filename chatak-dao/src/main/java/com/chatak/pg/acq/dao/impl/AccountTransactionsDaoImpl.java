@@ -287,7 +287,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 	      null != tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionTime)
 	          ? DateUtil.toDateStringFormat(
 	              tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionTime),
-	              PGConstants.DATE_FORMAT)
+	              PGConstants.TXN_DATE_FORMAT)
 	          : "");
 	  accountTransactionDTO
       .setCurrentBalance(
@@ -299,7 +299,7 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 	      null != tuple.get(QPGAccountTransactions.pGAccountTransactions.processedTime)
 	          ? DateUtil.toDateStringFormat(
 	              tuple.get(QPGAccountTransactions.pGAccountTransactions.processedTime),
-	              PGConstants.DATE_FORMAT)
+	              PGConstants.TXN_DATE_FORMAT)
 	          : "");
 	  accountTransactionDTO
       .setDescription(tuple.get(QPGAccountTransactions.pGAccountTransactions.description));
@@ -322,8 +322,10 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 	  accountTransactionDTO.setCurrency(tuple.get(QPGAccount.pGAccount.currency));
 	  accountTransactionDTO.setTransactionCode(
 	      tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionCode));
-	  accountTransactionDTO.setDeviceLocalTxnTime(tuple.get(QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime));
-	  accountTransactionDTO.setTimeZoneOffset(tuple.get(QPGAccountTransactions.pGAccountTransactions.timeZoneOffset));
+	  accountTransactionDTO.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(
+			DateUtil.toTimestamp(tuple.get(QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime),
+					Constants.HYPHEN_DATE_FORMAT),PGConstants.TXN_DATE_FORMAT));
+			  accountTransactionDTO.setTimeZoneOffset(tuple.get(QPGAccountTransactions.pGAccountTransactions.timeZoneOffset));
 	  validateAccountTransactionType(accountTransactionDTO, tuple);
 	  accountTransactionDTOs.add(accountTransactionDTO);
 	}

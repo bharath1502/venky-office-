@@ -88,4 +88,5 @@ public class ISOConstants {
   
   public static final Integer ALTERNATE_TRACK_2_DATA = 56;
   
+  public static final Integer ACCOUNT_NUMBER = 123;
 }

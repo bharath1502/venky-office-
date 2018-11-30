@@ -29,6 +29,7 @@ import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.AccountType;
+import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
@@ -173,7 +174,7 @@ public abstract class AccountTransactionService {
 //                 totalFeeAmount,
 //                 AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT,
 //                 descriptionTemplate);
-
+    if(!request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
     List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(pgTransaction.getCpId());
     Double pmShare = feeProgram.get(0).getPmShare();
     Double isoShare = feeProgram.get(0).getIsoShare();
@@ -203,7 +204,7 @@ public abstract class AccountTransactionService {
           AccountTransactionCode.CC_ISO_FEE_CREDIT,
           descriptionTemplate);      
     }
-    
+    }
     logger.info("Exiting:: AccountTransactionService:: logSaleToAccountTransaction method ");
     return account;
   }

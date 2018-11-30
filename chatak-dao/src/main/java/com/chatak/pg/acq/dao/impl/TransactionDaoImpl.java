@@ -671,7 +671,9 @@ public class TransactionDaoImpl implements TransactionDao {
     transactionResp.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
     transactionResp.setTransactionAmount((StringUtils.amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))));
     transactionResp.setMerchantFeeAmount(tuple.get(QPGTransaction.pGTransaction.merchantFeeAmount));
+    if(!transactionResp.getAcqTxnMode().equals("ACCOUNT_PAY")) {
     transactionResp.setFee_amount(tuple.get(QPGTransaction.pGTransaction.feeAmount).doubleValue()/Integer.parseInt("100"));
+    }
     transactionResp.setTerminal_id(Long.valueOf((tuple.get(QPGTransaction.pGTransaction.terminalId))));
     transactionResp.setUserName(tuple.get(QPGTransaction.pGTransaction.userName));
 	transactionResp.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil

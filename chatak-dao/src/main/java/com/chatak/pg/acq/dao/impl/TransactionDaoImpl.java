@@ -674,7 +674,9 @@ public class TransactionDaoImpl implements TransactionDao {
     transactionResp.setFee_amount(tuple.get(QPGTransaction.pGTransaction.feeAmount).doubleValue()/Integer.parseInt("100"));
     transactionResp.setTerminal_id(Long.valueOf((tuple.get(QPGTransaction.pGTransaction.terminalId))));
     transactionResp.setUserName(tuple.get(QPGTransaction.pGTransaction.userName));
-    transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	transactionResp.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+			.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), Constants.HYPHEN_DATE_FORMAT),
+			PGConstants.DATE_FORMAT));
     transactionResp.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
   }
 

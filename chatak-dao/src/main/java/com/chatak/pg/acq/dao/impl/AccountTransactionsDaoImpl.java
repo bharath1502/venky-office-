@@ -322,7 +322,9 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 	  accountTransactionDTO.setCurrency(tuple.get(QPGAccount.pGAccount.currency));
 	  accountTransactionDTO.setTransactionCode(
 	      tuple.get(QPGAccountTransactions.pGAccountTransactions.transactionCode));
-	  accountTransactionDTO.setDeviceLocalTxnTime(tuple.get(QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime));
+	  accountTransactionDTO.setDeviceLocalTxnTime(DateUtil
+				.toDateStringFormat(DateUtil.toTimestamp(tuple.get(QPGAccountTransactions.pGAccountTransactions.deviceLocalTxnTime),
+				Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
 	  accountTransactionDTO.setTimeZoneOffset(tuple.get(QPGAccountTransactions.pGAccountTransactions.timeZoneOffset));
 	  validateAccountTransactionType(accountTransactionDTO, tuple);
 	  accountTransactionDTOs.add(accountTransactionDTO);

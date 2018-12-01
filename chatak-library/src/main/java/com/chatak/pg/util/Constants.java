@@ -148,9 +148,9 @@ public class Constants {
 
   public static final String SYSTEM_REVENUE_ACCOUNT = "SYSTEM REVENUE ACCOUNT";
 
-  public static final String DATE_TIME_FORMAT = "MM/dd/yyyy HH:mm:ss";
+  public static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
-  public static final String DATE_TIME_FORMAT_MARKER = "MM/dd/yyyy HH:mm:ss a";
+  public static final String DATE_TIME_FORMAT_MARKER = "dd/MM/yyyy HH:mm:ss a";
 
   public static final String DELIMITER = "\\|";
 

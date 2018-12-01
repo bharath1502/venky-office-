@@ -333,6 +333,7 @@ public class PGMerchantServiceImpl implements PGMerchantService {
               currencyConfigDao.getCurrencyCodeNumeric(pgMerchant.getLocalCurrency());
           validatePGCurrencyConfig(loginRequest, loginResponse, merchantUsers, pgMerchant, pgCurrencyConfig);
           
+          if(loginResponse.getTerminalData() != null) {
           if(loginResponse.getTerminalData().getErrorCode().equals(Constant.SIXTEEN.toString())){
         	  loginResponse.setErrorCode(Constant.SIXTEEN.toString());
       	       return loginResponse;
@@ -341,7 +342,7 @@ public class PGMerchantServiceImpl implements PGMerchantService {
             loginResponse.setErrorCode(Constant.ELEVEN.toString());
             return loginResponse;
           } 
-
+          }
           loginResponse.setErrorCode(ChatakPayErrorCode.GEN_001.name());
           loginResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(),
               null, LocaleContextHolder.getLocale()));

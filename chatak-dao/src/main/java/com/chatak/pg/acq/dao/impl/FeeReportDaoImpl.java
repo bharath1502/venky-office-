@@ -351,7 +351,9 @@ public class FeeReportDaoImpl implements FeeReportDao {
 				settlementEntity.setPgTxnId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId));
 				settlementEntity.setIssTxnId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuerTxnID));
 				settlementEntity.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
-				settlementEntity.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+				settlementEntity.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(
+						DateUtil.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+								Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
 				settlementEntity.setTransactionType(tuple.get(QPGTransaction.pGTransaction.transactionType));
 				settlementEntity.setTxnTotalAmount(BigDecimal.valueOf(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount)));
 				settlementEntity.setBatchDate(tuple.get(QPGTransaction.pGTransaction.batchDate));

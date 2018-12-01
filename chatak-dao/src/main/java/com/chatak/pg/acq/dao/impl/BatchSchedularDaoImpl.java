@@ -484,7 +484,9 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
     transactionResp.setMerchantName(tuple.get(QPGMerchant.pGMerchant.firstName));
     transactionResp.setAcqChannel(tuple.get(QPGTransaction.pGTransaction.acqChannel));
     transactionResp.setTxn_ref_num(getSettlementReportTransactionsRefTransactionId(tuple));
-    transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+    transactionResp.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+			Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
     transactionResp.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
     String posEntryMode = tuple.get(QPGTransaction.pGTransaction.posEntryMode);
     logger.info("TransactionDaoImpl :: getTransactions :: posEntryMode: " + posEntryMode);

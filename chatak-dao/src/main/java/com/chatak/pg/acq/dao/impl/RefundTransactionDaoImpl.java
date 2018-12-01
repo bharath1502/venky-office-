@@ -252,7 +252,9 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
               : currencyCodeAlpha + ":" + "0.00");
       txnDto.setProcessor(((tuple.get(QPGTransaction.pGTransaction.processor) != null)
           ? tuple.get(QPGTransaction.pGTransaction.processor) : ""));
-      txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	  txnDto.setDeviceLocalTxnTime(DateUtil
+					.toDateStringFormat(DateUtil.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+							Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
       txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
       txnDto.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
       transactionStatusMessage(txnDto, tuple);
@@ -286,7 +288,9 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
         ? DateUtil.toDateStringFormat(tuple.get(QPGTransaction.pGTransaction.createdDate),
             PGConstants.DATE_FORMAT)
         : ""));
-    txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+    txnDto.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(
+		  DateUtil.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+					Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
     txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
   }
 
@@ -515,8 +519,8 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
         ? tuple.get(QPGMerchant.pGMerchant.businessName) : "");
     transactionResp.setTxnJsonString(convertObjectToJSON(txnDto));
 	transactionResp.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
-			.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), Constants.HYPHEN_DATE_FORMAT),
-			PGConstants.DATE_FORMAT));
+			.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+					Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
     transactionResp.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
     transactions.add(transactionResp);
   }

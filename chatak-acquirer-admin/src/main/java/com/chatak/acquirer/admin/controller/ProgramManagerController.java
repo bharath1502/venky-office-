@@ -176,7 +176,7 @@ public class ProgramManagerController implements URLMappingConstants {
    * @return
    * @throws CloneNotSupportedException
    */
-  @RequestMapping(value = PREPAID_ADMIN_CREATE_PROGRAM_MANAGER, method = RequestMethod.POST)
+  @RequestMapping(value = SHOW_PREPAID_ADMIN_SEARCH_PROGRAM_MANAGER, method = RequestMethod.POST)
   public ModelAndView processCreateProgramManager(HttpServletRequest request,
       HttpServletResponse response, Map<String, Object> model, HttpSession session,
       @RequestParam("programManagerLogo") MultipartFile file,

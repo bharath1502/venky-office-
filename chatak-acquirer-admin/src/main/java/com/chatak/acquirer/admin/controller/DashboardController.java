@@ -384,6 +384,7 @@ private void validateMerchant(Map model, Merchant merchant) {
       }
       if (null != adminUserList) {
         modelAndView.addObject("blockedUserList", adminUserList);
+        modelAndView.addObject("totalRecords", adminUserList.size());
         session.setAttribute("blockedUserList", adminUserList);
       } else {
         model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE,

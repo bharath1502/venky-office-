@@ -915,7 +915,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 					.append(" INNER JOIN PG_PM_ISO_MAPPING PMIM ON PMEM.ENTITY_ID = PMIM.ISO_ID AND PMIM.PM_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode) a");
 		} else if (entityType.equals(Constants.ISO_USER_TYPE)) {
 			query = new StringBuilder("select PGM.MERCHANT_CODE,PGM.ID ").append(
-					" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID PMEM.ENTITY_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode");
+					" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode");
 
 		} else {
 			return merchantRepository.findByMerchantCode(merchantCode);

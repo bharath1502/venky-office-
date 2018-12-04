@@ -82,8 +82,10 @@ public class HttpConfig {
 
 	private CloseableHttpClient httpClient() {
 	  CloseableHttpClient defaultHttpClient = null;
+	  PoolingHttpClientConnectionManager connectionManager = null;
+
     try {
-      PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+      connectionManager = new PoolingHttpClientConnectionManager();
       connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONNECTIONS);
       connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
       URI uri = null;
@@ -135,6 +137,9 @@ public class HttpConfig {
     }
     catch(URISyntaxException e) {
       logger.error("ERROR:: HttpConfig :: URISyntaxException Exception", e);
+    }
+    finally {
+      connectionManager.close();
     }
 		
 		return defaultHttpClient;

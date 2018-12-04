@@ -446,7 +446,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transactionFileExportUtil.txn.type", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant-batch-report.label.status", null, LocaleContextHolder.getLocale())
+        messageSource.getMessage("merchant-batch-report.status", null, LocaleContextHolder.getLocale())
         };
     return new ArrayList<String>(Arrays.asList(headerArr));
   }

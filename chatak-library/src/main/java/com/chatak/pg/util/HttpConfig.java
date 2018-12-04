@@ -138,9 +138,6 @@ public class HttpConfig {
     catch(URISyntaxException e) {
       logger.error("ERROR:: HttpConfig :: URISyntaxException Exception", e);
     }
-    finally {
-      connectionManager.close();
-    }
 		
 		return defaultHttpClient;
 	}

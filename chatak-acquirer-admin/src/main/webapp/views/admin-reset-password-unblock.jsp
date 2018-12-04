@@ -115,6 +115,7 @@
                     <td class="search-table-header-column widthP80"><span
                       class="glyphicon glyphicon-search search-table-icon-text"></span>
                       <span><spring:message code="header.label.searchsummary"/></span>
+                      <span class="pull-right"><spring:message code="common.label.totalcount"/> : <label id="totalCount">${totalRecords}</label></span>
                     </td>
                   </tr>
                 </table>

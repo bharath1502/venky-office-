@@ -252,7 +252,7 @@
 									</c:when>
 									<c:otherwise>
 										<tr>
-											<td colspan="10" style="color: red; text-align: center;"><spring:message
+											<td colspan="12" style="color: red; text-align: center;"><spring:message
 													code="dash-board.label.norecordsfound" /></td>
 										</tr>
 									</c:otherwise>
@@ -371,7 +371,7 @@
 									</c:when>
 									<c:otherwise>
 										<tr>
-											<td colspan="8" style="color: red; text-align: center;"><spring:message
+											<td colspan="9" style="color: red; text-align: center;"><spring:message
 													code="dash-board.label.norecordsfound" /></td>
 										</tr>
 									</c:otherwise>

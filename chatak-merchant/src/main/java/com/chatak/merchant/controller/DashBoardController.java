@@ -581,7 +581,7 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
   }
 
   private List<String> getTransactionHeaderList() {
-    String[] headerArr = {
+    String[] headerArr = { 
         messageSource.getMessage("dash-board.label.transactiontime", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant.common-deviceLocalTxnTime", null,

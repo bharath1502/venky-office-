@@ -426,63 +426,49 @@ public class BatchScheduleReportController implements URLMappingConstants {
   
   private List<String> getBatchHeaderList() {
     String[] headerArr = {
-        messageSource.getMessage("transaction-report-batchID", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("home.label.batch.date.time", null,
-            LocaleContextHolder.getLocale()),
         messageSource.getMessage("dash-board.label.transactiontime", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant.common-deviceLocalTxnTime", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("reportsglobal.label.txnID", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("reports.label.balancereports.merchantorsubmerchantName", null,
+        messageSource.getMessage("merchant-batch-report.transaction.id", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage(
             "reports.label.balancereports.manualtransactions.merchantorsubmerchantcode", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("reports.label.accountnumber", null,
-            LocaleContextHolder.getLocale()),
+        messageSource.getMessage("transaction-report-batchID", null,
+                LocaleContextHolder.getLocale()),
+        messageSource.getMessage("transactions-search.label.cardnumber", null,
+                LocaleContextHolder.getLocale()),
         messageSource.getMessage("processing-transaction-details.label.description", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("fileExportUtil.currency", null, LocaleContextHolder.getLocale()),
         messageSource.getMessage("recurring-search.label.amount", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transactions-search.label.processortxnid", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transactions-search.label.cardnumber", null,
-            LocaleContextHolder.getLocale()),
         messageSource.getMessage("transactionFileExportUtil.txn.type", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant-batch-report.label.status", null, LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transaction-file-exportutil-merchantTXNAmount", null,
-            LocaleContextHolder.getLocale())};
+        messageSource.getMessage("merchant-batch-report.label.status", null, LocaleContextHolder.getLocale())
+        };
     return new ArrayList<String>(Arrays.asList(headerArr));
   }
 
-  private static List<Object[]> getBatchFileData(List<Transaction> list) {
-    List<Object[]> fileData = new ArrayList<Object[]>();
+	private static List<Object[]> getBatchFileData(List<Transaction> list) {
+		List<Object[]> fileData = new ArrayList<Object[]>();
 
-    for (Transaction transaction : list) {
-      if (!"".equals(transaction.getTimeZoneOffset()) && null != transaction.getTimeZoneOffset()) {
-        transaction.setTimeZoneOffset("(" + transaction.getTimeZoneOffset() + ")");
-      }
-      Object[] rowData =
-          {transaction.getBatchId(), transaction.getBatchDate(), transaction.getTransactionDate(),
-              transaction.getDeviceLocalTxnTime()+transaction.getTimeZoneOffset(),
-            Long.parseLong(transaction.getTransactionId()), transaction.getMerchantBusinessName(),
-            Long.parseLong(transaction.getMerchant_code()), transaction.getAccountNumber(),
-              transaction.getTxnDescription(), transaction.getLocalCurrency(),
-              transaction.getTxn_total_amount()/Double.parseDouble("100"), transaction.getRef_transaction_id(),
-              Long.parseLong(transaction.getMaskCardNumber()), transaction.getTransaction_type(),
-              transaction.getMerchantSettlementStatus(), Double.parseDouble(transaction.getTransactionAmount())
-
-          };
-      fileData.add(rowData);
-    }
-
-    return fileData;
-  }
+		for (Transaction transaction : list) {
+			if (!"".equals(transaction.getTimeZoneOffset()) && null != transaction.getTimeZoneOffset()) {
+				transaction.setTimeZoneOffset("(" + transaction.getTimeZoneOffset() + ")");
+			}
+			Object[] rowData = { transaction.getTransactionDate(),
+					transaction.getDeviceLocalTxnTime() + transaction.getTimeZoneOffset(),
+					Long.parseLong(transaction.getTransactionId()), Long.parseLong(transaction.getMerchant_code()),
+					transaction.getBatchId(), Long.parseLong(transaction.getMaskCardNumber()),
+					transaction.getTxnDescription(), transaction.getLocalCurrency(),
+					transaction.getTxn_total_amount() / Double.parseDouble("100"), transaction.getTransaction_type(),
+					transaction.getMerchantSettlementStatus() };
+			fileData.add(rowData);
+		}
+		return fileData;
+	}
   
   private List<String> getFundingHeaderList() {
     String[] headerArr = {

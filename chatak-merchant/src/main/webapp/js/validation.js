@@ -42,7 +42,7 @@ var ValidationRules = {
 	fax : {
 		type : "numeric",
 		min : "9",
-		max : "12",
+		max : "15",
 		mandatory : false
 
 	},

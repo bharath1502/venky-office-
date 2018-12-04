@@ -129,7 +129,7 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-update.label.merchantcode"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="merchantCode"
 															id="merchantCode" maxlength="50"
-															onblur="validateMerchantCode()" readonly="true" />
+															onblur=" return clientValidation('dummyParentMerchantId','cardType','parentMerchantIdEr');" readonly="true" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="merchantCodeEr" class="red-error">&nbsp;</span>
 														</div>

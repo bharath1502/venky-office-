@@ -2508,7 +2508,8 @@ function searchValidationForMerchant(){
 
 function createValidationForMerchant(){
 	if(!clientValidation('fax','fax','faxEr')
-			| !clientValidation('address2','address2','address2Er')){
+			| !clientValidation('address2','address2','address2Er')
+			| !clientValidation('dummyParentMerchantId','cardType','parentMerchantIdEr')){
 		return false;
 	}
 	return true;

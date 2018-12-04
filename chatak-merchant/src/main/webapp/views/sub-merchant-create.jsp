@@ -313,7 +313,7 @@
 															class="required-field">*</span></label>
 														<form:hidden path="parentMerchantId" id="parentMerchantId" />
 														<select class="form-control" id="dummyParentMerchantId"
-															onblur="validateParentMerchantId();" onchange="fetchPartnerName(this.value)">
+															onblur=" return clientValidation('dummyParentMerchantId','cardType','parentMerchantIdEr');" onchange="fetchPartnerName(this.value)">
 															<option value="">..:<spring:message code="sub-merchant-create.label.select" />:..
 															</option>
 															<c:forEach items="${mainMerchantList}" var="mainMerchant">

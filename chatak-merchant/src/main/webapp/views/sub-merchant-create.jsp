@@ -312,8 +312,8 @@
 																code="manage.label.sub-merchant.merchantcode" /><span
 															class="required-field">*</span></label>
 														<form:hidden path="parentMerchantId" id="parentMerchantId" />
-														<select class="form-control" id="dummyParentMerchantId"
-															onblur=" return clientValidation('dummyParentMerchantId','cardType','parentMerchantIdEr');" onchange="fetchPartnerName(this.value)">
+														<select class="form-control" id="parentMerchantcode"
+															onblur=" return clientValidation('parentMerchantcode','cardType','parentMerchantIdEr');" onchange="fetchPartnerName(this.value)">
 															<option value="">..:<spring:message code="sub-merchant-create.label.select" />:..
 															</option>
 															<c:forEach items="${mainMerchantList}" var="mainMerchant">

@@ -724,9 +724,9 @@
 					validateOnlineOptions();
 					$("#navListId6").addClass("active-background");
 
-					$('#dummyParentMerchantId').val(
+					$('#parentMerchantcode').val(
 							$('#parentMerchantId').val());
-					$('#dummyParentMerchantId').attr('disabled', true);
+					$('#parentMerchantcode').attr('disabled', true);
 
 					/* populatePartnerAndAgentDetails($('#appMode').val(),
 							'sub-merchant', 'update', false); */

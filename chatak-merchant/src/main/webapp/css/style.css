@@ -78,8 +78,9 @@ h3 {
 }
 
 textarea.form-control {
-    height: 25px;
+    height: 45px;
     padding-top: 5px;
+    resize:none;
 }
 .form-control {
 	padding: 0 5px;

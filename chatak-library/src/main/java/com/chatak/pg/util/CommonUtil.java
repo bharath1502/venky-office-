@@ -489,7 +489,7 @@ public final class CommonUtil {
       throw new PrepaidAdminException("Please enter valid amount");
     }
     String amount = amountInCents.replaceAll("[^0-9]", "");
-    amount = Double.toString(Double.parseDouble(amount) / (Math.pow(10d, currencyExponent)));
+    amount = String.format("%.2f", Double.parseDouble(amount) / (Math.pow(10d, currencyExponent)));
     amount = amount.replaceAll("[^0-9]", currencyMinorUnit.toString());
     if(amount.substring(amount.indexOf(currencyMinorUnit), amount.length()).length() != currencyExponent + 1) {
       for(int i = amount.substring(amount.indexOf(currencyMinorUnit), amount.length()).length(); i < currencyExponent

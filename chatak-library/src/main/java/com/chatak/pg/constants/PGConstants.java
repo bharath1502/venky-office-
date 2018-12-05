@@ -301,7 +301,9 @@ public interface PGConstants {
   
   String DD_MM_YYYY = "dd/MM/yyyy";
   
-  String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+  String YYYY_MM_DD = "yyyy-MM-dd";
+  
+  String DATE_FORMAT = "dd/MM/yyyy HH:mm:ss";
   
   String PROGRAM_MANAGER_NAME = "Program Manager";
   

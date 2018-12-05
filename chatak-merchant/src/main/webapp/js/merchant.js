@@ -997,7 +997,11 @@ function validateCategory(){
 function validateAutoPaymentMethod() {
 	var autoPaymentMethod = get('autoPaymentMethod').value.trim();
 //	var autoPaymentMethodConfirm = get('autoPaymentMethod').value.trim();
-	if (isEmpty(autoPaymentMethod) && $('#allowAutoSettlement').is(':checked')) {
+	if(isEmpty(autoPaymentMethod)) {
+		setError(get('autoPaymentMethod'), webMessages.thisfieldismandatory);
+		loadMsgTitleText();
+		return false;
+	} else if (isEmpty(autoPaymentMethod) && $('#allowAutoSettlement').is(':checked')) {
 		setError(get('autoPaymentMethod'), webMessages.pleaseselectautopaymentmethod);
 		loadMsgTitleText();
 		return false;
@@ -2504,7 +2508,8 @@ function searchValidationForMerchant(){
 
 function createValidationForMerchant(){
 	if(!clientValidation('fax','fax','faxEr')
-			| !clientValidation('address2','address2','address2Er')){
+			| !clientValidation('address2','address2','address2Er')
+			| !clientValidation('parentMerchantcode','cardType','parentMerchantIdEr')){
 		return false;
 	}
 	return true;

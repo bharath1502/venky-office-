@@ -16,7 +16,7 @@
 
 	<!-- This is default url to get a token from OAuth -->
 	<sec:http pattern="/pg/oauth/token" create-session="stateless" entry-point-ref="basicAuthenticationEntryPoint"
-		authentication-manager-ref="clientAuthenticationManager" use-expressions="true">
+		authentication-manager-ref="clientAuthenticationManager" use-expressions="true" >
 		<sec:intercept-url pattern="/oauth/token" access="permitAll" />
 		<sec:anonymous enabled="true" />
 		<sec:http-basic />
@@ -25,7 +25,7 @@
 		<sec:custom-filter ref="clientCredentialsTokenEndpointFilter"
 			after="BASIC_AUTH_FILTER" />
 		<sec:access-denied-handler ref="oauthAccessDeniedHandler" />
-		
+		<sec:csrf disabled="true"/>
 	</sec:http>
 
 	<sec:http pattern="/**/transaction/clientSsoLogin" security="none"/>
@@ -48,7 +48,7 @@
 		<sec:intercept-url pattern="/pg/transaction/changePassword" access="hasAnyAuthority('ROLE_APP','WALLET_ADMIN')" />
 		<sec:intercept-url pattern="/pg/transaction/forgotPassword" access="hasAnyAuthority('ROLE_APP','WALLET_ADMIN')" />
 		<sec:intercept-url pattern="/pg/transaction/clientProcess" access="hasAnyAuthority('WALLET_ADMIN')" />
-
+		<sec:csrf disabled="true"/>
 		<sec:intercept-url pattern="/pg/**" access="hasAnyAuthority('ROLE_APP')" />
 
 		<sec:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
@@ -59,13 +59,16 @@
 		class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
 		<property name="realmName" value="Chatak Software Services" />
 	</bean>
+	<bean id = "noop" class="org.springframework.security.crypto.password.NoOpPasswordEncoder"></bean>
 	
-	<authentication-manager id="clientAuthenticationManager"
+	<sec:authentication-manager id="clientAuthenticationManager"
 		xmlns="http://www.springframework.org/schema/security">
-		<authentication-provider user-service-ref="chatakServiceBasicAccessClientDetails" />
-	</authentication-manager>
+		<sec:authentication-provider user-service-ref="chatakServiceBasicAccessClientDetails">
+			<sec:password-encoder ref="noop">
+			</sec:password-encoder>
+		</sec:authentication-provider>
+	</sec:authentication-manager>
 	
-
 	<bean id="oauthAuthenticationEntryPoint"
 		class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
 		<property name="realmName" value="Chatak Software Services" />
@@ -154,6 +157,5 @@
 
 	<oauth:expression-handler id="oauthExpressionHandler" />
 	<oauth:web-expression-handler id="oauthWebExpressionHandler" />
-	
 	
 </beans>

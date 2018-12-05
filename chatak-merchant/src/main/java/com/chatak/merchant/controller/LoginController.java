@@ -56,7 +56,9 @@ import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.exception.HttpClientException;
+import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.model.AccountTransactionDTO;
+import com.chatak.pg.model.CurrencyDTO;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.user.bean.MerchantAccountHistory;
@@ -486,14 +488,27 @@ public class LoginController implements URLMappingConstants {
         try {
           merchantDetailsResponse =
               paymentService.getMerchantIdAndTerminalId(merchantId.toString());
-          PGAccount accountDetails =
+          PGAccount account =
               accountService.getAccountDetailsByEntityId(merchantDetailsResponse.getMerchantId());
           modelAndView.addObject(Constants.MERCHANT_BUSINESS_NAME,
                   merchantDetailsResponse.getBusinessName());
           session.setAttribute(Constants.MERCHANT_BUSINESS_NAME,
               merchantDetailsResponse.getBusinessName());
+          AccountBalanceDTO accountDetails = new AccountBalanceDTO();
+          accountDetails.setEntityId(account.getEntityId());
+          accountDetails.setAccountNum(account.getAccountNum());
+          CurrencyDTO currencyConfig = accountService.getCurrencyConfigOnCurrencyCodeAlpha(account.getCurrency());
+          accountDetails.setAvailableBalanceString(
+        		  CommonUtil.formatAmountOnCurrency(account.getAvailableBalance().toString(),
+        				  currencyConfig.getCurrencyExponent(), currencyConfig.getCurrencySeparatorPosition(),
+        				  currencyConfig.getCurrencyMinorUnit(), currencyConfig.getCurrencyThousandsUnit()));
+          accountDetails.setCurrentBalanceString(
+        		  CommonUtil.formatAmountOnCurrency(account.getCurrentBalance().toString(),
+        				  currencyConfig.getCurrencyExponent(), currencyConfig.getCurrencySeparatorPosition(),
+        				  currencyConfig.getCurrencyMinorUnit(), currencyConfig.getCurrencyThousandsUnit()));
+          
           modelAndView.addObject("accountDetails", accountDetails);
-          modelAndView.addObject("currencyAlpha", accountDetails.getCurrency());
+          modelAndView.addObject("currencyAlpha", account.getCurrency());
           session.setAttribute("accountDetails", accountDetails);
 
           transaction.setMerchant_code(merchantDetailsResponse.getMerchantId());

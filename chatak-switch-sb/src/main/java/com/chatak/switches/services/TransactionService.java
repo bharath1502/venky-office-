@@ -259,7 +259,7 @@ public abstract class TransactionService extends AccountTransactionService {
     // to make it a whole 20 digit card number, 19 card digits + 'F'
     // In such cases, truncate the 'F'
     String cardNumber = request.getCardNum().replace("F", "");
-    if(request.getPosEntryMode().equals("350") || request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+    if(request.getPosEntryMode().equals("350")) {
     	pgTransaction.setPanMasked(request.getAccountNumber());
         pgTransaction.setPan(EncryptionUtil.encrypt(request.getAccountNumber()));
     } else {

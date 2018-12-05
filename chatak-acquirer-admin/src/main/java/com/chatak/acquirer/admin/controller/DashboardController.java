@@ -331,15 +331,14 @@ private void validateMerchant(Map model, Merchant merchant) {
   private void fetchState(HttpSession session, ModelAndView modelAndView, Merchant merchant) throws ChatakAdminException {
 	Response stateList = merchantUpdateService.getStatesByCountry(merchant.getCountry());
 	modelAndView.addObject("stateList", stateList.getResponseList());
+	if(StringUtil.isListNotNullNEmpty(stateList.getResponseList())){
 	session.setAttribute("stateList", new ArrayList(stateList.getResponseList()));
-
+	}
 	stateList = merchantUpdateService.getStatesByCountry(merchant.getBankCountry());
 	modelAndView.addObject("bankStateList", stateList.getResponseList());
+	if(StringUtil.isListNotNullNEmpty(stateList.getResponseList())){
 	session.setAttribute("bankStateList", new ArrayList(stateList.getResponseList()));
-
-	stateList = merchantUpdateService.getStatesByCountry(merchant.getLegalCountry());
-	modelAndView.addObject("legalStateList", stateList.getResponseList());
-	session.setAttribute("legalStateList", new ArrayList(stateList.getResponseList()));
+	}
   }
 
   @RequestMapping(value = CHATAK_ADMIN_UNBLOCK_USERS, method = RequestMethod.GET)
@@ -384,6 +383,7 @@ private void validateMerchant(Map model, Merchant merchant) {
       }
       if (null != adminUserList) {
         modelAndView.addObject("blockedUserList", adminUserList);
+        modelAndView.addObject("totalRecords", adminUserList.size());
         session.setAttribute("blockedUserList", adminUserList);
       } else {
         model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE,

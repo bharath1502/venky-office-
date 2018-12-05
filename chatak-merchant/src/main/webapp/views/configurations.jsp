@@ -81,7 +81,7 @@
 													</fieldset>
 													
 													<fieldset class="col-sm-3" id="weeklySettlement" style="display: none;">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.selectdayoftheweek"/></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.selectdayoftheweek"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" onblur="return clientValidation('autoTransferWeeklyDay', 'state','autoTransferWeeklyDayEr');"
 															path="autoTransferWeeklyDay" id="autoTransferWeeklyDay">
 															<form:option value="">.:<spring:message code="sub-merchant-create.label.select"/>:.</form:option>

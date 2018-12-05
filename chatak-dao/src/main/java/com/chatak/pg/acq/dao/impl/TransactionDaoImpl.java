@@ -852,7 +852,9 @@ public class TransactionDaoImpl implements TransactionDao {
 				settlementEntity.setUpdatedDate(tuple.get(QPGTransaction.pGTransaction.updatedDate));
 				settlementEntity.setMerchantId(tuple.get(QPGTransaction.pGTransaction.merchantId));
 				settlementEntity.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
-				settlementEntity.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+				settlementEntity.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(
+						DateUtil.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+								Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
 				settlementEntity.setAcqPmId(tuple.get(QPGTransaction.pGTransaction.pmId).toString());
 				settlementEntity.setBatchDate(tuple.get(QPGTransaction.pGTransaction.batchDate));
 				settlementEntity.setSettlementBatchStatus(tuple.get(QPGTransaction.pGTransaction.settlementBatchStatus));

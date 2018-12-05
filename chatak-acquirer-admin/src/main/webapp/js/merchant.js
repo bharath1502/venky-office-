@@ -1007,7 +1007,7 @@ function validateParentMerchantId() {
 
 function validateParentMerchantIdEdit() {
 	if (get('confirmMerchantCode')) {
-		setLable('confirmMerchantCode', $('#dummyParentMerchantId :selected')
+		setLable('confirmMerchantCode', $('#parentMerchantId :selected')
 				.text());
 	}
 	return true;

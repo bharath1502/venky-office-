@@ -121,8 +121,8 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
 		if(reportRequest.getId() != null) {
 			merchantFeeReportParam.setParameter("entityId", reportRequest.getId());
 	    }
-		merchantFeeReportParam.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
-		merchantFeeReportParam.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.DD_MM_YYYY));
+		merchantFeeReportParam.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.YYYY_MM_DD));
+		merchantFeeReportParam.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.YYYY_MM_DD));
 		merchantFeeReportParam.setParameter("offset", offset);
 		merchantFeeReportParam.setParameter("limit", limit);
 		List<Object> objectList = merchantFeeReportParam.getResultList();
@@ -183,8 +183,8 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
 	 if(reportRequest.getId() != null) {
 		 dailyFundingReportList.setParameter("entityId", reportRequest.getId());
 	 }
-	dailyFundingReportList.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
-	dailyFundingReportList.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.DD_MM_YYYY));
+	dailyFundingReportList.setParameter("startDate", DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.YYYY_MM_DD));
+	dailyFundingReportList.setParameter("endDate", DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.YYYY_MM_DD));
 	List<Object> list = dailyFundingReportList.getResultList();
     return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
   }
@@ -484,7 +484,9 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
     transactionResp.setMerchantName(tuple.get(QPGMerchant.pGMerchant.firstName));
     transactionResp.setAcqChannel(tuple.get(QPGTransaction.pGTransaction.acqChannel));
     transactionResp.setTxn_ref_num(getSettlementReportTransactionsRefTransactionId(tuple));
-    transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+    transactionResp.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+			Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
     transactionResp.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
     String posEntryMode = tuple.get(QPGTransaction.pGTransaction.posEntryMode);
     logger.info("TransactionDaoImpl :: getTransactions :: posEntryMode: " + posEntryMode);

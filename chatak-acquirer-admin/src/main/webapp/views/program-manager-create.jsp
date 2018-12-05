@@ -74,7 +74,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createProgramManager"
+								<form:form action="showProgramManager"
 									name="programManagerDetailsForm"
 									modelAttribute="programManagerRequest" method="post"
 									onsubmit="buttonDisabled()" enctype="multipart/form-data">

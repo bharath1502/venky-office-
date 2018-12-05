@@ -187,7 +187,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
       if (null != executedTxnsList) {
         transaction = new GetTransactionsListRequest();
         transaction.setPageSize(Integer.parseInt("20"));
-        transaction.setPageIndex(Constants.ONE);
+        transaction.setPageIndex(downLoadPageNumber);
         if (!StringUtil.isNullAndEmpty(requestFrom) && "dashobard".equals(requestFrom)) {
         	transaction.setPageSize(Integer.parseInt("10"));
         	modelAndView.setViewName(CHATAK_ADMIN_HOME);

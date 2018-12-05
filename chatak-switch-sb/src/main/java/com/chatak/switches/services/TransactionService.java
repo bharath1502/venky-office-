@@ -208,7 +208,7 @@ public abstract class TransactionService extends AccountTransactionService {
   protected PGTransaction populatePGTransaction(Request request, String txnType)
       throws Exception, ServiceException {
     logger.info("Entering :: TransactionService :: populatePGTransaction");
-    if(!request.getPosEntryMode().equals("350") || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+    if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
 		if (txnType.equalsIgnoreCase(TransactionType.SALE.toString())
 				&& (request.getTotalTxnAmount() < (request.getTxnAmount() + request.getTxnFee()))) {
 			throw new ServiceException(ActionCode.ERROR_CODE_12);
@@ -259,7 +259,7 @@ public abstract class TransactionService extends AccountTransactionService {
     // to make it a whole 20 digit card number, 19 card digits + 'F'
     // In such cases, truncate the 'F'
     String cardNumber = request.getCardNum().replace("F", "");
-    if(request.getPosEntryMode().equals("350")) {
+    if(request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE)) {
     	pgTransaction.setPanMasked(request.getAccountNumber());
         pgTransaction.setPan(EncryptionUtil.encrypt(request.getAccountNumber()));
     } else {
@@ -286,7 +286,7 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setTimeZoneOffset(request.getTimeZoneOffset());
     pgTransaction.setTimeZoneRegion(request.getTimeZoneRegion());
     pgTransaction.setDeviceLocalTxnTime(DateUtil.convertTimeZone(request.getTimeZoneOffset(), timestamp.toString()));
-    if(!request.getPosEntryMode().equals("350") || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+    if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
     	pgTransaction
         .setExpDate(setExpDate(request));
     getCardProgramDetailsByCardNumber(CommonUtil.getIIN(cardNumber), CommonUtil.getPartnerIINExt(cardNumber), 
@@ -434,7 +434,7 @@ public abstract class TransactionService extends AccountTransactionService {
     	logger.info("Setting PAN in ISO field");
       isoMsg.set(ISOConstants.PAN, request.getCardNum());
     }
-    if(!request.getPosEntryMode().equals("350") || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+    if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
     logger.info("PAN Number in Sale Txn Request : " + StringUtils.lastFourDigits(request.getCardNum()));
     logger.info("PAN Number in ISO Packet : " + StringUtils.lastFourDigits((String)isoMsg.getValue(ISOConstants.PAN)));
     isoMsg.set(ISOConstants.DATE_EXPIRATION, request.getExpDate());

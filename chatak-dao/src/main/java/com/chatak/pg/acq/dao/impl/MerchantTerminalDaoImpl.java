@@ -103,6 +103,7 @@ public class MerchantTerminalDaoImpl implements MerchantTerminalDao {
 	 * @param merchantId
 	 * @return
 	 */
+	
 	@Override
 	public PGMerchant validateMerchantId(String merchantId, Long entityId, String userType) {
 		PGMerchant merchant = new PGMerchant();

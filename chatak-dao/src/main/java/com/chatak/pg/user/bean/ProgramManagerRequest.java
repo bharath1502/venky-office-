@@ -4,7 +4,13 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import com.chatak.pg.bean.SearchRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProgramManagerRequest extends SearchRequest {
 
 	private static final long serialVersionUID = -3348275668511102325L;
@@ -120,8 +126,40 @@ public class ProgramManagerRequest extends SearchRequest {
 	private String schedulerRunTime;
 	
 	private String pmSystemConvertedTime;
+	
+	private Long entityId;
+	
+	private String loginuserType;
 
-	/**
+	 /**
+    * @return the entityId
+    */
+   public Long getEntityId() {
+     return entityId;
+   }
+
+   /**
+    * @param entityId the entityId to set
+    */
+   public void setEntityId(Long entityId) {
+     this.entityId = entityId;
+  }
+ 
+   /**
+    * @return the loginuserType
+    */
+   public String getLoginuserType() {
+     return loginuserType;
+   }
+
+   /**
+    * @param loginuserType the loginuserType to set
+    */
+   public void setLoginuserType(String loginuserType) {
+     this.loginuserType = loginuserType;
+   }
+
+  /**
 	 * @return the issuancepmid
 	 */
 	public Long getIssuancepmid() {

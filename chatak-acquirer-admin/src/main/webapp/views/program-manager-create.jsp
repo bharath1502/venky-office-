@@ -74,7 +74,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createProgramManager"
+								<form:form action="showProgramManager"
 									name="programManagerDetailsForm"
 									modelAttribute="programManagerRequest" method="post"
 									onsubmit="buttonDisabled()" enctype="multipart/form-data">
@@ -142,7 +142,7 @@
 													<form:input path="programManagerName" cssClass="form-control"
 														id="programMangerName"
 														onblur="clientValidation('programMangerName', 'program_manager_name','pgmmgrNameErrormsg')"
-														onclick="clearErrorMsg('pgmmgrcompanynameerrormsg');" />
+														onclick="clearErrorMsg('pgmmgrcompanynameerrormsg');"/>
 
 													<div class="discriptionErrorMsg">
 														<span id="pgmmgrNameErrormsg" class="red-error">&nbsp;</span>
@@ -522,12 +522,29 @@
 			$(".acquirerCurrencyNames").hide();
 			$(".acquirerBankNames").hide();
 			$(".acquirerCardProgram").hide();
-			 });
 		
-		function closePopup(){
+			if ('${programManagerRequest.programManagerType}' == 'onboarded') {
+				document.getElementById('programMangerName').readOnly = true;
+				document.getElementById('companyName').readOnly = true;
+				document.getElementById('businessEntityName').readOnly = true;
+				document.getElementById('contactPerson').readOnly = true;
+				document.getElementById('extension').readOnly = true;
+				document.getElementById('batchPrefix').readOnly = true;
+				document.getElementById('schedulerRunTime').readOnly = true;
+				document.getElementById('contactPhone').readOnly = true;
+				document.getElementById('programManagerEmailId').readOnly = true;
+				$('#currencyName').attr("readonly", "readonly"); 
+				$('#country').attr("readonly", "readonly");
+				$('#state').attr("readonly", "readonly");
+				$('#timezone').attr("readonly", "readonly");
+			}
+
+		});
+
+		function closePopup() {
 			$('#LogoDiv').popup("hide");
 		}
-		function openPopup(){
+		function openPopup() {
 			$('#LogoDiv').popup("show");
 		}
 		document.getElementById("schedulerRunTime").value = "00:00:00";
@@ -539,22 +556,22 @@
 				setDiv('sucessDiv', '');
 			}
 		}
-		
+
 		$(document).ready(function() {
 			/* Table Sorter includes Start*/
 			$(function() {
-				
-					  // call the tablesorter plugin
-					  $('#serviceResults').sortable({
-						
-						 divBeforeTable: '#divbeforeid',
-						divAfterTable: '#divafterid',
-						initialSort: false,
-						locale: 'th',
-						//negativeSort: [1, 2]
-					});
+
+				// call the tablesorter plugin
+				$('#serviceResults').sortable({
+
+					divBeforeTable : '#divbeforeid',
+					divAfterTable : '#divafterid',
+					initialSort : false,
+					locale : 'th',
+				//negativeSort: [1, 2]
+				});
 			});
-			});
+		});
 	</script>
 </body>
 </html>

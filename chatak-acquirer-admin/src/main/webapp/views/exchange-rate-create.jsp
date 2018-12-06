@@ -97,7 +97,7 @@
 								
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createExchangeRate" commandName="exchangeRate" name="exchangeRate">
+								<form:form action="createExchangeRate" modelAttribute="exchangeRate" name="exchangeRate">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

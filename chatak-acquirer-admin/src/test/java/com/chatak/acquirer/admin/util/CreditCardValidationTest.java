@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
+@SuppressWarnings({"static-access"})
 @RunWith(MockitoJUnitRunner.class)
 public class CreditCardValidationTest {
 

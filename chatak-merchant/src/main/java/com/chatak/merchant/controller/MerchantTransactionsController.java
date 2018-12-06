@@ -23,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.chatak.merchant.constants.URLMappingConstants;
-import com.chatak.merchant.exception.ChatakMerchantException;
 import com.chatak.merchant.exception.ChatakPayException;
 import com.chatak.merchant.model.GetTransactionResponse;
 import com.chatak.merchant.model.TransactionResponse;
@@ -31,8 +30,10 @@ import com.chatak.merchant.service.AccountService;
 import com.chatak.merchant.service.RestPaymentService;
 import com.chatak.merchant.service.TransactionService;
 import com.chatak.merchant.util.PaginationUtil;
+import com.chatak.pg.acq.dao.AdminUserDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
+import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.bean.TransactionPopUpDataDto;
 import com.chatak.pg.constants.AccountTransactionCode;
@@ -68,6 +69,9 @@ public class MerchantTransactionsController implements URLMappingConstants {
 
   @Autowired
   MerchantProfileDao merchantProfileDao;
+  
+  @Autowired
+  private AdminUserDao adminUserDao;
 
   @RequestMapping(value = CHATAK_MERCHANT_TRANSACTION_REFUND_PAGE, method = RequestMethod.POST)
   public ModelAndView showTransactionRefund(HttpServletRequest request,
@@ -381,6 +385,13 @@ public class MerchantTransactionsController implements URLMappingConstants {
   private GetTransactionsListResponse fetchPGMerchantDetails(Long merchantId,
 		GetTransactionsListRequest manualTransactionRequest) {
 	PGMerchant parentMerchant = merchantProfileDao.getMerchantById(merchantId);
+	//fetching entityId and entityType
+	PGAdminUser pgAdminUser  = adminUserDao.findByAdminUserId(Long.valueOf(parentMerchant.getCreatedBy()));
+	if(null != pgAdminUser){
+		manualTransactionRequest.setEntityId(pgAdminUser.getEntityId());
+		manualTransactionRequest.setUserType(pgAdminUser.getUserType());
+	}
+    
 	List<PGMerchant> subMerchantList = merchantDao.findById(merchantId);
 	List<String> merchantCodeList = new ArrayList<>();
 	merchantCodeList.add(parentMerchant.getMerchantCode());
@@ -389,8 +400,15 @@ public class MerchantTransactionsController implements URLMappingConstants {
 	}
 	String merchantCodes = StringUtils.join(merchantCodeList, "|");
 	manualTransactionRequest.setMerchant_code(merchantCodes);
-	GetTransactionsListResponse manualTransactionsReportList =
-	    transactionService.searchManulAccountTransactions(manualTransactionRequest);
+	GetTransactionsListResponse manualTransactionsReportList = null;
+	if (manualTransactionRequest.getUserType().equals(Constants.PM_USER_TYPE)
+			|| manualTransactionRequest.getUserType().equals(Constants.ISO_USER_TYPE)) {
+		logger.info("LoginController:: fetching manual txn for entityType");
+		manualTransactionsReportList = transactionService.searchManualAccountTransactionsForEntityId(manualTransactionRequest, manualTransactionRequest.getEntityId(), manualTransactionRequest.getUserType());
+	} else {
+		logger.info("LoginController:: fetching manual txn for Merchant");
+		manualTransactionsReportList =  transactionService.searchManulAccountTransactions(manualTransactionRequest);
+	}
 	return manualTransactionsReportList;
   }
 

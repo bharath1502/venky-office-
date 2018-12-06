@@ -51,7 +51,6 @@ public class JsonUtilTest {
 		Object request = new Object();
 		try {
 			Mockito.when(httpClient.invokePost(request, String.class, Constants.ACC_ACTIVE)).thenReturn(Constants.ACC_TERMINATED);
-
 			jsonUtil.sendToIssuance(request, "123", "543", String.class);
 		} catch (Exception e) {
 			logger.error("ERROR:: JsonUtilTest:: testSendToIssuance method", e);

@@ -167,6 +167,10 @@ public class UserManagementController implements URLMappingConstants {
       List<GenericUserDTO> userList = new ArrayList<GenericUserDTO>();
       List<GenericUserDTO> userList1 = new ArrayList<GenericUserDTO>();
       String userType = userDataDto.getUserType();
+      Long entityId = loginResponse.getEntityId();
+      String loginuserType = loginResponse.getUserType();
+      userDataDto.setEntityId(entityId);
+      userDataDto.setLoginuserType(loginuserType);
       if (Constants.ADMIN_USER_TYPE.equalsIgnoreCase(userType)
     		  || Constants.PM_USER_TYPE.equalsIgnoreCase(userType)
     		  || Constants.ISO_USER_TYPE.equalsIgnoreCase(userType)) {
@@ -249,7 +253,7 @@ public class UserManagementController implements URLMappingConstants {
       Map<String, String> merchantsMap = null;
       merchantsMap = merchantUpdateService
           .getMerchantNameAndMerchantCodeAsMapByMerchantType(Constants.TYPE_MERCHANT);
-      session.setAttribute("merchantList", merchantsMap);
+      session.setAttribute("merchantList", new HashMap(merchantsMap));
       modelAndView.addObject("merchantList", merchantsMap);
     } catch (Exception e) {
       logger.error("ERROR:: UserManagementController:: searchUser method", e);
@@ -399,7 +403,7 @@ public class UserManagementController implements URLMappingConstants {
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_USER_SEARCH);
     GenericUserDTO userData = null;
-    List<GenericUserDTO> userList3 = null;
+    List<GenericUserDTO> userDataList = null;
     try {
       userData = (GenericUserDTO) session.getAttribute(Constants.USER_SEARCH_REQUEST);
       userData.setPageIndex(downLoadPageNumber);
@@ -408,11 +412,11 @@ public class UserManagementController implements URLMappingConstants {
         userData.setPageIndex(Constants.ONE);
         userData.setPageSize(totalRecords);
       }
-      userList3 = new ArrayList<GenericUserDTO>();
+      userDataList = new ArrayList<GenericUserDTO>();
       List<GenericUserDTO> userList = userService.searchAdminUser(userData);
-      List<GenericUserDTO> userList1 = userService.searchMerchantUser(userData);
-      userList3.addAll(userList);
-      userList3.addAll(userList1);
+      List<GenericUserDTO> userListForMerchant = userService.searchMerchantUser(userData);
+      userDataList.addAll(userList);
+      userDataList.addAll(userListForMerchant);
       ExportDetails exportDetails = new ExportDetails();
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
         exportDetails.setExportType(ExportType.PDF);
@@ -420,7 +424,7 @@ public class UserManagementController implements URLMappingConstants {
         exportDetails.setExportType(ExportType.XLS);
         exportDetails.setExcelStartRowNumber(Integer.parseInt("4"));
     }
-    setExportDetailsDataForDownloadRoleReport(userList, exportDetails); 
+    setExportDetailsDataForDownloadRoleReport(userDataList, exportDetails); 
     ExportUtil.exportData(exportDetails, response, messageSource);
       userData.setPageSize(pageSize);
     } catch (Exception e) {
@@ -577,6 +581,7 @@ public class UserManagementController implements URLMappingConstants {
 
   private UserData validateUserRoleList(HttpServletRequest request, HttpSession session, final Long userIdData,
 		final String usersGroupType,Map model) throws ChatakAdminException {
+	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
 	List<UserRoleDTO> userRoleList = roleService.getRoleListByType(usersGroupType);
     session.setAttribute("userRoleListData", userRoleList);
     UserData userData = userService.getUserDataOnUsersGroupType(userIdData, usersGroupType);
@@ -591,6 +596,8 @@ public class UserManagementController implements URLMappingConstants {
     Map<Long, String> entityMap = new HashMap<>();
     if(userData.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE) && !StringUtil.isNull(userData.getEntityId())) {
     	programManagerRequest.setId(userData.getEntityId());
+    	programManagerRequest.setLoginuserType(loginResponse.getUserType());
+    	programManagerRequest.setEntityId(loginResponse.getEntityId());
         ProgramManagerResponse programManagerResponse = programManagerService
       		  .getAllProgramManagers(programManagerRequest);
     	entityMap = getEntityKeyValuePairs(programManagerResponse);
@@ -725,8 +732,9 @@ public class UserManagementController implements URLMappingConstants {
   public ModelAndView showUserTypeValue(HttpServletRequest request, HttpServletResponse response,
       @FormParam("rolesType") final String rolesType, Map model, HttpSession session) {
     logger.info("Entering:: UserManagementController:: showCreateUser method");
-
+      
     ModelAndView modelAndView = new ModelAndView(CHATAK_USER_CREATE);
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     try {
     	roleController.getRoleListForRoles(session, model);
       List<UserRoleDTO> userRoleList = roleService.getRoleListByType(rolesType);
@@ -735,6 +743,8 @@ public class UserManagementController implements URLMappingConstants {
       IsoRequest isoRequest = new IsoRequest();
       CommonUtil.setEntityIdsFromUserType(programManagerRequest, isoRequest, session);
       programManagerRequest.setStatuses(Arrays.asList("Active"));
+      programManagerRequest.setLoginuserType(loginResponse.getUserType());
+      programManagerRequest.setEntityId(loginResponse.getEntityId());
       ProgramManagerResponse programManagerResponse = programManagerService
     		  .getAllProgramManagers(programManagerRequest);
       isoRequest.setProgramManagerRequest(programManagerRequest);
@@ -840,9 +850,9 @@ public class UserManagementController implements URLMappingConstants {
     logger.info("Entering :: UserManagementController :: validateMerchantIDByName method");
     String merchantId = request.getParameter("merchantId");
     UserData userResponse = null;
-
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     try {
-      userResponse = userService.merchantIdByMerchantName(merchantId);
+      userResponse = userService.merchantIdByMerchantName(merchantId, loginResponse.getEntityId(), loginResponse.getUserType());
       return JsonUtil.convertObjectToJSON(userResponse);
     } catch (ChatakAdminException e) {
       logger.error("ERROR:: UserManagementController:: validateMerchantIDByName method", e);

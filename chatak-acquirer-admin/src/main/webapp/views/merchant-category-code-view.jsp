@@ -75,7 +75,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="#" commandName="mcc" name="mcc" method="post">
+								<form:form action="#" modelAttribute="mcc" name="mcc" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

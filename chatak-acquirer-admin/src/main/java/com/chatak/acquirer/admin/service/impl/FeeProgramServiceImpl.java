@@ -121,8 +121,13 @@ public class FeeProgramServiceImpl implements FeeProgramService {
     logger.info("prepaidservice :: FeeProgramManagementImpl :: searchFeeProgramForJpa Entering");
     FeeProgramResponseDetails feeProgramResponse = new FeeProgramResponseDetails();
     try {
-      List<FeeProgramDTO> feeProgramRequestResponseList =
-          feeProgramDao.searchFeeProgramForJpa(feeProgramDTO);
+      List<FeeProgramDTO> feeProgramRequestResponseList = null;
+      if (feeProgramDTO.getUserType() != null
+          && feeProgramDTO.getUserType().equals(Constants.PM_USER_TYPE)) {
+        feeProgramRequestResponseList = feeProgramDao.fetchFeeProgramForPM(feeProgramDTO);
+      } else {
+        feeProgramRequestResponseList = feeProgramDao.searchFeeProgramForJpa(feeProgramDTO);
+      }
       if (CommonUtil.isListNotNullAndEmpty(feeProgramRequestResponseList)) {
         feeProgramResponse.setFeeCodeList(feeProgramRequestResponseList);
         feeProgramResponse.setTotalNoOfRows(feeProgramDTO.getNoOfRecords());

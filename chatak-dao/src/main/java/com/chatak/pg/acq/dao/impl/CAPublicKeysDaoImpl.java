@@ -266,9 +266,9 @@ public class CAPublicKeysDaoImpl implements CAPublicKeysDao {
 		PGCaPublicKeys pgCaPublicKeys = caPublickeysRepository.findByPublicKeyId(getCAPublicKeysId);
 		if (pgCaPublicKeys != null) {
 			cAPublicKeysDTO.setPublicKeyName(pgCaPublicKeys.getPublicKeyName());
-			if (pgCaPublicKeys.getStatus().equals(Constants.ZERO)) {
+			if (pgCaPublicKeys.getStatus().equals(Constants.ZERO.toString())) {
 				cAPublicKeysDTO.setStatus(PGConstants.S_STATUS_ACTIVE);
-			} else if (pgCaPublicKeys.getStatus().equals(Constants.ONE)) {
+			} else if (pgCaPublicKeys.getStatus().equals(Constants.ONE.toString())) {
 				cAPublicKeysDTO.setStatus(PGConstants.S_STATUS_PENDING);
 			}
 			cAPublicKeysDTO.setRid(pgCaPublicKeys.getrId());

@@ -80,7 +80,7 @@
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
 								<form:form action="merchant-category-code-create"
-									commandName="mcc" name="mcc" method="post">
+									modelAttribute="mcc" name="mcc" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

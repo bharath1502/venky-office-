@@ -30,6 +30,7 @@ import com.chatak.merchant.model.MerchantData;
 import com.chatak.merchant.model.MerchantSearchResponse;
 import com.chatak.merchant.service.BatchSchedularReportService;
 import com.chatak.merchant.service.CurrencyConfigService;
+import com.chatak.merchant.service.LoginService;
 import com.chatak.merchant.service.MerchantInfoService;
 import com.chatak.merchant.service.MerchantService;
 import com.chatak.merchant.util.PaginationUtil;
@@ -72,7 +73,9 @@ public class SubMerchantController implements URLMappingConstants {
   
   @Autowired
   BatchSchedularReportService batchSchedularReportService;
-
+  
+  @Autowired
+  LoginService loginService;
   /**
    * Method to create merchant page
    * 
@@ -179,7 +182,7 @@ public class SubMerchantController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantInfoService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
       MerchantSearchResponse searchResponse = merchantInfoService.searchSubMerchantList(merchant);
       List<MerchantData> merchants = new ArrayList<>();
       if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMerchants())) {
@@ -218,6 +221,12 @@ public class SubMerchantController implements URLMappingConstants {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
+    }
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
     }
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
@@ -270,6 +279,12 @@ public class SubMerchantController implements URLMappingConstants {
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
     }
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     modelAndView.addObject(Constants.ERROR, null);
     modelAndView.addObject(Constants.SUCESS, null);
     try {
@@ -317,6 +332,12 @@ public class SubMerchantController implements URLMappingConstants {
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
     }
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
     Merchant subMerchant = new Merchant();
@@ -324,11 +345,10 @@ public class SubMerchantController implements URLMappingConstants {
     try {
       List<Option> options = merchantInfoService.getFeeProgramNames();
       modelAndView.addObject(Constants.FEE_PROGRAM_NAMES, options);
-      session.setAttribute(Constants.FEE_PROGRAM_NAMES, options);
-      session.setAttribute(Constants.UPDATE_MERCHANT_ID, session.getAttribute(Constants.UPDATE_MERCHANT_ID));
+      session.setAttribute(Constants.FEE_PROGRAM_NAMES, new ArrayList(options));
       List<Option> countryList = merchantInfoService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
       subMerchant.setMerchantType(PGConstants.SUB_MERCHANT);
       Long parentMerchantId = (Long) session.getAttribute(Constants.LOGIN_USER_MERCHANT_ID);
       subMerchant.setParentMerchantId(parentMerchantId);
@@ -441,6 +461,12 @@ public class SubMerchantController implements URLMappingConstants {
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
     }
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     Merchant merchant = new Merchant();
 
     modelAndView.addObject(Constants.ERROR, null);
@@ -450,7 +476,7 @@ public class SubMerchantController implements URLMappingConstants {
 
       List<Option> countryList = merchantInfoService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
       merchant.setId(getSubMerchantId);
       merchant = merchantService.getMerchant(merchant);
 
@@ -460,10 +486,10 @@ public class SubMerchantController implements URLMappingConstants {
       else {
         Response stateList = merchantInfoService.getStatesByCountry(merchant.getCountry());
         modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-        session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+        session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
         stateList = merchantInfoService.getStatesByCountry(merchant.getBankCountry());
         modelAndView.addObject(Constants.BANK_STATE_LIST, stateList.getResponseList());
-        session.setAttribute(Constants.BANK_STATE_LIST, stateList.getResponseList());
+        session.setAttribute(Constants.BANK_STATE_LIST, new ArrayList(stateList.getResponseList()));
         session.setAttribute(Constants.UPDATE_MERCHANT_ID, getSubMerchantId);
         modelAndView.addObject(Constants.MERCHANT, merchant);
         merchantInfoService.getProcessorNames();
@@ -506,7 +532,7 @@ public class SubMerchantController implements URLMappingConstants {
 
       List<Option> countryList = merchantInfoService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
       merchant.setId(getSubMerchantIdForView);
       merchant = merchantService.getMerchant(merchant);
       if (null == merchant)
@@ -515,10 +541,10 @@ public class SubMerchantController implements URLMappingConstants {
       else {
         Response stateList = merchantInfoService.getStatesByCountry(merchant.getCountry());
         modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-        session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+        session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
         stateList = merchantInfoService.getStatesByCountry(merchant.getBankCountry());
         modelAndView.addObject(Constants.BANK_STATE_LIST, stateList.getResponseList());
-        session.setAttribute(Constants.BANK_STATE_LIST, stateList.getResponseList());
+        session.setAttribute(Constants.BANK_STATE_LIST, new ArrayList(stateList.getResponseList()));
         modelAndView.addObject(Constants.MERCHANT, merchant);
         processorNames = merchantInfoService.getProcessorNames();
       }
@@ -552,6 +578,12 @@ public class SubMerchantController implements URLMappingConstants {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
       return modelAndView;
+    }
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
     }
     try {
       MerchantData merchantData = new MerchantData();

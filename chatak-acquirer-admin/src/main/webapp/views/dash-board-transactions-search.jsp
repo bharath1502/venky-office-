@@ -80,7 +80,7 @@
 						<input type="hidden" id="getMerchantId" name="getMerchantId" />
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
-					<form:form action="process-dash-board-settlement-action" commandName="settlementDto" name="processAction" method="post">
+					<form:form action="process-dash-board-settlement-action" modelAttribute="settlementDto" name="processAction" method="post">
 						<form:hidden path="merchantId" id="merchantId" />
 						<form:hidden path="terminalId" id="terminalId" />
 						<form:hidden path="txnId" id="txnId" />
@@ -325,7 +325,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
 	<script src="../js/sortable.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -347,13 +347,13 @@
 			$(".focus-field").click(function() {
 				$(this).children('.effectiveDate').focus();
 			});
-
-			$('.effectiveDate').datetimepicker({
+			/* rome(startDate, { time: false }); */
+			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'm/d/Y',
 				formatDate : 'Y/m/d',
 			});
-			
+			 */
 			$('#my_popup').popup({
 				blur : false
 			});

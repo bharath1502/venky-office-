@@ -301,6 +301,8 @@ public interface PGConstants {
   
   String DD_MM_YYYY = "dd/MM/yyyy";
   
+  String YYYY_MM_DD = "yyyy-MM-dd";
+  
   String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
   
   String PROGRAM_MANAGER_NAME = "Program Manager";
@@ -355,4 +357,99 @@ public interface PGConstants {
    
    public static final BigDecimal BIG_DECIMAL_HUNDRED = new BigDecimal("100");
 
+   String USER_NAME_REGEX = "^[a-zA-Z0-9.@]{6,30}$";
+
+   String PSWD_REGEX = "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z])[a-zA-Z0-9!@#$%^&*]{6,50}$";
+
+   String IMEI_REGEX = "^[0-9]{15}$";
+   
+   String REF_NUMBER_REGEX = "^[0-9]{10}$";
+   
+   String CARD_NUMBER_REGEX = "^[F0-9]{19,20}$";
+
+   String APP_VERSION_REGEX = "^[0-9.]{3,15}$";
+
+   String CVV_REGEX = "^[0-9]{3}$";
+
+   String EXP_DATE_REGEX = "^[0-9]{4}$";
+
+   String CARD_UID_REGEX = "^[A-Z0-9]{14}$";
+
+   String CARD_HOLDER_NAME_REGEX = "^[a-zA-Z0-9 ]{3,30}$";
+   
+   String INVOICE_NUMBER_REGEX = "^[0-9]{4,16}$";
+   
+   String ORDER_ID_REGEX = "^[0-9]{1,10}$";
+
+   String CARD_TYPE ="IP"; 
+
+   String QR_CODE = "^[0-9]{19}$";
+
+   String TRACK_2 = "^[DF0-9]{34}$";
+
+   String NFC_TRACK_2 = "^[DF0-9]{41,42}$";
+
+   String TID_REGEX = "^[0-9]{8}$";
+
+   String TXN_0119 = "TXN_0119";
+   String TXN_0120 = "TXN_0120";
+   String TXN_0121 = "TXN_0121";
+   String TXN_0122 = "TXN_0122";
+   String TXN_0123 = "TXN_0123";
+   String TXN_0124 = "TXN_0124";
+   String TXN_0125 = "TXN_0125";
+   String TXN_0126 = "TXN_0126";
+   String TXN_0127 = "TXN_0127";
+   String TXN_0128 = "TXN_0128";
+   String TXN_0129 = "TXN_0129";
+   String TXN_0130 = "TXN_0130";
+   String TXN_0131 = "TXN_0131";
+   String TXN_0132 = "TXN_0132";
+   String TXN_0133 = "TXN_0133";
+   String TXN_0134 = "TXN_0134";
+   String TXN_0135 = "TXN_0135";
+   String TXN_0136 = "TXN_0136";
+   String TXN_0137 = "TXN_0137";
+   String TXN_0138 = "TXN_0138";
+   String TXN_0139 = "TXN_0139";
+   String TXN_0140 = "TXN_0140";
+   String TXN_0141 = "TXN_0141";
+   String TXN_0142 = "TXN_0142";
+   String TXN_0143 = "TXN_0143";
+   String TXN_0144 = "TXN_0144";
+   String TXN_0145 = "TXN_0145";
+   String TXN_0146 = "TXN_0146";
+   String TXN_0147 = "TXN_0147";
+   String TXN_0148 = "TXN_0148";
+   String TXN_0149 = "TXN_0149";
+   String TXN_0150 = "TXN_0150";
+   String TXN_0151 = "TXN_0151";
+   String TXN_0152 = "TXN_0152";
+   String TXN_0153 = "TXN_0153";
+   String TXN_0154 = "TXN_0154";
+   String TXN_0155 = "TXN_0155";
+   String TXN_0156 = "TXN_0156";
+   String TXN_0157 = "TXN_0157";
+   String TXN_0158 = "TXN_0158";
+   String TXN_0159 = "TXN_0159";
+   String TXN_0160 = "TXN_0160";
+   String TXN_0161 = "TXN_0161";
+   String TXN_0162 = "TXN_0162";
+   String TXN_0163 = "TXN_0163";
+   String TXN_0164 = "TXN_0164";
+   String TXN_0165 = "TXN_0165";
+   String TXN_0166 = "TXN_0166";
+   String TXN_0167 = "TXN_0167";
+   String TXN_0168 = "TXN_0168";
+   String TXN_0169 = "TXN_0169";
+   String TXN_0170 = "TXN_0170";
+   String TXN_0171 = "TXN_0171";
+   String TXN_0172 = "TXN_0172";
+   String TXN_0173 = "TXN_0173";
+   String TXN_0174 = "TXN_0174";
+   String TXN_0175 = "TXN_0175";
+   String TXN_0176 = "TXN_0176";
+   String TXN_0177 = "TXN_0177";
+   String TXN_0178 = "TXN_0178";
+   String TXN_0179 = "TXN_0179";
 }

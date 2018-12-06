@@ -119,7 +119,7 @@ public class PartnerController implements URLMappingConstants {
 
       //Get the currency for the default Program Manager
       logger.info("Entering:: getDefaultPmCurrency method");
-      getDefaultPmCurrency(defaultPmId, programManagerResponse, programManagerRequest, model);
+      getDefaultPmCurrency(defaultPmId, programManagerRequest, model);
 
       //To get countries
       logger.info("Entering:: getCountryForCreate method");
@@ -171,7 +171,7 @@ public class PartnerController implements URLMappingConstants {
       logger.info("Entering:: getCountryState method");
       Response stateList = merchantUpdateService.getStatesByCountry(partnerRequest.getCountry());
       modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-      session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+      session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
 
       logger.info("Entering:: getBankDetails method");
       getBankDetails(partnerRequest);
@@ -360,16 +360,16 @@ public class PartnerController implements URLMappingConstants {
       // to get the list of currencycurrencyList
       List<Option> currencyCodeList = currencyConfigService.getCurrencyConfigCode();
       modelAndView.addObject("currencyList", currencyCodeList);
-      session.setAttribute("currencyList", currencyCodeList);
+      session.setAttribute("currencyList",new ArrayList(currencyCodeList));
 
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST,new ArrayList(countryList));
 
       // to get the states
       Response stateList = merchantUpdateService.getStatesByCountry(partnerList.get(0).getCountry());
       modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-      session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+      session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
 
       byte[] image = partnerList.get(0).getPartnerLogo();
       model.put("imageData", image);
@@ -426,7 +426,7 @@ public class PartnerController implements URLMappingConstants {
 
       Response stateList = merchantUpdateService.getStatesByCountry(partnerRequest.getCountry());
       modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-      session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+      session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
 
       if (bytes != null) {
         partnerRequest.setPartnerLogo(bytes);
@@ -523,10 +523,9 @@ public class PartnerController implements URLMappingConstants {
    * @return
    */
   @RequestMapping(value = PARTNER_PAGINATION_ACTION, method = RequestMethod.POST)
-  public ModelAndView getPartnerPagination(final HttpSession session,
+  public ModelAndView getPartnerPagination(final HttpSession session,PartnerRequest partnerRequest,
       @FormParam("partnerPageData") final Integer partnerPageData,
-      @FormParam("totalRecords") final Integer totalRecords, Map<String, Object> model,
-      PartnerRequest partnerRequest) {
+      @FormParam("totalRecords") final Integer totalRecords, Map<String, Object> model) {
     logger.info("Entering:: PartnerController:: getPartnerPagination method");
 
     ModelAndView modelAndView = new ModelAndView(PREPAID_ADMIN_SEARCH_PARTNER_PAGE);
@@ -539,9 +538,9 @@ public class PartnerController implements URLMappingConstants {
       List<Option> bankOptions = bankService.getBankData();
       modelAndView.addObject("bankList", bankOptions);
 
-      partnerRequest =
+      PartnerRequest searchlist =
           (PartnerRequest) session.getAttribute(Constants.PARTNER_REQUEST_LIST_EXPORTDATA);
-      if (partnerRequest != null) {
+      if (searchlist != null) {
         partnerRequest.setPartnerType(Constants.NORMAL_PARTNER);
         partnerRequest.setPageIndex(partnerPageData);
         partnerRequest.setNoOfRecords(totalRecords);
@@ -560,12 +559,11 @@ public class PartnerController implements URLMappingConstants {
     model.put("partnerStatusList", Arrays.asList(Constants.ACTIVE, Constants.ACC_SUSPENDED));
   }
 
-  private void getDefaultPmCurrency(Long defaultPmId, ProgramManagerResponse programManagerResponse,
-      ProgramManagerRequest programManagerRequest, Map<String, Object> model)
+  private void getDefaultPmCurrency(Long defaultPmId, ProgramManagerRequest programManagerRequest, Map<String, Object> model)
           throws ChatakAdminException {
     logger.info("Entering:: PartnerController:: getDefaultPmCurrency method");
     if (defaultPmId != null) {
-      programManagerResponse = programManagerService.editProgramManager(programManagerRequest);
+    	ProgramManagerResponse  programManagerResponse = programManagerService.editProgramManager(programManagerRequest);
       if (programManagerResponse != null
           && StringUtil.isListNotNullNEmpty(programManagerResponse.getProgramManagersList())) {
         model.put("pmCurrency",

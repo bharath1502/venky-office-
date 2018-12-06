@@ -76,7 +76,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="#" commandName="bank" name="bank"
+								<form:form action="#" modelAttribute="bank" name="bank"
 									method="post">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">

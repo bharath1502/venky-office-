@@ -129,7 +129,7 @@ Include all compiled plugins (below), or include individual files as needed
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createSubMerchant" commandName="subMerchant"
+								<form:form action="createSubMerchant" modelAttribute="subMerchant"
 									name="subMerchant">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
@@ -794,11 +794,7 @@ Include all compiled plugins (below), or include individual files as needed
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-		$('.effectiveDate').datetimepicker({
-			timepicker : false,
-			format : 'm/d/Y',
-			formatDate : 'Y/m/d',
-		});
+		
 		/* DatePicker Javascript End*/
 		$(
 				".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content")

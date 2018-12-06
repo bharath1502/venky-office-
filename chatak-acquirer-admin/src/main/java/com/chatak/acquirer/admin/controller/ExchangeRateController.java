@@ -60,7 +60,6 @@ public class ExchangeRateController implements URLMappingConstants {
     try {
       List<Option> currencyList = merchantUpdateService.getCurrencies();
       modelAndView.addObject("currencyList", currencyList);
-      session.setAttribute("currencyList", currencyList);
       ExchangeRateResponse searchExchangeResponse =
           exchangeRateService.searchExchangeRateInfo(exchangeInfo);
       if (searchExchangeResponse != null) {
@@ -121,7 +120,6 @@ public class ExchangeRateController implements URLMappingConstants {
     try {
       List<Option> currencyList = merchantUpdateService.getCurrencies();
       modelAndView.addObject(Constants.CURRENCY_LIST, currencyList);
-      session.setAttribute(Constants.CURRENCY_LIST, currencyList);
       ExchangeRate exchangeInfo = exchangeRateService.getExchangeInfoById(getExchangeId);
       model.put(Constants.EXCHANGE_RATE, exchangeInfo);
     } catch (Exception e) {

@@ -55,10 +55,6 @@ var C_MERCHANT_MSG = {
 		invalidinput : "Invalid input",
 		shouldcontainonlynumbers : "*Should contain only numbers*",
 		enterpropervalue : "*Enter proper value*",
-		startdatecannotbelesserthenpresentdate : "Start date can not be lesser then present date",
-		invalidinput : "Invalid input",
-		shouldcontainonlynumbers : "*Should contain only numbers*",
-		enterpropervalue : "*Enter proper value*",
 		fromDateShouldnotbeGreaterthanToDate : "From Date' should not be greater than 'To Date",
 		fromDatecannotbetheFutureDate : "From date' can not be the future date",
 		pleaseSelecttheImageinBetweentheRange350250 : "Please select the image in between the range 350*250",
@@ -70,7 +66,6 @@ var C_MERCHANT_MSG = {
 		pleaseSelectAccountNumber : "Please Select Account Number",
 		pleaseSelectDifferentAccountNumber : "Please Select Different Account Number",
 		pleaseEnterRecipientsAccountNumber : "Please Enter Recipients Account Number",
-		pleaseEnterDifferentAccountNumber : "Please Enter Different Account Number",
 		enterDescription : "Enter description ",
 		enterTheAmountToTransfer : "Enter The Amount To Transfer",
 		enterValidAmountToTransfer : "Enter Valid Amount To Transfer ",
@@ -88,7 +83,6 @@ var C_MERCHANT_MSG = {
 		invalidAddress2 : "Invalid Address2",
 		pleaseEnterMerchantCode : "Please enter merchant Code",
 		shouldbe6to16numerics : "Should be 6-16 numerics",
-		pleaseEnterBusinessName : "Please enter Business name",
 		invalidBusinessName : "Invalid Business name ",
 		pleaseEnterTimeZone : "Please enter time Zone",
 		pleaseEnterFederalTaxId : "Please enter federal Tax Id ",
@@ -111,7 +105,6 @@ var C_MERCHANT_MSG = {
 		invalidBusinessURL : "Invalid Business URL",
 		invalidMerchantCallBackURL : "Invalid Merchant CallBack URL",
 		pleaseSelectPayMentMethod : "Please select PayMent Method ",
-		invalidEstimatedYearlySale : "Invalid Estimated Yearly Sale",
 		pleaseEnterMailingZip : "Please enter Mailing zip ",
 		invalidMailingZip : "Invalid Mailing zip",
 
@@ -149,7 +142,6 @@ var C_MERCHANT_MSG = {
 		Shouldcontainonlynumericanddash : "Should contain only numeric and dash",
 		invalidlength : "Invalid Length",
 		exceedinglength : "Exceeding length",
-		shouldcontainonlynumbers : "*Should contain only numbers*",
 		shouldnotstartwithzero : "*Should not start with zero*",
 		shouldcontainonlypositivenumbers : "*Should contain only positive numbers*",
 		cancontainonlyalphabetsandnumerics : "*Can contain only alphabets and numerics*",
@@ -239,7 +231,6 @@ var C_MERCHANT_MSG = {
 		invalidbusinessURL : "Inválida URL Comercial",
 		thisfieldismandatory : "Este campo es requerido",
 		pleasenterusername : "Introduzca nombre de usuario",
-		pleasenterusername : "Introduzca nombre de usuario",
 		pleaseselectone : "Por favor, seleccione uno",
 		invalidmerchantcallbackURL : "URL no válida de devolución de llamada al comercio",
 		pleaseselectautopaymentmethod : "Seleccione Método de pago automático",
@@ -273,7 +264,6 @@ var C_MERCHANT_MSG = {
 		pleaseSelectAccountNumber : "Por favor, Seleccione Número de cuenta",
 		pleaseSelectDifferentAccountNumber : "Por favor, Seleccione Número de cuenta diferente",
 		pleaseEnterRecipientsAccountNumber : "Por favor, Introduzca el número de cuenta del destinatario",
-		pleaseEnterDifferentAccountNumber : "Por favor, Seleccione Número de cuenta diferente",
 		enterDescription : "Por favor, introduzca Descripción",
 		enterTheAmountToTransfer : "Ingrese monto Para transferir",
 		enterValidAmountToTransfer : "Introducir cantidad válida para transferir",
@@ -293,7 +283,6 @@ var C_MERCHANT_MSG = {
 		invalidAddress2 : "Invalid Address2 Es",
 		pleaseEnterMerchantCode : "Please enter merchant Code Es",
 		shouldbe6to16numerics : "Should be 6-16 numerics Es",
-		pleaseEnterBusinessName : "Please enter Business name Es",
 		invalidBusinessName : "Invalid Business name Es",
 		pleaseEnterTimeZone : "Please enter time Zone Es",
 		pleaseEnterFederalTaxId : "Please enter federal Tax Id Es",
@@ -316,7 +305,6 @@ var C_MERCHANT_MSG = {
 		invalidBusinessURL : "Inválida URL Comercial",
 		invalidMerchantCallBackURL : "URL no válida de devolución de llamada al comercio",
 		pleaseSelectPayMentMethod : "Please select PayMent Method Es",
-		invalidEstimatedYearlySale : "Invalid Estimated Yearly Sale Es",
 		pleaseEnterMailingZip : "Please enter Mailing zip Es",
 		invalidMailingZip : "Invalid Mailing zip Es",
 
@@ -354,7 +342,6 @@ var C_MERCHANT_MSG = {
 		Shouldcontainonlynumericanddash : "Debe contener solamente numeros y barra diagonal",
 		invalidlength : "Longitud inválida",
 		exceedinglength : "Excede la longitud",
-		shouldcontainonlynumbers : "*Debe contener solo números*",
 		shouldnotstartwithzero : "*No debe comenzar con cero*",
 		shouldcontainonlypositivenumbers : "*Contiene debe SOLO NUMEROS Positivos*",
 		cancontainonlyalphabetsandnumerics : "*Puede contener solo letras y número*",
@@ -574,11 +561,6 @@ function validStreet() {
 function validZipcode() {
 	var val = getVal("zipcodeDiv");
 	var len = val.length;
-	if (null === val) {
-		setDiv("streetErrorDiv", webMessages.pleaseenterzipCode);
-		loadMsgTitleText();
-		return false;
-	}
 	if (isEmpty(val)) {
 		setDiv("zipcodeErrorDiv", webMessages.pleaseenterzipCode);
 		loadMsgTitleText();

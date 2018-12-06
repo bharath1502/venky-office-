@@ -27,7 +27,6 @@ import com.chatak.pg.acq.dao.TransactionReportDao;
 import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAccountTransactions;
-import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.bean.TransactionPopUpDataDto;
@@ -82,11 +81,11 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public GetTransactionsListResponse searchTransactions(
-      GetTransactionsListRequest getTransactionsListRequest) throws ChatakAdminException {
+      GetTransactionsListRequest getTransactionsListRequest, Long entityId) throws ChatakAdminException {
     logger.info("Entering :: TransactionServiceImpl :: searchTransactions method");
     GetTransactionsListResponse response = new GetTransactionsListResponse();
     try {
-      List<Transaction> transactions = transactionDao.getTransactions(getTransactionsListRequest);
+      List<Transaction> transactions = transactionDao.getTransactions(getTransactionsListRequest, entityId);
 
       if (transactions != null) {
         response.setTransactionList(transactions);
@@ -136,11 +135,11 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public GetTransactionsListResponse getAllTransactions(
-      GetTransactionsListRequest getTransactionsListRequest) throws ChatakAdminException {
+      GetTransactionsListRequest getTransactionsListRequest, Long entityID) throws ChatakAdminException {
     logger.info("Entering :: TransactionServiceImpl :: getAllTransactions method");
     GetTransactionsListResponse response = new GetTransactionsListResponse();
     try {
-      List<Transaction> transactions = transactionDao.getTransactions(getTransactionsListRequest);
+      List<Transaction> transactions = transactionDao.getTransactions(getTransactionsListRequest, entityID);
       List<PGTransaction> pgTransactions = transactionDao.getAllTransactions();
       if (pgTransactions != null) {
         transactions = new ArrayList<>(pgTransactions.size());
@@ -443,7 +442,7 @@ public class TransactionServiceImpl implements TransactionService {
       
       removeDuplicateSettlementList(settlemetActionDTOList, removedTxnsList);
 
-      actionDTOList = setActionDTOs(actionDTOList, settlemetActionDTOList);
+      setActionDTOs(actionDTOList, settlemetActionDTOList);
       session.setAttribute(PGConstants.BULK_SETTLEMENT_LIST_OBJ, actionDTOList);
       session.setAttribute(PGConstants.BULK_SETTLEMENT_LIST,
           (null != actionDTOList.getActionDTOs() && actionDTOList.getActionDTOs().size() > 0)
@@ -690,5 +689,11 @@ public class TransactionServiceImpl implements TransactionService {
       }
     }
     return null;
+  }
+
+  @Override
+  public GetTransactionsListResponse searchAccountTransactionsForEntityId(GetTransactionsListRequest getTransactionsListRequest,
+		  Long entityId, String userType) {
+	  return accountTransactionsDao.searchAccountTransactionsForEntityId(getTransactionsListRequest, entityId, userType);
   }
 }

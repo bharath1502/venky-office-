@@ -97,6 +97,15 @@ public interface Constant {
  public static final String PAYMENT_STEP_6 = "6";
  
  public static final String PAYMENT_STEP_7 = "7";
+ 
+ public static final Integer SIXTEEN = 16;
+ 
+ public static final String SIXTEEN_STR = "16";
+ 
+ public static final Integer ELEVEN = 11;
+ 
+ public static final String ELEVEN_STR = "11";
+
 
   // Acquiring channel
   public static final String ACQUIRING_CHANNEL_WEB = "Web";

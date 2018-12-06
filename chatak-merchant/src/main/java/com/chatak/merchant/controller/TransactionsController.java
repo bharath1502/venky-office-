@@ -27,11 +27,14 @@ import com.chatak.merchant.model.GetMerchantDetailsResponse;
 import com.chatak.merchant.model.GetTransactionResponse;
 import com.chatak.merchant.model.TransactionListResponse;
 import com.chatak.merchant.service.AccountService;
+import com.chatak.merchant.service.LoginService;
 import com.chatak.merchant.service.RestPaymentService;
 import com.chatak.merchant.service.TransactionService;
 import com.chatak.merchant.util.JsonUtil;
 import com.chatak.merchant.util.PaginationUtil;
+import com.chatak.pg.acq.dao.AdminUserDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
+import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.FeatureConstants;
 import com.chatak.pg.constants.PGConstants;
@@ -67,6 +70,12 @@ public class TransactionsController implements URLMappingConstants {
 
   @Autowired
   AccountService accountService;
+  
+  @Autowired
+  LoginService loginService;
+  
+  @Autowired
+  private AdminUserDao adminUserDao;
 
   /**
    * Method to show search transaction page
@@ -178,7 +187,12 @@ public class TransactionsController implements URLMappingConstants {
     logger.info("Entering:: TransactionsController:: searchMerchant method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_SEARCH_TRANSACTION_PAGE);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
-
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     if (request.getHeader(Constants.REFERER) == null) {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
@@ -483,14 +497,28 @@ public class TransactionsController implements URLMappingConstants {
       try {
         merchantDetailsResponse = paymentService.getMerchantIdAndTerminalId(merchantId.toString());
         transaction.setMerchant_code(merchantDetailsResponse.getMerchantId());
-
         setTxnCodeList(transaction);
+        //fetching entityId and entityType
+        PGAdminUser pgAdminUser  = adminUserDao.findByAdminUserId(Long.valueOf(merchantDetailsResponse.getCreatedBy()));
+        if(null != pgAdminUser){
+      	  transaction.setEntityId(pgAdminUser.getEntityId());
+      	  transaction.setUserType(pgAdminUser.getUserType());
+        }
+        
         transaction.setPageIndex(Constants.ONE);
         transaction.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
         transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-        GetTransactionsListResponse executedTxnList =
-            transactionService.searchAccountTransactions(transaction);
-
+        GetTransactionsListResponse executedTxnList = null;
+        
+        if (transaction.getUserType().equals(Constants.PM_USER_TYPE)
+      		  || transaction.getUserType().equals(Constants.ISO_USER_TYPE)) {
+      	  logger.info("LoginController:: fetching executed txn for entityType");
+      	  executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, transaction.getEntityId(), transaction.getUserType());
+        } else {
+      	  logger.info("LoginController:: fetching executed txn for Merchant");
+      	 executedTxnList = transactionService.searchAccountTransactions(transaction);
+        }
+       
         if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
 
           setTransactionResponseDetails(session, modelAndView, transactionResponse, executedTxnList);
@@ -543,9 +571,23 @@ public class TransactionsController implements URLMappingConstants {
         transaction.setMerchant_code(merchantDetailsResponse.getMerchantId());
 
         setTxnCodeList(transaction);
+        //fetching entityId and entityType
+        PGAdminUser pgAdminUser  = adminUserDao.findByAdminUserId(Long.valueOf(merchantDetailsResponse.getCreatedBy()));
+        if(null != pgAdminUser){
+        	transaction.setEntityId(pgAdminUser.getEntityId());
+        	transaction.setUserType(pgAdminUser.getUserType());
+        }
         transaction.setSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
-        GetTransactionsListResponse executedTxnList =
-            transactionService.searchAccountTransactions(transaction);
+        GetTransactionsListResponse executedTxnList = null;
+
+        if (transaction.getUserType().equals(Constants.PM_USER_TYPE)
+        		|| transaction.getUserType().equals(Constants.ISO_USER_TYPE)) {
+        	logger.info("LoginController:: fetching executed txn for entityType");
+        	executedTxnList = transactionService.searchAccountTransactionsForEntityId(transaction, transaction.getEntityId(), transaction.getUserType());
+        } else {
+        	logger.info("LoginController:: fetching executed txn for Merchant");
+        	executedTxnList = transactionService.searchAccountTransactions(transaction);
+        }
 
         if (null != executedTxnList && null != executedTxnList.getAccountTransactionList()) {
           setTransactionResponseDetails(session, modelAndView, transactionResponse, executedTxnList);
@@ -579,7 +621,6 @@ public class TransactionsController implements URLMappingConstants {
 	txnCodeList.add(AccountTransactionCode.EFT_DEBIT);
 	txnCodeList.add(AccountTransactionCode.FT_BANK);
 	txnCodeList.add(AccountTransactionCode.FT_CHECK);
-
 	transaction.setTransactionCodeList(txnCodeList);
   }
 

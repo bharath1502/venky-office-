@@ -1,7 +1,14 @@
 package com.chatak.pay.controller.model;
 
-import com.chatak.pay.model.TSMResponse;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.chatak.pay.model.TSMResponse;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientSsoLoginResponse extends Response {
 
   private static final long serialVersionUID = 2989867872759614602L;

@@ -66,10 +66,4 @@ public class FeeControllerTest {
 		feeController.getFeeDetails(request, response, session, "123", Long.parseLong("10"));
 	}
 
-	@Test
-	public void testGetFeeDetailsException() {
-		Mockito.when(cardPaymentProcessor.validMerchant(Matchers.anyString())).thenThrow(new NullPointerException());
-		feeController.getFeeDetails(request, response, session, "123", Long.parseLong("10"));
-	}
-
 }

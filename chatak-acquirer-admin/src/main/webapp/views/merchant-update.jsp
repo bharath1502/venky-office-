@@ -140,7 +140,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updateMerchant" commandName="merchant"
+								<form:form action="updateMerchant" modelAttribute="merchant"
 									name="merchant">
 									<input type="hidden" id="currencyCode" name="currencyCode">
 									<input type="hidden" id="cardProgramIds" name="cardProgramIds">
@@ -707,13 +707,14 @@
 																	<td><spring:message code="common.label.city" />:</td>
 																	<td><div id="confirmMcity"></div></td>
 																</tr>
-																<tr>
-																	<td><spring:message code="common.label.state" />:</td>
-																	<td><div id="confirmMstate"></div></td>
-																</tr>
+																
 																<tr>
 																	<td><spring:message code="common.label.country" />:</td>
 																	<td><div id="confirmMcountry"></div></td>
+																</tr>
+																<tr>
+																	<td><spring:message code="common.label.state" />:</td>
+																	<td><div id="confirmMstate"></div></td>
 																</tr>
 																<tr>
 																	<td><spring:message code="common.label.zipcode" />:</td>

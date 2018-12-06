@@ -18,8 +18,8 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+<!-- <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
+	type="text/css" /> -->
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
@@ -76,7 +76,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createBlackListedCard" commandName="blackListedCard" name="blackListedCard">
+								<form:form action="createBlackListedCard" modelAttribute="blackListedCard" name="blackListedCard">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

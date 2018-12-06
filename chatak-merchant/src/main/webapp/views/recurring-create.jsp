@@ -106,7 +106,7 @@
 							<div class="col-sm-12">
 								<!-- Page Form Start -->
 								<form:form action="createRecurringCustomer"
-									commandName="recurringCustomer" name="recurringCustomer"
+									modelAttribute="recurringCustomer" name="recurringCustomer"
 									method="post">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">

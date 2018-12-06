@@ -154,11 +154,11 @@ public class ProgramManagerController implements URLMappingConstants {
       // to get the list of currencycurrencyList
       List<Option> currencyCodeList = currencyConfigService.getCurrencyConfigCode();
       modelAndView.addObject("currencyList", currencyCodeList);
-      session.setAttribute("currencyList", currencyCodeList);
+      session.setAttribute("currencyList",new ArrayList(currencyCodeList));
    // to get the list of program manager Countries
       List<Option> countryList = bankService.getCountry();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);	
+      session.setAttribute(Constants.COUNTRY_LIST,new ArrayList(countryList));	
     } catch (Exception e) {
       logger.error("ERROR:: ProgramManagerController:: showCreateProgramManager method", e);
     }
@@ -176,7 +176,7 @@ public class ProgramManagerController implements URLMappingConstants {
    * @return
    * @throws CloneNotSupportedException
    */
-  @RequestMapping(value = PREPAID_ADMIN_CREATE_PROGRAM_MANAGER, method = RequestMethod.POST)
+  @RequestMapping(value = SHOW_PREPAID_ADMIN_SEARCH_PROGRAM_MANAGER, method = RequestMethod.POST)
   public ModelAndView processCreateProgramManager(HttpServletRequest request,
       HttpServletResponse response, Map<String, Object> model, HttpSession session,
       @RequestParam("programManagerLogo") MultipartFile file,
@@ -309,6 +309,17 @@ public class ProgramManagerController implements URLMappingConstants {
     logger.info("Exit:: ProgramManagerController:: processSearchProgramManager method");
     return modelAndView;
   }
+  
+  
+	@RequestMapping(value = PREPAID_ADMIN_SEARCH_PROGRAM_MANAGER, method = RequestMethod.GET)
+	public ModelAndView processSearchProgramManagerGetMethod(HttpServletRequest request,
+			ProgramManagerRequest programManagerRequest, HttpServletResponse response, Map<String, Object> model,
+			HttpSession session) {
+		logger.info("Entering:: ProgramManagerController:: processSearchProgramManager method");
+		ModelAndView modelAndView = showSearchProgramManager(request, response, model, session);
+		logger.info("Exit:: ProgramManagerController:: processSearchProgramManager method");
+		return modelAndView;
+	}
 
   private ModelAndView processException(HttpServletRequest request, HttpServletResponse response,
       Map<String, Object> model, HttpSession session, Exception e, String methodName) {
@@ -458,16 +469,16 @@ public class ProgramManagerController implements URLMappingConstants {
       // to get the list of currencycurrencyList
       List<Option> currencyCodeList = currencyConfigService.getCurrencyConfigCode();
       modelAndView.addObject("currencyList", currencyCodeList);
-      session.setAttribute("currencyList", currencyCodeList);
+      session.setAttribute("currencyList",new ArrayList(currencyCodeList));
       
       // to get the list of program manager Countries
       List<Option> countryList = bankService.getCountry();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
+      session.setAttribute(Constants.COUNTRY_LIST,new ArrayList(countryList));
       
       Response stateList = bankService.getStatesByCountry(programManagerList.get(0).getCountry());
       modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-      session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+      session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
       for(Option option : countryList){
     	  if(programManagerList.get(0).getCountry().equals(option.getValue())){
     		  TimeZoneResponse timeZon = bankService.searchAllTimeZone(Long.valueOf(option.getLabel()));

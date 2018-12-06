@@ -16,8 +16,8 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+ <link href="../css/jquery-datepicker.css" rel="stylesheet">
+ <link href="../css/rome.css" rel="stylesheet">
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="../js/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
@@ -90,7 +90,7 @@
 								</form>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="getDailyFundingReport" commandName="dailyFundingReport"
+								<form:form action="getDailyFundingReport" modelAttribute="dailyFundingReport"
 									name="dailyFundingReport">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
@@ -98,9 +98,9 @@
 											<div class="field-element-row">
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.fromdate" /><span class="required-field">*</span></label>
-													<div class="input-group focus-field">
+													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="fromDate" id="fromDate" onblur="return clientValidation('fromDate', 'startDate','transFromDateErrorDiv')"
-															cssClass="form-control effectiveDate" />
+															cssClass="form-control effectiveDate jquery-datepicker__input" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -110,9 +110,9 @@
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.todate" /><span class="required-field">*</span></label>
-													<div class="input-group focus-field">
+													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="toDate" onblur="return clientValidation('toDate', 'endDate','transToDateErrorDiv');"
-															cssClass="form-control effectiveDate" id="toDate" />
+															cssClass="form-control effectiveDate jquery-datepicker__input" id="toDate" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -312,8 +312,9 @@
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/sortable.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	 <script src="../js/jquery-datepicker.js"></script>
 	<script src="../js/reports.js"></script>
+	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/messages.js"></script>
@@ -341,15 +342,16 @@
 		$(document).ready(function() {
 			$("#navListId8").addClass("active-background");
 			$(".focus-field").click(function() {
-				$(this).children('.effectiveDate').focus();
+				 $(this).children('.effectiveDate').focus();
 			});
-
-			$('.effectiveDate').datetimepicker({
+			rome(fromDate, { time: false });
+			rome(toDate, { time: false });
+			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',
 				formatDate : 'd/m/Y',
 				maxDate:new Date()
-			});
+			}); */
 			
 			$('#my_popup').popup({
 				blur : false

@@ -128,7 +128,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="search-sub-merchant" commandName="merchant"
+								<form:form action="search-sub-merchant" modelAttribute="merchant"
 									name="merchant">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
@@ -476,7 +476,7 @@
 		<span class="glyphicon glyphicon-remove"
 			onclick="closePopup();clearPopupDesc();"></span>
 		<h2><spring:message code="merchant.label.ChangeStatus"/></h2>
-		<form action="subMerchantActivationSuspention" name="merchantActivationSuspentionForm" method="post">
+		<form:form action="subMerchantActivationSuspention" name="merchantActivationSuspentionForm" method="post">
 			<input type="hidden" id="suspendActiveId" name="subMerchantId" /> <input
 				type="hidden" id="suspendActiveStatus" name="subMerchantStatus" /> 
 				<input type="hidden" name="CSRFToken" value="${tokenval}">
@@ -493,7 +493,7 @@
 						value="<spring:message code="common.label.submit"/>" onclick="return validatePopupDesc();">
 				</div>
 			</div>
-		</form>
+		</form:form>
 		<!--Panel Action Button End -->
 	</div>
 	<!--Body Wrapper block End -->

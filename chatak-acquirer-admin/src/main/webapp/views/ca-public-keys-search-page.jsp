@@ -107,7 +107,7 @@
 
 								<!-- Page Form Start -->
 								<form:form action="caPublicKeysSearch"
-									commandName="caPublicKeysDTO" name="caPublicKeysDTO">
+									modelAttribute="caPublicKeysDTO" name="caPublicKeysDTO">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

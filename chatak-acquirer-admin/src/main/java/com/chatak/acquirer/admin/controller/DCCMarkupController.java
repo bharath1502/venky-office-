@@ -9,7 +9,6 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.FormParam;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -32,6 +31,8 @@ import com.chatak.pg.bean.DCCMarkupResponse;
 import com.chatak.pg.bean.MerchantNameResponse;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.util.Constants;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -111,7 +112,7 @@ public class DCCMarkupController implements URLMappingConstants {
       ObjectMapper mapper = new ObjectMapper();
       dccMarkup.setMerchantCode(merchantCode);
       List<DCCCurrency> currencyDatas = mapper.readValue(arrayList,
-          new org.codehaus.jackson.type.TypeReference<List<DCCCurrency>>() {});
+          new TypeReference<List<DCCCurrency>>() {});
       dccMarkup.setDccCurrency(currencyDatas);
       Response response = dccMarkupService.addDccMarkup(dccMarkup);
       if (response != null) {
@@ -245,7 +246,7 @@ public class DCCMarkupController implements URLMappingConstants {
       dccMarkup.setMerchantCode(merchantCode);
       ObjectMapper mapper = new ObjectMapper();
       List<DCCCurrency> currencyDatas = mapper.readValue(arrayList,
-          new org.codehaus.jackson.type.TypeReference<List<DCCCurrency>>() {});
+          new TypeReference<List<DCCCurrency>>() {});
       dccMarkup.setDccCurrency(currencyDatas);
       Response dccResponse = dccMarkupService.updateDCCMarkup(dccMarkup);
       if (dccResponse != null) {

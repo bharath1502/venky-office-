@@ -77,7 +77,6 @@ public class ResellerController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
       ResellerSearchResponse resellerValues = resellerService.searchReseller(resellerData);
       modelAndView.addObject(Constants.RESELLER_DATA, resellerData);
       if (resellerValues != null && !CollectionUtils.isEmpty(resellerValues.getReseller())) {
@@ -115,10 +114,9 @@ public class ResellerController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
       Response stateList = merchantUpdateService.getStatesByCountry("USA");
       modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-      session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+      session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
       model.put(Constants.RESELLER_DATA, resellerData);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
@@ -148,7 +146,7 @@ public class ResellerController implements URLMappingConstants {
       resellerData.setCreatedBy(userid.toString());
       Response stateList = merchantUpdateService.getStatesByCountry("USA");
       modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-      session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+      session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
       AddResellerResponse addResellerResponse = resellerService.addReseller(resellerData);
       if (null != addResellerResponse
           && addResellerResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_00)) {
@@ -194,7 +192,6 @@ public class ResellerController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
       ResellerSearchResponse resellerResponseList = resellerService.searchReseller(resellerData);
       modelAndView.addObject("resellerValues", resellerResponseList.getReseller());
       if (!CollectionUtils.isEmpty(resellerResponseList.getReseller())) {
@@ -233,7 +230,6 @@ public class ResellerController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
       resellerData.setResellerId(getResellerId);
       resellerData = resellerService.getReseller(resellerData);
 
@@ -243,7 +239,7 @@ public class ResellerController implements URLMappingConstants {
       } else {
         Response stateList = merchantUpdateService.getStatesByCountry(resellerData.getCountry());
         modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-        session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+        session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
         session.setAttribute("getResellerId", getResellerId);
         modelAndView.addObject(Constants.RESELLER_DATA, resellerData);
       }
@@ -357,7 +353,6 @@ public class ResellerController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-      session.setAttribute(Constants.COUNTRY_LIST, countryList);
       resellerData.setResellerId(resellerViewresellerId);
       resellerData = resellerService.getReseller(resellerData);
       if (null == resellerData) {
@@ -365,7 +360,7 @@ public class ResellerController implements URLMappingConstants {
       } else {
         Response stateList = merchantUpdateService.getStatesByCountry(resellerData.getCountry());
         modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-        session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+        session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
       }
     } catch (ChatakAdminException e) {
       modelAndView = showSearchResellerPage(request, response, model, session);
@@ -390,7 +385,7 @@ public class ResellerController implements URLMappingConstants {
       model.put(Constants.RESELLER_DATA, resellerData);
       resellerData.setPageIndex(pageNumber);
       resellerData.setNoOfRecords(totalRecords);
-      modelAndView = setResellerSearchResponce(pageNumber, modelAndView, resellerData);
+      setResellerSearchResponce(pageNumber, modelAndView, resellerData);
     } catch (Exception e) {
       logger.error("ERROR:: ResellerController:: getPaginationList method", e);
       modelAndView.addObject(Constants.ERROR,

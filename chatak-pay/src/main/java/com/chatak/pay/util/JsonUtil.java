@@ -28,6 +28,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.exception.HttpClientException;
+import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.model.OAuthToken;
 import com.chatak.pg.util.HttpClient;
@@ -74,6 +75,24 @@ public class JsonUtil {
   private static final ObjectMapper mapper = new ObjectMapper();
 
   public static final String PAYGATE_SERVICE_URL = Properties.getProperty("chatak-merchant.service.url");
+  
+  private static String tmsTokenServiceUrl = Properties.getProperty("chatak-tms.oauth.service.url");
+  
+  private static String tmsRestServiceUrl = Properties.getProperty("chatak-tms.rest.service.url");
+  
+  private static String tmsBaseServiceUrl = Properties.getProperty("chatak-tms.base.service.url");
+  
+  private static String baseOauthRefreshServiceUrl = Properties.getProperty("chatak-tms.oauth.refresh.service.url");
+  
+  protected static Long tmsTokenValidity = null;
+  
+  protected static String tmsOauthToken = null;
+  
+  protected static String tmsOauthRefreshToken = null;
+
+  private static final int MAX_RETRY_COUNT = 3;
+
+  private static int refershRequestCount = 0;
 
   /**
    * Method to convert Java object to JSON
@@ -204,24 +223,34 @@ public class JsonUtil {
 			          @Override
 			          public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1)
 			              throws CertificateException {
-			            //Need to Implement Based on Requirement
+			        	  try {
+								arg0[0].checkValidity();
+							} catch (CertificateException e) {
+								logger.info("Error:: JsonUtil:: checkClientTrusted method ");
+								throw new CertificateException("Certificate not valid or trusted.");
+							}
 			          }
 			          
 			          @Override
 			          public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1)
 			              throws CertificateException {
-			            //Need to Implement Based on Requirement
+			        	  try {
+								arg0[0].checkValidity();
+							} catch (CertificateException e) {
+								logger.info("Error:: JsonUtil:: checkServerTrusted method ");
+								throw new CertificateException("Certificate not valid or trusted.");
+							}
 			          }
 			        }};
 
 
 			        // Install the all-trusting trust manager
 			        try {
-			          SSLContext sc = SSLContext.getInstance("TLS");
+			          SSLContext sc = SSLContext.getInstance("TLSv1.2");
 			          sc.init(null, trustAllCerts, new SecureRandom());
 			          HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-			          SSLContext ctx = SSLContext.getInstance("SSL");
+			          SSLContext ctx = SSLContext.getInstance("TLSv1.2");
 			          ctx.init(null, trustAllCerts, null);
 			        } catch (Exception e) {
 			          logger.info("Error:: JsonUtil:: getValidOAuth2Token method " + e);;
@@ -296,15 +325,23 @@ public class JsonUtil {
 
     public static <T extends Object> T sendToTSM(Class<T> className,Object request,String serviceEndPoint) throws  HttpClientException {
 		T resultantObject = null;
-		String tsmURL = Properties.getProperty("chatak-tsm.service.url");
-		logger.info("-- TMS URL "+tsmURL);
-		HttpClient httpClient = new HttpClient(tsmURL , serviceEndPoint);
+		HttpClient httpClient = new HttpClient(tmsRestServiceUrl , serviceEndPoint);
+        logger.info("TMS URL -->> " + tmsRestServiceUrl + serviceEndPoint);
 	    try {
-	    	Header[] headers = new Header[] { new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
-	    			new BasicHeader("consumerClientId", Properties.getProperty("chatak-issuance.consumer.client.id")),
-	    			new BasicHeader("consumerSecret", Properties.getProperty("chatak-issuance.consumer.client.secret"))};
+	    	Header[] headers = new Header[] { new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType())
+	    	                  ,new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + getTmsOauthToken())};
 	      resultantObject = httpClient.invokePost(request,className, headers, false);
 	     logger.info("Reponse : Resultant Object "+resultantObject);
+	    } catch(PrepaidAdminException pae) {
+        	logger.info("Requesting oauth ::");
+        	if (refershRequestCount < MAX_RETRY_COUNT) {
+        		logger.info("Retrying.. : " + (refershRequestCount + 1));
+        		tmsOauthToken = null;
+        		tmsTokenValidity = null;
+        		tmsOauthRefreshToken = null;
+        		refershRequestCount++;
+        		return sendToTSM(className, request, serviceEndPoint);
+        	}
 	    } catch (HttpClientException hce) {
 	        logger.error("ERROR: JsonUtil :: sendToTSM method" + hce.getHttpErrorCode() + hce.getMessage(), hce);
 	    	throw hce;
@@ -315,6 +352,74 @@ public class JsonUtil {
 	    }
 	    return resultantObject;
 	}
+
+    private static <T> String getTmsOauthToken() {
+      logger.info("Entering:: JsonUtil:: getTmsOauthToken method ");
+      if (isValidToken()) {
+        return tmsOauthToken;
+      } else {
+        HttpClient paymentHttpClient = new HttpClient(tmsBaseServiceUrl, tmsTokenServiceUrl);
+        try {
+          Header[] headers = new Header[] {new BasicHeader(AUTH_HEADER, getBasicAuthValueForTms())};
+
+          String response = paymentHttpClient.invokeTmsOauthGet(String.class, headers);
+          OAuthToken apiResponse = mapper.readValue(response, OAuthToken.class);
+          tmsTokenValidity = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
+          tmsOauthRefreshToken = apiResponse.getRefreshToken().getAccess_token();
+          tmsOauthToken = apiResponse.getAccess_token();
+          refershRequestCount = 0;
+          return tmsOauthToken;
+        } catch(PrepaidAdminException pae) {
+        	logger.info("Requesting oauth ::");
+        	if (refershRequestCount < MAX_RETRY_COUNT) {
+        		logger.info("Retrying.. : " + (refershRequestCount + 1));
+        		tmsOauthToken = null;
+        		tmsTokenValidity = null;
+        		tmsOauthRefreshToken = null;
+        		refershRequestCount++;
+        		return getTmsOauthToken();
+        	}
+        } catch (Exception e) {
+          logger.error("Error:: JsonUtil:: getTmsOauthToken method " + e);
+        }
+        return null;
+      }
+    }
+    
+    protected static boolean isValidToken() {
+      if (tmsOauthToken == null || tmsTokenValidity == null) {
+        return false;
+      } else if (System.currentTimeMillis() > tmsTokenValidity) {
+        tmsOauthToken = null;
+        return (null != refreshOAuth2Token(tmsBaseServiceUrl, baseOauthRefreshServiceUrl));
+      } else {
+        return true;
+      }
+    }
+    
+    private static String refreshOAuth2Token(String baseServiceUrl, String tokenServiceUrl){
+      logger.info("Entering:: JsonUtil:: refreshOAuth2Token method ");
+      HttpClient httpClient = new HttpClient(baseServiceUrl, tokenServiceUrl + tmsOauthRefreshToken);
+      try {
+        Header[] headers = new Header[] {new BasicHeader(AUTH_HEADER, getBasicAuthValueForTms())};
+        String response = httpClient.invokeTmsOauthGet(String.class, headers);
+        OAuthToken apiResponse = mapper.readValue(response, OAuthToken.class);
+        tmsTokenValidity = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
+        tmsOauthRefreshToken = apiResponse.getRefreshToken().getAccess_token();
+        tmsOauthToken = apiResponse.getAccess_token();
+        return tmsOauthToken;
+      } catch (Exception e) {
+        logger.error("Error:: JsonUtil:: refreshOAuth2Token method " + e);
+      }
+      return null;
+    }
+
+  private static String getBasicAuthValueForTms() {
+    String basicAuth = Properties.getProperty("chatak-tms.oauth.basic.auth.username") + ":"
+                      + Properties.getProperty("chatak-tms.oauth.basic.auth.password");
+           basicAuth = TOKEN_TYPE_BASIC + new String(Base64.getEncoder().encode(basicAuth.getBytes()));
+           return basicAuth;
+  }
 
     /**
      * Method to get OAUTH token for given credentials
@@ -358,7 +463,7 @@ public class JsonUtil {
 
       String tokenEndpointUrl =
           Properties.getProperty("chatak.pay.token.url").trim().replace("$", applicationClient.getAppClientId().trim()).
-          replace("#", applicationClient.getAppClientAccess().trim());
+          replace("#", applicationClient.getAppAuthPass().trim());
       logger.info("URL :: " + PAYGATE_SERVICE_URL + tokenEndpointUrl);
       OAuthToken apiResponse= null;
       try {

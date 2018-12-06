@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -34,7 +35,6 @@ import com.chatak.pg.bean.Response;
 import com.chatak.pg.model.AccountTransactionDTO;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExecutedTransactionsControllerTest {
@@ -110,8 +110,8 @@ public class ExecutedTransactionsControllerTest {
           .thenReturn(getTransactionsListResponse);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
-          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS));
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
+          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error("ExecutedTransactionsControllerTest | testShowExecutedTransactions | Exception ",
           e);
@@ -127,7 +127,7 @@ public class ExecutedTransactionsControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -145,10 +145,9 @@ public class ExecutedTransactionsControllerTest {
           .thenReturn(getTransactionsListResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
-          .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS));
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error(
           "ExecutedTransactionsControllerTest | testExecutedTransactionsPagination | Exception ",
@@ -165,10 +164,9 @@ public class ExecutedTransactionsControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
-          .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error(
           "ExecutedTransactionsControllerTest | testExecutedTransactionsPaginationException | Exception ",
@@ -184,10 +182,10 @@ public class ExecutedTransactionsControllerTest {
               .searchAccountTransactions(Matchers.any(GetTransactionsListRequest.class)))
           .thenReturn(getTransactionsListResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.EXECUTED_TXN_LIST, accountTxnsList)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "XLS")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.EXECUTED_TXN_LIST, accountTxnsList)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "XLS")
           .param("requestFrom", "dashobard").param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
@@ -203,10 +201,10 @@ public class ExecutedTransactionsControllerTest {
               .searchAccountTransactions(Matchers.any(GetTransactionsListRequest.class)))
           .thenReturn(getTransactionsListResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.EXECUTED_TXN_LIST, accountTxnsList)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "PDF")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.EXECUTED_TXN_LIST, accountTxnsList)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "PDF")
           .param("requestFrom", "dashobard").param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
@@ -222,10 +220,10 @@ public class ExecutedTransactionsControllerTest {
               .searchAccountTransactions(Matchers.any(GetTransactionsListRequest.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_EXECUTED_TRANSACTIONS_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.EXECUTED_TXN_LIST, accountTxnsList)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "PDF")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.EXECUTED_TXN_LIST, accountTxnsList)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "PDF")
           .param("requestFrom", "dashobard").param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
@@ -242,8 +240,8 @@ public class ExecutedTransactionsControllerTest {
               .searchAccountTransactions(Matchers.any(GetTransactionsListRequest.class)))
           .thenReturn(getTransactionsListResponse);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.EXECUTED_TXN_LIST, accountTxnsList).header(Constants.REFERER, Constants.REFERER))
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.EXECUTED_TXN_LIST, accountTxnsList).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS));
     } catch (Exception e) {
       logger.error(
@@ -259,8 +257,8 @@ public class ExecutedTransactionsControllerTest {
               .searchAccountTransactions(Matchers.any(GetTransactionsListRequest.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.EXECUTED_TXN_LIST, accountTxnsList).header(Constants.REFERER, Constants.REFERER))
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.EXECUTED_TXN_LIST, accountTxnsList).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -278,10 +276,10 @@ public class ExecutedTransactionsControllerTest {
           .thenReturn(getTransactionsListResponse);
       mockMvc.perform(
           post("/" + URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.EXECUTED_TXN_LIST, accountTxnsList)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()));
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.EXECUTED_TXN_LIST, accountTxnsList)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error(
           "ExecutedTransactionsControllerTest | testProcessingTransactionsPagination | Exception ",
@@ -298,10 +296,10 @@ public class ExecutedTransactionsControllerTest {
           .thenThrow(nullPointerException);
       mockMvc.perform(
           post("/" + URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.EXECUTED_TXN_LIST, accountTxnsList)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()));
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.EXECUTED_TXN_LIST, accountTxnsList)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()));
     } catch (Exception e) {
       logger.error(
           "ExecutedTransactionsControllerTest | testProcessingTransactionsPaginationException | Exception ",
@@ -317,10 +315,10 @@ public class ExecutedTransactionsControllerTest {
               .searchAccountTransactions(Matchers.any(GetTransactionsListRequest.class)))
           .thenReturn(getTransactionsListResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.PROCESSING_TXN_LIST, accountTxnsList)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "PDF")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.PROCESSING_TXN_LIST, accountTxnsList)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "PDF")
           .param("requestFrom", "dashobard").param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
@@ -336,10 +334,10 @@ public class ExecutedTransactionsControllerTest {
               .searchAccountTransactions(Matchers.any(GetTransactionsListRequest.class)))
           .thenReturn(getTransactionsListResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.PROCESSING_TXN_LIST, accountTxnsList)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "XLS")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.PROCESSING_TXN_LIST, accountTxnsList)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "XLS")
           .param("requestFrom", "dashobard").param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
@@ -356,10 +354,10 @@ public class ExecutedTransactionsControllerTest {
               .searchAccountTransactions(Matchers.any(GetTransactionsListRequest.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_PROCESSING_TRANSACTIONS_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.PROCESSING_TXN_LIST, accountTxnsList)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "XLS")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.PROCESSING_TXN_LIST, accountTxnsList)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "XLS")
           .param("requestFrom", "dashobard").param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(

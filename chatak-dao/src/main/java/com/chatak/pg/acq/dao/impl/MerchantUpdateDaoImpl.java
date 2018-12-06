@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.model.PGAccount;
@@ -33,6 +32,7 @@ import com.chatak.pg.acq.dao.model.PGMerchantEntityMap;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGTerminal;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
+import com.chatak.pg.acq.dao.model.QPGMerchantEntityMap;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.ApplicationClientRepository;
 import com.chatak.pg.acq.dao.repository.MerchantCardProgramMapRepository;
@@ -247,7 +247,9 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 
       PGTerminal pgTerminal = new PGTerminal();
       pgTerminal.setComments(addMerchantRequest.getUserName());
-      pgTerminal.setMerchantId(Long.valueOf(merchant.getId()));
+      if(merchant!=null){
+      pgTerminal.setMerchantId(merchant.getId());
+       }
       pgTerminal.setStatus(PGConstants.STATUS_SUCCESS);
       int length = merchant.getMerchantCode().length();
       pgTerminal
@@ -886,5 +888,51 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 		}
 		
 		return merchant;
+	}
+
+	@Override
+	public List<PGMerchant> getPmMerchantByEntityIdandEntityType(Long entityId, String entityType) {
+		JPAQuery query = new JPAQuery(entityManager);
+		return query.from(QPGMerchant.pGMerchant, QPGMerchantEntityMap.pGMerchantEntityMap)
+				.where(isMerchantNotEq(),
+						QPGMerchantEntityMap.pGMerchantEntityMap.entityId.eq(entityId)
+								.and(QPGMerchantEntityMap.pGMerchantEntityMap.entitytype.eq(entityType))
+								.and(QPGMerchantEntityMap.pGMerchantEntityMap.merchantId.eq(QPGMerchant.pGMerchant.id))
+								.and(QPGMerchant.pGMerchant.status.in(1, Integer.parseInt("4"))))
+				.list(QPGMerchant.pGMerchant);
+	}
+
+	@Override
+	public PGMerchant getMerchantOnCodeAndEntityDetails(String merchantCode, String entityType, Long entityId) {
+		PGMerchant merchant = new PGMerchant();
+		Query qry = null;
+		StringBuilder query = null;
+		if (entityType.equals(Constants.PM_USER_TYPE)) {
+			query = new StringBuilder("SELECT a.MERCHANT_CODE,a.ID FROM")
+					.append(" (SELECT PGM.MERCHANT_CODE,PGM.ID FROM PG_MERCHANT PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING PMEM")
+					.append(" ON PGM.ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID=:entityId  UNION SELECT PGM.MERCHANT_CODE, PGM.ID FROM PG_MERCHANT PGM where PARENT_MERCHANT_ID is not null AND PGM.MERCHANT_CODE=:merchantCode ")
+					.append(" union SELECT PGM.MERCHANT_CODE, PGM.ID FROM PG_MERCHANT PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING PMEM ON PGM.ID = PMEM.MERCHANT_ID")
+					.append(" INNER JOIN PG_PM_ISO_MAPPING PMIM ON PMEM.ENTITY_ID = PMIM.ISO_ID AND PMIM.PM_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode) a");
+		} else if (entityType.equals(Constants.ISO_USER_TYPE)) {
+			query = new StringBuilder("select PGM.MERCHANT_CODE,PGM.ID ").append(
+					" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode");
+
+		} else {
+			return merchantRepository.findByMerchantCode(merchantCode);
+		}
+		qry = entityManager.createNativeQuery(query.toString());
+		qry.setParameter("entityId", entityId);
+		qry.setParameter("merchantCode", merchantCode);
+		List<Object> list = qry.getResultList();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			Iterator it = list.iterator();
+			while (it.hasNext()) {
+				Object[] objs = (Object[]) it.next();
+				merchant.setMerchantCode(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
+				merchant.setId(StringUtil.isNull(objs[1]) ? null : ((BigInteger) objs[1]).longValue());
+				return merchant;
+			}
+		}
+		return null;
 	}
 }

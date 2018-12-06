@@ -8,6 +8,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
+
+@SuppressWarnings("static-access")
 @RunWith(MockitoJUnitRunner.class)
 public class EncryptionUtilTest {
 
@@ -27,12 +29,12 @@ public class EncryptionUtilTest {
 	}
 
 	@Test
-	public void testGenerateRandNumeric() {
+	public void testGenerateRandNumeric() throws NoSuchAlgorithmException {
 		encryptionUtil.generateRandNumeric(1);
 	}
 
 	@Test
-	public void testGeneratePin() {
+	public void testGeneratePin() throws NoSuchAlgorithmException {
 		encryptionUtil.generatePin(1);
 	}
 

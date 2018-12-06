@@ -51,8 +51,24 @@ public class GetMerchantListRequest implements Serializable {
 	private String programManagerName;
 	
 	private String entityName;
+	
+	private String loginuserType;
 
-	/**
+   /**
+   * @return the loginuserType
+   */
+    public String getLoginuserType() {
+      return loginuserType;
+    }
+
+   /**
+   * @param loginuserType the loginuserType to set
+   */
+    public void setLoginuserType(String loginuserType) {
+      this.loginuserType = loginuserType;
+    }
+
+   /**
 	 * @return the id
 	 */
 	public Long getId() {

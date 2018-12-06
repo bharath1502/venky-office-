@@ -154,7 +154,7 @@ public class FundTransferController implements URLMappingConstants {
   public ModelAndView processBulkFundTransferAction(HttpServletRequest request,
       HttpServletResponse response, HttpSession session,
       @FormParam("requestObject") String requestObject, @FormParam("action") String action,
-      Map model) {
+      Map model){
     ModelAndView modelAndView = showFundTransferRequests(model, request, response);
     try {
       String jsonRequest = "{\"pgTransfersIds\":[" + requestObject + "]}";

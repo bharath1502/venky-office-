@@ -200,7 +200,7 @@ public class RoleController implements URLMappingConstants {
         UserRolesDTO tempRoleDTO;
         for (int i = 0; i < listSize; i++) {
           tempRoleDTO = (UserRolesDTO) roleResponseList.get(i);
-          tempRoleDTO = isRoleCreatedUser(adminUserRoleList, merchantUserRoleList, tempRoleDTO);
+          isRoleCreatedUser(adminUserRoleList, merchantUserRoleList, tempRoleDTO);
           responseList.add(tempRoleDTO);
         }
         modelAndView.addObject(Constants.ROLE_LIST, responseList);
@@ -536,7 +536,7 @@ public class RoleController implements URLMappingConstants {
       session.setAttribute("editRoleResponseData", editRoleResponseData);
       if (loginResponse.getUserRoleId() != null && editRoleResponseData.getRoleRequest() != null) {
         if (loginResponse.getUserRoleId()
-            .compareTo(Long.valueOf(editRoleResponseData.getRoleRequest().getRoleId())) == 0) {
+            .compareTo(editRoleResponseData.getRoleRequest().getRoleId()) == 0) {
           model.put(Constants.SAME_ROLE_FLAG, "true");
         } else {
           model.put(Constants.SAME_ROLE_FLAG, Constants.FLAG_FALSE);
@@ -651,7 +651,7 @@ public class RoleController implements URLMappingConstants {
 		} else if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_PM.getValue())) {
 			roleLevels = Arrays.asList(RoleLevel.CP_PM, RoleLevel.CP_ISO, RoleLevel.CP_MERCHANT);
 		} else if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_ISO.getValue())) {
-			roleLevels = Arrays.asList(RoleLevel.CP_ISO, RoleLevel.CP_MERCHANT);
+			roleLevels = Arrays.asList(RoleLevel.CP_MERCHANT);
 		}
 		if (StringUtil.isListNotNullNEmpty(roleLevels)) {
 			model.put("roleLevelList", roleLevels);

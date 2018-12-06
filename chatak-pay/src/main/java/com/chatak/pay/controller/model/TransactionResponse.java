@@ -50,6 +50,8 @@ public class TransactionResponse extends Response {
   private String terminalId;
   
   private String deviceLocalTxnTime;
+  
+  private String transactionType;
 
   public String getTxnRefNumber() {
     return txnRefNumber;
@@ -169,6 +171,14 @@ public class TransactionResponse extends Response {
 
   public void setDeviceLocalTxnTime(String deviceLocalTxnTime) {
     this.deviceLocalTxnTime = deviceLocalTxnTime;
+  }
+
+  public String getTransactionType() {
+	return transactionType;
+  }
+
+  public void setTransactionType(String transactionType) {
+	this.transactionType = transactionType;
   }
 
 }

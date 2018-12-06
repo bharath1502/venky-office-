@@ -74,7 +74,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updateCurrency" commandName="currencyDTO"
+								<form:form action="updateCurrency" modelAttribute="currencyDTO"
 									name="currencyDTO" method="post">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">

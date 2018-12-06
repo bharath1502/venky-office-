@@ -1,8 +1,12 @@
 package com.chatak.pg.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MerchantCategoryCode {
+public class MerchantCategoryCode implements Serializable {
+
+  private static final long serialVersionUID = -8252976061435041871L;
+
   private Long id;
 
   private String mcc;

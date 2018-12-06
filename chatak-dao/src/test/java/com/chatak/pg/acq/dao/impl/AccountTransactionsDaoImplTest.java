@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class AccountTransactionsDaoImplTest {
   private static final String PG_TXN_ID = "pgTransactionId";
   private static final String CURRENCY = "currency";
   private static final String DEVICE_LOCAL_TXN_TIME = "deviceLocalTxnTime";
-  private static final String TIME_ZONE_OFFSET_ = "timeZoneOffset";
+  private static final String TIME_ZONE_OFFSET = "timeZoneOffset";
 
   @InjectMocks
   AccountTransactionsDaoImpl accountTransactionsDaoImpl;
@@ -87,13 +88,15 @@ public class AccountTransactionsDaoImplTest {
 
   @Mock
   Timestamp timestamp;
+  
+  private static Logger logger = Logger.getLogger(AccountTransactionsDaoImplTest.class);
 
   List<Object> dataList;
 
   @Before
-  public void setUp() {
+  public void setUp()  {
     dataList = new ArrayList<>();
-
+  try {
     Object[] obj = new Object[Integer.parseInt("17")];
     obj[Constants.ZERO] = timestamp;
     obj[Constants.ONE] = timestamp;
@@ -110,9 +113,15 @@ public class AccountTransactionsDaoImplTest {
     obj[Constants.TWELVE] = PG_TXN_ID;
     obj[Constants.THIRTEEN] = CURRENCY;
     obj[Constants.FOURTEEN] = DEVICE_LOCAL_TXN_TIME;
-    obj[Constants.FIFTEEN] = TIME_ZONE_OFFSET_;
+    obj[Constants.FIFTEEN] = TIME_ZONE_OFFSET;
 
     dataList.add(obj);
+  } catch(ExceptionInInitializerError e){
+	logger.error("ERROR:: AccountTransactionsDaoImplTest:: setUp method", e);
+    }
+    catch(NoClassDefFoundError e){
+	logger.error("ERROR:: AccountTransactionsDaoImplTest:: setUp method", e);
+    }
   }
 
   @Test

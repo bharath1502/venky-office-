@@ -16,8 +16,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+   <link href="../css/jquery-datepicker.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -89,7 +88,7 @@
 							<!-- Content Block End -->
 						<!-- Search Table Block Start -->
 						
-						<form:form action="processFeeReport" commandName="feeReportRequest" method="post">
+						<form:form action="processFeeReport" modelAttribute="feeReportRequest" method="post">
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 												
 												<fieldset class="col-sm-3">
@@ -110,9 +109,9 @@
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.manualtransactions.selectdaterange.fromdate" /><span class="required-field">*</span></label>
-													<div class="input-group focus-field">
+													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="fromDate" id="transFromDate" onblur="return clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')"
-															cssClass="form-control effectiveDate" />
+															cssClass="form-control effectiveDate jquery-datepicker__input" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -123,8 +122,8 @@
 												
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.balancereports.manualtransactions.selectdaterange.todate" /><span class="required-field">*</span></label>
-													<div class="input-group focus-field">
-														<form:input path="toDate" cssClass="form-control effectiveDate" id="transToDate"
+													<div class="input-group focus-field jquery-datepicker">
+														<form:input path="toDate" cssClass="form-control effectiveDate jquery-datepicker__input" id="transToDate"
 														onblur="return clientValidation('transToDate', 'endDate','transToDateErrorDiv');" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
@@ -174,8 +173,8 @@
 										test="${!(fn:length(feeTransactionList) eq 0) }">
 										<c:forEach items="${feeTransactionList}" var="transaction">
 											<tr>
-												<td><a href="javascript:showISOTxns('${transaction.isoId }')" style="text-decoration: underline;">${transaction.isoName }</a></td>
-												<td>${transaction.isoEarnedAmount }</td>
+												<td><a href="javascript:showISOTxns('${transaction.isoId}')" style="text-decoration: underline;">${transaction.isoName}</a></td>
+												<td><fmt:formatNumber value="${transaction.isoEarnedAmount/100.0}"/></td>
 											</tr>
 										</c:forEach>
 									</c:when>
@@ -278,7 +277,7 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/utils.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	 <script src="../js/jquery-datepicker.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -289,15 +288,17 @@
 	$(document).ready(function() {
 		$("#navListId4").addClass("active-background");
 		$(".focus-field").click(function() {
-			$(this).children('.effectiveDate').focus();
+			 $(this).children('.effectiveDate').focus();
+			 $('.jquery-datepicker').datepicker();
 		});
-
-		$('.effectiveDate').datetimepicker({
+		/* rome(transFromDate, { time: false });
+		rome(transToDate, { time: false }); */
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'd/m/Y',
 			maxDate:new Date()
-		});
+		}); */
 		
 		 if ("${transactionDiv}" == "true"){
 			 $('#checkb').show();

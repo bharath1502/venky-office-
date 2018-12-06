@@ -304,10 +304,9 @@ public class PayController implements URLMappingConstants, Constant {
           return;
         }
 
-        Object[] objAr = EncryptionUtil.getJCryptoKeyPair();
-        session.setAttribute(CHATAK_PAY_JS_CRYPT_KEYS_SESSION, objAr[0]);
+        session.setAttribute(CHATAK_PAY_JS_CRYPT_KEYS_SESSION, (KeyPair)EncryptionUtil.getJCryptoKeyPair()[0]);
         PrintWriter out = response.getWriter();
-        out.print(objAr[1].toString());
+        out.print(EncryptionUtil.getJCryptoKeyPair()[1].toString());
         session.setAttribute(CHATAK_PAY_TXN_STATE_SESSION, PAYMENT_STEP_3);
         return;
       }

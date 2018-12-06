@@ -192,6 +192,16 @@ public class SwitchController implements URLMappingConstants {
     logger.info("Exiting:: SwitchController:: searchSwitchInfo method");
     return modelAndView;
   }
+  
+	@RequestMapping(value = CHATAK_ADMIN_SEARCH_SWITCH, method = RequestMethod.GET)
+	public ModelAndView searchSwitchInfoGetMethod(HttpServletRequest request, HttpServletResponse response,
+			SwitchRequest searchSwitchRequest, Map model, HttpSession session) {
+		logger.info("Entering:: SwitchController:: searchSwitchInfo method");
+		BindingResult bindingResult = null;
+		ModelAndView modelAndView = showSearchSwitchPage(request, response, searchSwitchRequest, bindingResult, model, session);
+		logger.info("Exiting:: SwitchController:: searchSwitchInfo method");
+		return modelAndView;
+	}
 
   @RequestMapping(value = CHATAK_ADMIN_SHOW_EDIT_SWITCH, method = RequestMethod.POST)
   public ModelAndView showEditSwitch(HttpServletRequest request, HttpServletResponse response,

@@ -64,7 +64,7 @@
 								<!--Success and Failure Message End-->
 
 								<form:form action="chatak-pay-page-config" name="paypageconfig"
-									commandName="payPageConfig" method="post">
+									modelAttribute="payPageConfig" method="post">
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">

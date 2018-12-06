@@ -122,7 +122,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updateMerchant" commandName="merchant" name="merchant">
+								<form:form action="updateMerchant" modelAttribute="merchant" name="merchant">
 								<form:hidden path="id" id="getMerchantId"/>
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">

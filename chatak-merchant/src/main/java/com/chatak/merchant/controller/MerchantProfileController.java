@@ -1,5 +1,6 @@
 package com.chatak.merchant.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +59,9 @@ public class MerchantProfileController implements URLMappingConstants {
 
   @Autowired
   MerchantProfileService merchantProfileService;
+  
+  @Autowired
+  LoginService loginService;
 
   @RequestMapping(value = SHOW_MERCHANT_FORGOT_PSWD, method = RequestMethod.GET)
   public ModelAndView showMerchantForgotPassword(Map model, HttpServletRequest request) {
@@ -130,6 +134,12 @@ public class MerchantProfileController implements URLMappingConstants {
       HttpServletResponse response, ChangePasswordRequest changePasswordRequest,
       HttpSession session) {
     ModelAndView modelAndView = new ModelAndView(SHOW_MERCHANT_CHANGE_PSWD);
+    if (!loginService.checkUserActive(session)) {
+      model.put(Constants.ERROR, messageSource.getMessage("user.has.been.inactivated", null,
+          LocaleContextHolder.getLocale()));
+      session.invalidate();
+      return new ModelAndView(CHATAK_MERCHANT_LOG_OUT);
+    }
     if (!((StringUtil.isNullAndEmpty(changePasswordRequest.getConfirmPassword()))
         || (StringUtil.isNullAndEmpty(changePasswordRequest.getNewPassword())))) {
 
@@ -187,10 +197,10 @@ public class MerchantProfileController implements URLMappingConstants {
       model.put(Constants.MERCHANT_PROFILE, merchantProfile);
       List<Option> countryList = merchantProfileService.getCountries();
       modelAndView.addObject("countryList", countryList);
-      session.setAttribute("countryList", countryList);
+      session.setAttribute("countryList", new ArrayList(countryList));
       Response stateList = merchantProfileService.getStatesByCountry(merchantProfile.getCountry());
       modelAndView.addObject("stateList", stateList.getResponseList());
-      session.setAttribute("stateList", stateList.getResponseList());
+      session.setAttribute("stateList", new ArrayList(stateList.getResponseList()));
     } catch (Exception e) {
       logger.error("Error:: LoginController:: myProfile method", e);
       model.put(Constants.ERROR, messageSource.getMessage("chatak.normal.error.message", null,

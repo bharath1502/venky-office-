@@ -139,12 +139,12 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public TransactionResponse calculateSettlementAmounts(Long pmId) {
+	public TransactionResponse calculateSettlementAmounts(Long pmId, Timestamp date) {
 		logger.info("Entering :: SettlementReportServiceImpl :: calculateSettlementAmounts");
 		TransactionResponse transactionResponse = new TransactionResponse();
 		
 		// Start with the funds received from Issuance
-		List<PGIssSettlementData> issSettlementData = issSettlementDataDao.findByProgramManagerId(pmId);
+		List<PGIssSettlementData> issSettlementData = issSettlementDataDao.findByAcqPmIdAndBatchDate(pmId, date);
 		BigInteger pmEarnedAmount = issSettlementData.get(0).getTotalAmount();
 		
 		// ISO total amounts
@@ -184,7 +184,11 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 					BigInteger totalISOAmount = isoMappedTransaction.getTotalEntityAmount();
 					Long isoFeeEarned = issuanceSettlementTransactions.getIsoAmount();
 					
-					totalISOAmount = totalISOAmount.add(setIsoFeeEarned(isoFeeEarned));
+					if(issuanceSettlementTransactions.getTxnType() != null && issuanceSettlementTransactions.getTxnType().equalsIgnoreCase(Constants.SALE)){
+						totalISOAmount = totalISOAmount.add(setIsoFeeEarned(isoFeeEarned));
+					} else if(issuanceSettlementTransactions.getTxnType() != null && issuanceSettlementTransactions.getTxnType().equalsIgnoreCase(Constants.REFUND)) {
+						totalISOAmount = totalISOAmount.subtract(setIsoFeeEarned(isoFeeEarned));
+					}
 					logger.info("Iterating PG_ISS_SETTLEMENT_ENTITY, ISO Transaction, ISO Id : " 
 							+ issuanceSettlementTransactions.getIsoId() + " : totalISOAmount: " + totalISOAmount);
 					
@@ -427,8 +431,8 @@ public class SettlementReportServiceImpl implements SettlementReportService {
 	}
 	
 	@Override
-	public PGSettlementEntityHistory findByBatchFileDateandAcqpmid(Long pmId, Timestamp date) {
-		return issuanceSettlementTransactionHistoryDao.findByBatchFileDateandAcqpmid(pmId, date);
+	public List<PGIssSettlementData> findByAcqPmIdAndBatchDate(Long pmId, Timestamp date) {
+		return issSettlementDataDao.findByAcqPmIdAndBatchDate(pmId, date);
 	
 	}
 }

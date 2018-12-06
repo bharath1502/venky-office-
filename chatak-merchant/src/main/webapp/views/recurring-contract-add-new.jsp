@@ -16,8 +16,7 @@
 <!-- Bootstrap -->
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+<link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -196,7 +195,7 @@
 					<!-- Contracts Popup Box Information Start -->
 					<div id="my_popup2" class="locatioin-list-popup">
 						<form:form action="showContractAddOrUpdatePage"
-							commandName="recurringContractInfoDTO" method="post">
+							modelAttribute="recurringContractInfoDTO" method="post">
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 							<span class="glyphicon glyphicon-remove" onclick="closePopup2()"></span>
 							<fieldset class="col-sm-12 padding0">
@@ -351,7 +350,7 @@
 	<script src="../js/validation.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script> <script src="../js/utils.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	 <script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/jquery.maskedinput.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
@@ -372,11 +371,13 @@
 			});
 			
 			highlightMainContent('navListId5');
-			$('.effectiveDate').datetimepicker({
+			rome(startDate, { time: false });
+			rome(endDate, { time: false });
+			/* $('.effectiveDate').datetimepicker({
 				timepicker:false,
 				format:'m/d/Y',
 				formatDate:'Y/m/d',
-			});
+			}); */
 			
 			setTotal();
 		});

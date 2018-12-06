@@ -18,8 +18,8 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
+<!-- <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
+	type="text/css" /> -->
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
@@ -71,7 +71,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="updateBlackListedCard" commandName="blackListedCard" name="blackListedCard">
+								<form:form action="updateBlackListedCard" modelAttribute="blackListedCard" name="blackListedCard">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
@@ -128,7 +128,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 <script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
-	<script src="../js/jquery.datetimepicker.js"></script>
+	
 	<script src="../js/validation.js"></script>
 	<script src="../js/chatak-ajax.js"></script>
 	<script src="../js/black-listed-card.js"></script> 

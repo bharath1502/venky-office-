@@ -111,7 +111,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createSubMerchant" commandName="subMerchant" name="subMerchant">
+								<form:form action="createSubMerchant" modelAttribute="subMerchant" name="subMerchant">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">
@@ -146,7 +146,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.phone"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="phone"
+														<form:input cssClass="form-control" onkeypress="return numbersonly(this,event)" path="phone"
 															id="phone" maxlength="10" onblur="this.value=this.value.trim();validatePhone()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="phoneEr" class="red-error">&nbsp;</span>
@@ -312,8 +312,8 @@
 																code="manage.label.sub-merchant.merchantcode" /><span
 															class="required-field">*</span></label>
 														<form:hidden path="parentMerchantId" id="parentMerchantId" />
-														<select class="form-control" id="dummyParentMerchantId"
-															onblur="validateParentMerchantId();" onchange="fetchPartnerName(this.value)">
+														<select class="form-control" id="parentMerchantcode"
+															onblur=" return clientValidation('parentMerchantcode','cardType','parentMerchantIdEr');" onchange="fetchPartnerName(this.value)">
 															<option value="">..:<spring:message code="sub-merchant-create.label.select" />:..
 															</option>
 															<c:forEach items="${mainMerchantList}" var="mainMerchant">
@@ -601,11 +601,11 @@
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-		$('.effectiveDate').datetimepicker({
+		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'Y/m/d',
-		});
+		}); */
 
 		function highlightMainContent() {
 			$("#navListId2").addClass("active-background");

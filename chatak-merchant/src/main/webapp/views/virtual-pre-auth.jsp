@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.chatak.pg.util.Constants"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -108,7 +109,7 @@
 							<!--Success and Failure Message End-->
 							<!-- Page Form Start -->
 							<form:form action="do-virtual-terminal-preAuth"
-								commandName="virtualTerminalPreAuth" id="txnForm">
+								modelAttribute="virtualTerminalPreAuth" id="txnForm">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-12" id="hideAllFields">
 									<div class="row">

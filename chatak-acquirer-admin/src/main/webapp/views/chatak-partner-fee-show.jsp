@@ -133,7 +133,7 @@
 					<c:if test="${flag eq true}">
 						<div class="main-content-holder padding0" id="showFeeDivId">
 							<form:form action="chatak-partner-fee-create"
-								commandName="partnerFeeCodeDTO" method="post">
+								modelAttribute="partnerFeeCodeDTO" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<form:hidden path="accountNumber" />
 								<input type="hidden" name="merchantCode" id="merchantCode" />

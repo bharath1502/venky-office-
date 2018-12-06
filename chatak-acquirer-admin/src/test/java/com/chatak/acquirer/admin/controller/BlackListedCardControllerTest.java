@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -37,7 +39,6 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.BlackListedCard;
 import com.chatak.pg.user.bean.BlackListedCardRequest;
 import com.chatak.pg.user.bean.BlackListedCardResponse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BlackListedCardControllerTest {
@@ -107,7 +108,7 @@ public class BlackListedCardControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_BLACK_LISTED_CARD_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_CREATE_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testShowCreateBlackListedCardPage | Exception ",
@@ -125,8 +126,8 @@ public class BlackListedCardControllerTest {
           .thenReturn(addBlackListedCardResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_BLACK_LISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testShowCreateBlackListedCardPage | Exception ",
@@ -144,8 +145,8 @@ public class BlackListedCardControllerTest {
           .thenReturn(addBlackListedCardResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_BLACK_LISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testBlackListedCardCodeZ5 | Exception ", e);
@@ -162,8 +163,8 @@ public class BlackListedCardControllerTest {
           .thenReturn(addBlackListedCardResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_BLACK_LISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testBlackListedCardElse | Exception ", e);
@@ -178,8 +179,8 @@ public class BlackListedCardControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_CREATE_BLACK_LISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testBlackListedCardException | Exception ", e);
@@ -191,8 +192,8 @@ public class BlackListedCardControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testShowSearchBlackListedCardPage | Exception ",
@@ -204,7 +205,7 @@ public class BlackListedCardControllerTest {
   public void testSearchBlackListedCardInfo() {
     addBlackListedCardResponse = new BlackListedCardResponse();
     addBlackListedCardResponse.setBlackListedCardRequest(blacklistedcardRequest);
-    addBlackListedCardResponse.setTotalNoOfRows(Constants.TEN.intValue());
+    addBlackListedCardResponse.setTotalNoOfRows(TestConstants.TEN.intValue());
     try {
       Mockito
           .when(blackListedCardService
@@ -212,8 +213,8 @@ public class BlackListedCardControllerTest {
           .thenReturn(addBlackListedCardResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testSearchBlackListedCardInfo | Exception ", e);
@@ -229,8 +230,8 @@ public class BlackListedCardControllerTest {
           .thenReturn(addBlackListedCardResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testSearchBlackListedCardInfoIf | Exception ",
@@ -247,8 +248,8 @@ public class BlackListedCardControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE)))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE)))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -263,9 +264,9 @@ public class BlackListedCardControllerTest {
           .thenReturn(searchBlackListedCardRequest);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_EDIT_BLACKLISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getBlackListedCardId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getBlackListedCardId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_EDIT_BLACK_LISTED_CARD));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testShowEditBlackListedCard | Exception ", e);
@@ -279,9 +280,9 @@ public class BlackListedCardControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_EDIT_BLACKLISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getBlackListedCardId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getBlackListedCardId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_EDIT_BLACK_LISTED_CARD));
     } catch (Exception e) {
       logger.error(
@@ -296,9 +297,9 @@ public class BlackListedCardControllerTest {
           .thenReturn(searchBlackListedCardRequest);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_VIEW_BLACKLISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getBlackListedCardId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getBlackListedCardId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_VIEW_BLACKLISTED_CARD));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testShowViewBlackListedCard | Exception ", e);
@@ -312,9 +313,9 @@ public class BlackListedCardControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_VIEW_BLACKLISTED_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getBlackListedCardId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getBlackListedCardId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_VIEW_BLACKLISTED_CARD));
     } catch (Exception e) {
       logger.error(
@@ -333,9 +334,9 @@ public class BlackListedCardControllerTest {
           .thenReturn(addBlackListedCardResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_BLACK_LISTD_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getBlackListedCardId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getBlackListedCardId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testUpdateBlackListedCard | Exception ", e);
@@ -353,9 +354,9 @@ public class BlackListedCardControllerTest {
           .thenReturn(addBlackListedCardResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_BLACK_LISTD_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getBlackListedCardId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getBlackListedCardId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testUpdateBlackListedCardElse | Exception ", e);
@@ -371,9 +372,9 @@ public class BlackListedCardControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_UPDATE_BLACK_LISTD_CARD)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param("getBlackListedCardId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param("getBlackListedCardId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -385,7 +386,7 @@ public class BlackListedCardControllerTest {
   public void testGetPaginationList() {
     addBlackListedCardResponse = new BlackListedCardResponse();
     addBlackListedCardResponse.setBlackListedCardRequest(blacklistedcardRequest);
-    addBlackListedCardResponse.setTotalNoOfRows(Constants.TEN);
+    addBlackListedCardResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(blackListedCardService
@@ -393,10 +394,10 @@ public class BlackListedCardControllerTest {
           .thenReturn(addBlackListedCardResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_BLACK_LISTED_CARD_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
-              .param("pageNumber", Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
+              .param("pageNumber", TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testGetPaginationList | Exception ", e);
@@ -412,10 +413,10 @@ public class BlackListedCardControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_BLACK_LISTED_CARD_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
-              .param("pageNumber", Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
+              .param("pageNumber", TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testGetPaginationListException | Exception ",
@@ -427,17 +428,17 @@ public class BlackListedCardControllerTest {
   public void testDownloadBlackListedCardReport() {
     addBlackListedCardResponse = new BlackListedCardResponse();
     addBlackListedCardResponse.setBlackListedCardRequest(blacklistedcardRequest);
-    addBlackListedCardResponse.setTotalNoOfRows(Constants.TEN);
+    addBlackListedCardResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(blackListedCardService
               .searchBlackListedCardInformation(Matchers.any(BlackListedCardRequest.class)))
           .thenReturn(addBlackListedCardResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_BLACK_LISTED_CARD_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadType", "XLS")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadType", "XLS")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testDownloadBlackListedCardReport | Exception ",
           e);
@@ -448,17 +449,17 @@ public class BlackListedCardControllerTest {
   public void testDownloadBlackListedCardReportPDF() {
     addBlackListedCardResponse = new BlackListedCardResponse();
     addBlackListedCardResponse.setBlackListedCardRequest(blacklistedcardRequest);
-    addBlackListedCardResponse.setTotalNoOfRows(Constants.TEN);
+    addBlackListedCardResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(blackListedCardService
               .searchBlackListedCardInformation(Matchers.any(BlackListedCardRequest.class)))
           .thenReturn(addBlackListedCardResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_BLACK_LISTED_CARD_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param("downloadType", "PDF")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param("downloadType", "PDF")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
           "BlackListedCardControllerTest | testDownloadBlackListedCardReportPDF | Exception ", e);
@@ -478,10 +479,10 @@ public class BlackListedCardControllerTest {
       mockMvc
           .perform(
               post("/" + URLMappingConstants.CHATAK_ADMIN_ACTIVATION_SUSPENTION_BLACK_LISTD_CARD)
-                  .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-                  .sessionAttr(Constants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
-                  .sessionAttr("Constants.PAGE_NUMBER", Constants.TEN)
-                  .param("suspendActiveId", Constants.ONE.toString())
+                  .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+                  .sessionAttr(TestConstants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
+                  .sessionAttr("TestConstants.PAGE_NUMBER", TestConstants.TEN)
+                  .param("suspendActiveId", TestConstants.ONE.toString())
                   .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
@@ -503,10 +504,10 @@ public class BlackListedCardControllerTest {
       mockMvc
           .perform(
               post("/" + URLMappingConstants.CHATAK_ADMIN_ACTIVATION_SUSPENTION_BLACK_LISTD_CARD)
-                  .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-                  .sessionAttr(Constants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
-                  .sessionAttr("Constants.PAGE_NUMBER", Constants.TEN)
-                  .param("suspendActiveId", Constants.ONE.toString())
+                  .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+                  .sessionAttr(TestConstants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
+                  .sessionAttr("TestConstants.PAGE_NUMBER", TestConstants.TEN)
+                  .param("suspendActiveId", TestConstants.ONE.toString())
                   .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
@@ -525,26 +526,26 @@ public class BlackListedCardControllerTest {
       mockMvc
           .perform(
               post("/" + URLMappingConstants.CHATAK_ADMIN_ACTIVATION_SUSPENTION_BLACK_LISTD_CARD)
-                  .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-                  .sessionAttr(Constants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
-                  .sessionAttr("Constants.PAGE_NUMBER", Constants.TEN)
-                  .param("suspendActiveId", Constants.ONE.toString())
+                  .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+                  .sessionAttr(TestConstants.BLACK_LISTED_CARD_INFO, searchBlackListedCardRequest)
+                  .sessionAttr("TestConstants.PAGE_NUMBER", TestConstants.TEN)
+                  .param("suspendActiveId", TestConstants.ONE.toString())
                   .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE));
     } catch (Exception e) {
       logger.error(
           "BlackListedCardControllerTest | testChangeBlackListedCardStatusException | Exception ",
-          e);
+          e);   
     }
   }
 
   @Test
   public void testValidateuniqueCardNumber() {
     try {
-      Mockito.when(blackListedCardService.validateCardNumber(Matchers.any()))
+      Mockito.when(blackListedCardService.validateCardNumber((BigInteger) Matchers.any()))
           .thenReturn(cardNumberResponse);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_CARDNUMBER_VALIDATE)
-          .param("cardId", Constants.ONE.toString()));
+          .param("cardId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("BlackListedCardControllerTest | testValidateuniqueCardNumber | Exception ", e);
     }

@@ -1,6 +1,6 @@
 package com.chatak.acquirer.admin.util;
 
-import static org.junit.Assert.*;
+import java.security.NoSuchAlgorithmException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,7 @@ public class PasswordHandlerTest {
 	}
 	
 	@Test
-	public void testGenerateRandomNumber() {
+	public void testGenerateRandomNumber() throws NoSuchAlgorithmException {
 		passwordHandler.generateRandomNumber(Integer.parseInt("3"));
 	}
 	

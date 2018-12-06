@@ -193,7 +193,7 @@ public class FundsTransfersController implements URLMappingConstants {
       logger.error("Error:: TrasactionController:: showAccountTransfer method", e);
     }
     model.put(Constants.ACCOUNTS, accounts);
-    session.setAttribute(Constants.ACCOUNTS, accounts);
+    session.setAttribute(Constants.ACCOUNTS, new ArrayList(accounts));
     AccountTransferRequest accountTransferRequest = new AccountTransferRequest();
     model.put("accountTransferRequest", accountTransferRequest);
     logger.info("Exiting:: TrasactionController:: showAccountTransfer method");
@@ -226,7 +226,7 @@ public class FundsTransfersController implements URLMappingConstants {
 
       accounts = fundTransferService
           .getAccountList(merchantProfileDao.getMerchantById(merchantId).getMerchantCode());
-      session.setAttribute(Constants.ACCOUNTS, accounts);
+      session.setAttribute(Constants.ACCOUNTS, new ArrayList(accounts));
     } catch (ChatakMerchantException e) {
       logger.info("Error:: TrasactionController:: processAccountTransfer method",e);
       model.put(Constants.SUCESS, null);

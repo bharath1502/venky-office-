@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -63,6 +62,7 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service("merchantInfoService")
 public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants {

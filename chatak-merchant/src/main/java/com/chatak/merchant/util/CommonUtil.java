@@ -3,12 +3,13 @@ package com.chatak.merchant.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -39,9 +40,9 @@ public final class CommonUtil {
 		return (list != null && !list.isEmpty());
 	}
 
-	public static String generateRandomNumber(int length) {
+	public static String generateRandomNumber(int length){
 		StringBuilder sb = new StringBuilder();
-		Random random = new Random();
+		SecureRandom random = new SecureRandom();
 		int n;
 		for(n = 0; n < length; n++) {
 			int j = random.nextInt() % Constants.TEN;
@@ -77,10 +78,11 @@ public final class CommonUtil {
 	 * 
 	 * @param length
 	 * @return String
+	 * @throws NoSuchAlgorithmException 
 	 */
-	public static String generateRandNumeric(int length) {
+	public static String generateRandNumeric(int length){
 		String finalRandString = "";
-		Random randomObj = new Random();
+		SecureRandom randomObj = new SecureRandom();
 		for(int j = 0; j < length; j++) {
 			int rand_int = randomObj.nextInt(Constants.SEVENTYTWO);
 			finalRandString += Integer.toString(rand_int);
@@ -114,9 +116,9 @@ public final class CommonUtil {
 		return String.valueOf(System.nanoTime());
 	}
 
-	public static Long generateNumericString(int length) {
+	public static Long generateNumericString(int length){
 	  StringBuilder sb = new StringBuilder();
-		Random random = new Random();
+		SecureRandom random = new SecureRandom();
 		for(int n = 0; n < length; n++) {
 			int j = random.nextInt() % Constants.TEN;
 			sb.append((char) (j + Constants.FORTYEIGHT));
@@ -137,10 +139,11 @@ public final class CommonUtil {
 	 * 
 	 * @param length
 	 * @return String
+	 * @throws NoSuchAlgorithmException 
 	 */
-	public static String generateAlphaNumericString(int length) {
+	public static String generateAlphaNumericString(int length){
 		String charString = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		Random rnd = new Random();
+		SecureRandom rnd = new SecureRandom();
 		StringBuilder sb = new StringBuilder(length);
 		for(int i = 0; i < length; i++) {
 			sb.append(charString.charAt(rnd.nextInt(charString.length())));

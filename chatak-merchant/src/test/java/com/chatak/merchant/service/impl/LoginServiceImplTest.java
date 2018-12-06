@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,6 +22,7 @@ import com.chatak.merchant.controller.model.LoginResponse;
 import com.chatak.merchant.controller.model.ResetPasswordData;
 import com.chatak.merchant.exception.ChatakMerchantException;
 import com.chatak.merchant.model.UserProfileRequest;
+import com.chatak.merchant.util.PasswordHandler;
 import com.chatak.pg.acq.dao.MerchantProfileDao;
 import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.RoleDao;
@@ -28,6 +30,8 @@ import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGUserRoles;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
+import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
 import junit.framework.Assert;
@@ -73,6 +77,14 @@ public class LoginServiceImplTest {
 
 	@Mock
 	DataAccessException dataAccessException;
+	
+	
+	@Before
+	public void init() {
+	  java.util.Properties propsExportedLocal = new java.util.Properties();
+	  propsExportedLocal.setProperty("max.download.limit", "12");
+	  Properties.mergeProperties(propsExportedLocal);
+	}
 
 	@Test
 	public void testAuthenticate() throws ChatakMerchantException {
@@ -193,7 +205,7 @@ public class LoginServiceImplTest {
 		pgMerchantUsers.setMerPassword("900150983CD24FB0D6963F7D28E17F72");
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
 		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class), Matchers.any(Locale.class))).thenReturn("12");
-		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));
+		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Ipsidy@123!"));
 	}
 
 	@Test
@@ -204,27 +216,37 @@ public class LoginServiceImplTest {
 		pgMerchantUsers.setPreviousPasswords("E8CE7A0A002060AAADC0ACF3C4158339");
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
 		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class), Matchers.any(Locale.class))).thenReturn("12");
-		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));
+		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Ipsidy@123!"));
 	}
 
-	@Test(expected = ChatakMerchantException.class)
+	@Test
 	public void testChangdPasswordexp() throws ChatakMerchantException {
 		pgMerchantUsers = new PGMerchantUsers();
 		pgMerchantUsers.setMerPassword("900150983CD24FB0D6963F7D28E17F72");
+		pgMerchantUsers.setEmailVerified(Constants.ZERO);
+		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class),
+		          Matchers.any(Locale.class))).thenReturn("12");
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
-		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "xyz"));
+		PasswordHandler passwordHandler = new PasswordHandler();
+		passwordHandler.validate("Ipsdiy@123!");
+		Mockito.when(merchantUserDao.createOrUpdateUser(Matchers.any(PGMerchantUsers.class))).thenReturn(pgMerchantUsers);
+		loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Ipsdiy@123!");
 	}
 
-	@Test(expected = ChatakMerchantException.class)
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testChangdPasswordException() throws ChatakMerchantException {
 		pgMerchantUsers = new PGMerchantUsers();
-		pgMerchantUsers.setEmailVerified(0);
+		pgMerchantUsers.setEmailVerified(Constants.ZERO);
 		pgMerchantUsers.setMerPassword("900150983CD24FB0D6963F7D28E17F72");
 		pgMerchantUsers.setPreviousPasswords("E8CE7A0A002060AAADC0ACF3C4158339");
-		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
 		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class), Matchers.any(Locale.class)))
-				.thenThrow(new NullPointerException());
-		Assert.assertNotNull(loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Chatak@123!"));
+		.thenReturn("12");
+		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
+		PasswordHandler passwordHandler = new PasswordHandler();
+		passwordHandler.validate("Ipsdiy@123!");
+		Mockito.when(merchantUserDao.createOrUpdateUser(Matchers.any(PGMerchantUsers.class))).thenReturn(pgMerchantUsers);
+		loginServiceImpl.changdPassword(Long.parseLong("123"), "abc", "Ipsidy@123!");
 	}
 
 	@Test
@@ -312,7 +334,7 @@ public class LoginServiceImplTest {
 		Assert.assertNotNull(loginServiceImpl.validToken(Long.parseLong("12345"), "bbbb"));
 	}
 
-	@Test(expected = ChatakMerchantException.class)
+	@Test
 	public void testResetPassword() throws ChatakMerchantException {
 		ResetPasswordData resetPasswordData = new ResetPasswordData();
 		pgMerchantUsers = new PGMerchantUsers();
@@ -320,22 +342,29 @@ public class LoginServiceImplTest {
 		resetPasswordData.setNewPassword("Ipsdiy@123!");
 		pgMerchantUsers.setMerPassword("900150983CD24FB0D6963F7D28E17F72");
 		pgMerchantUsers.setPreviousPasswords("E8CE7A0A002060AAADC0ACF3C4158339");
+		 Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class),
+		          Matchers.any(Locale.class))).thenReturn("12");
+		PasswordHandler passwordHandler = new PasswordHandler();
+		passwordHandler.validate("Ipsdiy@123!");
 		Mockito.when(merchantUserDao.createOrUpdateUser(Matchers.any(PGMerchantUsers.class))).thenReturn(pgMerchantUsers);
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
-
 		loginServiceImpl.resetPassword(resetPasswordData, Long.parseLong("123"));
 	}
 
-	@Test(expected = ChatakMerchantException.class)
+	@Test
 	public void testResetPasswordNotEqulZero() throws ChatakMerchantException {
 		ResetPasswordData resetPasswordData = new ResetPasswordData();
 		pgMerchantUsers = new PGMerchantUsers();
-		pgMerchantUsers.setEmailVerified(1);
-		resetPasswordData.setNewPassword("MD5");
+		resetPasswordData.setNewPassword("Ipsdiy@123!");
 		pgMerchantUsers.setMerPassword("900150983CD24FB0D6963F7D28E17F72");
 		pgMerchantUsers.setPreviousPasswords("E8CE7A0A002060AAADC0ACF3C4158339");
-		Mockito.when(merchantUserDao.createOrUpdateUser(Matchers.any(PGMerchantUsers.class))).thenReturn(pgMerchantUsers);
+		pgMerchantUsers.setEmailVerified(Constants.ZERO);
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
+		 Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class),
+		          Matchers.any(Locale.class))).thenReturn("12");
+		PasswordHandler passwordHandler = new PasswordHandler();
+		passwordHandler.validate("Ipsdiy@123!");
+		Mockito.when(merchantUserDao.createOrUpdateUser(Matchers.any(PGMerchantUsers.class))).thenReturn(pgMerchantUsers);
 		loginServiceImpl.resetPassword(resetPasswordData, Long.parseLong("123"));
 	}
 

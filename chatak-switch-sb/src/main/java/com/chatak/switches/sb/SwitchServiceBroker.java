@@ -55,6 +55,7 @@ import com.chatak.pg.bean.VoidResponse;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.ActionCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.ProcessorType;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.util.CommonUtil;
@@ -415,7 +416,9 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     PGTransaction pgTransaction = null;
     try {
       // validation of Request
-      validateRequest(purchaseRequest);
+     if (!purchaseRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+		 validateRequest(purchaseRequest);
+	 }
       // Create Transaction record
       pgTransaction = populatePGTransaction(purchaseRequest, PGConstants.TXN_TYPE_SALE);
       pgTransaction.setPaymentMethod(PGConstants.PAYMENT_METHOD_DEBIT);
@@ -425,8 +428,13 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgTransaction.setIsoId(purchaseRequest.getIsoId());
 
       //Commenting since there is already another call at the bottom where the transaction is updated.
-      /*voidTransactionDao.createTransaction(pgTransaction);*/
+      PGTransaction insertedPgTransaction = voidTransactionDao.createTransaction(pgTransaction);
 
+      // PERF >> Changes related to transaction id
+      // Fetch inserted TXN ID
+      BigInteger transactionID = insertedPgTransaction.getId();
+      purchaseRequest.setTransactionId(String.valueOf(transactionID));
+      
 
       // PERF >> Will use the primary auto increment key as the transaction id
       // Set the gateway transaction id
@@ -439,13 +447,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       fetchCardNumberLength(purchaseRequest);
       /********* Sending to upstream processor *********/
 
-      //purchaseResponse = paymentService.purchaseTransaction(purchaseRequest);
-      String mock = Properties.getProperty("issuance.mock");
-      if ("true".equals(mock)) {
-        purchaseResponse = paymentService.purchaseTransactionMock();
-      } else {
-        purchaseResponse = paymentService.purchaseTransaction(purchaseRequest);
-      }
+      purchaseResponse = paymentService.purchaseTransaction(purchaseRequest);
 
       logger.info("SwitchServiceBroker::SALE Transaction Response: "
           + purchaseResponse.getErrorCode() + "::" + purchaseResponse.getErrorMessage());
@@ -461,21 +463,24 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 
       pgTransaction.setIssuancePartner(purchaseResponse.getIssuancePartner());
       //setting transaction based on processor response
-      pgTransaction.setDeviceLocalTxnTime(purchaseResponse.getIssuanceTxnTime() == null
-    		  ? pgTransaction.getDeviceLocalTxnTime() : purchaseResponse.getIssuanceTxnTime());
+      pgTransaction.setDeviceLocalTxnTime(getIssuanceTxnTime(purchaseResponse, pgTransaction));
       
       // PERF >> Moving it down to after transaction insertion
       // Update account
       //statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
 
-      String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() !=null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
-      autoSettlement = (autoSettlement!=null && autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_YES
-          : Constants.BATCH_STATUS_NA;
+      String autoSettlement = getAutoSettlement(pgMerchant);
 
       if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
         pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);
       }
       pgTransaction.setBatchId(Constants.BATCH_STATUS_NA);
+      if(purchaseResponse.getErrorCode().equals(ActionCode.ERROR_CODE_00)) {
+    	  pgTransaction.setBatchId(purchaseRequest.getBatchId()); 
+    	  pgTransaction.setMerchantSettlementStatus(Constants.EXECUTED_STATUS);
+      } else {
+    	  pgTransaction.setMerchantSettlementStatus(Constants.DECLINED);
+      }
       pgTransaction.setBatchDate(new Timestamp(System.currentTimeMillis()));
       pgTransaction.setAutoSettlementStatus(autoSettlement);
 
@@ -488,11 +493,11 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       }
       
       // Update transaction status and switch response
-      PGTransaction insertedPgTransaction = voidTransactionDao.createTransaction(pgTransaction);
+      insertedPgTransaction = voidTransactionDao.createTransaction(pgTransaction);
 
       // PERF >> Changes related to transaction id
       // Fetch inserted TXN ID
-      BigInteger transactionID = insertedPgTransaction.getId();
+      transactionID = insertedPgTransaction.getId();
       pgSwitchTransaction.setPgTransactionId(String.valueOf(transactionID));
       
       asyncService.saveSwitchTransaction(pgSwitchTransaction);
@@ -511,6 +516,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       purchaseResponse.setTotalAmount(pgTransaction.getTxnTotalAmount());
       purchaseResponse.setErrorMessage(purchaseResponse.getUpStreamMessage());
       purchaseResponse.setIssuerTxnRefNum(pgTransaction.getIssuerTxnRefNum());
+      purchaseResponse.setTxnType(pgTransaction.getTransactionType());
     } catch (ServiceException e) {
       logger.error(Constants.EXCEPTIONS + e.getMessage(), e);
       if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
@@ -557,6 +563,20 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     return purchaseResponse;
   }
 
+  private String getAutoSettlement(PGMerchant pgMerchant) {
+    String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() != null
+        ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
+    autoSettlement = (autoSettlement != null && autoSettlement.equals("1"))
+        ? Constants.AUTO_SETTLEMENT_STATUS_NO : Constants.BATCH_STATUS_NA;
+    return autoSettlement;
+  }
+
+  private String getIssuanceTxnTime(PurchaseResponse purchaseResponse,
+      PGTransaction pgTransaction) {
+    return purchaseResponse.getIssuanceTxnTime() == null
+    	  ? pgTransaction.getDeviceLocalTxnTime() : purchaseResponse.getIssuanceTxnTime();
+  }
+
 private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTransaction pgTransaction) {
 	return null != pgTransaction && null != pgSwitchTransaction;
 }
@@ -577,7 +597,6 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 
         pgTransaction.setRefundStatus(0);
 
-        pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_PROCESSING);
         if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
           // Setting Initial Litle EFT status
           pgTransaction.setEftStatus(PGConstants.LITLE_PENDING);
@@ -684,7 +703,7 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());
       switchTransaction.initConfig(pgSwitch.getPrimarySwitchURL(),
-          Integer.valueOf(pgSwitch.getPrimarySwitchPort()));
+          pgSwitch.getPrimarySwitchPort());
       ISOMsg switchISOMsg =
           switchTransaction.auth(getISOMsg("0200", "021010", adjustmentRequest.getTxnAmount(),
               adjustmentRequest.getCardNum(), adjustmentRequest.getExpDate(), txnRefNum));
@@ -747,7 +766,7 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
    * @return VoidResponse
    * @throws ServiceException
    */
-  public VoidResponse voidTransaction(VoidRequest voidRequest) throws ServiceException {
+  public VoidResponse voidTransaction(VoidRequest voidRequest, PGTransaction refSaleTransaction) throws ServiceException {
     logger.info("SwitchServiceBroker | voidTransaction | Entering");
     binUpstreamRouter = new BINUpstreamRouter(binDao.getAllActiveBins());
     VoidResponse voidResponse = new VoidResponse();
@@ -760,7 +779,7 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 
       // Create Transaction record
       pgTransaction = populatePGTransaction(voidRequest, PGConstants.TXN_TYPE_VOID);
-      pgTransaction.setRefTransactionId(voidRequest.getTxnRefNumber());
+      pgTransaction.setRefTransactionId(voidRequest.getTxnRefNum());
       pgTransaction.setSysTraceNum(voidRequest.getSysTraceNum());
       pgTransaction.setPaymentMethod(PGConstants.PAYMENT_METHOD_CREDIT);
       pgTransaction.setTxnAmount(voidRequest.getTxnAmount());
@@ -768,9 +787,7 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgTransaction.setTxnTotalAmount(voidRequest.getTotalTxnAmount());
       pgTransaction.setFeeAmount(voidRequest.getTxnFee());
       pgTransaction.setUserName(voidRequest.getUserName());
-      Date date = new Date();
-      String batchId = new SimpleDateFormat(Constants.BATCH_ID_DATE_FORMAT).format(date);
-      pgTransaction.setBatchId(batchId + pgTransaction.getMerchantId());
+      pgTransaction.setBatchId(Constants.BATCH_STATUS_NA);
       pgTransaction.setBatchDate(new Timestamp(System.currentTimeMillis()));
       voidTransactionDao.createTransaction(pgTransaction);
 
@@ -791,6 +808,9 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgTransaction.setProcessor(paymentService.getProcessor());
       pgTransaction.setRefTransactionId(voidRequest.getTxnRefNum());
 
+      if(voidResponse.getErrorCode().equals(ActionCode.ERROR_CODE_00)) {
+    	pgTransaction.setBatchId(voidRequest.getBatchId()); 
+      }
       pgSwitchTransaction.setProcessorResponse(voidResponse.getUpStreamResponse());
       pgSwitchTransaction.setProcessorMessage(voidResponse.getUpStreamResponse());
       pgSwitchTransaction.setProcessorResponseMsg(voidResponse.getUpStreamMessage());
@@ -799,7 +819,7 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 
       // Update account
       if (pgTransaction.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
-        statusVoidValidation(voidRequest, voidResponse, pgTransaction);
+        statusVoidValidation(voidRequest, voidResponse, pgTransaction, refSaleTransaction);
       } else {
         pgTransaction.setTxnDescription(voidResponse.getErrorMessage());
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_DECLILNED);
@@ -809,12 +829,12 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       switchTransactionDao.createTransaction(pgSwitchTransaction);
 
       // Set Response attributes
-      voidResponse.setTxnRefNum(pgTransaction.getTransactionId());
-      voidResponse.setTxnAmount(Double.valueOf(pgTransaction.getTxnAmount()));
+      voidResponse.setTxnRefNum(pgTransaction.getId().toString());
+      voidResponse.setTxnAmount(Double.valueOf(pgTransaction.getTxnTotalAmount()));
       voidResponse.setFeeAmount(Double.valueOf(PGConstants.VOID_TXN_AMOUNT));
-      voidResponse.setTxnRefNum(pgTransaction.getTransactionId());
       voidResponse.setAuthId(pgTransaction.getAuthId());
       voidResponse.setErrorMessage(voidResponse.getUpStreamMessage());
+      voidResponse.setTxnType(pgTransaction.getTransactionType());
 
     } catch (DataAccessException e) {
         voidResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
@@ -825,7 +845,7 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
         logger.error("SwitchServiceBroker | voidTransaction | DataAccessException :", e);
       } catch (ServiceException e) {
       
-      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+      if (null != pgTransaction && null != pgSwitchTransaction) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
         pgTransaction
@@ -854,14 +874,10 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 
   }
 
-  private void statusVoidValidation(VoidRequest voidRequest, VoidResponse voidResponse, PGTransaction pgTransaction)
+  private void statusVoidValidation(VoidRequest voidRequest, VoidResponse voidResponse, PGTransaction pgTransaction,
+		  			PGTransaction originalSaleTransaction)
 		throws Exception, ServiceException {
-	PGTransaction originalSaleTransaction;
 	voidResponse.setAuthId(voidRequest.getAuthId());
-	originalSaleTransaction = voidTransactionDao
-	    .findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(
-	        voidRequest.getTxnRefNum(), voidRequest.getIssuerTxnRefNum(),
-	        pgTransaction.getMerchantId(), pgTransaction.getTerminalId());
 	if ((originalSaleTransaction.getMerchantSettlementStatus()
 	    .equals(PGConstants.PG_SETTLEMENT_PENDING))
 	    || (originalSaleTransaction.getMerchantSettlementStatus()
@@ -894,12 +910,12 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	  String descriptionTemplate =
 	      Properties.getProperty("chatak-pay.void.description.template");
 	  descriptionTemplate = MessageFormat.format(descriptionTemplate,
-	      originalSaleTransaction.getTransactionId(), pgTransaction.getIssuerTxnRefNum());
+	      originalSaleTransaction.getId(), pgTransaction.getIssuerTxnRefNum());
 
 	  pgTransaction.setTxnDescription(descriptionTemplate + nbFlag);// settingdescription
 	  pgTransaction.setMerchantFeeAmount(
 	      StringUtils.getValidLongValue(originalSaleTransaction.getMerchantFeeAmount()));
-	  pgTransaction.setMerchantSettlementStatus(PGConstants.TXN_TYPE_VOID);
+	  pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_EXECUTED);
 	  voidTransactionDao.createTransaction(originalSaleTransaction);
 }
 
@@ -971,7 +987,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
         reversalResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
         reversalResponse
             .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-        if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+        if (null != pgTransaction && null != pgSwitchTransaction) {
           pgTransaction.setStatus(PGConstants.STATUS_FAILED);
           voidTransactionDao.createTransaction(pgTransaction);
           pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
@@ -980,7 +996,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
         logger.error("SwitchServiceBroker | voidTransaction | DataAccessException :", e);
       }  catch (ServiceException e) {
 
-      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+      if (null != pgTransaction && null != pgSwitchTransaction) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         voidTransactionDao.createTransaction(pgTransaction);
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
@@ -1081,7 +1097,14 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       pgTransaction.setAdjAmount(Long.valueOf(PGConstants.VOID_TXN_AMOUNT));
       pgTransaction.setTxnTotalAmount(refundRequest.getTotalTxnAmount());
       pgTransaction.setUserName(refundRequest.getUserName());
-      voidTransactionDao.createTransaction(pgTransaction);
+      pgTransaction.setPmId(refundRequest.getPmId());
+      pgTransaction.setIsoId(refundRequest.getIsoId());
+      pgTransaction.setBatchId(Constants.BATCH_STATUS_NA);
+      PGTransaction insertedPgTransaction = voidTransactionDao.createTransaction(pgTransaction);
+      
+      // Fetch inserted TXN ID
+      BigInteger transactionID = insertedPgTransaction.getId();
+      refundRequest.setTransactionId(String.valueOf(transactionID));
 
       // Switch transaction log before Switch call
       pgSwitchTransaction = populateSwitchTransactionRequest(refundRequest);
@@ -1104,10 +1127,10 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       pgTransaction.setIssuancePartner(refundResponse.getIssuancePartner());
       pgTransaction.setDeviceLocalTxnTime(refundResponse.getIssuanceTxnTime());
       
-      Date date = new Date();
-      String batchId = new SimpleDateFormat(Constants.BATCH_ID_DATE_FORMAT).format(date);
-      pgTransaction.setBatchId(batchId + pgTransaction.getMerchantId());
       pgTransaction.setBatchDate(new Timestamp(System.currentTimeMillis()));
+      if(refundResponse.getErrorCode().equals(ActionCode.ERROR_CODE_00)) {
+    	pgTransaction.setBatchId(refundRequest.getBatchId()); 
+      }
 
       pgSwitchTransaction.setProcessorMessage(refundResponse.getUpStreamResponse());
       pgSwitchTransaction.setProcessorResponse(refundResponse.getUpStreamResponse());
@@ -1131,10 +1154,11 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       switchTransactionDao.createTransaction(pgSwitchTransaction);
 
       // Set Response attributes
-      refundResponse.setTxnRefNum(pgTransaction.getTransactionId());
+      refundResponse.setTxnRefNum(pgTransaction.getId().toString());
       refundResponse.setTotalTxnAmount(pgTransaction.getTxnTotalAmount());
-      refundResponse.setTxnAmount(Long.valueOf(pgTransaction.getTxnAmount()));
+      refundResponse.setTxnAmount(pgTransaction.getTxnAmount());
       refundResponse.setErrorMessage(refundResponse.getUpStreamMessage());
+      refundResponse.setTxnType(pgTransaction.getTransactionType());
 
     } catch (DataAccessException e) {
       refundRequest.setReversalReason(e.getMessage());
@@ -1177,7 +1201,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 	          .equals(PGConstants.PG_SETTLEMENT_PROCESSING)) {
 	    validateMerchantSettlementProcessing(orignalSaleTxn, pgTransaction);
 	  } else if (orignalSaleTxn.getMerchantSettlementStatus()
-	      .equals(PGConstants.PG_SETTLEMENT_EXECUTED)
+	      .equals(Constants.SETTLEMENT_STATUS)
 	      || orignalSaleTxn.getMerchantSettlementStatus().equals(PGConstants.PG_TXN_REFUNDED)) {
 	    validateMerchantSettlementExecuted(orignalSaleTxn, pgTransaction,refundRequest);
 	  }
@@ -1305,7 +1329,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     } catch (ServiceException e) {
       logger.error(Constants.EXCEPTIONS + e);
 
-      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+      if (null != pgTransaction && null != pgSwitchTransaction) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);
         pgTransaction
@@ -1466,7 +1490,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     } catch (ServiceException e) {
       logger.error(Constants.EXCEPTIONS + e);
 
-      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+      if (null != pgTransaction && null != pgSwitchTransaction) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         voidTransactionDao.createTransaction(pgTransaction);
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
@@ -1479,7 +1503,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       reversalResponse.setErrorCode(ActionCode.ERROR_CODE_Z12);
       reversalResponse
           .setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z12));
-      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+      if (null != pgTransaction && null != pgSwitchTransaction) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         voidTransactionDao.createTransaction(pgTransaction);
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
@@ -1705,7 +1729,7 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
       cashBackResponse.setIssuerTxnRefNum(pgTransaction.getIssuerTxnRefNum());
     } catch (ServiceException e) {
       logger.error(Constants.EXCEPTIONS + e);
-      if (checkPgTransaction(pgSwitchTransaction, pgTransaction)) {
+      if (null != pgTransaction && null != pgSwitchTransaction) {
 
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgTransaction.setMerchantSettlementStatus(PGConstants.PG_TXN_FAILED);

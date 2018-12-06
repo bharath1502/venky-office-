@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +17,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import com.chatak.mailsender.service.MailServiceManagement;
+import com.chatak.pay.constants.Constant;
 import com.chatak.pay.controller.model.LoginRequest;
 import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pay.model.Merchant;
@@ -30,6 +34,7 @@ import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGTerminal;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.user.bean.AddMerchantBankRequest;
 import com.chatak.pg.user.bean.AddMerchantBankResponse;
 import com.chatak.pg.user.bean.AddMerchantRequest;
@@ -41,6 +46,7 @@ import com.chatak.pg.user.bean.GetMerchantListRequest;
 import com.chatak.pg.user.bean.GetMerchantListResponse;
 import com.chatak.pg.user.bean.UpdateMerchantRequest;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
+import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
@@ -49,6 +55,8 @@ public class PGMerchantServiceImplTest {
 
 	@InjectMocks
 	PGMerchantServiceImpl pgMerchantServiceImpl = new PGMerchantServiceImpl();
+
+	private static Logger log = LogManager.getLogger(PGMerchantServiceImplTest.class);
 
 	@Mock
 	private MessageSource messageSource;
@@ -80,6 +88,8 @@ public class PGMerchantServiceImplTest {
 	@Before
 	public void pro() {
 		java.util.Properties properties = new java.util.Properties();
+		properties.setProperty("max.download.limit", "12");
+		properties.setProperty("merchant.user.previous.password.count", "3");
 		properties.setProperty("chatak-tms.enabled", "10");
 		Properties.mergeProperties(properties);
 	}
@@ -95,15 +105,6 @@ public class PGMerchantServiceImplTest {
 		UpdateMerchantRequest updateMerchantRequest = new UpdateMerchantRequest();
 		UpdateMerchantResponse updateMerchantResponse = new UpdateMerchantResponse();
 		updateMerchantResponse.setErrorCode("00");
-		Mockito.when(merchantUpdateDao.updateMerchant(Matchers.any(UpdateMerchantRequest.class)))
-				.thenReturn(updateMerchantResponse);
-		pgMerchantServiceImpl.updateMerchant(updateMerchantRequest);
-	}
-
-	@Test
-	public void testUpdateMerchanttException() throws ChatakPayException {
-		UpdateMerchantRequest updateMerchantRequest = new UpdateMerchantRequest();
-		UpdateMerchantResponse updateMerchantResponse = new UpdateMerchantResponse();
 		Mockito.when(merchantUpdateDao.updateMerchant(Matchers.any(UpdateMerchantRequest.class)))
 				.thenReturn(updateMerchantResponse);
 		pgMerchantServiceImpl.updateMerchant(updateMerchantRequest);
@@ -138,29 +139,12 @@ public class PGMerchantServiceImplTest {
 	}
 
 	@Test
-	public void testDeleteMerchantException() throws ChatakPayException {
-		DeleteMerchantRequest deleteMerchantRequest = new DeleteMerchantRequest();
-		deleteMerchantRequest.setMerchantCode("abc");
-		Mockito.when(merchantProfileDao.deleteMerchant(Matchers.any(DeleteMerchantRequest.class)))
-				.thenThrow(new NullPointerException());
-		pgMerchantServiceImpl.deleteMerchant(deleteMerchantRequest);
-	}
-
-	@Test
 	public void testGetMerchantList() throws ChatakPayException {
 		GetMerchantListRequest getMerchantListRequest = new GetMerchantListRequest();
 		GetMerchantListResponse getMerchantListResponse = new GetMerchantListResponse();
 		getMerchantListResponse.setErrorCode("00");
 		Mockito.when(merchantProfileDao.getMerchantlist(Matchers.any(GetMerchantListRequest.class)))
 				.thenReturn(getMerchantListResponse);
-		pgMerchantServiceImpl.getMerchantList(getMerchantListRequest);
-	}
-
-	@Test
-	public void testGetMerchantListException() throws ChatakPayException {
-		GetMerchantListRequest getMerchantListRequest = new GetMerchantListRequest();
-		Mockito.when(merchantProfileDao.getMerchantlist(Matchers.any(GetMerchantListRequest.class)))
-				.thenThrow(new NullPointerException());
 		pgMerchantServiceImpl.getMerchantList(getMerchantListRequest);
 	}
 
@@ -197,14 +181,6 @@ public class PGMerchantServiceImplTest {
 		getMerchantBankResponse.setErrorCode("01");
 		Mockito.when(merchantDao.getMerchantBankDetails(Matchers.any(GetMerchantBankDetailsRequest.class)))
 				.thenReturn(getMerchantBankResponse);
-		pgMerchantServiceImpl.getMerchantBankDetails(getMerchantBankDetailsRequest);
-	}
-
-	@Test
-	public void testGetMerchantBankDetailsException() throws ChatakPayException {
-		GetMerchantBankDetailsRequest getMerchantBankDetailsRequest = new GetMerchantBankDetailsRequest();
-		Mockito.when(merchantDao.getMerchantBankDetails(Matchers.any(GetMerchantBankDetailsRequest.class)))
-				.thenThrow(new NullPointerException());
 		pgMerchantServiceImpl.getMerchantBankDetails(getMerchantBankDetailsRequest);
 	}
 
@@ -251,39 +227,24 @@ public class PGMerchantServiceImplTest {
 		Map<String, String> map = new HashMap<>();
 		List<Merchant> merchants = new ArrayList<>();
 		Merchant merchant = new Merchant();
-		map.get("");
+		map.put("1", "1-1");
 		merchantList.add(map);
 		merchants.add(merchant);
 		Mockito.when(merchantUpdateDao.getMerchantList()).thenReturn(merchantList);
 		pgMerchantServiceImpl.getMerchantNamesAndMerchantCode();
 	}
 
-	@Test(expected = ChatakPayException.class)
-	public void testChangedPassword() throws ChatakPayException {
+	@Test
+	public void testChangedPasswordSuccess() throws ChatakPayException {
 		PGMerchantUsers pgMerchantUsers = new PGMerchantUsers();
+		pgMerchantUsers.setMerPassword("1CEB3E00BFA610E1C55453734A5C6B7E");
+		pgMerchantUsers.setStatus(PGConstants.STATUS_SUCCESS);
+		pgMerchantUsers.setEmailVerified(Constant.ZERO);
 		Mockito.when(merchantUserDao.findByUserName(Matchers.anyString())).thenReturn(pgMerchantUsers);
-		pgMerchantServiceImpl.changedPassword("abc", "abc", "abc");
-	}
-
-	@Test(expected = ChatakPayException.class)
-	public void testChangedPasswordCurrentPassword() throws ChatakPayException {
-		PGMerchantUsers pgMerchantUsers = new PGMerchantUsers();
-		pgMerchantUsers.setMerPassword("900150983CD24FB0D6963F7D28E17F72");
-		Mockito.when(merchantUserDao.findByUserName(Matchers.anyString())).thenReturn(pgMerchantUsers);
-		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class),
-				Matchers.any(Locale.class))).thenReturn("abcd");
-		pgMerchantServiceImpl.changedPassword("abcd", "abc", "abcd");
-	}
-
-	@Test(expected = ChatakPayException.class)
-	public void testChangedPasswordNewPassword() throws ChatakPayException {
-		PGMerchantUsers pgMerchantUsers = new PGMerchantUsers();
-		pgMerchantUsers.setMerPassword("900150983CD24FB0D6963F7D28E17F72");
-		pgMerchantUsers.setPreviousPasswords("900150983CD24FB0D6963F7D28E17F72");
-		Mockito.when(merchantUserDao.findByUserName(Matchers.anyString())).thenReturn(pgMerchantUsers);
-		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class),
-				Matchers.any(Locale.class))).thenReturn("abcd");
-		pgMerchantServiceImpl.changedPassword("abcd", "abc", "900150983CD24FB0D6963F7D28E17F72");
+		Mockito.when(messageSource.getMessage("chatak.general.error", null, LocaleContextHolder.getLocale())).thenReturn("abcd");
+		Mockito.when(messageSource.getMessage("merchant.user.previous.password.count", null,
+              LocaleContextHolder.getLocale())).thenReturn("3");
+		pgMerchantServiceImpl.changedPassword("abcd", "900150983CD24FB0D6963F7D28E17F72", "Admin@123");
 	}
 
 	@Test
@@ -306,20 +267,6 @@ public class PGMerchantServiceImplTest {
 		PGMerchantUsers pgMerchantUsers = new PGMerchantUsers();
 		pgMerchantUsers.setStatus(1);
 		Mockito.when(merchantUserDao.findByUserName(Matchers.anyString())).thenReturn(pgMerchantUsers);
-		pgMerchantServiceImpl.forgotPassword("abcd", "www.ggg.com");
-	}
-
-	@Test(expected = ChatakPayException.class)
-	public void testForgotPasswordException() throws ChatakPayException {
-		PGMerchantUsers pgMerchantUsers = new PGMerchantUsers();
-		pgMerchantUsers.setStatus(0);
-		pgMerchantUsers.setId(Long.parseLong("123"));
-		pgMerchantUsers.setEmail("1234");
-		Mockito.when(merchantUserDao.findByUserName(Matchers.anyString())).thenReturn(pgMerchantUsers);
-		Mockito.when(merchantUserDao.createOrUpdateUser(Matchers.any(PGMerchantUsers.class)))
-				.thenReturn(pgMerchantUsers);
-		Mockito.when(messageSource.getMessage(Matchers.anyString(), Matchers.any(Object[].class),
-				Matchers.any(Locale.class))).thenThrow(new NullPointerException());
 		pgMerchantServiceImpl.forgotPassword("abcd", "www.ggg.com");
 	}
 

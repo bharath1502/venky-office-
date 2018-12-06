@@ -25,6 +25,7 @@ import com.chatak.pg.acq.dao.UserActivityLogDao;
 import com.chatak.pg.acq.dao.UsersRoleDao;
 import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGUserRoles;
+import com.chatak.pg.exception.PrepaidAdminUserNotActiveException;
 import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
@@ -57,11 +58,17 @@ public class LoginServiceImplTest {
 	MessageSource messageSource;
 
 	@Before
-	public void pro() {
-		java.util.Properties properties = new java.util.Properties();
-		properties.setProperty("password.policy.format", "abcd");
-		Properties.mergeProperties(properties);
-	}
+	public void init() {
+      java.util.Properties propsExportedLocal = new java.util.Properties();
+        propsExportedLocal.setProperty("max.download.limit", "500");
+        propsExportedLocal.setProperty("thread.pool.size", "500");
+        propsExportedLocal.setProperty("chatak-tsm.service.fetch.merchant.tid", "fetchByMerchantIdAndTId");
+        propsExportedLocal.setProperty("chatak-tms.rest.service.url", "https://dev.ipsidy.net/tms/admin/management/");
+        propsExportedLocal.setProperty("thread.max.per.route", "500");
+        propsExportedLocal.setProperty("CONNECT", "CONNECT");
+        propsExportedLocal.setProperty("chatak-issuance.service.url", "https://dev.ipsidy.net/issuance-admin");
+        Properties.mergeProperties(propsExportedLocal);
+  }
 
 	@Test
 	public void testAuthenticate() throws NoSuchAlgorithmException, ReflectiveOperationException {
@@ -134,7 +141,7 @@ public class LoginServiceImplTest {
 	}
 
 	@Test(expected = ChatakAdminException.class)
-	public void testChangdPassword() throws NumberFormatException, ChatakAdminException {
+	public void testChangdPassword() throws NumberFormatException, ChatakAdminException, PrepaidAdminUserNotActiveException {
 		PGAdminUser adminUser = new PGAdminUser();
 		adminUser.setPassword("5435");
 		Mockito.when(adminUserDao.findByAdminUserId(Matchers.anyLong())).thenReturn(adminUser);
@@ -142,14 +149,14 @@ public class LoginServiceImplTest {
 	}
 
 	@Test(expected = ChatakAdminException.class)
-	public void testChangdPasswordChatakAdminException() throws NumberFormatException, ChatakAdminException {
+	public void testChangdPasswordChatakAdminException() throws NumberFormatException, ChatakAdminException, PrepaidAdminUserNotActiveException {
 		PGAdminUser adminUser = new PGAdminUser();
 		Mockito.when(adminUserDao.findByAdminUserId(Matchers.anyLong())).thenReturn(adminUser);
 		loginServiceImpl.changdPassword(Long.parseLong("423"), "asd2", "asdf2");
 	}
 
 	@Test(expected = ChatakAdminException.class)
-	public void testChangdPasswordException() throws NumberFormatException, ChatakAdminException {
+	public void testChangdPasswordException() throws NumberFormatException, ChatakAdminException, PrepaidAdminUserNotActiveException {
 		loginServiceImpl.changdPassword(Long.parseLong("423"), "asd2", "asdf2");
 	}
 

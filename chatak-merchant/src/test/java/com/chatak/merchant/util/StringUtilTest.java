@@ -128,7 +128,7 @@ public class StringUtilTest {
 		stringUtil.validatePhone("phone");
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testParseEmailToken() throws ChatakMerchantException {
 		stringUtil.parseEmailToken("phone");
 	}
@@ -188,11 +188,6 @@ public class StringUtilTest {
 	public void testIsNull() {
 		Object object = new Object();
 		stringUtil.isNull(object);
-	}
-
-	@Test
-	public void testGetAmountInFloat() {
-		stringUtil.getAmountInFloat(1, 1, Double.parseDouble("5435.0"));
 	}
 
 }

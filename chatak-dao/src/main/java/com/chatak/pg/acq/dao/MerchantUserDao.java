@@ -57,4 +57,8 @@ public interface MerchantUserDao {
   public PGApplicationClient getApplicationClientAuth(String appAuthUser);
 
   public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient);
+  
+  public PGMerchantUsers getMerchantUserByStatus(String userName) throws DataAccessException;
+  
+  public List<GenericUserDTO> searchMerchantUsersForPM(GenericUserDTO genericUserDTO, Long entityId);
 }

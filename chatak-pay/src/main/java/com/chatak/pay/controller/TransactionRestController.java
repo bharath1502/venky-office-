@@ -5,15 +5,16 @@ package com.chatak.pay.controller;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -53,6 +54,7 @@ import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.bean.ChangePasswordRequest;
 import com.chatak.pg.bean.ForgotPasswordRequest;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.exception.HttpClientException;
@@ -267,14 +269,9 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 						messageSource.getMessage("chatak.password.required", null, LocaleContextHolder.getLocale()));
 				return loginResponse;
 			}
-			
-			validateCustomerUserName(loginRequest.getUsername());
 
 			loginResponse = pgMerchantService.authenticateMerchantUser(loginRequest);
 
-		} catch (HttpClientException e) {
-		  logger.error("Error :: TransactionRestController :: login : " + e.getMessage(), e);
-          return getAccessDeniedResponse(messageSource);
         } catch (Exception e) {
 		  logger.error("Error :: TransactionRestController :: login: ", e);
 		}
@@ -377,12 +374,38 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
       Response response = new Response();
       logger.info("Entering:: TransactionRestController:: changePassword method");
       try {
+        if (changePassword == null || changePassword.getUserName() == null) {
+          return processInvalidRequest(PGConstants.TXN_0121, messageSource);
+        } else if (changePassword.getCurrentPassword() == null) {
+          return processInvalidRequest(PGConstants.TXN_0122, messageSource);
+        } else if (changePassword.getNewPassword() == null) {
+          return processInvalidRequest(PGConstants.TXN_0123, messageSource);
+        } else if (changePassword.getConfirmPassword() == null) {
+          return processInvalidRequest(PGConstants.TXN_0124, messageSource);
+        } else if (!Pattern.compile(PGConstants.USER_NAME_REGEX).matcher(changePassword.getUserName())
+            .matches()) {
+          return processInvalidRequest(PGConstants.TXN_0125, messageSource);
+        } else if (!Pattern.compile(PGConstants.PSWD_REGEX).matcher(changePassword.getCurrentPassword())
+            .matches()) {
+          return processInvalidRequest(PGConstants.TXN_0126, messageSource);
+        } else if (!Pattern.compile(PGConstants.PSWD_REGEX).matcher(changePassword.getNewPassword())
+            .matches()) {
+          return processInvalidRequest(PGConstants.TXN_0127, messageSource);
+        } else if (!Pattern.compile(PGConstants.PSWD_REGEX).matcher(changePassword.getConfirmPassword())
+            .matches()) {
+          return processInvalidRequest(PGConstants.TXN_0128, messageSource);
+        }
         validateCustomerUserName(changePassword.getUserName());
+        if (changePassword.getCurrentPassword().equals(changePassword.getNewPassword())) {
+          return processInvalidRequest(PGConstants.TXN_0119, messageSource);
+        } else if (!changePassword.getNewPassword().equals(changePassword.getConfirmPassword())) {
+          return processInvalidRequest(PGConstants.TXN_0120, messageSource);
+        }
         booleanResp = pgMerchantService.changedPassword(changePassword.getUserName(),
             changePassword.getCurrentPassword(), changePassword.getNewPassword());
         if (booleanResp.equals(true)) {
           response.setErrorCode(ChatakPayErrorCode.GEN_001.name());
-          response.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(), null,
+          response.setErrorMessage(messageSource.getMessage("password.change.success", null,
               LocaleContextHolder.getLocale()));
         }
       } catch (HttpClientException e) {
@@ -391,6 +414,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
         return getAccessDeniedResponse(messageSource);
       } catch (ChatakPayException e) {
         logger.info("Error:: TransactionRestController:: changePassword method", e);
+        response.setErrorCode(ChatakPayErrorCode.GEN_002.name());
         response.setErrorMessage(e.getMessage());
         return response;
       }
@@ -402,7 +426,13 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 	public Response forgotPassword(HttpServletRequest request ,@RequestBody ForgotPasswordRequest changePassword ) throws ChatakPayException {		
 		Boolean booleanResp = null;	
 		Response response = new Response();
-		logger.info("Entering:: TransactionRestController:: forgotPassword method");		
+		logger.info("Entering:: TransactionRestController:: forgotPassword method");
+        if (changePassword == null || changePassword.getUserName() == null) {
+          return processInvalidRequest(PGConstants.TXN_0121, messageSource);
+        } else if (!Pattern.compile(PGConstants.USER_NAME_REGEX).matcher(changePassword.getUserName())
+            .matches()) {
+          return processInvalidRequest(PGConstants.TXN_0125, messageSource);
+        }
 		String url = request.getRequestURL().toString();
         String uri = request.getRequestURI();
         String baseUrl = url.substring(0, url.length() - uri.length()) + "/" + Properties.getProperty("chatak.merchant.portal");
@@ -414,6 +444,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 			}
 		}catch(ChatakPayException e){
 			logger.info("Error:: TransactionRestController:: changePassword method",e);
+			response.setErrorCode(ChatakPayErrorCode.GEN_002.name());
 			response.setErrorMessage(e.getMessage());
 			return response;
 		}
@@ -424,7 +455,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
         @RequestMapping(value = "/clientSsoLogin", method = RequestMethod.POST)
         public Response clientSsoLogin(HttpServletRequest request, HttpServletResponse response,
             HttpSession session, @RequestBody LoginRequest loginRequest) {
-          logger.info("Entering:: TransactionRestController:: login method");
+          logger.info("Entering:: TransactionRestController:: clientSsoLogin method");
           ClientSsoLoginResponse clientLoginResponse = new ClientSsoLoginResponse();
           try {
             if (loginRequest.getUsername() == null || loginRequest.getUsername().equals("")) {
@@ -438,11 +469,26 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
                   LocaleContextHolder.getLocale()));
               return clientLoginResponse;
             }
+            
+            validateLoginRequest(loginRequest);
       
             LoginResponse loginResponse = pgMerchantService.authenticateMerchantUser(loginRequest);
+            if(loginResponse.getErrorCode().equals(SIXTEEN_STR)){
+            	clientLoginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
+            	clientLoginResponse.setErrorMessage(messageSource.getMessage("chatak.invalid.appversion", null,LocaleContextHolder.getLocale()));
+            	return clientLoginResponse;
+            }
+            if(loginResponse.getErrorCode().equals(ELEVEN_STR)){
+            	clientLoginResponse.setErrorCode(ChatakPayErrorCode.GEN_002.name());
+            	clientLoginResponse.setErrorMessage(messageSource.getMessage("chatak.deviceSerial.error", null,
+                        LocaleContextHolder.getLocale()));
+            	return clientLoginResponse;
+            }
             clientLoginResponse = CommonUtil.copyBeanProperties(loginResponse, ClientSsoLoginResponse.class);
-            ClientCurrencyDTO currencyDTO = CommonUtil.copyBeanProperties(loginResponse.getCurrencyDTO(), ClientCurrencyDTO.class);
-            clientLoginResponse.setCurrencyDTO(currencyDTO);
+            if (loginResponse.getCurrencyDTO() != null) {
+              ClientCurrencyDTO currencyDTO = CommonUtil.copyBeanProperties(loginResponse.getCurrencyDTO(), ClientCurrencyDTO.class);
+              clientLoginResponse.setCurrencyDTO(currencyDTO);
+            }
             if (isLoginSuccess(clientLoginResponse)) {
               // OAuth generation
               logger.info("OAuth Genartion : " + clientLoginResponse.getErrorCode());
@@ -451,21 +497,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
       
               if (!StringUtil.isNull(applicationClientDTO)) {
                 logger.info("ApplicationClientDTO is not NULL");
-                OAuthToken token = null;
-      
-                if (!StringUtil.isNullAndEmpty(applicationClientDTO.getRefreshToken())) {
-                  logger.info("Refresh Token is Not Empty");
-                  token = JsonUtil.getValidOAuth2TokenLoginRefresh(applicationClientDTO);
-                  
-                  // refresh token expired, need to update here
-                  token = updatingTokenOnExpiration(applicationClientDTO, token);
-                } else {
-                  logger.info("Refresh Token is Empty");
-                  token = JsonUtil.getValidOAuth2TokenLogin(applicationClientDTO);
-      
-                  // save the refresh token for the first time
-                  saveFirstTimeRefreshToken(applicationClientDTO, token);
-                }
+                OAuthToken token = getOAuthToken(applicationClientDTO);
       
                 if (StringUtil.isNull(token)) {
                   logger.info("Token is NULL");
@@ -486,13 +518,59 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
                 return clientLoginResponse;
               }
             }
+          } catch (InvalidRequestException e) {
+            logger.error("Error :: TransactionRestController :: clientSsoLogin : ", e);
+            return processInvalidRequest(e.getLocalizedMessage(), messageSource);
           } catch (Exception e) {
-            logger.error("Error :: TransactionRestController :: login: ", e);
+            logger.error("Error :: TransactionRestController :: clientSsoLogin : ", e);
           }
       
-          logger.info("Exiting:: TransactionRestController:: login method");
+          logger.info("Exiting:: TransactionRestController:: clientSsoLogin method");
       
           return clientLoginResponse;
+        }
+
+        private OAuthToken getOAuthToken(ApplicationClientDTO applicationClientDTO)
+            throws InstantiationException, IllegalAccessException {
+          OAuthToken token = null;
+   
+          if (!StringUtil.isNullAndEmpty(applicationClientDTO.getRefreshToken())) {
+            logger.info("Refresh Token is Not Empty");
+            token = JsonUtil.getValidOAuth2TokenLoginRefresh(applicationClientDTO);
+            
+            // refresh token expired, need to update here
+            token = updatingTokenOnExpiration(applicationClientDTO, token);
+          } else {
+            logger.info("Refresh Token is Empty");
+            token = JsonUtil.getValidOAuth2TokenLogin(applicationClientDTO);
+   
+            // save the refresh token for the first time
+            saveFirstTimeRefreshToken(applicationClientDTO, token);
+          }
+          return token;
+        }
+
+        private void validateLoginRequest(LoginRequest loginRequest) throws InvalidRequestException {
+          if (loginRequest.getDeviceSerial() == null) {
+            throw new InvalidRequestException(PGConstants.TXN_0129);
+          } else if (loginRequest.getCurrentAppVersion() == null) {
+            throw new InvalidRequestException(PGConstants.TXN_0130);
+          } else if (!Pattern.compile(PGConstants.USER_NAME_REGEX).matcher(loginRequest.getUsername())
+              .matches()) {
+            throw new InvalidRequestException(PGConstants.TXN_0131);
+          } else if (!Pattern.compile(PGConstants.PSWD_REGEX).matcher(loginRequest.getPassword())
+              .matches()) {
+            throw new InvalidRequestException(PGConstants.TXN_0132);
+          } else if (!Pattern.compile(PGConstants.IMEI_REGEX).matcher(loginRequest.getDeviceSerial())
+              .matches() || loginRequest.getDeviceSerial().startsWith("0")) {
+            throw new InvalidRequestException(PGConstants.TXN_0133);
+          } else if (!Pattern.compile(PGConstants.APP_VERSION_REGEX)
+              .matcher(loginRequest.getCurrentAppVersion()).matches()
+              || loginRequest.getCurrentAppVersion().contains("..")
+              || loginRequest.getCurrentAppVersion().endsWith(".")
+              || loginRequest.getCurrentAppVersion().startsWith(".")) {
+            throw new InvalidRequestException(PGConstants.TXN_0134);
+          }
         }
 
         private boolean isInvalidPassword(LoginRequest loginRequest) {
@@ -533,8 +611,10 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
             ApplicationClientDTO applicationClientDTO =
                 pgMerchantService.getApplicationClientAuth(loginRequest.getUsername());
             logger.info("Validating Refresh Token -->> Application Client DTO : " + applicationClientDTO);
-            if (applicationClientDTO != null
-                && (!applicationClientDTO.getRefreshToken().equals(headerRefreshToken))) {
+            if(applicationClientDTO == null) {
+              return processInvalidRequest(PGConstants.TXN_0131, messageSource);
+            }
+            if (!applicationClientDTO.getRefreshToken().equals(headerRefreshToken)) {
               loginResponse.setErrorCode("ERROR_1685");
               loginResponse.setErrorMessage(messageSource.getMessage(loginResponse.getErrorCode(), null,
                   LocaleContextHolder.getLocale()));
@@ -591,9 +671,13 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
       public Response clientProcess(HttpServletRequest request, HttpServletResponse response,
           HttpSession session, @RequestBody TransactionRequest transactionRequest) {
         try {
+          validateClientProcessRequest(transactionRequest);
           validateCustomerUserName(transactionRequest.getUserName());
           return process(request, response, session, transactionRequest);
-        } catch (HttpClientException e) {
+		} catch (InvalidRequestException e) {
+			logger.error("Error :: TransactionRestController :: clientSsoLogin : ", e);
+			return processInvalidRequest(e.getLocalizedMessage(), messageSource);
+		} catch (HttpClientException e) {
           logger.error("Error :: TransactionRestController :: clientProcess : " + e.getMessage(), e);
           return getAccessDeniedResponse(messageSource);
         }
@@ -615,7 +699,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
         	logger.info("Invalid Access Token..");
         	logger.info("UserName in JSON Request : "
               + customerUserName + " UserName in Authentication : " + getCustomerUserName());
-          throw new HttpClientException("403", HttpStatus.FORBIDDEN_403);
+          throw new HttpClientException("403", HttpStatus.SC_FORBIDDEN);
         }
       }
 
@@ -626,4 +710,284 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
             messageSource.getMessage(response.getErrorCode(), null, LocaleContextHolder.getLocale()));
         return response;
       }
+
+      public Response processInvalidRequest(String errorCode, MessageSource messageSource) {
+        Response loginResponse = new Response();
+        loginResponse.setErrorCode(errorCode);
+        loginResponse.setErrorMessage(
+                messageSource.getMessage(loginResponse.getErrorCode(), null, LocaleContextHolder.getLocale()));
+        logger.info("Exiting :: TransactionRestController :: processInvalidRequest :: " + loginResponse.getErrorMessage());
+        return loginResponse;
+    }
+
+	private void validateClientProcessRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest == null || transactionRequest.getUserName() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0121);
+		} else if (transactionRequest.getTransactionType() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0135);
+		} else if (transactionRequest.getMerchantCode() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0136);
+		} else if (transactionRequest.getTerminalId() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0175);
+		} else if (transactionRequest.getDeviceSerial() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0129);
+		} else if (!Pattern.compile(PGConstants.USER_NAME_REGEX).matcher(transactionRequest.getUserName()).matches()) {
+			throw new InvalidRequestException(PGConstants.TXN_0125);
+		} else if (!isValidTransactionType(transactionRequest)) {
+			throw new InvalidRequestException(PGConstants.TXN_0139);
+		} else if (!Pattern.compile(PGConstants.IMEI_REGEX).matcher(transactionRequest.getMerchantCode()).matches()
+				|| transactionRequest.getMerchantCode().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0140);
+		} else if (!Pattern.compile(PGConstants.TID_REGEX).matcher(transactionRequest.getTerminalId()).matches()) {
+			throw new InvalidRequestException(PGConstants.TXN_0141);
+		} else if (!Pattern.compile(PGConstants.IMEI_REGEX).matcher(transactionRequest.getDeviceSerial()).matches()
+				|| transactionRequest.getDeviceSerial().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0133);
+		} else {
+			validateTimeZoneDetails(transactionRequest);
+		}
+		validateRequestOnTxnType(transactionRequest);
+	}
+
+	private void validateTimeZoneDetails(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getTimeZoneOffset() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0137);
+		} else if (transactionRequest.getTimeZoneRegion() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0138);
+		} else if (transactionRequest.getTimeZoneOffset().length() < 5
+				|| transactionRequest.getTimeZoneOffset().length() > 20) {
+			throw new InvalidRequestException(PGConstants.TXN_0142);
+		} else if (transactionRequest.getTimeZoneRegion().length() < 5
+				|| transactionRequest.getTimeZoneRegion().length() > 20) {
+			throw new InvalidRequestException(PGConstants.TXN_0143);
+		}
+	}
+
+	private void validateRequestOnTxnType(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getTransactionType().equals(TransactionType.SALE)) {
+			validateSaleTxnRequest(transactionRequest);
+		} else if (transactionRequest.getTransactionType().equals(TransactionType.REFUND)) {
+			validateRefundTxnRequest(transactionRequest);
+		} else if (transactionRequest.getTransactionType().equals(TransactionType.BALANCE)) {
+			validateBalanceEnquiryRequest(transactionRequest);
+		} else {
+			throw new InvalidRequestException(PGConstants.TXN_0139);
+		}
+	}
+
+	private void validateRefundTxnRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getCgRefNumber() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0144);
+		} else if (transactionRequest.getTxnRefNumber() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0145);
+		} else if (!Pattern.compile(PGConstants.REF_NUMBER_REGEX).matcher(transactionRequest.getCgRefNumber()).matches()
+				|| transactionRequest.getCgRefNumber().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0146);
+		} else if (!Pattern.compile(PGConstants.REF_NUMBER_REGEX).matcher(transactionRequest.getTxnRefNumber())
+				.matches() || transactionRequest.getTxnRefNumber().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0147);
+		}
+	}
+
+	private void validateSaleTxnRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getInvoiceNumber() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0161);
+		} else if (transactionRequest.getMerchantAmount() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0162);
+		} else if (transactionRequest.getOrderId() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0163);
+		} else if (transactionRequest.getTotalTxnAmount() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0164);
+		} else if (transactionRequest.getCardData() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0165);
+		} else if (transactionRequest.getCardData().getCardType() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0168);
+		} else if (!Pattern.compile(PGConstants.INVOICE_NUMBER_REGEX).matcher(transactionRequest.getInvoiceNumber())
+				.matches() || transactionRequest.getInvoiceNumber().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0171);
+		} else if (transactionRequest.getMerchantAmount() <= 0) {
+			throw new InvalidRequestException(PGConstants.TXN_0178);
+		} else if (!Pattern.compile(PGConstants.ORDER_ID_REGEX).matcher(transactionRequest.getOrderId()).matches()
+				|| transactionRequest.getOrderId().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0173);
+        } else if (transactionRequest.getTotalTxnAmount() <= 0
+            || !transactionRequest.getTotalTxnAmount().equals(transactionRequest.getMerchantAmount())) {
+			throw new InvalidRequestException(PGConstants.TXN_0179);
+        } else if (!transactionRequest.getCardData().getCardType().toString().equals(PGConstants.CARD_TYPE)) {
+			throw new InvalidRequestException(PGConstants.TXN_0177);
+		}
+		validateCardHolderName(transactionRequest);
+		validateSaleRequest(transactionRequest);
+	}
+
+	private void validateBalanceEnquiryRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getEntryMode() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0148);
+		} else if (transactionRequest.getCardData() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0149);
+		} else if (transactionRequest.getCardData().getCardNumber() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0151);
+		} else if (transactionRequest.getCardData().getCvv() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0152);
+		} else if (transactionRequest.getCardData().getExpDate() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0153);
+		} else if (transactionRequest.getCardData().getUid() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0154);
+		} else if (!Pattern.compile(PGConstants.CARD_NUMBER_REGEX)
+				.matcher(transactionRequest.getCardData().getCardNumber()).matches()
+				|| transactionRequest.getCardData().getCardNumber().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0155);
+		} else if (!Pattern.compile(PGConstants.CVV_REGEX).matcher(transactionRequest.getCardData().getCvv()).matches()
+				|| transactionRequest.getCardData().getCvv().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0156);
+		} else if (isValidExpDate(transactionRequest)) {
+			throw new InvalidRequestException(PGConstants.TXN_0157);
+		} else if (isNotValidCardUid(transactionRequest)) {
+			throw new InvalidRequestException(PGConstants.TXN_0158);
+		} else if (!isValidEntryMode(transactionRequest)) {
+			throw new InvalidRequestException(PGConstants.TXN_0159);
+		} else {
+			validateCardHolderName(transactionRequest);
+		}
+	}
+
+	private boolean isNotValidCardUid(TransactionRequest transactionRequest) {
+		return !Pattern.compile(PGConstants.CARD_UID_REGEX).matcher(transactionRequest.getCardData().getUid())
+				.matches();
+	}
+
+	private void validateCardHolderName(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getCardData().getCardHolderName() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0150);
+		} else if (!Pattern.compile(PGConstants.CARD_HOLDER_NAME_REGEX)
+				.matcher(transactionRequest.getCardData().getCardHolderName()).matches()) {
+			throw new InvalidRequestException(PGConstants.TXN_0160);
+		}
+	}
+
+	private void validateSaleRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getEntryMode().equals(EntryModeEnum.MANUAL)) {
+			validateManualRequest(transactionRequest);
+		} else if (transactionRequest.getEntryMode().equals(EntryModeEnum.QR_SALE)) {
+			validateQrSaleRequest(transactionRequest);
+		} else if (transactionRequest.getEntryMode().equals(EntryModeEnum.PAN_SWIPE_CONTACTLESS)) {
+			validateNfcRequest(transactionRequest);
+		} else if (transactionRequest.getEntryMode().equals(EntryModeEnum.CARD_TAP)) {
+			validateCardTapRequest(transactionRequest);
+		} else {
+			throw new InvalidRequestException(PGConstants.TXN_0159);
+		}
+	}
+
+	private void validateManualRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getCardData().getCardNumber() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0151);
+		} else if (transactionRequest.getCardData().getCvv() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0152);
+		} else if (transactionRequest.getCardData().getExpDate() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0153);
+		} else if (isInvalidData(transactionRequest.getCardData().getTrack2())) {
+			throw new InvalidRequestException(PGConstants.TXN_0170);
+		} else if (!Pattern.compile(PGConstants.CARD_NUMBER_REGEX)
+				.matcher(transactionRequest.getCardData().getCardNumber()).matches()
+				|| transactionRequest.getCardData().getCardNumber().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0155);
+		} else if (!Pattern.compile(PGConstants.CVV_REGEX).matcher(transactionRequest.getCardData().getCvv()).matches()
+				|| transactionRequest.getCardData().getCvv().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0156);
+		} else if (isValidExpDate(transactionRequest)) {
+			throw new InvalidRequestException(PGConstants.TXN_0157);
+		}
+	}
+
+	private void validateQrSaleRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getQrCode() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0176);
+		} else if (transactionRequest.getCardData().getTrack2() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0172);
+		} else if (!Pattern.compile(PGConstants.QR_CODE).matcher(transactionRequest.getQrCode()).matches()
+				|| transactionRequest.getQrCode().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0174);
+		} else if (!Pattern.compile(PGConstants.TRACK_2).matcher(transactionRequest.getCardData().getTrack2()).matches()
+				|| transactionRequest.getCardData().getTrack2().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0170);
+		} else if (isInvalidData(transactionRequest.getCardData().getCardNumber())) {
+			throw new InvalidRequestException(PGConstants.TXN_0155);
+		} else if (isInvalidData(transactionRequest.getCardData().getExpDate())) {
+			throw new InvalidRequestException(PGConstants.TXN_0157);
+		}
+	}
+
+	private void validateNfcRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getCardData().getCardNumber() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0151);
+		} else if (transactionRequest.getCardData().getExpDate() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0153);
+		} else if (transactionRequest.getCardData().getTrack2() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0170);
+		} else if (!Pattern.compile(PGConstants.CARD_NUMBER_REGEX)
+				.matcher(transactionRequest.getCardData().getCardNumber()).matches()
+				|| transactionRequest.getCardData().getCardNumber().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0155);
+		} else if (isValidExpDate(transactionRequest)) {
+			throw new InvalidRequestException(PGConstants.TXN_0157);
+		} else if (!Pattern.compile(PGConstants.NFC_TRACK_2).matcher(transactionRequest.getCardData().getTrack2())
+				.matches() || transactionRequest.getCardData().getTrack2().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0170);
+		}
+	}
+
+	private void validateCardTapRequest(TransactionRequest transactionRequest) throws InvalidRequestException {
+		if (transactionRequest.getCardData().getCardNumber() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0151);
+		} else if (transactionRequest.getCardData().getCvv() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0152);
+		} else if (transactionRequest.getCardData().getExpDate() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0153);
+		} else if (transactionRequest.getCardData().getUid() == null) {
+			throw new InvalidRequestException(PGConstants.TXN_0154);
+		} else if (isInvalidData(transactionRequest.getCardData().getTrack2())) {
+			throw new InvalidRequestException(PGConstants.TXN_0170);
+		} else if (!Pattern.compile(PGConstants.CVV_REGEX).matcher(transactionRequest.getCardData().getCvv()).matches()
+				|| transactionRequest.getCardData().getCvv().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0156);
+		} else if (isNotValidCardUid(transactionRequest)) {
+			throw new InvalidRequestException(PGConstants.TXN_0158);
+		} else if (isValidExpDate(transactionRequest)) {
+			throw new InvalidRequestException(PGConstants.TXN_0157);
+		} else if (!Pattern.compile(PGConstants.CARD_NUMBER_REGEX)
+				.matcher(transactionRequest.getCardData().getCardNumber()).matches()
+				|| transactionRequest.getCardData().getCardNumber().startsWith("0")) {
+			throw new InvalidRequestException(PGConstants.TXN_0155);
+		}
+	}
+
+	private boolean isValidExpDate(TransactionRequest transactionRequest) {
+		String expDate = transactionRequest.getCardData().getExpDate();
+		int expMonth = Integer.parseInt(expDate.substring(2));
+		return !Pattern.compile(PGConstants.EXP_DATE_REGEX).matcher(expDate).matches() || expDate.startsWith("0")
+				|| expMonth < 1 || expMonth > 12;
+	}
+
+	private boolean isInvalidData(String track2) {
+		return (!(track2 == null || track2.equals("")));
+	}
+
+	private boolean isValidTransactionType(TransactionRequest transactionRequest) {
+		for (TransactionType type : TransactionType.values()) {
+			if (type.name().equals(transactionRequest.getTransactionType().toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isValidEntryMode(TransactionRequest transactionRequest) {
+		for (EntryModeEnum type : EntryModeEnum.values()) {
+			if (type.name().equals(transactionRequest.getEntryMode().toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

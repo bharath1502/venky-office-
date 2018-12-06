@@ -58,11 +58,18 @@ public class PGSplitTransactionServiceImplTest {
 	@Mock
 	RefundTransactionDao refundTransactionDao;
 
-	@Test(expected = SplitTransactionException.class)
+	@Mock
+	SplitTxnData splitTxnData;
+
+	@Test
 	public void testProcessLogSplitTransactionSplitPay() throws SplitTransactionException {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		TransactionResponse transactionResponse = new TransactionResponse();
 		transactionRequest.setShareMode(ShareModeEnum.SPLIT_PAY);
+		splitTxnData = new SplitTxnData();
+		splitTxnData.setSplitAmount(1l);
+		splitTxnData.setRefMobileNumber(1l);
+		transactionRequest.setSplitTxnData(splitTxnData);
 		pgSplitTransactionServiceImpl.processLogSplitTransaction(transactionRequest, transactionResponse);
 	}
 

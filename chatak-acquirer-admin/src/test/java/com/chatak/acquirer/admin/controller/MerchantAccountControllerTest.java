@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -41,8 +42,8 @@ import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.MerchantAccountSearchDto;
 import com.chatak.pg.user.bean.MerchantDetailsForAccountCreate;
 import com.chatak.pg.user.bean.MerchantDetailsForAccountResponse;
-import com.chatak.pg.util.Constants;
 
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class MerchantAccountControllerTest {
 
@@ -136,7 +137,7 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantDetailsResponse);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("entityType", Constants.TYPE_MERCHANT))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("entityType", TestConstants.TYPE_MERCHANT))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -154,7 +155,7 @@ public class MerchantAccountControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("entityType", Constants.TYPE_MERCHANT))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("entityType", TestConstants.TYPE_MERCHANT))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -170,8 +171,8 @@ public class MerchantAccountControllerTest {
       Mockito.when(merchantValidateService.getFeeProgramNames()).thenReturn(optionList);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("entityType", Constants.TYPE_MERCHANT)
-              .header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("entityType", TestConstants.TYPE_MERCHANT)
+              .header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_CREATE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testShowMerchantAccountCreatePage | Exception ",
@@ -185,8 +186,8 @@ public class MerchantAccountControllerTest {
       Mockito.when(merchantUpdateService.getCountries()).thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_CREATE_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("entityType", Constants.TYPE_MERCHANT)
-              .header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("entityType", TestConstants.TYPE_MERCHANT)
+              .header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_CREATE));
     } catch (Exception e) {
       logger.error(
@@ -204,8 +205,8 @@ public class MerchantAccountControllerTest {
           Matchers.anyLong())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("entityType", Constants.TYPE_MERCHANT)
-              .param("merchantType", Constants.TYPE_MERCHANT).header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("entityType", TestConstants.TYPE_MERCHANT)
+              .param("merchantType", TestConstants.TYPE_MERCHANT).header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testCreateMerchantAccount | Exception ", e);
@@ -227,8 +228,8 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantDetailsResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("entityType", Constants.TYPE_MERCHANT)
-              .param("merchantType", "Reseller").header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("entityType", TestConstants.TYPE_MERCHANT)
+              .param("merchantType", "Reseller").header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testCreateMerchantAccountElse | Exception ", e);
@@ -244,8 +245,8 @@ public class MerchantAccountControllerTest {
           Matchers.anyLong())).thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("entityType", Constants.TYPE_MERCHANT)
-              .param("merchantType", "Reseller").header(Constants.REFERER, Constants.REFERER))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("entityType", TestConstants.TYPE_MERCHANT)
+              .param("merchantType", "Reseller").header(TestConstants.REFERER, TestConstants.REFERER))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_CREATE));
     } catch (Exception e) {
       logger.error(
@@ -258,7 +259,7 @@ public class MerchantAccountControllerTest {
     merchantAccountSearchResponse = new MerchantAccountSearchResponse();
     merchantAccountSearchDtoList.add(merchantAccountSearchDto);
     merchantAccountSearchResponse.setMerchantAccountSearchDtoList(merchantAccountSearchDtoList);
-    merchantAccountSearchResponse.setTotalNoOfRows(Constants.TEN);
+    merchantAccountSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(merchantAccountService.searchMerchantAccount(
@@ -266,8 +267,8 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantAccountSearchResponse);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(Constants.PAGE_SIZE,
-                  Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(TestConstants.PAGE_SIZE,
+                  TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testShowMerchantAccountSearchPage | Exception ",
@@ -284,8 +285,8 @@ public class MerchantAccountControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(Constants.PAGE_SIZE,
-                  Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(TestConstants.PAGE_SIZE,
+                  TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -299,7 +300,7 @@ public class MerchantAccountControllerTest {
     merchantAccountSearchResponse = new MerchantAccountSearchResponse();
     merchantAccountSearchDtoList.add(merchantAccountSearchDto);
     merchantAccountSearchResponse.setMerchantAccountSearchDtoList(merchantAccountSearchDtoList);
-    merchantAccountSearchResponse.setTotalNoOfRows(Constants.TEN);
+    merchantAccountSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(merchantAccountService.searchMerchantAccount(
@@ -307,8 +308,8 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantAccountSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(Constants.PAGE_SIZE,
-                  Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(TestConstants.PAGE_SIZE,
+                  TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testMerchantAccountSearch | Exception ", e);
@@ -324,8 +325,8 @@ public class MerchantAccountControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(Constants.PAGE_SIZE,
-                  Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(TestConstants.PAGE_SIZE,
+                  TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -338,7 +339,7 @@ public class MerchantAccountControllerTest {
     merchantAccountSearchResponse = new MerchantAccountSearchResponse();
     merchantAccountSearchDtoList.add(merchantAccountSearchDto);
     merchantAccountSearchResponse.setMerchantAccountSearchDtoList(merchantAccountSearchDtoList);
-    merchantAccountSearchResponse.setTotalNoOfRows(Constants.TEN);
+    merchantAccountSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(merchantAccountService.searchMerchantAccount(
@@ -346,10 +347,10 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantAccountSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-              .param(Constants.PAGE_NUMBER, Constants.TEN.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.TEN.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
               .param("sortProperty", "sortProperty"))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
@@ -367,10 +368,10 @@ public class MerchantAccountControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-              .param(Constants.PAGE_NUMBER, Constants.TEN.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.TEN.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
               .param("sortProperty", "sortProperty"))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
@@ -392,8 +393,8 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantDetailsResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -411,8 +412,8 @@ public class MerchantAccountControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -426,7 +427,7 @@ public class MerchantAccountControllerTest {
     merchantDetailsResponse = new MerchantDetailsForAccountResponse();
     merchantDetailsList.add(merchantDetailsForAccountCreate);
     merchantDetailsResponse.setMerchantDetailsList(merchantDetailsList);
-    merchantDetailsResponse.setTotalRecords(Constants.TEN);
+    merchantDetailsResponse.setTotalRecords(TestConstants.TEN);
     try {
       Mockito
           .when(merchantAccountService
@@ -434,9 +435,9 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantDetailsResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANTDETAILS_ACCOUNT_CREATE_PAGINATION)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANTS_MODEL, merchant)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANTS_MODEL, merchant)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -454,9 +455,9 @@ public class MerchantAccountControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANTDETAILS_ACCOUNT_CREATE_PAGINATION)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANTS_MODEL, merchant)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANTS_MODEL, merchant)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE));
     } catch (Exception e) {
       logger.error(
@@ -470,9 +471,9 @@ public class MerchantAccountControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_STATUS_CHANGE)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANTS_MODEL, merchant)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).param("merchantType", Constants.TYPE_MERCHANT))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANTS_MODEL, merchant)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).param("merchantType", TestConstants.TYPE_MERCHANT))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testChangeAccountStatus | Exception ", e);
@@ -484,9 +485,9 @@ public class MerchantAccountControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_STATUS_CHANGE)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANTS_MODEL, merchant)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).param("merchantType", "Seller"))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANTS_MODEL, merchant)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).param("merchantType", "Seller"))
           .andExpect(view().name(URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testChangeAccountStatusElse | Exception ", e);
@@ -498,9 +499,9 @@ public class MerchantAccountControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_EDIT)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANTS_MODEL, merchant)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).param("merchantType", Constants.TYPE_MERCHANT))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANTS_MODEL, merchant)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).param("merchantType", TestConstants.TYPE_MERCHANT))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testUpdateMerchantAccount | Exception ", e);
@@ -512,9 +513,9 @@ public class MerchantAccountControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_EDIT)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANTS_MODEL, merchant)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).param("merchantType", "Seller"))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANTS_MODEL, merchant)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).param("merchantType", "Seller"))
           .andExpect(view().name(URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testUpdateMerchantAccountElse | Exception ", e);
@@ -530,9 +531,9 @@ public class MerchantAccountControllerTest {
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_EDIT_PAGE)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANTS_MODEL, merchant)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).param("merchantType", "Seller"))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANTS_MODEL, merchant)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).param("merchantType", "Seller"))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_EDIT));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testMerchantAccountEditPage | Exception ", e);
@@ -546,9 +547,9 @@ public class MerchantAccountControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_EDIT_PAGE)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANTS_MODEL, merchant)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString()).param("merchantType", "Seller"))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANTS_MODEL, merchant)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString()).param("merchantType", "Seller"))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_EDIT));
     } catch (Exception e) {
       logger.error(
@@ -561,17 +562,17 @@ public class MerchantAccountControllerTest {
     merchantAccountSearchResponse = new MerchantAccountSearchResponse();
     merchantAccountSearchDtoList.add(merchantAccountSearchDto);
     merchantAccountSearchResponse.setMerchantAccountSearchDtoList(merchantAccountSearchDtoList);
-    merchantAccountSearchResponse.setTotalNoOfRows(Constants.TEN);
+    merchantAccountSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(merchantAccountService.searchMerchantAccount(
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenReturn(merchantAccountSearchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_REPORT)
-          .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param(Constants.DOWNLOAD_TYPE, "XLS")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param(TestConstants.DOWNLOAD_TYPE, "XLS")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testDownloadMerchantAccountReport | Exception ",
           e);
@@ -583,17 +584,17 @@ public class MerchantAccountControllerTest {
     merchantAccountSearchResponse = new MerchantAccountSearchResponse();
     merchantAccountSearchDtoList.add(merchantAccountSearchDto);
     merchantAccountSearchResponse.setMerchantAccountSearchDtoList(merchantAccountSearchDtoList);
-    merchantAccountSearchResponse.setTotalNoOfRows(Constants.TEN);
+    merchantAccountSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito
           .when(merchantAccountService.searchMerchantAccount(
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenReturn(merchantAccountSearchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_REPORT)
-          .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param(Constants.DOWNLOAD_TYPE, "PDF")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param(TestConstants.DOWNLOAD_TYPE, "PDF")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountControllerTest | testDownloadMerchantAccountReportPDF | Exception ", e);
@@ -608,10 +609,10 @@ public class MerchantAccountControllerTest {
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_ACCOUNT_SEARCH_REPORT)
-          .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("downLoadPageNumber", Constants.ONE.toString()).param(Constants.DOWNLOAD_TYPE, "PDF")
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true"));
+          .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("downLoadPageNumber", TestConstants.ONE.toString()).param(TestConstants.DOWNLOAD_TYPE, "PDF")
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountControllerTest | testDownloadMerchantAccountReportException | Exception ",
@@ -642,7 +643,7 @@ public class MerchantAccountControllerTest {
     merchantAccountSearchResponse = new MerchantAccountSearchResponse();
     merchantAccountSearchDtoList.add(merchantAccountSearchDto);
     merchantAccountSearchResponse.setMerchantAccountSearchDtoList(merchantAccountSearchDtoList);
-    merchantAccountSearchResponse.setTotalNoOfRows(Constants.TEN);
+    merchantAccountSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(merchantAccountService.getMerchantMapByMerchantType(Matchers.anyString()))
           .thenReturn(merchantDataMap);
@@ -651,10 +652,10 @@ public class MerchantAccountControllerTest {
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenReturn(merchantAccountSearchResponse);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE)
-          .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()));
+          .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountControllerTest | testShowSubMerchantAccountSearchPage | Exception ", e);
@@ -671,10 +672,10 @@ public class MerchantAccountControllerTest {
               Matchers.any(MerchantAccountSearchDto.class), Matchers.anyMap()))
           .thenReturn(merchantAccountSearchResponse);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE)
-          .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()));
+          .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error(
           "MerchantAccountControllerTest | testShowSubMerchantAccountSearchPageException | Exception ",
@@ -687,7 +688,7 @@ public class MerchantAccountControllerTest {
     merchantAccountSearchResponse = new MerchantAccountSearchResponse();
     merchantAccountSearchDtoList.add(merchantAccountSearchDto);
     merchantAccountSearchResponse.setMerchantAccountSearchDtoList(merchantAccountSearchDtoList);
-    merchantAccountSearchResponse.setTotalNoOfRows(Constants.TEN);
+    merchantAccountSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(merchantAccountService.getMerchantMapByMerchantType(Matchers.anyString()))
           .thenReturn(merchantDataMap);
@@ -697,10 +698,10 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantAccountSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-              .param("downLoadPageNumber", Constants.ONE.toString())
-              .param(Constants.PAGE_SIZE, Constants.ONE.toString()))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+              .param("downLoadPageNumber", TestConstants.ONE.toString())
+              .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("MerchantAccountControllerTest | testSearchSubMerchantAccount | Exception ", e);
@@ -718,10 +719,10 @@ public class MerchantAccountControllerTest {
           .thenReturn(merchantAccountSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE)
-              .header(Constants.REFERER, Constants.REFERER).sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
-              .param("downLoadPageNumber", Constants.ONE.toString())
-              .param(Constants.PAGE_SIZE, Constants.ONE.toString()))
+              .header(TestConstants.REFERER, TestConstants.REFERER).sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MERCHANT_ACCOUNT_SEARCH_MODEL, merchantAccountSearchDto)
+              .param("downLoadPageNumber", TestConstants.ONE.toString())
+              .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error(

@@ -114,7 +114,7 @@
 								</form:form>
 
 								<!-- Page Form Start -->
-								<form:form action="updateMerchant" commandName="merchant"
+								<form:form action="updateMerchant" modelAttribute="merchant"
 									name="merchant">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
@@ -452,7 +452,7 @@
 														<input type="button"
 															class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="goToMerchantSearch()">
+															onclick="goToSubMerchantSearch()">
 													</fieldset>
 												</div>
 												<div class="col-sm-12 button-content subMerchantDiv1"
@@ -644,7 +644,7 @@
 														<input type="button"
 															class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="goToMerchantSearch()">
+															onclick="goToSubMerchantSearch()">
 													</fieldset>
 												</div>
 												<div class="col-sm-12 button-content subMerchantDiv1"

@@ -306,7 +306,7 @@ public class MerchantControllerTest {
     merchantSearchResponse.setSubMerchants(merchantsData);
     merchantSearchResponse.setTotalNoOfRows(Integer.parseInt("1"));
     try {
-      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(merchantSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_MERCHANT)
@@ -321,7 +321,7 @@ public class MerchantControllerTest {
   @Test
   public void testSearchMerchantException() {
     try {
-      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_SEARCH_MERCHANT)
@@ -409,7 +409,7 @@ public class MerchantControllerTest {
     merchantSearchResponse.setSubMerchants(merchantsData);
     merchantSearchResponse.setTotalNoOfRows(Integer.parseInt("1"));
     try {
-      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenReturn(merchantSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANTS_PAGINATION)
@@ -426,7 +426,7 @@ public class MerchantControllerTest {
   public void testGetPaginationListException() {
     merchant = new Merchant();
     try {
-      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class)))
+      Mockito.when(merchantUpdateService.searchMerchant(Matchers.any(Merchant.class), Matchers.anyString(), Matchers.anyLong()))
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANTS_PAGINATION)

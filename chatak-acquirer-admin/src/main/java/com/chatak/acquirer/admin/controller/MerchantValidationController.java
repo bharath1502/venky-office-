@@ -361,13 +361,6 @@ public class MerchantValidationController implements URLMappingConstants {
     String declineReason = request.getParameter("declineReason");
     logger.info("Entering :: MerchantValidationController :: updateMerchant method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_HOME);
-
-    String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
-    if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_MERCHANT_DELETE_FEATURE_ID)) {
-      session.invalidate();
-      modelAndView.setViewName(INVALID_REQUEST_PAGE);
-      return modelAndView;
-    }
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
     merchant.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
@@ -403,7 +396,13 @@ public class MerchantValidationController implements URLMappingConstants {
   }
 
   private void validateStatusPendingandDecline(HttpSession session, ModelAndView modelAndView) {
-	List<Merchant> merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+	LoginResponse loginResponse = (LoginResponse) session.getAttribute("loginResponse");
+	List<Merchant> merchants = new ArrayList<>();
+	if(loginResponse != null && loginResponse.getUserType().equals(PGConstants.ADMIN)){
+	      merchants = merchantUpdateService.getMerchantByStatusPendingandDecline();
+	  } else if (loginResponse != null && loginResponse.getUserType().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+		  merchants = merchantUpdateService.getPmMerchantByEntityIdandEntityType(loginResponse.getEntityId(), loginResponse.getUserType());
+	}
 	setSessionValue(session, merchants);
 	modelAndView.setViewName(CHATAK_ADMIN_HOME);
 	modelAndView.addObject(Constants.MERCHANT_SUB_LIST, merchants);
@@ -475,7 +474,7 @@ public class MerchantValidationController implements URLMappingConstants {
     try {
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject("countryList", countryList);
-      session.setAttribute("countryList", countryList);
+      session.setAttribute("countryList",new ArrayList(countryList));
       merchant.setId(getParentMerchantId);
       session.setAttribute("updateMerchantId", getParentMerchantId);
       merchant = merchantValidateService.getMerchant(merchant);
@@ -487,25 +486,25 @@ public class MerchantValidationController implements URLMappingConstants {
         List<Option> options =
             merchantValidateService.getFeeProgramNamesForEdit(merchant.getFeeProgram());
         modelAndView.addObject("feeprogramnames", options);
-        session.setAttribute("feeprogramnames", options);
+        session.setAttribute("feeprogramnames",new ArrayList(options));
 
         Response stateList = merchantUpdateService.getStatesByCountry(merchant.getCountry());
         modelAndView.addObject("stateList", stateList.getResponseList());
-        session.setAttribute("stateList", stateList.getResponseList());
+        session.setAttribute("stateList", new ArrayList(stateList.getResponseList()));
 
         stateList = merchantUpdateService.getStatesByCountry(merchant.getBankCountry());
         modelAndView.addObject("bankStateList", stateList.getResponseList());
-        session.setAttribute("bankStateList", stateList.getResponseList());
+        session.setAttribute("bankStateList", new ArrayList(stateList.getResponseList()));
 
         Response agentnamesList = merchantUpdateService.getAgentNames(merchant.getLocalCurrency());
         if (agentnamesList != null) {
           modelAndView.addObject(Constants.AGENT_NAMES_LIST, agentnamesList.getResponseList());
-          session.setAttribute(Constants.AGENT_NAMES_LIST, agentnamesList.getResponseList());
+          session.setAttribute(Constants.AGENT_NAMES_LIST, new ArrayList(agentnamesList.getResponseList()));
         }
 
         stateList = merchantUpdateService.getStatesByCountry(merchant.getLegalCountry());
         modelAndView.addObject("legalStateList", stateList.getResponseList());
-        session.setAttribute("legalStateList", stateList.getResponseList());
+        session.setAttribute("legalStateList", new ArrayList(stateList.getResponseList()));
 
         modelAndView.addObject(Constants.MERCHANT, merchant);
         processorNames = merchantValidateService.getProcessorNames();
@@ -567,6 +566,7 @@ public class MerchantValidationController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_MERCHANT);
     Merchant merchant = null;
     MerchantSearchResponse searchResponse = null;
+    LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     try {
       merchant = (Merchant) session.getAttribute(Constants.MERCHANTS_MODEL);
       merchant.setPageIndex(downLoadPageNumber);
@@ -575,7 +575,7 @@ public class MerchantValidationController implements URLMappingConstants {
         merchant.setPageIndex(Constants.ONE);
         merchant.setPageSize(totalRecords);
       }
-      searchResponse = merchantUpdateService.searchMerchant(merchant);
+      searchResponse = merchantUpdateService.searchMerchant(merchant, loginResponse.getUserType(), loginResponse.getEntityId());
       List<MerchantCreateResponse> list = searchResponse.getMerchantCreateResponses();
       ExportDetails exportDetails = new ExportDetails();
       if (StringUtil.isListNotNullNEmpty(list)) {
@@ -614,15 +614,10 @@ public class MerchantValidationController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("currency-search-page.label.currencycode", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant.label.entitytype", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant.label.entityname", null,
-                LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant-file-exportutil-phone", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant-file-exportutil-email", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("admin.cardprogramname", null, LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant-file-exportutil-country", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant-file-exportutil-status", null,
@@ -633,21 +628,18 @@ public class MerchantValidationController implements URLMappingConstants {
   private static List<Object[]> getRoleFileData(List<MerchantCreateResponse> merchantData) {
     List<Object[]> fileData = new ArrayList<Object[]>();
     for (MerchantCreateResponse merData : merchantData) {
-      Object[] rowData = new Object[Integer.parseInt("10")];
+      Object[] rowData = new Object[Integer.parseInt("7")];
       rowData[0] = merData.getMerchantCode();
       rowData[1] = merData.getBusinessName();
       rowData[Integer.parseInt("2")] = merData.getLocalCurrency();
-      rowData[Integer.parseInt("3")] = merData.getEntityType();
-      rowData[Integer.parseInt("4")] = merData.getEntityName();
       if (merData.getPhone() != null) {
-        rowData[Integer.parseInt("5")] = merData.getPhone();
+        rowData[Integer.parseInt("3")] = merData.getPhone();
       } else {
-        rowData[Integer.parseInt("5")] = " ";
+        rowData[Integer.parseInt("3")] = " ";
       }
-      rowData[Integer.parseInt("6")] = merData.getEmailId();
-      rowData[Integer.parseInt("7")] = merData.getCardProgramName();
-      rowData[Integer.parseInt("8")] = merData.getCountry();
-      rowData[Integer.parseInt("9")] = merData.getStatus();
+      rowData[Integer.parseInt("4")] = merData.getEmailId();
+      rowData[Integer.parseInt("5")] = merData.getCountry();
+      rowData[Integer.parseInt("6")] = merData.getStatus();
       fileData.add(rowData);
     }
     return fileData;
@@ -690,7 +682,11 @@ public class MerchantValidationController implements URLMappingConstants {
            programManagerResponse = isoService.findISONameByAccountCurrency(currencyId);
        }        
       }else if(userType.equals(Constants.PM_USER_TYPE)){
-        programManagerResponse = programManagerService.findByProgramManagerIdAndAccountCurrency(loginResponse.getEntityId(), currencyId);
+    	if(null != entityType && entityType.equals(PGConstants.PROGRAM_MANAGER_NAME)) {
+           programManagerResponse = programManagerService.findByProgramManagerIdAndAccountCurrency(loginResponse.getEntityId(), currencyId);
+		 } else {
+			 programManagerResponse = isoService.findIsoNameByProgramManagerId(loginResponse.getEntityId());
+		 }
       }
       
       if (programManagerResponse != null) {

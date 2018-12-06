@@ -102,8 +102,8 @@ public class FeeReportDaoImpl implements FeeReportDao {
 			Query feeReportParam = entityManager.createNativeQuery(feeReportBuilder.toString());
 			feeReportParam.setParameter("pmId", feeReportRequest.getProgramManagerId());
 			feeReportParam.setParameter(TRANSACTION_CODES, feeReportRequest.getTransactionCodeList());
-			feeReportParam.setParameter(START_DATE, feeReportRequest.getFromDate());
-			feeReportParam.setParameter(END_DATE, feeReportRequest.getToDate());
+			feeReportParam.setParameter(START_DATE, DateUtil.getStartDayTimestamp(feeReportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
+			feeReportParam.setParameter(END_DATE, DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY));
 			feeReportParam.setParameter("offset", offset);
 			feeReportParam.setParameter("limit", limit);
 			List<Object> objectList = feeReportParam.getResultList();
@@ -148,8 +148,8 @@ public class FeeReportDaoImpl implements FeeReportDao {
 				Query isoFeeReportParam = entityManager.createNativeQuery(feeReportBuilder.toString());
 				isoFeeReportParam.setParameter("isoId", feeReportRequest.getIsoId());
 				isoFeeReportParam.setParameter(TRANSACTION_CODES, feeReportRequest.getTransactionCodeList());
-				isoFeeReportParam.setParameter(START_DATE, StringUtil.isNullAndEmpty(feeReportRequest.getFromDate())?null:feeReportRequest.getFromDate());
-				isoFeeReportParam.setParameter(END_DATE, StringUtil.isNullAndEmpty(feeReportRequest.getToDate())?null:feeReportRequest.getToDate());
+				isoFeeReportParam.setParameter(START_DATE, StringUtil.isNullAndEmpty(feeReportRequest.getFromDate())?null:DateUtil.getStartDayTimestamp(feeReportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
+				isoFeeReportParam.setParameter(END_DATE, StringUtil.isNullAndEmpty(feeReportRequest.getToDate())?null:DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY));
 				List<Object> objectList = isoFeeReportParam.getResultList();
 				Iterator<Object> itr = objectList.iterator();
 				if(StringUtil.isListNotNullNEmpty(objectList)) {
@@ -188,8 +188,8 @@ public class FeeReportDaoImpl implements FeeReportDao {
 			Query qry = entityManager.createNativeQuery(feeReportBuilder.toString());
 			qry.setParameter("pmId", feeReportRequest.getProgramManagerId());
 			qry.setParameter(TRANSACTION_CODES, feeReportRequest.getTransactionCodeList());
-			qry.setParameter(START_DATE, feeReportRequest.getFromDate());
-			qry.setParameter(END_DATE, feeReportRequest.getToDate());
+			qry.setParameter(START_DATE, DateUtil.getStartDayTimestamp(feeReportRequest.getFromDate(), PGConstants.DD_MM_YYYY));
+			qry.setParameter(END_DATE, DateUtil.getEndDayTimestamp(feeReportRequest.getToDate(), PGConstants.DD_MM_YYYY));
 			List<Object> objectList = qry.getResultList();
 			logger.info("Exiting :: FeeReportDaoImpl :: getTotalNumberOfFeeReportRecords");
         return (objectList != null && !objectList.isEmpty() ? objectList
@@ -199,16 +199,14 @@ public class FeeReportDaoImpl implements FeeReportDao {
 	@Override
 	public FeeReportResponse fetchISORevenueTransactions(FeeReportRequest feeReportRequest) {
 		logger.info("Entering :: FeeReportDaoImpl :: fetchISORevenueTransactions");
-		
 		Timestamp startDate = null;
 		Timestamp endDate = null;
 		Integer pageIndex = feeReportRequest.getPageIndex();
         
-		// Required for future implementation
-		/*Integer pageSize = feeReportRequest.getPageSize();
+		Integer pageSize = feeReportRequest.getPageSize();
         Integer offset = 0;
-        Integer limit = 0;*/
-        Integer totalRecords;
+        Integer limit = 0;
+        Integer totalRecords = feeReportRequest.getNoOfRecords();
 		FeeReportResponse feeReportResponse = new FeeReportResponse();
 		List<SettlementEntity> feeReportList = new ArrayList<>();
 		try {
@@ -216,15 +214,14 @@ public class FeeReportDaoImpl implements FeeReportDao {
 	            totalRecords = getTotalNumberOfIsoRevenueReportRecords(feeReportRequest);
 	            feeReportRequest.setNoOfRecords(totalRecords);
 	        }
-			
-			// Required for future implementation
-	        /*if (pageIndex == null && pageSize == null) {
+			feeReportResponse.setTotalNoOfRows(totalRecords);
+	        if (pageIndex == null && pageSize == null) {
 	        	offset = 0;
 	        	limit = Constants.DEFAULT_PAGE_SIZE;
 	        } else {
 	            offset = (pageIndex - 1) * pageSize;
 	            limit = pageSize;
-	        }*/
+	        }
 			if (!CommonUtil.isNullAndEmpty(feeReportRequest.getFromDate())) {
 				startDate = DateUtil.getStartDayTimestamp(feeReportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
 			}
@@ -238,6 +235,7 @@ public class FeeReportDaoImpl implements FeeReportDao {
 							.and(isValidDate(startDate, endDate))
 							.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)),
 							 isIsoIdEq(feeReportRequest.getIsoId()))
+							.offset(offset).limit(limit).orderBy(orderByCreatedDateDesc())
 					.list(QPGSettlementEntityHistory.pGSettlementEntityHistory.merchantId,
 							QPGSettlementEntityHistory.pGSettlementEntityHistory.acqSaleAmount,
 							QPGSettlementEntityHistory.pGSettlementEntityHistory.issSaleAmount,
@@ -327,7 +325,7 @@ public class FeeReportDaoImpl implements FeeReportDao {
 		List<Tuple> infoList = query
 				.from(QPGSettlementTransactionHistory.pGSettlementTransactionHistory, QPGTransaction.pGTransaction, QPGSettlementEntityHistory.pGSettlementEntityHistory)
 				.where(isIssuanceSettlementEntityIdIdEq(issuanceSettlementEntityId)
-						.and(QPGTransaction.pGTransaction.transactionId
+						.and(QPGTransaction.pGTransaction.id.stringValue()
 								.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId))
 						.and(QPGSettlementEntityHistory.pGSettlementEntityHistory.id.eq(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuanceSettlementEntityId)))
 				.list(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.terminalId,
@@ -353,7 +351,9 @@ public class FeeReportDaoImpl implements FeeReportDao {
 				settlementEntity.setPgTxnId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.pgTransactionId));
 				settlementEntity.setIssTxnId(tuple.get(QPGSettlementTransactionHistory.pGSettlementTransactionHistory.issuerTxnID));
 				settlementEntity.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
-				settlementEntity.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+				settlementEntity.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(
+						DateUtil.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+								Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
 				settlementEntity.setTransactionType(tuple.get(QPGTransaction.pGTransaction.transactionType));
 				settlementEntity.setTxnTotalAmount(BigDecimal.valueOf(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount)));
 				settlementEntity.setBatchDate(tuple.get(QPGTransaction.pGTransaction.batchDate));
@@ -506,7 +506,7 @@ public class FeeReportDaoImpl implements FeeReportDao {
         Integer pageSize = feeReportRequest.getPageSize();
         Integer offset = 0;
         Integer limit = 0;
-        Integer totalRecords;
+        Integer totalRecords = feeReportRequest.getNoOfRecords();
 		FeeReportResponse feeReportResponse = new FeeReportResponse();
 		List<SettlementEntity> feeReportList = new ArrayList<>();
 		try {
@@ -514,7 +514,7 @@ public class FeeReportDaoImpl implements FeeReportDao {
 	            totalRecords = getTotalNumberOfPmRevenueReportRecords(feeReportRequest);
 	            feeReportRequest.setNoOfRecords(totalRecords);
 	        }
-
+			feeReportResponse.setTotalNoOfRows(totalRecords);
 	        if (pageIndex == null && pageSize == null) {
 	        	offset = 0;
 	        	limit = Constants.DEFAULT_PAGE_SIZE;

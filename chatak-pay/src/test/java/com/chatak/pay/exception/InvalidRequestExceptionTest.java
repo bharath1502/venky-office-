@@ -1,6 +1,7 @@
 package com.chatak.pay.exception;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -9,7 +10,7 @@ import com.chatak.pg.util.Constants;
 
 public class InvalidRequestExceptionTest {
 
-private static Logger logger = Logger.getLogger(InvalidRequestException.class);
+private static Logger logger = LogManager.getLogger(InvalidRequestException.class);
 	
 	
 
@@ -29,7 +30,7 @@ private static Logger logger = Logger.getLogger(InvalidRequestException.class);
 
 	@Test
 	public void testInvalidRequestException() {
-		logger.info("ERROR :: InvalidRequestExceptionTest :: testInvalidRequestException:");
+		logger.info("Info :: InvalidRequestExceptionTest :: testInvalidRequestException method");
 	}
 	
 	@Test

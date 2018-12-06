@@ -77,6 +77,7 @@ h3 {
 
 textarea.form-control{
 	height: 25px;
+	resize: none;
 }
 .form-control {
 	padding: 0 5px;
@@ -100,7 +101,7 @@ textarea.form-control{
 	overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-     width: 185px; 
+     width: 100%; 
 }
 
 .discriptionErrorMsgReset {

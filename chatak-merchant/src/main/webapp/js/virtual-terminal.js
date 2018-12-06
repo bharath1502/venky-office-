@@ -124,7 +124,7 @@ function doAjaxFetchTransactionForRefund() {
 			}
 		},
 		error : function(e) {
-			alert(e);
+			showAlertPopup(e);
 		}
 	});
 }

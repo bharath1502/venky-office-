@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.impl.MerchantUpdateServiceImpl;
 import com.chatak.mailsender.service.MailServiceManagement;
@@ -31,11 +31,10 @@ import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.bean.CountryRequest;
 import com.chatak.pg.bean.CurrencyRequest;
-import com.chatak.pg.model.AgentDTO;
-import com.chatak.pg.model.AgentDTOResponse;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.user.bean.GetMerchantListRequest;
 import com.chatak.pg.user.bean.GetMerchantListResponse;
+import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,6 +76,14 @@ public class MerchantUpdateServiceImplTest {
 	@Mock
 	MerchantUpdateDao merchantUpdateDao;
 
+	@Before
+    public void init() {
+      java.util.Properties propsExportedLocal = new java.util.Properties();
+      propsExportedLocal.setProperty("thread.pool.size", "500");
+      propsExportedLocal.setProperty("thread.max.per.route", "500");
+      Properties.mergeProperties(propsExportedLocal);
+    }
+
 	@Test(expected = NullPointerException.class)
 	public void testSearchMerchant() throws ChatakAdminException {
 		Merchant merchant = new Merchant();
@@ -91,7 +98,7 @@ public class MerchantUpdateServiceImplTest {
 		subMerchants.add(pgMerchant);
 		Mockito.when(subMerchantDao.getMerchantlistOnSubMerchantCode(Matchers.any(GetMerchantListRequest.class)))
 				.thenReturn(getMerchantListResponse);
-		merchantUpdateServiceImpl.searchMerchant(merchant);
+		merchantUpdateServiceImpl.searchMerchant(merchant, "Admin", 1l);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -102,7 +109,7 @@ public class MerchantUpdateServiceImplTest {
 		PGMerchant pgMerchant = new PGMerchant();
 		getMerchantListResponse.setMerchants(pgMerchants);
 		pgMerchants.add(pgMerchant);
-		merchantUpdateServiceImpl.searchMerchant(merchant);
+		merchantUpdateServiceImpl.searchMerchant(merchant, "Admin", 1l);
 	}
 
 	@Test
@@ -290,7 +297,7 @@ public class MerchantUpdateServiceImplTest {
 		pgMerchants.add(pgMerchant);
 		Mockito.when(subMerchantDao.getSubMerchantList(Matchers.any(GetMerchantListRequest.class)))
 				.thenReturn(getMerchantListResponse);
-		merchantUpdateServiceImpl.searchSubMerchants(merchant);
+		merchantUpdateServiceImpl.searchSubMerchants(merchant, "Admin", 1l);
 	}
 
 	@Test
@@ -348,7 +355,7 @@ public class MerchantUpdateServiceImplTest {
 	@Test
 	public void testDistinctList() throws ChatakAdminException {
 		List<Merchant> merchants = new ArrayList<>();
-		merchantUpdateServiceImpl.distinctList(merchants);
+		MerchantUpdateServiceImpl.distinctList(merchants);
 	}
 
 	@Test
@@ -356,25 +363,7 @@ public class MerchantUpdateServiceImplTest {
 		List<Merchant> merchants = new ArrayList<>();
 		Merchant merchant = new Merchant();
 		merchants.add(merchant);
-		merchantUpdateServiceImpl.distinctList(merchants);
-	}
-
-	@Test
-	public void testGetAgentNames() {
-		List<Option> options = new ArrayList<>();
-		List<AgentDTO> agentDTOs = new ArrayList<>();
-		AgentDTO agentDTO = new AgentDTO();
-		agentDTOs.add(agentDTO);
-		AgentDTOResponse agentDTOlist = new AgentDTOResponse();
-		Option option = new Option();
-		options.add(option);
-		agentDTOlist.setAgentDTOlist(agentDTOs);
-		merchantUpdateServiceImpl.getAgentNames("7438");
-	}
-
-	@Test
-	public void testGetAgentNamesException() {
-		merchantUpdateServiceImpl.getAgentNames("7438");
+		MerchantUpdateServiceImpl.distinctList(merchants);
 	}
 
 }

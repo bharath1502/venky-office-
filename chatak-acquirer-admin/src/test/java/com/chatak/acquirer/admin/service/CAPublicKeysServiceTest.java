@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataAccessException;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.CAPublicKeysResponse;
 import com.chatak.acquirer.admin.model.Response;
@@ -22,7 +23,6 @@ import com.chatak.acquirer.admin.service.impl.CAPublicKeysServiceImpl;
 import com.chatak.pg.acq.dao.CAPublicKeysDao;
 import com.chatak.pg.acq.dao.model.PGCaPublicKeys;
 import com.chatak.pg.model.CAPublicKeysDTO;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CAPublicKeysServiceTest {
@@ -48,7 +48,7 @@ public class CAPublicKeysServiceTest {
 
     Mockito.when(caPublicKeysDao.createCAPublicKeys(Matchers.any(PGCaPublicKeys.class)))
         .thenReturn(caPublicKeysDaoDetails);
-    Mockito.when(response.getErrorCode()).thenReturn(Constants.SUCCESS_CODE);
+    Mockito.when(response.getErrorCode()).thenReturn(TestConstants.SUCCESS_CODE);
 
     response = CAPublicKeysService.createCAPublicKeys(caPublicKeysDTO);
     Assert.assertNotNull(response);
@@ -63,7 +63,7 @@ public class CAPublicKeysServiceTest {
 
     Mockito.when(caPublicKeysDao.updateCAPublicKeys(Matchers.any(PGCaPublicKeys.class)))
         .thenReturn(caPublicKeysDaoDetails);
-    Mockito.when(response.getErrorCode()).thenReturn(Constants.SUCCESS_CODE);
+    Mockito.when(response.getErrorCode()).thenReturn(TestConstants.SUCCESS_CODE);
 
     response = CAPublicKeysService.updateCAPublicKeys(caPublicKeysDTO);
     Assert.assertNotNull(response);
@@ -74,8 +74,8 @@ public class CAPublicKeysServiceTest {
   public void caPublicKeysById() {
     PGCaPublicKeys pgCaPublicKeys = Mockito.mock(PGCaPublicKeys.class);
 
-    Mockito.when(caPublicKeysDao.caPublicKeysById(Constants.TWO_LONG)).thenReturn(pgCaPublicKeys);
-    pgCaPublicKeys = CAPublicKeysService.caPublicKeysById(Constants.TWO_LONG);
+    Mockito.when(caPublicKeysDao.caPublicKeysById(TestConstants.TWO_LONG)).thenReturn(pgCaPublicKeys);
+    pgCaPublicKeys = CAPublicKeysService.caPublicKeysById(TestConstants.TWO_LONG);
     Assert.assertNotNull(pgCaPublicKeys);
   }
 
@@ -88,9 +88,9 @@ public class CAPublicKeysServiceTest {
     Mockito.when(caPublicKeysDao.searchCAPublicKeys(Matchers.any(CAPublicKeysDTO.class)))
         .thenReturn(caPublicKeysResponseList);
     Mockito.when(caPublicKeysDTO.getStatus()).thenReturn("0");
-    Mockito.when(caPublicKeysResponse.getErrorCode()).thenReturn(Constants.STATUS_CODE_SUCCESS);
+    Mockito.when(caPublicKeysResponse.getErrorCode()).thenReturn(TestConstants.STATUS_CODE_SUCCESS);
 
-      caPublicKeysResponse = CAPublicKeysService.searchCAPublicKeys(caPublicKeysDTO);
+    caPublicKeysResponse = CAPublicKeysService.searchCAPublicKeys(caPublicKeysDTO);
 
     Assert.assertNotNull(caPublicKeysResponse);
 

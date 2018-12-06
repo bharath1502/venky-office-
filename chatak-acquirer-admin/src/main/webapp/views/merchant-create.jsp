@@ -124,7 +124,7 @@
 								</div>
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-								<form:form action="createMerchant" commandName="merchant" name="merchant">
+								<form:form action="createMerchant" modelAttribute="merchant" name="merchant">
 								<input type="hidden" id="currencyCode" name="currencyCode">
 								<input type="hidden" id="cardProgramIds" name="cardProgramIds">
 								<input type="hidden" id="entitiesId" name="entitiesId">
@@ -415,11 +415,6 @@
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-		$('.effectiveDate').datetimepicker({
-			timepicker : false,
-			format : 'm/d/Y',
-			formatDate : 'Y/m/d',
-		});
 
 		/* DatePicker Javascript End*/
 		$(
@@ -648,6 +643,7 @@
 						getCardProgramByPmId(SelID);
 						entitiesId.push(SelID);
 						entityNameArr.push(SelText);
+						setDiv('programManagerNameIdEr', '');
 					}
 				}				
 			}else if(action == 'REMOVE'){
@@ -707,6 +703,7 @@
 			var selectedId = 'cpId' + cardProgramId + entityId;
 			
 			if($('#' + selectedId).is(":checked")){
+				$('#ambiguityFlag').text('');
 				cardProgramIdList.push(cardProgramId+'@'+entityId);
 				cardProgramArr.push(cardProgramName);
 				selectedCpId.push(parseInt(cardProgramId));

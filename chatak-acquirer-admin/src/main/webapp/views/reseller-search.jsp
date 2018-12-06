@@ -124,7 +124,7 @@
 
 								<!--Success and Failure Message End-->
 								<!-- Page Form Start -->
-							<form:form action="searchReseller" commandName="resellerData" name="resellerData">
+							<form:form action="searchReseller" modelAttribute="resellerData" name="resellerData">
 								 <input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 paddingT20">
 										<div class="row">

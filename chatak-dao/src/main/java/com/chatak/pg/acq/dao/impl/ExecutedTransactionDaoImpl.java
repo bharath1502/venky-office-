@@ -179,7 +179,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
         transactionsReports.setTransactionId(tuple.get(QPGTransaction.pGTransaction.transactionId));
         transactionsReports.setDateTime(DateUtil.toDateStringFormat(
             tuple.get(QPGTransaction.pGTransaction.createdDate), PGConstants.DATE_FORMAT));
-        transactionsReports.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+        transactionsReports.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+    		.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+				Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
         transactionsReports.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
         transactionsReports.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
         statusMsg = getStatusMessage(tuple);
@@ -198,18 +200,18 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	    .setTransactionAmount((tuple.get(QPGTransaction.pGTransaction.txnAmount) != null)
 	        ? tuple.get(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha) + " "
 	            + StringUtils.amountToString(
-	                tuple.get(QPGTransaction.pGTransaction.txnAmount).longValue())
+	                tuple.get(QPGTransaction.pGTransaction.txnAmount))
 	        : tuple.get(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha) + "0.00");
 	txnDto
 	    .setFee_amount((tuple.get(QPGTransaction.pGTransaction.feeAmount) != null)
 	        ? tuple.get(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha) + " "
 	            + StringUtils.amountToString(
-	                tuple.get(QPGTransaction.pGTransaction.feeAmount).longValue())
+	                tuple.get(QPGTransaction.pGTransaction.feeAmount))
 	        : tuple.get(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha) + "0.00");
 	txnDto.setTxn_total_amount((tuple.get(QPGTransaction.pGTransaction.txnTotalAmount) != null)
 	    ? tuple.get(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha) + " "
 	        + StringUtils.amountToString(
-	            tuple.get(QPGTransaction.pGTransaction.txnTotalAmount).longValue())
+	            tuple.get(QPGTransaction.pGTransaction.txnTotalAmount))
 	    : tuple.get(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha) + "0.00");
 	txnDto.setProcessor(((tuple.get(QPGTransaction.pGTransaction.processor) != null)
 	    ? tuple.get(QPGTransaction.pGTransaction.processor) : ""));
@@ -251,7 +253,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	    ? tuple.get(QPGTransaction.pGTransaction.acqChannel) : ""));
 	txnDto.setTransactionDate(DateUtil.toDateStringFormat(
 	    tuple.get(QPGTransaction.pGTransaction.createdDate), PGConstants.DATE_FORMAT));
-	txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	txnDto.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		  .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+			Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
 	txnDto.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
 	txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
   }
@@ -377,7 +381,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
               .setParentMerchantId(tuple.get(QPGAccountFeeLog.pGAccountFeeLog.parentEntityId));
           transactionsReports
               .setTotalTxnAmount(tuple.get(QPGTransaction.pGTransaction.txnAmount).toString());
-          transactionsReports.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+          transactionsReports.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+    		  .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+				  Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
           transactionsReports.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
           transactionsReports.setNoOfRecords(totalRecords);
           statusMsg = getStatusMessage(tuple);
@@ -453,7 +459,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
               .setParentMerchantId(tuple.get(QPGAccountFeeLog.pGAccountFeeLog.parentEntityId));
           transactionsReports
               .setTotalTxnAmount(tuple.get(QPGTransaction.pGTransaction.txnAmount).toString());
-          transactionsReports.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+          transactionsReports.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+    		  .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+				  Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
           transactionsReports.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
           statusMsg = getStatusMessage(tuple);
           setTxnPopUpData(txnDto, tuple);
@@ -511,12 +519,12 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
   private void setTxnPopUpDetails(TransactionPopUpDataDto txnDto, String statusMsg, Tuple tuple) {
 	txnDto.setFee_amount((tuple.get(QPGTransaction.pGTransaction.feeAmount) != null)
 	      ? PGConstants.DOLLAR_SYMBOL + StringUtils
-	          .amountToString(tuple.get(QPGTransaction.pGTransaction.feeAmount).longValue())
+	          .amountToString(tuple.get(QPGTransaction.pGTransaction.feeAmount))
 	      : PGConstants.DOLLAR_SYMBOL + "0.00");
 	  txnDto
 	      .setTxn_total_amount((tuple.get(QPGTransaction.pGTransaction.txnTotalAmount) != null)
 	          ? PGConstants.DOLLAR_SYMBOL + StringUtils.amountToString(
-	              tuple.get(QPGTransaction.pGTransaction.txnTotalAmount).longValue())
+	              tuple.get(QPGTransaction.pGTransaction.txnTotalAmount))
 	          : PGConstants.DOLLAR_SYMBOL + "0.00");
 	  txnDto.setProcessor(((tuple.get(QPGTransaction.pGTransaction.processor) != null)
 	      ? tuple.get(QPGTransaction.pGTransaction.processor) : ""));
@@ -561,9 +569,11 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	      ? tuple.get(QPGTransaction.pGTransaction.acqChannel) : ""));
 	  txnDto.setTransactionAmount((tuple.get(QPGTransaction.pGTransaction.txnAmount) != null)
 	      ? PGConstants.DOLLAR_SYMBOL + StringUtils
-	          .amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount).longValue())
+	          .amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))
 	      : PGConstants.DOLLAR_SYMBOL + "0.00");
-	  txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	  txnDto.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		  .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+			  Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
   }
 
   private void setTransactionPopUpData(TransactionPopUpDataDto txnDto, Tuple tuple) {
@@ -591,7 +601,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	      ? tuple.get(QPGTransaction.pGTransaction.acqChannel) : ""));
 	  txnDto.setTransactionDate(DateUtil.toDateStringFormat(
 	      tuple.get(QPGTransaction.pGTransaction.createdDate), PGConstants.DATE_FORMAT));
-	  txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	  txnDto.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		    .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+			  Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
 	  txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
   }
 
@@ -600,19 +612,19 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	      .setTransactionAmount((tuple.get(QPGTransaction.pGTransaction.txnAmount) != null)
 	          ? tuple.get(QPGAccount.pGAccount.currency) + " "
 	              + StringUtils.amountToString(
-	                  tuple.get(QPGTransaction.pGTransaction.txnAmount).longValue())
+	                  tuple.get(QPGTransaction.pGTransaction.txnAmount))
 	          : PGConstants.DOLLAR_SYMBOL + "0.00");
 	  txnDto
 	      .setFee_amount((tuple.get(QPGTransaction.pGTransaction.feeAmount) != null)
 	          ? tuple.get(QPGAccount.pGAccount.currency) + " "
 	              + StringUtils.amountToString(
-	                  tuple.get(QPGTransaction.pGTransaction.feeAmount).longValue())
+	                  tuple.get(QPGTransaction.pGTransaction.feeAmount))
 	          : PGConstants.DOLLAR_SYMBOL + "0.00");
 	  txnDto
 	      .setTxn_total_amount((tuple.get(QPGTransaction.pGTransaction.txnTotalAmount) != null)
 	          ? tuple.get(QPGAccount.pGAccount.currency) + " "
 	              + StringUtils.amountToString(
-	                  tuple.get(QPGTransaction.pGTransaction.txnTotalAmount).longValue())
+	                  tuple.get(QPGTransaction.pGTransaction.txnTotalAmount))
 	          : PGConstants.DOLLAR_SYMBOL + "0.00");
 	  txnDto.setProcessor(((tuple.get(QPGTransaction.pGTransaction.processor) != null)
 	      ? tuple.get(QPGTransaction.pGTransaction.processor) : ""));
@@ -691,11 +703,11 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
   private void setTransactionPopUpDataDetails(TransactionPopUpDataDto txnDto, String statusMsg, Tuple tuple) {
 	txnDto.setTxn_total_amount((tuple.get(QPGTransaction.pGTransaction.txnTotalAmount) != null)
 	    ? PGConstants.DOLLAR_SYMBOL + StringUtils
-	        .amountToString(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount).longValue())
+	        .amountToString(tuple.get(QPGTransaction.pGTransaction.txnTotalAmount))
 	    : PGConstants.DOLLAR_SYMBOL + "0.00");
 	txnDto.setFee_amount((tuple.get(QPGTransaction.pGTransaction.feeAmount) != null)
 	        ? PGConstants.DOLLAR_SYMBOL + StringUtils
-	            .amountToString(tuple.get(QPGTransaction.pGTransaction.feeAmount).longValue())
+	            .amountToString(tuple.get(QPGTransaction.pGTransaction.feeAmount))
 	        : PGConstants.DOLLAR_SYMBOL + "0.00");
 	txnDto.setProcessor(((tuple.get(QPGTransaction.pGTransaction.processor) != null)
 	    ? tuple.get(QPGTransaction.pGTransaction.processor) : ""));
@@ -740,7 +752,7 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	    tuple.get(QPGTransaction.pGTransaction.createdDate), DateUtil.VIEW_DATE_TIME_FORMAT));
 	txnDto.setTransactionAmount((tuple.get(QPGTransaction.pGTransaction.txnAmount) != null)
 	    ? PGConstants.DOLLAR_SYMBOL + StringUtils
-	        .amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount).longValue())
+	        .amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))
 	    : PGConstants.DOLLAR_SYMBOL + "0.00");
   }
 

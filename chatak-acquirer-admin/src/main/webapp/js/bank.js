@@ -45,7 +45,7 @@ function validContactPersonEmail() {
 
 function validContactPersonName() {
 	var contactName = get('contactName').value.trim();
-	var spaceRegx = /^[a-zA-Z0-9]+(\s{0,1}[a-zA-Z0-9])*$/;
+	var spaceRegx = /^[a-zA-Z]+(\s{0,1}[a-zA-Z])*$/;
 
 	if (isEmpty(contactName)) {
 		setError(get('contactName'), webMessages.pleaseEnterPrimaryContactName);

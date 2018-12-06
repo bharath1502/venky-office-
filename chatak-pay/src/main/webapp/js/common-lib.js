@@ -227,8 +227,6 @@ function validateToDate(divId, errorMsg) {
 		setDiv(divId, "&nbsp;");
 		return flag;
 	}
-	setDiv(divId, "&nbsp;");
-	return flag;
 }
 function validateEndDate(divId, errorMsg) {
 
@@ -426,7 +424,6 @@ function validatePopupDesc() {
 		return true;
 	}
 
-	$('#my_popup').popup('hide');
 }
 
 function clearPopupDesc() {
@@ -582,7 +579,6 @@ var urlQueryString = function() {
 
 function clickIE4() {
 	if (event.button == 2) {
-		alert(message);
 		return false;
 	}
 }
@@ -590,7 +586,6 @@ function clickIE4() {
 function clickNS4(e) {
 	if (document.layers || document.getElementById && !document.all) {
 		if (e.which == 2 || e.which == 3) {
-			alert(message);
 			return false;
 		}
 	}

@@ -6,7 +6,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,7 +15,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
 
 /**
@@ -23,7 +24,7 @@ import org.bouncycastle.util.encoders.Base64;
  */
 public class EncryptionUtil {
   
-  private static Logger logger = Logger.getLogger(EncryptionUtil.class);
+  private static Logger logger = LogManager.getLogger(EncryptionUtil.class);
 
 	private static final String ALGO_MD5 = "MD5";
 
@@ -46,10 +47,11 @@ public class EncryptionUtil {
 	 * 
 	 * @param length
 	 * @return String
+	 * @throws NoSuchAlgorithmException 
 	 */
 	public static String generatePassword(int length) {
 		String charString = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		Random rnd = new Random();
+		SecureRandom rnd = new SecureRandom();
 		StringBuilder sb = new StringBuilder(length);
 		for (int i = 0; i < length; i++) {
 			sb.append(charString.charAt(rnd.nextInt(charString.length())));
@@ -76,10 +78,15 @@ public class EncryptionUtil {
    */
   public static String generatePin(int length) {
     String charString = "0123456789";
-    Random rnd = new Random();
     StringBuilder sb = new StringBuilder(length);
-    for (int i = 0; i < length; i++) {
-      sb.append(charString.charAt(rnd.nextInt(charString.length())));
+    try {
+      SecureRandom rnd = new SecureRandom();
+      for (int i = 0; i < length; i++) {
+        sb.append(charString.charAt(rnd.nextInt(charString.length())));
+      }
+    }
+    catch(Exception e) {
+      logger.error("Error :: EncryptionUtil :: generatePin", e.getMessage());
     }
     return sb.toString();
   }

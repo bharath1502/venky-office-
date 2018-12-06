@@ -2,9 +2,14 @@ package com.chatak.pg.bean;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ForgotPasswordRequest implements Serializable
 {
-  
+
+private static final long serialVersionUID = -3065562472184563112L;
+
 private String userName;
 
 private String email;

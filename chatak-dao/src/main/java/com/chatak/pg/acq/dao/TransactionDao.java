@@ -93,7 +93,7 @@ public interface TransactionDao {
 
 
 
-  public List<Transaction> getTransactions(GetTransactionsListRequest getTransactionsListRequest);
+  public List<Transaction> getTransactions(GetTransactionsListRequest getTransactionsListRequest, Long entityId);
   
   public List<Long> fetchCardProgramDetailsByMerchantCode(TransactionRequest transactionRequest);
   

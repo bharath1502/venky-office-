@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.MessageSource;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.impl.MerchantServiceImpl;
 import com.chatak.mailsender.service.MailServiceManagement;
@@ -29,16 +30,13 @@ import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.SubMerchantDao;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantCurrencyMapping;
-import com.chatak.pg.acq.dao.model.Partner;
 import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.model.MerchantCurrencyMapping;
 import com.chatak.pg.user.bean.AddMerchantRequest;
 import com.chatak.pg.user.bean.AddMerchantResponse;
-import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.user.bean.UpdateMerchantRequest;
 import com.chatak.pg.user.bean.UpdateMerchantResponse;
-import com.chatak.pg.util.Constants;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -98,7 +96,7 @@ public class MerchantServiceImplTest {
 		merchant.setLegalAnnualCard("8935");
 		addMerchantResponse.setMerchantCode("436");
 		addMerchantResponse.setErrorCode("00");
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		merchant.setStatus(0);
 		merchant.setCreatedBy("35");
 		merchant.setSelectedCurrencyMapping(currencyMappingList);
@@ -124,7 +122,7 @@ public class MerchantServiceImplTest {
 		merchant.setLegalAnnualCard("8935");
 		addMerchantResponse.setMerchantCode("436");
 		addMerchantResponse.setErrorCode("00");
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		merchant.setStatus(0);
 		merchant.setCreatedBy("35");
 		merchant.setParentMerchantId(Long.parseLong("643"));
@@ -152,7 +150,7 @@ public class MerchantServiceImplTest {
 		merchant.setLegalAnnualCard("8935");
 		addMerchantResponse.setMerchantCode("436");
 		addMerchantResponse.setErrorCode("00");
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		merchant.setStatus(0);
 		merchant.setCreatedBy("35");
 		merchant.setAutoTransferDay("D");
@@ -180,7 +178,7 @@ public class MerchantServiceImplTest {
 		merchant.setLegalAnnualCard("8935");
 		addMerchantResponse.setMerchantCode("436");
 		addMerchantResponse.setErrorCode("00");
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		merchant.setStatus(0);
 		merchant.setCreatedBy("35");
 		merchant.setSelectedCurrencyMapping(currencyMappingList);
@@ -207,7 +205,7 @@ public class MerchantServiceImplTest {
 		merchant.setLegalAnnualCard("8935");
 		addMerchantResponse.setMerchantCode("436");
 		addMerchantResponse.setErrorCode("00");
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		merchant.setStatus(0);
 		merchant.setCreatedBy("35");
 		merchant.setSelectedCurrencyMapping(currencyMappingList);
@@ -231,7 +229,7 @@ public class MerchantServiceImplTest {
 		merchant.setLegalAnnualCard("8935");
 		addMerchantResponse.setMerchantCode("436");
 		addMerchantResponse.setErrorCode("00");
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		merchant.setStatus(0);
 		merchant.setCreatedBy("35");
 		merchant.setSelectedCurrencyMapping(currencyMappingList);
@@ -241,7 +239,7 @@ public class MerchantServiceImplTest {
 		merchantServiceImpl.addMerchant(merchant, "2111");
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected = NullPointerException.class)
 	public void testAddMerchantException() throws ChatakAdminException {
 		Merchant merchant = new Merchant();
 		merchantServiceImpl.addMerchant(merchant, "2111");
@@ -269,7 +267,7 @@ public class MerchantServiceImplTest {
 		updateMerchantResponse.setDeclined(true);
 		merchant.setStatus(0);
 		merchant.setSessionStatus(Integer.parseInt("2"));
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		updateMerchantResponse.setPassword("4343");
 		merchant.setSelectedCurrencyMapping(currencyMappingList);
 		Mockito.when(merchantUpdateDao.getMerchantByCode(Matchers.anyString())).thenReturn(pgMerchant);
@@ -302,7 +300,7 @@ public class MerchantServiceImplTest {
 		updateMerchantResponse.setDeclined(true);
 		merchant.setStatus(0);
 		merchant.setSessionStatus(Integer.parseInt("2"));
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		updateMerchantResponse.setPassword("4343");
 		merchant.setAutoTransferDay("D");
 		merchant.setSelectedCurrencyMapping(currencyMappingList);
@@ -336,7 +334,7 @@ public class MerchantServiceImplTest {
 		updateMerchantResponse.setDeclined(true);
 		merchant.setStatus(0);
 		merchant.setSessionStatus(Integer.parseInt("2"));
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		updateMerchantResponse.setPassword("4343");
 		merchant.setAutoTransferDay("W");
 		merchant.setSelectedCurrencyMapping(currencyMappingList);
@@ -371,7 +369,7 @@ public class MerchantServiceImplTest {
 		updateMerchantResponse.setDeclined(true);
 		merchant.setStatus(0);
 		merchant.setSessionStatus(Integer.parseInt("2"));
-		merchant.setMerchantType(Constants.TYPE_SUB_MERCHANT);
+		merchant.setMerchantType(TestConstants.TYPE_SUB_MERCHANT);
 		updateMerchantResponse.setPassword("4343");
 		merchant.setAutoTransferLimit(bigDecimal);
 		merchant.setAutoTransferDay("M");

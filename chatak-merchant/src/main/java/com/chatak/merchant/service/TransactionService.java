@@ -57,4 +57,8 @@ public interface TransactionService {
 	public Long findMerchantFeeByMerchantId(String merchantId);
 	
 	public GetTransactionsListResponse searchManulAccountTransactions(GetTransactionsListRequest getTransactionsListRequest);
+	
+	public GetTransactionsListResponse searchAccountTransactionsForEntityId(GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType);
+	
+	public GetTransactionsListResponse searchManualAccountTransactionsForEntityId(GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType);
 }

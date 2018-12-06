@@ -5,9 +5,14 @@ import java.util.List;
 
 import com.chatak.pg.model.AgentDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @SuppressWarnings("rawtypes")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response implements Serializable {
 
   /**
@@ -66,6 +71,38 @@ public class Response implements Serializable {
   private String deviceTimeZoneOffset;
   
   private String deviceTimeZoneRegion;
+  
+  private String txnType;
+  
+  private Long id;
+  
+  private String isoName;
+  
+  private Long isoId;
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getIsoName() {
+    return isoName;
+  }
+
+  public Long getIsoId() {
+    return isoId;
+  }
+
+  public void setIsoName(String isoName) {
+    this.isoName = isoName;
+  }
+
+  public void setIsoId(Long isoId) {
+    this.isoId = isoId;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public List<AgentDTO> getAgentDTOlist() {
     return agentDTOlist;
@@ -394,4 +431,11 @@ public class Response implements Serializable {
     this.deviceTimeZoneRegion = deviceTimeZoneRegion;
   }
 
+  public String getTxnType() {
+    return txnType;
+  }
+
+  public void setTxnType(String txnType) {
+    this.txnType = txnType;
+  }
 }

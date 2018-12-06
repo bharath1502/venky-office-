@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
@@ -45,7 +46,6 @@ import com.chatak.pg.user.bean.GetDailyFundingReportResponse;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.GetTransactionsListResponse;
 import com.chatak.pg.user.bean.Transaction;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BatchScheduleReportControllerTest {
@@ -141,13 +141,13 @@ public class BatchScheduleReportControllerTest {
   @Test
   public void testShowBatchReport() {
     merchantMap = new HashMap<String, String>();
-    merchantMap.put(Constants.ACC_ACTIVE, "Active");
+    merchantMap.put(TestConstants.ACC_ACTIVE, "Active");
     Mockito.when(merchantUpdateService.getMerchantCodeAndCompanyName(Matchers.anyString()))
         .thenReturn(merchantMap);
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_BATCH_REPORT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_BATCH_REPORT));
     } catch (Exception e) {
       logger.error(
@@ -161,7 +161,7 @@ public class BatchScheduleReportControllerTest {
     transactionResponse = new GetTransactionsListResponse();
     transactionList.add(transaction);
     transactionResponse.setTransactionList(transactionList);
-    transactionResponse.setTotalResultCount(Constants.TEN);
+    transactionResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(settlementReportService
             .searchBatchReportTransactions(Matchers.any(GetBatchReportRequest.class)))
@@ -170,7 +170,7 @@ public class BatchScheduleReportControllerTest {
         .thenReturn(responseval);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_GET_BATCH_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("batchReport", "batchReport"))
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("batchReport", "batchReport"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_BATCH_REPORT));
     } catch (Exception e) {
       logger.error(
@@ -183,7 +183,7 @@ public class BatchScheduleReportControllerTest {
   public void testGetBatchReportElse() throws ChatakAdminException {
     transactionResponse = new GetTransactionsListResponse();
     transactionResponse.setTransactionList(transactionList);
-    transactionResponse.setTotalResultCount(Constants.TEN);
+    transactionResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(settlementReportService
             .searchBatchReportTransactions(Matchers.any(GetBatchReportRequest.class)))
@@ -191,7 +191,7 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_GET_BATCH_REPORT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_BATCH_REPORT));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testGetBatchReportElse | Exception "
@@ -208,7 +208,7 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_GET_BATCH_REPORT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_BATCH_REPORT));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testShowBatchReportException | Exception "
@@ -221,7 +221,7 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testShowDailyFundingReport | Exception "
@@ -233,7 +233,7 @@ public class BatchScheduleReportControllerTest {
   public void testGetDailyFundingReport() throws ChatakAdminException {
     getReportResponse = new GetDailyFundingReportResponse();
     getReportResponse.setDailyFundingReport(dailyFundingReportList);
-    getReportResponse.setTotalResultCount(Constants.TEN);
+    getReportResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(batchSchedularService
             .searchDailyFundingReportDetails(Matchers.any(GetDailyFundingReportRequest.class)))
@@ -241,8 +241,8 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_GET_DAILY_FUNDING_REPORT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.DAILY_FUNDING_REQUEST_OBJECT, dailyFundingReport))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.DAILY_FUNDING_REQUEST_OBJECT, dailyFundingReport))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testGetDailyFundingReport | Exception "
@@ -259,8 +259,8 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_GET_DAILY_FUNDING_REPORT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.DAILY_FUNDING_REQUEST_OBJECT, dailyFundingReport))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.DAILY_FUNDING_REQUEST_OBJECT, dailyFundingReport))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT));
     } catch (Exception e) {
       logger.error(
@@ -288,15 +288,15 @@ public class BatchScheduleReportControllerTest {
     transactionList.add(transaction);
     transactionResponse = new GetTransactionsListResponse();
     transactionResponse.setTransactionList(transactionList);
-    transactionResponse.setTotalResultCount(Constants.TEN);
+    transactionResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(settlementReportService
             .searchBatchReportTransactions(Matchers.any(GetBatchReportRequest.class)))
         .thenReturn(transactionResponse);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_BATCH_TRANSACTION_PAGINATION)
-          .sessionAttr(Constants.BATCH_REQUEST_OBJECT, batchReport)
-          .param(Constants.PAGE_NUMBER, "2"));
+          .sessionAttr(TestConstants.BATCH_REQUEST_OBJECT, batchReport)
+          .param(TestConstants.PAGE_NUMBER, "2"));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testGetBatchReportPaginationIf | Exception "
           + e.getMessage(), e);
@@ -307,14 +307,14 @@ public class BatchScheduleReportControllerTest {
   public void testGetBatchReportPagination() throws ChatakAdminException {
     transactionResponse = new GetTransactionsListResponse();
     transactionResponse.setTransactionList(transactionList);
-    transactionResponse.setTotalResultCount(Constants.TEN);
+    transactionResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(settlementReportService
             .searchBatchReportTransactions(Matchers.any(GetBatchReportRequest.class)))
         .thenReturn(transactionResponse);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_BATCH_TRANSACTION_PAGINATION)
-          .sessionAttr(Constants.BATCH_REQUEST_OBJECT, batchReport));
+          .sessionAttr(TestConstants.BATCH_REQUEST_OBJECT, batchReport));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testGetBatchReportPagination | Exception "
           + e.getMessage(), e);
@@ -324,7 +324,7 @@ public class BatchScheduleReportControllerTest {
   @Test
   public void testGetBatchReportPaginationException() throws ChatakAdminException {
     LocaleContextHolder.setLocale(locale);
-    Mockito.when(messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+    Mockito.when(messageSource.getMessage(TestConstants.CHATAK_GENERAL_ERROR, null,
         LocaleContextHolder.getLocale())).thenReturn("abc");
     Mockito
         .when(settlementReportService
@@ -332,7 +332,7 @@ public class BatchScheduleReportControllerTest {
         .thenThrow(nullPointerException);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_BATCH_TRANSACTION_PAGINATION)
-          .sessionAttr(Constants.BATCH_REQUEST_OBJECT, batchReport));
+          .sessionAttr(TestConstants.BATCH_REQUEST_OBJECT, batchReport));
     } catch (Exception e) {
       logger.error(
           "BatchScheduleReportControllerTest | testGetBatchReportPaginationException | Exception "
@@ -352,10 +352,10 @@ public class BatchScheduleReportControllerTest {
         .thenReturn(transactionResponse);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATA_ADMIN_BATCH_TRANSACTION_EXPORT)
-          .sessionAttr(Constants.BATCH_REQUEST_OBJECT, batchReport)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true")
-          .param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.BATCH_REQUEST_OBJECT, batchReport)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true")
+          .param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testDownloadBatchReportXLS | Exception "
           + e.getMessage(), e);
@@ -370,10 +370,10 @@ public class BatchScheduleReportControllerTest {
         .thenThrow(nullPointerException);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATA_ADMIN_BATCH_TRANSACTION_EXPORT)
-          .sessionAttr(Constants.BATCH_REQUEST_OBJECT, batchReport)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true")
-          .param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.BATCH_REQUEST_OBJECT, batchReport)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true")
+          .param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger
           .error("BatchScheduleReportControllerTest | testDownloadBatchReportException | Exception "
@@ -385,7 +385,7 @@ public class BatchScheduleReportControllerTest {
   public void testGetFundingReportPagination() throws ChatakAdminException {
     getReportResponse = new GetDailyFundingReportResponse();
     getReportResponse.setDailyFundingReport(dailyFundingReportList);
-    getReportResponse.setTotalResultCount(Constants.TEN);
+    getReportResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(batchSchedularService
             .searchDailyFundingReportDetails(Matchers.any(GetDailyFundingReportRequest.class)))
@@ -397,9 +397,9 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_FUNDING_REPORT_PAGINATION)
-              .sessionAttr(Constants.DAILY_FUNDING_REQUEST_OBJECT, batchFundingReport)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.DAILY_FUNDING_REQUEST_OBJECT, batchFundingReport)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testGetFundingReportPagination | Exception "
@@ -420,9 +420,9 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_FUNDING_REPORT_PAGINATION)
-              .sessionAttr(Constants.DAILY_FUNDING_REQUEST_OBJECT, batchFundingReport)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.DAILY_FUNDING_REQUEST_OBJECT, batchFundingReport)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT));
     } catch (Exception e) {
       logger.error(
@@ -442,10 +442,10 @@ public class BatchScheduleReportControllerTest {
         .thenReturn(getReportResponse);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATA_ADMIN_FUNDING_REPORT_EXPORT)
-          .sessionAttr(Constants.DAILY_FUNDING_REQUEST_OBJECT, batchFundingReport)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true")
-          .param(Constants.DOWNLOAD_TYPE, Constants.XLS_FILE_FORMAT));
+          .sessionAttr(TestConstants.DAILY_FUNDING_REQUEST_OBJECT, batchFundingReport)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true")
+          .param(TestConstants.DOWNLOAD_TYPE, TestConstants.XLS_FILE_FORMAT));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testDownloadFundingReport | Exception "
           + e.getMessage(), e);
@@ -462,10 +462,10 @@ public class BatchScheduleReportControllerTest {
         .thenThrow(nullPointerException);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATA_ADMIN_FUNDING_REPORT_EXPORT)
-          .sessionAttr(Constants.DAILY_FUNDING_REQUEST_OBJECT, batchFundingReport)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadAllRecords", "true")
-          .param(Constants.DOWNLOAD_TYPE, Constants.XLS_FILE_FORMAT));
+          .sessionAttr(TestConstants.DAILY_FUNDING_REQUEST_OBJECT, batchFundingReport)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadAllRecords", "true")
+          .param(TestConstants.DOWNLOAD_TYPE, TestConstants.XLS_FILE_FORMAT));
     } catch (Exception e) {
       logger.error(
           "BatchScheduleReportControllerTest | testDownloadFundingReportException | Exception "
@@ -490,7 +490,7 @@ public class BatchScheduleReportControllerTest {
     transactionList.add(transaction);
     transactionResponse = new GetTransactionsListResponse();
     transactionResponse.setTransactionList(transactionList);
-    transactionResponse.setTotalResultCount(Constants.TEN);
+    transactionResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(batchSchedularService
             .getMerchantHistoryOnId(Matchers.any(GetTransactionsListRequest.class)))
@@ -498,7 +498,7 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY)
-              .param("batchID", Constants.TEN.toString()).param(Constants.MERCHANT_CODE, "M20")
+              .param("batchID", TestConstants.TEN.toString()).param(TestConstants.MERCHANT_CODE, "M20")
               .param("downloadAllRecords", "true"))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY));
     } catch (Exception e) {
@@ -511,7 +511,7 @@ public class BatchScheduleReportControllerTest {
   public void testGetTransactionHistoryElse() throws ChatakAdminException {
     transactionResponse = new GetTransactionsListResponse();
     transactionResponse.setTransactionList(transactionList);
-    transactionResponse.setTotalResultCount(Constants.TEN);
+    transactionResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(batchSchedularService
             .getMerchantHistoryOnId(Matchers.any(GetTransactionsListRequest.class)))
@@ -519,7 +519,7 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY)
-              .param("batchID", Constants.TEN.toString()).param(Constants.MERCHANT_CODE, "M20")
+              .param("batchID", TestConstants.TEN.toString()).param(TestConstants.MERCHANT_CODE, "M20")
               .param("downloadAllRecords", "true"))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY));
     } catch (Exception e) {
@@ -537,7 +537,7 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY)
-              .param("batchID", Constants.TEN.toString()).param(Constants.MERCHANT_CODE, "M20")
+              .param("batchID", TestConstants.TEN.toString()).param(TestConstants.MERCHANT_CODE, "M20")
               .param("downloadAllRecords", "true"))
           .andExpect(view().name(URLMappingConstants.INVALID_REQUEST_PAGE));
     } catch (Exception e) {
@@ -553,17 +553,17 @@ public class BatchScheduleReportControllerTest {
     transactionResponse = new GetTransactionsListResponse();
     transactionList.add(transaction);
     transactionResponse.setTransactionList(transactionList);
-    transactionResponse.setTotalResultCount(Constants.TEN);
+    transactionResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(batchSchedularService
             .getMerchantHistoryOnId(Matchers.any(GetTransactionsListRequest.class)))
         .thenReturn(transactionResponse);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY_REPORT)
-          .param("batchID", Constants.TEN.toString())
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param(Constants.MERCHANT_CODE, "M20")
-          .param("downloadAllRecords", "true").param(Constants.DOWNLOAD_TYPE, Constants.XLS_FILE_FORMAT)
+          .param("batchID", TestConstants.TEN.toString())
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param(TestConstants.MERCHANT_CODE, "M20")
+          .param("downloadAllRecords", "true").param(TestConstants.DOWNLOAD_TYPE, TestConstants.XLS_FILE_FORMAT)
           .sessionAttr("transactionHistory", getTransactionList));
     } catch (Exception e) {
       logger.error("BatchScheduleReportControllerTest | testDownloadTxnsHistoryReport | Exception "
@@ -579,10 +579,10 @@ public class BatchScheduleReportControllerTest {
         .thenThrow(nullPointerException);
     try {
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY_REPORT)
-          .param("batchID", Constants.TEN.toString())
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param(Constants.MERCHANT_CODE, "M20")
-          .param("downloadAllRecords", "true").param(Constants.DOWNLOAD_TYPE, Constants.XLS_FILE_FORMAT)
+          .param("batchID", TestConstants.TEN.toString())
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param(TestConstants.MERCHANT_CODE, "M20")
+          .param("downloadAllRecords", "true").param(TestConstants.DOWNLOAD_TYPE, TestConstants.XLS_FILE_FORMAT)
           .sessionAttr("transactionHistory", getTransactionList));
     } catch (Exception e) {
       logger.error(
@@ -597,7 +597,7 @@ public class BatchScheduleReportControllerTest {
     transactionResponse = new GetTransactionsListResponse();
     transactionList.add(transaction);
     transactionResponse.setTransactionList(transactionList);
-    transactionResponse.setTotalResultCount(Constants.TEN);
+    transactionResponse.setTotalResultCount(TestConstants.TEN);
     Mockito
         .when(batchSchedularService
             .getMerchantHistoryOnId(Matchers.any(GetTransactionsListRequest.class)))
@@ -605,8 +605,8 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_TRANSACTION_HISTORY_PAGINATION)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
               .sessionAttr("transactionHistory", getTransactionList))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY));
     } catch (Exception e) {
@@ -626,8 +626,8 @@ public class BatchScheduleReportControllerTest {
     try {
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_TRANSACTION_HISTORY_PAGINATION)
-              .param(Constants.PAGE_NUMBER, Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
+              .param(TestConstants.PAGE_NUMBER, TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
               .sessionAttr("transactionHistory", getTransactionList))
           .andExpect(view().name(URLMappingConstants.CHATAK_MERCHANT_TXN_HISTORY));
     } catch (Exception e) {

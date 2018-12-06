@@ -3,7 +3,8 @@ package com.chatak.pg.model;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL) 
@@ -36,6 +37,10 @@ public class AccountBalanceDTO extends Response implements Serializable {
   private String timeZoneOffset;
   private String timeZoneRegion;
   private String deviceLocalTxnTime;
+  private String availableBalanceString;
+  private String currentBalanceString;
+  private Long accountNum;
+  private String entityId;
   /**
    * @return the currencyMinorUnit
    */
@@ -200,5 +205,29 @@ public class AccountBalanceDTO extends Response implements Serializable {
   }
   public void setDeviceLocalTxnTime(String deviceLocalTxnTime) {
     this.deviceLocalTxnTime = deviceLocalTxnTime;
+  }
+  public String getAvailableBalanceString() {
+    return availableBalanceString;
+  }
+  public void setAvailableBalanceString(String availableBalanceString) {
+    this.availableBalanceString = availableBalanceString;
+  }
+  public String getCurrentBalanceString() {
+    return currentBalanceString;
+  }
+  public void setCurrentBalanceString(String currentBalanceString) {
+    this.currentBalanceString = currentBalanceString;
+  }  
+  public Long getAccountNum() {
+    return accountNum;
+  }
+  public void setAccountNum(Long accountNum) {
+    this.accountNum = accountNum;
+  }
+  public String getEntityId() {
+    return entityId;
+  }
+  public void setEntityId(String entityId) {
+    this.entityId = entityId;
   }
 }

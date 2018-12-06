@@ -94,7 +94,7 @@
 								</form:form>
 
 								<!-- Page Form Start -->
-								<form:form action="bank-search" commandName="bank" name="bank" method="post">
+								<form:form action="bank-search" modelAttribute="bank" name="bank" method="post">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12">
 										<div class="row">
@@ -220,13 +220,15 @@
 															class="glyphicon glyphicon-pencil"></span></a>
 													</c:if>
 												</c:if>
-												<c:if test="${bank.status == 'Active'}">
+												<c:if test="${bank.loginuserType == 'Admin'}">
+											    <c:if test="${bank.status == 'Active'}">
 														<a href="javascript:changeStatus('${bank.bankName}','Suspended','Suspended','bankPopupDiv')" title="Suspend">
 												<img src="../images/active.png" alt="Suspend" title="Suspend"></img></a>
 												</c:if>
 												<c:if test="${bank.status == 'Suspended'}">
 														<a href="javascript:changeStatus('${bank.bankName}','Active','Active','bankPopupDiv')" title="Active">
 												<img alt="Active" src="../images/deactive.png" title="Activate"></img></a>
+												</c:if> 
 												</c:if>
 												<c:if test="${bank.status == 'Active'}">
 													<c:if test="${fn:contains(existingFeatures,bankDelete)}">

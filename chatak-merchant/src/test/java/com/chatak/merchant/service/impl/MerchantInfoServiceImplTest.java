@@ -1,12 +1,12 @@
 package com.chatak.merchant.service.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,7 +30,6 @@ import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.SubMerchantDao;
 import com.chatak.pg.acq.dao.SwitchDao;
 import com.chatak.pg.acq.dao.model.PGAdminUser;
-import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGFeeProgram;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGState;
@@ -44,6 +43,7 @@ import com.chatak.pg.user.bean.AddMerchantResponse;
 import com.chatak.pg.user.bean.FeeProgramNameListDTO;
 import com.chatak.pg.user.bean.GetMerchantListRequest;
 import com.chatak.pg.user.bean.GetMerchantListResponse;
+import com.chatak.pg.util.Properties;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -93,6 +93,15 @@ public class MerchantInfoServiceImplTest {
 
 	@Mock
 	DataAccessException dataAccessException;
+
+	@Before
+    public void init() {
+      java.util.Properties propsExportedLocal = new java.util.Properties();
+      propsExportedLocal.setProperty("max.download.limit", "12");
+      propsExportedLocal.setProperty("thread.max.per.route", "500");
+      propsExportedLocal.setProperty("thread.pool.size", "500");
+      Properties.mergeProperties(propsExportedLocal);
+    }
 
 	@Test
 	public void testValidateUserName() throws ChatakMerchantException {
@@ -350,12 +359,6 @@ public class MerchantInfoServiceImplTest {
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetPartnerList() throws ChatakMerchantException, IOException {
-		Assert.assertNull(merchantInfoServiceImpl.getPartnerList("987654321"));
-
-	}
-
 	@Test
 	public void testGetExistingAgentList() {
 		Assert.assertNotNull(merchantInfoServiceImpl.getExistingAgentList("54321"));
@@ -389,26 +392,6 @@ public class MerchantInfoServiceImplTest {
 		Mockito.when(merchantDao.getActiveAndCurrentFeePrograms(Matchers.anyString()))
 				.thenReturn(feeProgramNameListDTO);
 		Assert.assertNotNull(merchantInfoServiceImpl.getFeeProgramNamesForEdit("54321"));
-
-	}
-
-	@Test
-	public void testValidateAgentDetails() throws ChatakMerchantException {
-		PGCurrencyConfig currencyConfig = new PGCurrencyConfig();
-		Mockito.when(currencyConfigRepository.findByCurrencyCodeAlpha(Matchers.anyString())).thenReturn(currencyConfig);
-		Assert.assertNull(merchantInfoServiceImpl.validateAgentDetails("1", "2", "3", "4"));
-
-	}
-
-	@Test
-	public void testGetAgentDataById() throws ChatakMerchantException {
-
-		Assert.assertNull(merchantInfoServiceImpl.getAgentDataById(Long.parseLong("4351")));
-	}
-
-	@Test
-	public void testGetAgentNames() {
-		Assert.assertNull(merchantInfoServiceImpl.getAgentNames("4321"));
 
 	}
 

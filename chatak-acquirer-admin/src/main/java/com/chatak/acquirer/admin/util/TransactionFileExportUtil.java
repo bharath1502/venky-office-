@@ -58,9 +58,8 @@ public class TransactionFileExportUtil {
     String headerDate = new SimpleDateFormat(Constants.EXPORT_HEADER_DATE_FORMAT).format(date);
     String filename = "Settlement_Report" + selectedFlag + dateString + ".xls";
     response.setHeader("Content-Disposition", "attachment;filename=" + filename);
-    try {
-
-      HSSFWorkbook wb = new HSSFWorkbook();
+    
+    try (HSSFWorkbook wb = new HSSFWorkbook()) {
       HSSFSheet sheet = wb.createSheet(messageSource.getMessage("reports.label.settlementReport",
               null, LocaleContextHolder.getLocale()));
       Font hFont = wb.createFont();
@@ -124,7 +123,6 @@ public class TransactionFileExportUtil {
       getTransactionList(transactionList, sheet, wb);
       
       wb.write(response.getOutputStream());
-      wb.close();
       response.getOutputStream().flush();
       response.getOutputStream().close();
     } catch (Exception e) {

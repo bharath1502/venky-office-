@@ -2,6 +2,7 @@ package com.chatak.acquirer.admin.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.ExportDetails;
+import com.chatak.acquirer.admin.controller.model.LoginResponse;
+import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.MerchantAccountSearchResponse;
 import com.chatak.acquirer.admin.service.MerchantAccountService;
 import com.chatak.acquirer.admin.util.ExportUtil;
@@ -36,7 +39,7 @@ import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.user.bean.MerchantAccountSearchDto;
 import com.chatak.pg.util.Constants;
 
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Controller
 public class MerchantAccountBalancesController implements URLMappingConstants {
   private static Logger logger = Logger.getLogger(MerchantAccountBalancesController.class);
@@ -83,10 +86,14 @@ public class MerchantAccountBalancesController implements URLMappingConstants {
     try {
     	 Response creditResponse = merchantAccountService.processMerchantAccountBalanceUpdate(accountBalance,
           PGConstants.PAYMENT_METHOD_CREDIT);
+    	 LoginResponse loginResponse =
+             (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+         Long entityId = loginResponse.getEntityId();
+         String userType = loginResponse.getUserType();
       if (null != creditResponse
           && creditResponse.getErrorCode().equalsIgnoreCase(Constants.SUCCESS_CODE)) {
         accountBalance =
-            merchantAccountService.getAccountBalanceDTO(accountBalance.getMerchantCode());
+            merchantAccountService.getAccountBalanceDTO(accountBalance.getMerchantCode(), entityId, userType);
       } else {
         modelAndView.addObject(Constants.ERROR, messageSource
             .getMessage("merchant.should.be.active", null, LocaleContextHolder.getLocale()));
@@ -115,8 +122,12 @@ public class MerchantAccountBalancesController implements URLMappingConstants {
     try {
     	Response debitResponse = merchantAccountService.processMerchantAccountBalanceUpdate(accountBalance,
           PGConstants.PAYMENT_METHOD_DEBIT);
+    	LoginResponse loginResponse =
+            (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+        Long entityId = loginResponse.getEntityId();
+        String userType = loginResponse.getUserType();
       if (null != debitResponse && debitResponse.getErrorCode().equalsIgnoreCase(Constants.SUCCESS_CODE)) {
-        accountBalance = merchantAccountService.getAccountBalanceDTO(accountBalance.getMerchantCode());
+        accountBalance = merchantAccountService.getAccountBalanceDTO(accountBalance.getMerchantCode(), entityId, userType);
       } else {
         accountBalance.setInputAmount(accountBalance.getInputAmount() / Constants.MAX_PAGE_SIZE);
         if(null != debitResponse) {
@@ -138,7 +149,7 @@ public class MerchantAccountBalancesController implements URLMappingConstants {
 
   @RequestMapping(value = AJAX_MERCHANT_BALANCE_DETAILS, method = RequestMethod.GET)
   public @ResponseBody String fetchAccountDetialsbyMerchantCode(Map model,
-      HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+      HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ChatakAdminException {
     ModelAndView modelAndView = new ModelAndView(SHOW_ACC_MANUAL_CREDIT);
     modelAndView.addObject(Constants.ERROR, null);
     logger.info(
@@ -146,11 +157,23 @@ public class MerchantAccountBalancesController implements URLMappingConstants {
     String merchantId = request.getParameter("merchantId");
     AccountBalanceDTO accountBalance;
     try {
-      accountBalance = merchantAccountService.getAccountBalanceDTO(merchantId);
+      if(StringUtil.isNullAndEmpty(merchantId)){
+        throw new Exception();
+      }
+      LoginResponse loginResponse =
+          (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
+      Long entityId = loginResponse.getEntityId();
+      String userType = loginResponse.getUserType();
+      accountBalance = merchantAccountService.getAccountBalanceDTO(merchantId, entityId, userType);
       return JsonUtil.convertObjectToJSON(accountBalance);
+    } catch (ChatakAdminException ex) {
+      Response rsp = new Response();
+      rsp.setErrorCode(ex.getErrorCode());
+      rsp.setErrorMessage(ex.getErrorMessage());
+      return JsonUtil.convertObjectToJSON(rsp);
     } catch (Exception e) {
-      modelAndView.addObject(Constants.ERROR,
-          messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
+      modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       logger.error(
           "ERROR :: MerchantAccountBalancesController :: fetchAccountDetialsbyMerchantCode method:"
               + e);
@@ -158,7 +181,6 @@ public class MerchantAccountBalancesController implements URLMappingConstants {
     logger.info(
         "Exiting :: MerchantAccountBalancesController :: fetchAccountDetialsbyMerchantCode method");
     return merchantId;
-
   }
 
   @RequestMapping(value = CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_REPORT, method = RequestMethod.POST)
@@ -182,7 +204,7 @@ public class MerchantAccountBalancesController implements URLMappingConstants {
 
       if (null == merchantDataMap) {
         merchantDataMap = merchantAccountService.getMerchantMapByMerchantType(PGConstants.MERCHANT);
-        session.setAttribute("merchantDataMap", merchantDataMap);
+        session.setAttribute("merchantDataMap", new HashMap(merchantDataMap));
       }
       modelAndView.addObject("merchantDataMap", merchantDataMap);
       if (downloadAllRecords) {
@@ -242,7 +264,7 @@ public class MerchantAccountBalancesController implements URLMappingConstants {
 
       if (null == merchantDataMap) {
         merchantDataMap = merchantAccountService.getMerchantMapByMerchantType(PGConstants.MERCHANT);
-        session.setAttribute("merchantDataMap", merchantDataMap);
+        session.setAttribute("merchantDataMap", new HashMap(merchantDataMap));
       }
 
       modelAndView.addObject("merchantDataMap", merchantDataMap);
@@ -268,22 +290,22 @@ public class MerchantAccountBalancesController implements URLMappingConstants {
   }
   
   private List<String> getRoleHeaderList() {
-    String[] headerArr = {
-        messageSource.getMessage("merchant-file-exportutil-subMerchantName", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant-file-exportutil-merchantName", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant-file-exportutil-state", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant-file-exportutil-accountNumber", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant-file-exportutil-contactPerson", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant-file-exportutil-currentBalance", null,
-            LocaleContextHolder.getLocale()),
-        messageSource.getMessage("merchant-file-exportutil-status", null,
-            LocaleContextHolder.getLocale())};
-    return new ArrayList<String>(Arrays.asList(headerArr));
+	  String[] headerArr = {
+			  messageSource.getMessage("merchant-file-exportutil-subMerchantName", null,
+					  LocaleContextHolder.getLocale()),
+			  messageSource.getMessage("merchant-file-exportutil-merchantName", null,
+					  LocaleContextHolder.getLocale()),
+			  messageSource.getMessage("merchant-file-exportutil-state", null,
+					  LocaleContextHolder.getLocale()),
+			  messageSource.getMessage("merchant-file-exportutil-accountNumber", null,
+					  LocaleContextHolder.getLocale()),
+			  messageSource.getMessage("merchant-file-exportutil-contactPerson", null,
+					  LocaleContextHolder.getLocale()),
+			  messageSource.getMessage("merchant-file-exportutil-currentBalance", null,
+					  LocaleContextHolder.getLocale()),
+			  messageSource.getMessage("merchant-file-exportutil-status", null,
+					  LocaleContextHolder.getLocale())};
+	  return new ArrayList<String>(Arrays.asList(headerArr));
   }
 
   private static List<Object[]> getRoleFileData(List<MerchantAccountSearchDto> merchantAccountData) {

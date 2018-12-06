@@ -5,6 +5,10 @@ package com.chatak.pg.user.bean;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * @Author: Girmiti Software
  * @Date: May 2, 2018
@@ -13,6 +17,8 @@ import java.io.Serializable;
  * @Comments: 
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value=Include.NON_NULL)
 public class CurrencyConfigRequest implements Serializable{
 	private static final long serialVersionUID = -362537255370697839L;
 

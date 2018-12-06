@@ -77,7 +77,7 @@ public class TerminalController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       List<Option> options = merchantUpdateService.getActiveMerchants();
-      session.setAttribute("merchantOptions", options);
+      session.setAttribute("merchantOptions", new ArrayList(options));
       modelAndView.addObject("merchantOptions", options);
     } catch (ChatakAdminException e) {
       logger.error("Error :: TerminalController:: showCreateTerminalPage method", e);
@@ -103,7 +103,7 @@ public class TerminalController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       List<Option> options = merchantUpdateService.getActiveMerchants();
-      session.setAttribute("merchantOptions", options);
+      session.setAttribute("merchantOptions", new ArrayList(options));
       modelAndView.addObject("merchantOptions", options);
       AddTerminalResponse addTerminalResponse = terminalService.addTerminal(terminal);
       if (null != addTerminalResponse) {
@@ -148,7 +148,7 @@ public class TerminalController implements URLMappingConstants {
     session.setAttribute(Constants.TERMINALS_MODEL, terminal);
     try {
       List<Option> options = merchantUpdateService.getActiveMerchants();
-      session.setAttribute("merchantOptions", options);
+      session.setAttribute("merchantOptions", new ArrayList(options));
       modelAndView.addObject("merchantOptions", options);
       TerminalSearchResponse searchResponse = terminalService.searchTerminal(terminal);
       List<Terminals> terminalList = new ArrayList<Terminals>();
@@ -264,7 +264,7 @@ public class TerminalController implements URLMappingConstants {
    */
   @RequestMapping(value = CHATAK_ADMIN_EDIT_TERMINAL, method = RequestMethod.POST)
   public ModelAndView showEditTerminalPage(HttpServletRequest request, HttpServletResponse response,
-      @FormParam("getTerminalId") final String getTerminalId, Terminal terminal,
+      @FormParam("getTerminalId") final String getTerminalId, Terminal terminal, 
       BindingResult bindingResult, Map model, HttpSession session) {
     logger.info("Entering:: TerminalController:: showEditTerminal method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_EDIT_TERMINAL_PAGE);
@@ -272,14 +272,14 @@ public class TerminalController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       List<Option> options = merchantUpdateService.getActiveMerchants();
-      session.setAttribute("merchantOptions", options);
+      session.setAttribute("merchantOptions", new ArrayList(options));
       modelAndView.addObject("merchantOptions", options);
-      terminal = terminalService.getTerminal(getTerminalId);
-      if (null == terminal)
+      Terminal terminalrequest = terminalService.getTerminal(getTerminalId);
+      if (null == terminalrequest)
         modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
             null, LocaleContextHolder.getLocale()));
       else
-        modelAndView.addObject("terminal", terminal);
+        modelAndView.addObject("terminal", terminalrequest);
     } catch (Exception e) {
       logger.error("ERROR:: TerminalController:: showEditTerminal method", e);
       modelAndView.addObject(Constants.ERROR,

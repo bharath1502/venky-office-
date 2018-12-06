@@ -123,9 +123,9 @@ public class ChatakSwitchChannel extends BaseChannel {
     	logger.info(switchName + " Connection is not available");
         throw new ISOException(switchName + " Connection is not available");
       }
-
       synchronized(serverInLock) {
-        serverIn.read(incomingBytes);
+    	int count=serverIn.read(incomingBytes);
+        logger.info(count);
       }
       isoMsg.setPackager(packager);
 

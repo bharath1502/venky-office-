@@ -93,4 +93,6 @@ public interface ProgramManagerService {
   
   public List<CardProgramRequest> getUnselectedCpForIndependentPm(Long programManagerId, String currency);
   
+  public Response findProgramManagerNameAndIdByEntityId(Long entityId, Long merchantId);
+  
 }

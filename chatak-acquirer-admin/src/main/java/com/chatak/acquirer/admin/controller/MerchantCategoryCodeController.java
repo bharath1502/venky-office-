@@ -243,7 +243,7 @@ public class MerchantCategoryCodeController implements URLMappingConstants {
     List<Option> tccMultipleList = mccService.getAllTCCs();
     modelAndView.addObject(Constants.TCC_MULTIPLE_LIST, tccMultipleList);
     model.put(Constants.TCC_MULTIPLE_LIST, tccMultipleList != null ? tccMultipleList : null);
-    session.setAttribute(Constants.TCC_MULTIPLE_LIST, tccMultipleList);
+    session.setAttribute(Constants.TCC_MULTIPLE_LIST, new ArrayList(tccMultipleList));
     return tccMultipleList;
   }
 
@@ -267,7 +267,7 @@ public class MerchantCategoryCodeController implements URLMappingConstants {
           mcc.getSelectedTCCMultiple() != null ? mcc.getSelectedTCCMultiple() : null);
       modelAndView.addObject(Constants.TCC_MULTIPLE_LIST, tccMultipleList);
       model.put(Constants.TCC_MULTIPLE_LIST, tccMultipleList != null ? tccMultipleList : null);
-      session.setAttribute(Constants.TCC_MULTIPLE_LIST, tccMultipleList);
+      session.setAttribute(Constants.TCC_MULTIPLE_LIST, new ArrayList(tccMultipleList));
 
     } else {
       new MerchantCategoryCode();

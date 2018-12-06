@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.MessageSource;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.UserData;
 import com.chatak.acquirer.admin.service.impl.UserServiceImpl;
@@ -25,7 +26,6 @@ import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.GenericUserDTO;
-import com.chatak.pg.util.Constants;
 import com.chatak.prepaid.velocity.IVelocityTemplateCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,7 +67,7 @@ public class UserServiceImplTest {
 		PGMerchant merchant = new PGMerchant();
 		PGMerchantUsers pgMerchantUsers = new PGMerchantUsers();
 		userData.setEmailId("abcde");
-		userData.setRoleType(Constants.TYPE_MERCHANT);
+		userData.setRoleType(TestConstants.TYPE_MERCHANT);
 		userData.setCreatedBy("abc");
 		Mockito.when(merchantUpdateDao.getMerchant(Matchers.anyString())).thenReturn(merchant);
 		Mockito.when(merchantUserDao.createOrUpdateUser(Matchers.any(PGMerchantUsers.class)))
@@ -94,7 +94,7 @@ public class UserServiceImplTest {
 		UserData userData = new UserData();
 		PGMerchant merchant = null;
 		userData.setEmailId("abcde");
-		userData.setRoleType(Constants.TYPE_MERCHANT);
+		userData.setRoleType(TestConstants.TYPE_MERCHANT);
 		userData.setCreatedBy("abc");
 		Mockito.when(merchantUpdateDao.getMerchant(Matchers.anyString())).thenReturn(merchant);
 		userServiceImpl.saveUser(userData);
@@ -134,7 +134,7 @@ public class UserServiceImplTest {
 		pgMerchant.setEmailId("asdf");
 		pgMerchantUsers.setEmail("asdf");
 		pgMerchant.setStatus(1);
-		userData.setRoleType(Constants.TYPE_MERCHANT);
+		userData.setRoleType(TestConstants.TYPE_MERCHANT);
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
 		Mockito.when(merchantUserDao.findById(Matchers.anyLong())).thenReturn(pgMerchant);
 		userServiceImpl.updateUser(userData);
@@ -148,7 +148,7 @@ public class UserServiceImplTest {
 		pgMerchant.setEmailId("asdf");
 		pgMerchantUsers.setEmail("asdf");
 		pgMerchant.setStatus(0);
-		userData.setRoleType(Constants.TYPE_MERCHANT);
+		userData.setRoleType(TestConstants.TYPE_MERCHANT);
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(pgMerchantUsers);
 		Mockito.when(merchantUserDao.findById(Matchers.anyLong())).thenReturn(pgMerchant);
 		userServiceImpl.updateUser(userData);
@@ -172,7 +172,7 @@ public class UserServiceImplTest {
 		PGMerchantUsers pgMerchantUsers = new PGMerchantUsers();
 		PGMerchant pgMerchant = new PGMerchant();
 		userData.setUserId(Long.parseLong("43"));
-		userData.setRoleType(Constants.TYPE_MERCHANT);
+		userData.setRoleType(TestConstants.TYPE_MERCHANT);
 		pgMerchantUsers.setPgMerchantId(Long.parseLong("43"));
 		Mockito.when(merchantUserDao.findByMerchantUserId(Long.parseLong("545"))).thenReturn(pgMerchantUsers);
 		Mockito.when(merchantUserDao.findById(Matchers.anyLong())).thenReturn(pgMerchant);
@@ -206,7 +206,7 @@ public class UserServiceImplTest {
 	@Test
 	public void testChangeUserStatusException() throws ChatakAdminException {
 		UserData userData = new UserData();
-		userData.setRoleType(Constants.TYPE_MERCHANT);
+		userData.setRoleType(TestConstants.TYPE_MERCHANT);
 		userServiceImpl.changeUserStatus(userData, "status");
 	}
 
@@ -249,7 +249,7 @@ public class UserServiceImplTest {
 		userServiceImpl.searchAdminUser(adminUserDTO);
 	}
 
-	@Test
+	@Test(expected = ChatakAdminException.class)
 	public void testSearchMerchantUser() throws ChatakAdminException {
 		GenericUserDTO adminUserDTO = new GenericUserDTO();
 		userServiceImpl.searchMerchantUser(adminUserDTO);
@@ -269,7 +269,7 @@ public class UserServiceImplTest {
 		PGMerchant merchant = new PGMerchant();
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(merchantUser);
 		Mockito.when(merchantProfileDao.getMerchantById(Matchers.anyLong())).thenReturn(merchant);
-		userServiceImpl.getUserDataOnUsersGroupType(Long.parseLong("543"), Constants.TYPE_MERCHANT);
+		userServiceImpl.getUserDataOnUsersGroupType(Long.parseLong("543"), TestConstants.TYPE_MERCHANT);
 	}
 
 	@Test
@@ -282,7 +282,7 @@ public class UserServiceImplTest {
 	@Test(expected = ChatakAdminException.class)
 	public void testGetUserDataOnUsersGroupTypeException() throws ChatakAdminException {
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenThrow(new NullPointerException());
-		userServiceImpl.getUserDataOnUsersGroupType(Long.parseLong("543"), Constants.TYPE_MERCHANT);
+		userServiceImpl.getUserDataOnUsersGroupType(Long.parseLong("543"), TestConstants.TYPE_MERCHANT);
 	}
 
 	@Test
@@ -310,7 +310,7 @@ public class UserServiceImplTest {
 		Mockito.when(merchantUserDao.findByMerchantUserId(Matchers.anyLong())).thenReturn(merchantUser);
 		Mockito.when(merchantUserDao.findById(Matchers.anyLong())).thenReturn(pgMerchant);
 		Mockito.when(merchantUserDao.createOrUpdateUser(Matchers.any(PGMerchantUsers.class))).thenReturn(merchantUser);
-		userServiceImpl.deleteMerchantUser(Long.parseLong("543"), Constants.TYPE_MERCHANT);
+		userServiceImpl.deleteMerchantUser(Long.parseLong("543"), TestConstants.TYPE_MERCHANT);
 	}
 
 	@Test
@@ -355,7 +355,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testSearchAdminUserList() throws ChatakAdminException {
-		userServiceImpl.searchAdminUserList();
+		userServiceImpl.searchAdminUserList("Admin");
 	}
 
 	@Test
@@ -377,11 +377,11 @@ public class UserServiceImplTest {
 		userServiceImpl.unblockMerchantUser("56");
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testMerchantIdByMerchantName() throws ChatakAdminException {
 		PGMerchant pgMerchant = new PGMerchant();
 		Mockito.when(merchantUpdateDao.getMerchant(Matchers.anyString())).thenReturn(pgMerchant);
-		userServiceImpl.merchantIdByMerchantName("56");
+		userServiceImpl.merchantIdByMerchantName("56", 1l, "Admin");
 	}
 
 }

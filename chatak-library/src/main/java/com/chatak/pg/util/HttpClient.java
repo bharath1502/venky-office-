@@ -6,9 +6,8 @@ import org.apache.http.Header;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,10 +17,12 @@ import org.springframework.web.client.RestTemplate;
 
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.exception.PrepaidAdminException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class HttpClient {
 
-  private static Logger logger = Logger.getLogger(ByteConversionUtils.class);
+  private static final Logger logger =  LogManager.getLogger(HttpClient.class);
 
   private static final String CONTENT_TYPE = "Content-Type";
 
@@ -29,18 +30,10 @@ public class HttpClient {
 
   private static final String AUTHORIZATION_PREFIX = "Bearer ";
 
-  private static final String AUTHORIZATION_BASIC = "Basic ";
-
-  private static final ObjectMapper objectMapper = new ObjectMapper();
-
   public static final ObjectWriter objectWriter = new ObjectMapper().writer();
 
   private static final String HTTP_ERROR_CODE = "Failed with HTTP error code : ";
   
-  private static final int THREAD_POOL_SIZE = Integer.parseInt(Properties.getProperty("thread.pool.size"));
-
-  private static final int THREAD_MAX_PER_ROUTE = Integer.parseInt(Properties.getProperty("thread.max.per.route"));
-
   private RestTemplate restTemplate = null;
 
   private final String finalURL;
@@ -60,6 +53,10 @@ public class HttpClient {
    */
   public <T extends Object> T invokeGet(Class<T> response, Header[] headers) throws IOException {
     return invokeGetCommon(response, headers);
+  }
+  
+  public <T extends Object> T invokeTmsOauthGet(Class<T> response, Header[] headers) throws IOException, PrepaidAdminException {
+    return invokeTmsOauthCommon(response, headers);
   }
 
   /**
@@ -187,7 +184,7 @@ public class HttpClient {
       
       // PERF >> This method is causing object wait timeout
       //processSensitiveData(isSensitiveData, resultantObject, "Resultant Object After convertion: ");
-      logger.info("Exiting :: HttpaygatepClient :: invokePost");
+      logger.info("Exiting :: HttpClient :: invokePost");
       return resultantObject.getBody();
     } catch (RuntimeException e) {
       logger.error("ERROR in invokePost method", e);
@@ -253,13 +250,25 @@ public class HttpClient {
     return null;
   }
   
-  private void processSensitiveData(Boolean isSensitiveData, String jsonRequest, String logInfo) {
-    if(!StringUtils.isNull(isSensitiveData) && isSensitiveData) {
-      String maskedjsonStringRes = CommonUtil.maskJsonString((String)jsonRequest);
-          logger.info(logInfo + maskedjsonStringRes);
-    } else {
-          logger.info(logInfo + jsonRequest);
+  public <T extends Object> T invokeTmsOauthCommon(Class<T> response, Header[] headers) throws IOException, PrepaidAdminException {
+    logger.info("Entering :: DateUtil :: invokeGetCommon");
+    try {
+      logger.info("Calling GET API - " + (finalURL));
+      
+      ResponseEntity<T> resultantObject = restTemplate.exchange(finalURL, HttpMethod.GET, new HttpEntity<T>(null, setHeadersEntity(null, headers)), response);
+      validateResponseStatusCode(resultantObject.getStatusCode().value());
+      
+      logger.info("Resultant Object After convertion: " + resultantObject.getBody());
+      logger.info("Exiting :: HttpClient :: invokeGetCommon");
+      return resultantObject.getBody();
+    } catch(PrepaidAdminException pae) {
+      logger.error("ERROR in calling GET API " + (finalURL), pae);
+      throw new PrepaidAdminException("401");
+    } catch (Exception e) {
+      logger.error("ERROR in calling GET API " + (finalURL), e);
     }
+    logger.info("Exiting :: HttpClient :: invokeGetCommon :: ERROR in calling GET API and rerurning NULL " + (finalURL));
+    return null;
   }
   
   private HttpHeaders setHeadersEntity(String accessToken, Header[] headerArray) {

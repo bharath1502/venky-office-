@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.Option;
@@ -37,7 +38,6 @@ import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.MerchantCategoryCode;
 import com.chatak.pg.user.bean.MerchantCategoryCodeResponse;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MerchantCategoryCodeControllerTest {
@@ -116,7 +116,7 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.getAllTCCs()).thenReturn(optionList);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testShowCreateMCCPage | Exception ", e);
@@ -129,7 +129,7 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.getAllTCCs()).thenThrow(nullPointerException);
       mockMvc
           .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE));
     } catch (Exception e) {
       logger.error(
@@ -146,7 +146,7 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testCreateMCC | Exception ", e);
@@ -162,7 +162,7 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testCreateMCCElse | Exception ", e);
@@ -176,7 +176,7 @@ public class MerchantCategoryCodeControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_CREATE));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testCreateMCCException | Exception ", e);
@@ -188,14 +188,14 @@ public class MerchantCategoryCodeControllerTest {
     mccSearchResponse = new MerchantCategoryCodeSearchResponse();
     mccList.add(merchantCategoryCode);
     mccSearchResponse.setMccs(mccList);
-    mccSearchResponse.setTotalNoOfRows(Constants.TEN);
+    mccSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(mccService.searchMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenReturn(mccSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(Constants.PAGE_SIZE,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(TestConstants.PAGE_SIZE,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testSearchMCC | Exception ", e);
@@ -206,14 +206,14 @@ public class MerchantCategoryCodeControllerTest {
   public void testSearchMCCException() {
     mccSearchResponse = new MerchantCategoryCodeSearchResponse();
     mccSearchResponse.setMccs(mccList);
-    mccSearchResponse.setTotalNoOfRows(Constants.TEN);
+    mccSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(mccService.searchMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param(Constants.PAGE_SIZE,
-                  Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param(TestConstants.PAGE_SIZE,
+                  TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testSearchMCCException | Exception ", e);
@@ -229,8 +229,8 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccSearchResponse);
       Mockito.when(mccService.getMCCDetails(Matchers.anyLong())).thenReturn(merchantCategoryCode);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_EDIT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()))
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_EDIT));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testShowEditMCC | Exception ", e);
@@ -243,8 +243,8 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.searchMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenReturn(mccSearchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_EDIT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testShowEditMCCElse | Exception ", e);
     }
@@ -257,8 +257,8 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccSearchResponse);
       Mockito.when(mccService.getMCCDetails(Matchers.anyLong())).thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_EDIT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testShowEditMCCException | Exception ", e);
     }
@@ -271,8 +271,8 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccSearchResponse);
       Mockito.when(mccService.getMCCDetails(Matchers.anyLong())).thenThrow(chatakAdminException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_EDIT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error(
           "MerchantCategoryCodeControllerTest | testShowEditMCCChatakException | Exception ", e);
@@ -288,8 +288,8 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccSearchResponse);
       Mockito.when(mccService.getMCCDetails(Matchers.anyLong())).thenReturn(merchantCategoryCode);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_VIEW)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()))
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_VIEW));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testShowViewMCC | Exception ", e);
@@ -302,8 +302,8 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.searchMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenReturn(mccSearchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_VIEW)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testShowViewMCCElse | Exception ", e);
     }
@@ -316,8 +316,8 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccSearchResponse);
       Mockito.when(mccService.getMCCDetails(Matchers.anyLong())).thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_VIEW)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testShowViewMCCException | Exception ", e);
     }
@@ -330,8 +330,8 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccSearchResponse);
       Mockito.when(mccService.getMCCDetails(Matchers.anyLong())).thenThrow(chatakAdminException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_VIEW)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error(
           "MerchantCategoryCodeControllerTest | testShowViewMCCChatakException | Exception ", e);
@@ -346,9 +346,9 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.updateMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenReturn(mccResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_UPDATE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()))
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testUpdateMCC | Exception ", e);
@@ -363,9 +363,9 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.updateMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenReturn(mccResponse);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_UPDATE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()))
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_EDIT));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testUpdateMCCElse | Exception ", e);
@@ -378,9 +378,9 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.updateMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_UPDATE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-          .param(Constants.PAGE_SIZE, Constants.ONE.toString()).param("editId", Constants.ONE.toString()))
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+          .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString()).param("editId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_EDIT));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testUpdateMCCException | Exception ", e);
@@ -395,10 +395,10 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.deleteMcc(Matchers.anyLong())).thenReturn(mccResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_DELERE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param(Constants.PAGE_SIZE, Constants.ONE.toString())
-              .param("getDeleteMCCId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString())
+              .param("getDeleteMCCId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testDeleteMCC | Exception ", e);
@@ -413,10 +413,10 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.deleteMcc(Matchers.anyLong())).thenReturn(mccResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_DELERE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param(Constants.PAGE_SIZE, Constants.ONE.toString())
-              .param("getDeleteMCCId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString())
+              .param("getDeleteMCCId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testDeleteMCCElseIf | Exception ", e);
@@ -428,13 +428,13 @@ public class MerchantCategoryCodeControllerTest {
     mccResponse = new MerchantCategoryCodeResponse();
     mccResponse.setErrorCode(ActionErrorCode.ERROR_CODE_01);
     try {
-      Mockito.when(mccService.deleteMcc(Constants.THREE_LONG)).thenReturn(mccResponse);
+      Mockito.when(mccService.deleteMcc(TestConstants.THREE_LONG)).thenReturn(mccResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_DELERE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param(Constants.PAGE_SIZE, Constants.ONE.toString())
-              .param("getDeleteMCCId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString())
+              .param("getDeleteMCCId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testDeleteMCCElse | Exception ", e);
@@ -447,10 +447,10 @@ public class MerchantCategoryCodeControllerTest {
       Mockito.when(mccService.deleteMcc(Matchers.anyLong())).thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_DELERE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_USER_ID, Long.valueOf(Constants.ONE))
-              .param(Constants.PAGE_SIZE, Constants.ONE.toString())
-              .param("getDeleteMCCId", Constants.ONE.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_USER_ID, Long.valueOf(TestConstants.ONE))
+              .param(TestConstants.PAGE_SIZE, TestConstants.ONE.toString())
+              .param("getDeleteMCCId", TestConstants.ONE.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testDeleteMCCException | Exception ", e);
@@ -462,16 +462,16 @@ public class MerchantCategoryCodeControllerTest {
     mccSearchResponse = new MerchantCategoryCodeSearchResponse();
     mccList.add(merchantCategoryCode);
     mccSearchResponse.setMccs(mccList);
-    mccSearchResponse.setTotalNoOfRows(Constants.TEN);
+    mccSearchResponse.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(mccService.searchMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenReturn(mccSearchResponse);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MCC_MODEL, merchantCategoryCode)
-              .param(Constants.PAGE_NUMBER, Constants.TWO.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MCC_MODEL, merchantCategoryCode)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.TWO.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testGetPaginationList | Exception ", e);
@@ -485,10 +485,10 @@ public class MerchantCategoryCodeControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_PAGINATION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MCC_MODEL, merchantCategoryCode)
-              .param(Constants.PAGE_NUMBER, Constants.TWO.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MCC_MODEL, merchantCategoryCode)
+              .param(TestConstants.PAGE_NUMBER, TestConstants.TWO.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error(
@@ -507,11 +507,11 @@ public class MerchantCategoryCodeControllerTest {
               .searchMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenReturn(mccSearchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.GET_MERCHANT_CATEGORY_CODE_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.MCC_MODEL, merchantCategoryCode)
-          .param("downLoadPageNumber", Constants.TWO.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
-          .param("downloadAllRecords", "true").param(Constants.DOWNLOAD_TYPE, "XLS"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.MCC_MODEL, merchantCategoryCode)
+          .param("downLoadPageNumber", TestConstants.TWO.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
+          .param("downloadAllRecords", "true").param(TestConstants.DOWNLOAD_TYPE, "XLS"));
     } catch (Exception e) {
       logger.error(
           "MerchantCategoryCodeControllerTest | testDownloadMerchantCategoryCodeList | Exception ",
@@ -530,11 +530,11 @@ public class MerchantCategoryCodeControllerTest {
               .searchMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenReturn(mccSearchResponse);
       mockMvc.perform(post("/" + URLMappingConstants.GET_MERCHANT_CATEGORY_CODE_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.MCC_MODEL, merchantCategoryCode)
-          .param("downLoadPageNumber", Constants.TWO.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
-          .param("downloadAllRecords", "true").param(Constants.DOWNLOAD_TYPE, "PDF"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.MCC_MODEL, merchantCategoryCode)
+          .param("downLoadPageNumber", TestConstants.TWO.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
+          .param("downloadAllRecords", "true").param(TestConstants.DOWNLOAD_TYPE, "PDF"));
     } catch (Exception e) {
       logger.error(
           "MerchantCategoryCodeControllerTest | testDownloadMerchantCategoryCodeListPDF | Exception ",
@@ -550,11 +550,11 @@ public class MerchantCategoryCodeControllerTest {
               .searchMerchantCategoryCode(Matchers.any(MerchantCategoryCode.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.GET_MERCHANT_CATEGORY_CODE_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.MCC_MODEL, merchantCategoryCode)
-          .param("downLoadPageNumber", Constants.TWO.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString())
-          .param("downloadAllRecords", "true").param(Constants.DOWNLOAD_TYPE, "PDF"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.MCC_MODEL, merchantCategoryCode)
+          .param("downLoadPageNumber", TestConstants.TWO.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString())
+          .param("downloadAllRecords", "true").param(TestConstants.DOWNLOAD_TYPE, "PDF"));
     } catch (Exception e) {
       logger.error(
           "MerchantCategoryCodeControllerTest | testDownloadMerchantCategoryCodeListException | Exception ",
@@ -573,12 +573,12 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccResponse);
       mockMvc.perform(
           post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MCC_MODEL, merchantCategoryCode)
-              .sessionAttr(Constants.PAGE_NUMBER, Constants.TWO)
-              .param("suspendActiveId", Constants.TWO.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MCC_MODEL, merchantCategoryCode)
+              .sessionAttr(TestConstants.PAGE_NUMBER, TestConstants.TWO)
+              .param("suspendActiveId", TestConstants.TWO.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason")
-              .param(Constants.DOWNLOAD_TYPE, "PDF"))
+              .param(TestConstants.DOWNLOAD_TYPE, "PDF"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testChangeMCCStatus | Exception ", e);
@@ -596,12 +596,12 @@ public class MerchantCategoryCodeControllerTest {
           .thenReturn(mccResponse);
       mockMvc.perform(
           post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MCC_MODEL, merchantCategoryCode)
-              .sessionAttr(Constants.PAGE_NUMBER, Constants.TWO)
-              .param("suspendActiveId", Constants.TWO.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MCC_MODEL, merchantCategoryCode)
+              .sessionAttr(TestConstants.PAGE_NUMBER, TestConstants.TWO)
+              .param("suspendActiveId", TestConstants.TWO.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason")
-              .param(Constants.DOWNLOAD_TYPE, "PDF"))
+              .param(TestConstants.DOWNLOAD_TYPE, "PDF"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testChangeMCCStatusElse | Exception ", e);
@@ -617,12 +617,12 @@ public class MerchantCategoryCodeControllerTest {
           .thenThrow(nullPointerException);
       mockMvc.perform(
           post("/" + URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_ACTIVATION_SUSPENTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.MCC_MODEL, merchantCategoryCode)
-              .sessionAttr(Constants.PAGE_NUMBER, Constants.TWO)
-              .param("suspendActiveId", Constants.TWO.toString())
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.MCC_MODEL, merchantCategoryCode)
+              .sessionAttr(TestConstants.PAGE_NUMBER, TestConstants.TWO)
+              .param("suspendActiveId", TestConstants.TWO.toString())
               .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason")
-              .param(Constants.DOWNLOAD_TYPE, "PDF"))
+              .param(TestConstants.DOWNLOAD_TYPE, "PDF"))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_MERCHANT_CATEGORY_CODE_SEARCH));
     } catch (Exception e) {
       logger.error("MerchantCategoryCodeControllerTest | testChangeMCCStatusException | Exception ",

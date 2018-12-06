@@ -73,8 +73,6 @@ public class IsoController implements URLMappingConstants{
 	    	
 	    	 List<Option> countryList = bankService.getCountries();
 	         modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-	         session.setAttribute(Constants.COUNTRY_LIST, countryList);
-	         
 	    	List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
 	        modelAndView.addObject("currencyList", currencyList);
 	    } catch (Exception e) {
@@ -218,6 +216,16 @@ public class IsoController implements URLMappingConstants{
 
 	}
 	
+	@RequestMapping(value = PROCESS_ISO_SEARCH, method = RequestMethod.GET)
+	public ModelAndView processIsoSearchGetMethod(Map model, HttpSession session, IsoRequest isoRequest) {
+		logger.info("Entering :: IsoController :: processIsoSearch");
+		HttpServletRequest request = null;
+		HttpServletResponse response = null;
+		ModelAndView modelAndView = showIsoSearch(request, response, model, session);
+		logger.info("Exiting :: IsoController :: processIsoSearch");
+		return modelAndView;
+	}
+	
 	@RequestMapping(value = SHOW_ISO_EDIT, method = RequestMethod.POST)
 	  public ModelAndView showIsoEdit(Map model, HttpSession session,@FormParam("isoId") Long isoId,HttpServletRequest request,HttpServletResponse response) {
 		logger.info("Entering :: IsoController :: showIsoEdit");
@@ -233,11 +241,10 @@ public class IsoController implements URLMappingConstants{
 	    	model.put("cardProgramList", isoResponse.getCardProgramRequestList());
 	    	 List<Option> countryList = bankService.getCountries();
 			modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-			session.setAttribute(Constants.COUNTRY_LIST, countryList);
+			session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));
 			com.chatak.pg.bean.Response stateList = bankService.getStatesByCountry(isoResponse.getIsoRequest().get(0).getCountry());
 			modelAndView.addObject(Constants.STATE_LIST, stateList.getResponseList());
-
-			session.setAttribute(Constants.STATE_LIST, stateList.getResponseList());
+			session.setAttribute(Constants.STATE_LIST, new ArrayList(stateList.getResponseList()));
 	    	if(userType.equals(Constants.ADMIN_USER_TYPE)){
 	    		programManagerList = fetchProgramManagerByCurrency(isoId,isoResponse.getIsoRequest().get(0).getProgramManagerRequest().getAccountCurrency());
 	    	}
@@ -271,7 +278,6 @@ public class IsoController implements URLMappingConstants{
 			}
 			List<Option> countryList = bankService.getCountries();
 			modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-			session.setAttribute(Constants.COUNTRY_LIST, countryList);
 			Map<Long, Long> cardProgramAndEntityId = new HashMap<>();
             String[] ids;
             for(String id : isoReq.getCardProgramIds()){

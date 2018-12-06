@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import com.chatak.acquirer.admin.constants.TestConstants;
 import com.chatak.acquirer.admin.constants.URLMappingConstants;
 import com.chatak.acquirer.admin.controller.model.LoginDetails;
 import com.chatak.acquirer.admin.controller.model.LoginResponse;
@@ -41,7 +42,6 @@ import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.model.FeeCodeDTO;
 import com.chatak.pg.model.FeeProgramDTO;
-import com.chatak.pg.util.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FeeProgramControllerTest {
@@ -133,8 +133,8 @@ public class FeeProgramControllerTest {
     try {
       mockMvc
           .perform(get("/" + URLMappingConstants.SHOW_FEE_PROGRAM_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramSearch | Exception ", e);
@@ -150,8 +150,8 @@ public class FeeProgramControllerTest {
       Mockito.when(feeCodeService.getAllFeeCodeList()).thenReturn(codeResponse);
       mockMvc
           .perform(get("/" + URLMappingConstants.SHOW_FEE_PROGRAM_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramCreate | Exception ", e);
@@ -164,8 +164,8 @@ public class FeeProgramControllerTest {
       Mockito.when(feeCodeService.getAllFeeCodeList()).thenThrow(nullPointerException);
       mockMvc
           .perform(get("/" + URLMappingConstants.SHOW_FEE_PROGRAM_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramCreateException | Exception ", e);
@@ -175,14 +175,14 @@ public class FeeProgramControllerTest {
   @Test
   public void testCreateFeeProgram() {
     responseval = new Response();
-    responseval.setErrorMessage(Constants.SUCESS);
+    responseval.setErrorMessage(TestConstants.SUCESS);
     try {
       Mockito.when(feeProgramService.createFeeProgram(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testCreateFeeProgram | Exception ", e);
@@ -192,14 +192,14 @@ public class FeeProgramControllerTest {
   @Test
   public void testCreateFeeProgramFailed() {
     responseval = new Response();
-    responseval.setErrorMessage(Constants.FAILED);
+    responseval.setErrorMessage(TestConstants.FAILED);
     try {
       Mockito.when(feeProgramService.createFeeProgram(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testCreateFeeProgramFailed | Exception ", e);
@@ -213,8 +213,8 @@ public class FeeProgramControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testCreateFeeProgramException | Exception ", e);
@@ -228,8 +228,8 @@ public class FeeProgramControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_CREATE)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_CREATE_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testCreateFeeProgramChatakException | Exception ",
@@ -241,11 +241,11 @@ public class FeeProgramControllerTest {
   public void testUpdateFeeProgram() {
     responseval = new Response();
     feeProgramResponseDetails = new FeeProgramResponseDetails();
-    feeProgramDTO.setCreatedBy(Constants.ADMIN_VALUE);
-    feeProgramDTO.setCreatedDate(new Timestamp(Constants.ZERO));
+    feeProgramDTO.setCreatedBy(TestConstants.ADMIN_VALUE);
+    feeProgramDTO.setCreatedDate(new Timestamp(TestConstants.ZERO));
     feeProgramDTOList.add(feeProgramDTO);
     feeProgramResponseDetails.setFeeCodeList(feeProgramDTOList);
-    responseval.setErrorMessage(Constants.SUCESS);
+    responseval.setErrorMessage(TestConstants.SUCESS);
     try {
       Mockito.when(feeProgramService.getByFeeProgramId(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(feeProgramResponseDetails);
@@ -253,8 +253,8 @@ public class FeeProgramControllerTest {
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.UPDATE_FEE_PROGRAM)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testUpdateFeeProgram | Exception ", e);
@@ -265,11 +265,11 @@ public class FeeProgramControllerTest {
   public void testUpdateFeeProgramElse() {
     responseval = new Response();
     feeProgramResponseDetails = new FeeProgramResponseDetails();
-    feeProgramDTO.setCreatedBy(Constants.ADMIN_VALUE);
-    feeProgramDTO.setCreatedDate(new Timestamp(Constants.ZERO));
+    feeProgramDTO.setCreatedBy(TestConstants.ADMIN_VALUE);
+    feeProgramDTO.setCreatedDate(new Timestamp(TestConstants.ZERO));
     feeProgramDTOList.add(feeProgramDTO);
     feeProgramResponseDetails.setFeeCodeList(feeProgramDTOList);
-    responseval.setErrorMessage(Constants.FAILED);
+    responseval.setErrorMessage(TestConstants.FAILED);
     try {
       Mockito.when(feeProgramService.getByFeeProgramId(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(feeProgramResponseDetails);
@@ -277,8 +277,8 @@ public class FeeProgramControllerTest {
           .thenReturn(responseval);
       mockMvc
           .perform(post("/" + URLMappingConstants.UPDATE_FEE_PROGRAM)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testUpdateFeeProgramElse | Exception ", e);
@@ -292,8 +292,8 @@ public class FeeProgramControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.UPDATE_FEE_PROGRAM)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testUpdateFeeProgramException | Exception ", e);
@@ -307,8 +307,8 @@ public class FeeProgramControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.UPDATE_FEE_PROGRAM)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testUpdateFeeProgramChatakException | Exception ",
@@ -321,15 +321,15 @@ public class FeeProgramControllerTest {
     feeProgramResponseDetails = new FeeProgramResponseDetails();
     feeProgramDTOList.add(feeProgramDTO);
     feeProgramResponseDetails.setFeeCodeList(feeProgramDTOList);
-    feeProgramResponseDetails.setTotalNoOfRows(Constants.TEN);
+    feeProgramResponseDetails.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(feeProgramService.searchFeeProgramForJpa(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(feeProgramResponseDetails);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-              .param("pageSize", Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+              .param("pageSize", TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testSearchFeeProgram | Exception ", e);
@@ -343,8 +343,8 @@ public class FeeProgramControllerTest {
           .thenReturn(feeProgramResponseDetails);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testSearchFeeProgramElse | Exception ", e);
@@ -358,8 +358,8 @@ public class FeeProgramControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testSearchFeeProgramChatakException | Exception ",
@@ -374,8 +374,8 @@ public class FeeProgramControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_SEARCH)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testSearchFeeProgramException | Exception ", e);
@@ -386,19 +386,19 @@ public class FeeProgramControllerTest {
   public void testShowFeeProgramEdit() {
     responseval = new Response();
     feeProgramResponseDetails = new FeeProgramResponseDetails();
-    feeProgramDTO.setCreatedBy(Constants.ADMIN_VALUE);
-    feeProgramDTO.setCreatedDate(new Timestamp(Constants.ZERO));
+    feeProgramDTO.setCreatedBy(TestConstants.ADMIN_VALUE);
+    feeProgramDTO.setCreatedDate(new Timestamp(TestConstants.ZERO));
     feeProgramDTO.setFeeProgramName("feeProgramName");
     feeProgramDTOList.add(feeProgramDTO);
     feeProgramResponseDetails.setFeeCodeList(feeProgramDTOList);
-    responseval.setErrorMessage(Constants.FAILED);
+    responseval.setErrorMessage(TestConstants.FAILED);
     try {
       Mockito.when(feeProgramService.getFeeProgramDetails(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(feeProgramResponseDetails);
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_FEE_PROGRAM_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_EDIT_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramEdit | Exception ", e);
@@ -412,8 +412,8 @@ public class FeeProgramControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_FEE_PROGRAM_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_EDIT_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramEditException | Exception ", e);
@@ -427,8 +427,8 @@ public class FeeProgramControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_FEE_PROGRAM_EDIT)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_EDIT_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramEditChatakException | Exception ",
@@ -440,19 +440,19 @@ public class FeeProgramControllerTest {
   public void testShowFeeProgramView() {
     responseval = new Response();
     feeProgramResponseDetails = new FeeProgramResponseDetails();
-    feeProgramDTO.setCreatedBy(Constants.ADMIN_VALUE);
-    feeProgramDTO.setCreatedDate(new Timestamp(Constants.ZERO));
+    feeProgramDTO.setCreatedBy(TestConstants.ADMIN_VALUE);
+    feeProgramDTO.setCreatedDate(new Timestamp(TestConstants.ZERO));
     feeProgramDTO.setFeeProgramName("feeProgramName");
     feeProgramDTOList.add(feeProgramDTO);
     feeProgramResponseDetails.setFeeCodeList(feeProgramDTOList);
-    responseval.setErrorMessage(Constants.FAILED);
+    responseval.setErrorMessage(TestConstants.FAILED);
     try {
       Mockito.when(feeProgramService.getFeeProgramDetails(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(feeProgramResponseDetails);
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_FEE_PROGRAM_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.SHOW_FEE_PROGRAM_VIEW));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramView | Exception ", e);
@@ -466,8 +466,8 @@ public class FeeProgramControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_FEE_PROGRAM_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.SHOW_FEE_PROGRAM_VIEW));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramViewException | Exception ", e);
@@ -481,8 +481,8 @@ public class FeeProgramControllerTest {
           .thenThrow(chatakAdminException);
       mockMvc
           .perform(post("/" + URLMappingConstants.SHOW_FEE_PROGRAM_VIEW)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse))
           .andExpect(view().name(URLMappingConstants.SHOW_FEE_PROGRAM_VIEW));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testShowFeeProgramViewChatakException | Exception ",
@@ -495,17 +495,17 @@ public class FeeProgramControllerTest {
     feeProgramResponseDetails = new FeeProgramResponseDetails();
     feeProgramDTOList.add(feeProgramDTO);
     feeProgramResponseDetails.setFeeCodeList(feeProgramDTOList);
-    feeProgramResponseDetails.setTotalNoOfRows(Constants.TEN);
+    feeProgramResponseDetails.setTotalNoOfRows(TestConstants.TEN);
     try {
       Mockito.when(feeProgramService.searchFeeProgramForJpa(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(feeProgramResponseDetails);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_PAGINATION_ACTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-              .sessionAttr(Constants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
-              .param("pageNumber", Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+              .sessionAttr(TestConstants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
+              .param("pageNumber", TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testGetfeeProgramPagination | Exception ", e);
@@ -519,11 +519,11 @@ public class FeeProgramControllerTest {
           .thenThrow(nullPointerException);
       mockMvc
           .perform(post("/" + URLMappingConstants.FEE_PROGRAM_PAGINATION_ACTION)
-              .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-              .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-              .sessionAttr(Constants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
-              .param("pageNumber", Constants.ONE.toString())
-              .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()))
+              .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+              .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+              .sessionAttr(TestConstants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
+              .param("pageNumber", TestConstants.ONE.toString())
+              .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()))
           .andExpect(view().name(URLMappingConstants.FEE_PROGRAM_SEARCH_PAGE));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testGetfeeProgramPaginationException | Exception ",
@@ -540,11 +540,11 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.searchFeeProgramForJpa(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(feeProgramResponseDetails);
       mockMvc.perform(post("/" + URLMappingConstants.DOWNLOAD_FEE_PROGRAM_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-          .sessionAttr(Constants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "XLS")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+          .sessionAttr(TestConstants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "XLS")
           .param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testDownloadFeeProgramReport | Exception ", e);
@@ -560,11 +560,11 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.searchFeeProgramForJpa(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(feeProgramResponseDetails);
       mockMvc.perform(post("/" + URLMappingConstants.DOWNLOAD_FEE_PROGRAM_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-          .sessionAttr(Constants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "PDF")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+          .sessionAttr(TestConstants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "PDF")
           .param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testDownloadFeeProgramReportPDF | Exception ", e);
@@ -577,11 +577,11 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.searchFeeProgramForJpa(Matchers.any(FeeProgramDTO.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.DOWNLOAD_FEE_PROGRAM_REPORT)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES)
-          .sessionAttr(Constants.LOGIN_RESPONSE_DATA, loginResponse)
-          .sessionAttr(Constants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
-          .param("downLoadPageNumber", Constants.ONE.toString())
-          .param(Constants.TOTAL_RECORDS, Constants.TEN.toString()).param("downloadType", "PDF")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
+          .sessionAttr(TestConstants.LOGIN_RESPONSE_DATA, loginResponse)
+          .sessionAttr(TestConstants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO)
+          .param("downLoadPageNumber", TestConstants.ONE.toString())
+          .param(TestConstants.TOTAL_RECORDS, TestConstants.TEN.toString()).param("downloadType", "PDF")
           .param("downloadAllRecords", "true"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testDownloadFeeProgramReportException | Exception ",
@@ -594,7 +594,7 @@ public class FeeProgramControllerTest {
     try {
       Mockito.when(feeProgramService.validateFeePgmAccNo(Matchers.anyString())).thenReturn(false);
       mockMvc.perform(post("/" + URLMappingConstants.VALIDATE_FEEPGM_ACCOUNTNUM)
-          .param("specificAccountNumber", Constants.ONE.toString()));
+          .param("specificAccountNumber", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testValidateAccountNumFromCI | Exception ", e);
     }
@@ -606,7 +606,7 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.validateFeePgmAccNo(Matchers.anyString()))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.VALIDATE_FEEPGM_ACCOUNTNUM)
-          .param("specificAccountNumber", Constants.ONE.toString()));
+          .param("specificAccountNumber", TestConstants.ONE.toString()));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testValidateAccountNumFromCIException | Exception ",
           e);
@@ -619,7 +619,7 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.deleteFeeProgram(Long.valueOf(Matchers.anyLong())))
           .thenReturn(responseval);
       mockMvc.perform(get("/" + URLMappingConstants.SHOW_FEE_PROGRAM_DELETE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("feeProgramIds", "2"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("feeProgramIds", "2"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testDeleteFeeProgram | Exception ", e);
     }
@@ -631,7 +631,7 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.deleteFeeProgram(Long.valueOf(Matchers.anyLong())))
           .thenThrow(nullPointerException);
       mockMvc.perform(get("/" + URLMappingConstants.SHOW_FEE_PROGRAM_DELETE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("feeProgramIds", "2"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("feeProgramIds", "2"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testDeleteFeeProgramException | Exception ", e);
     }
@@ -643,7 +643,7 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.validateFeeprogramName(Matchers.anyString()))
           .thenReturn(feeprogramNameResponse);
       mockMvc.perform(get("/" + URLMappingConstants.CHATAK_ADMIN_FEEPROGRAM_VALIDATE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("feeProgramId", "2"));
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("feeProgramId", "2"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testValidateFeeprogramName | Exception ", e);
     }
@@ -657,7 +657,7 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.changeFeeProgramStatus(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(responseval);
       mockMvc.perform(post("/" + URLMappingConstants.FEE_PROGRAM_STATUS_CHANGE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("suspendActiveId", "2")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("suspendActiveId", "2")
           .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testChangeFeeProgramStatus | Exception ", e);
@@ -672,7 +672,7 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.changeFeeProgramStatus(Matchers.any(FeeProgramDTO.class)))
           .thenReturn(responseval);
       mockMvc.perform(post("/" + URLMappingConstants.FEE_PROGRAM_STATUS_CHANGE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("suspendActiveId", "2")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("suspendActiveId", "2")
           .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testChangeFeeProgramStatusElse | Exception ", e);
@@ -687,7 +687,7 @@ public class FeeProgramControllerTest {
       Mockito.when(feeProgramService.changeFeeProgramStatus(Matchers.any(FeeProgramDTO.class)))
           .thenThrow(nullPointerException);
       mockMvc.perform(post("/" + URLMappingConstants.FEE_PROGRAM_STATUS_CHANGE)
-          .sessionAttr(Constants.EXISTING_FEATURES, Constants.EXISTING_FEATURES).param("suspendActiveId", "2")
+          .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES).param("suspendActiveId", "2")
           .param("suspendActiveStatus", "suspendActiveStatus").param("reason", "reason"));
     } catch (Exception e) {
       logger.error("FeeProgramControllerTest | testChangeFeeProgramStatusException | Exception ",

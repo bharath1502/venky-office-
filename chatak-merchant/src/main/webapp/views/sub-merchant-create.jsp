@@ -312,8 +312,7 @@
 																code="manage.label.sub-merchant.merchantcode" /><span
 															class="required-field">*</span></label>
 														<form:hidden path="parentMerchantId" id="parentMerchantId" />
-														<select class="form-control" id="parentMerchantcode"
-															onblur=" return clientValidation('parentMerchantcode','cardType','parentMerchantIdEr');" onchange="fetchPartnerName(this.value)">
+														<select class="form-control" id="parentMerchantcode">
 															<c:forEach items="${mainMerchantList}" var="mainMerchant">
 																<option value="${mainMerchant.value}">${mainMerchant.label}</option>
 															</c:forEach>
@@ -673,7 +672,7 @@
 		document.getElementById('lookingFor').setAttribute('maxlength', '100');
 		
 		$(document).ready(function() {
-			 $("#parentMerchantId").prop("disabled", true);
+			 $("#parentMerchantcode").prop("disabled", true);
 			});
 
 	</script>

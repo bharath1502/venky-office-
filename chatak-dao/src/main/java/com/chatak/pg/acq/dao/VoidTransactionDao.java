@@ -22,7 +22,15 @@ import com.chatak.pg.user.bean.Transaction;
  */
 public interface VoidTransactionDao {
 
-  public List<ReportsDTO> getAllEftTransfers();
+  public List<ReportsDTO> getAllEftTransfers(); 
+  
+  public PGTransaction getTransactionOnInvoiceNum(String merchantId, String terminalId,
+	      String inVoiceNum);
+
+  public PGTransaction getAuthTransaction(String merchantId, String terminalId, String txnId,
+	      String txnType, String authId);
+  public PGTransaction findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount(
+	      String pan, String invoiceNumber, String merchantId, String terminalId, Long txnAmount);
 
   public DashBoardRecords findDashBoardRecords();
 
@@ -69,4 +77,7 @@ public interface VoidTransactionDao {
       GetTransactionsListRequest getTransactionsListRequest);
 
   public List<PGTransaction> getAllTransactionsOnMerchantCode(String merchantCode);
+  
+  public PGTransaction findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId(
+	      String transactionId, String merchantId, String terminalId);
 }

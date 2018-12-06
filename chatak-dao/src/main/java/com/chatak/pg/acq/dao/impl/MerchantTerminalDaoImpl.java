@@ -110,6 +110,28 @@ public class MerchantTerminalDaoImpl implements MerchantTerminalDao {
 	}
 
 	/**
+	 * @param merchantId
+	 * @param terminalId
+	 * @return
+	 * @throws DataAccessException
+	 */
+	
+
+	/**
+	 * @param merchantId
+	 * @return
+	 * @throws DataAccessException
+	 */
+	
+
+	/**
+	 * @param merchantId
+	 * @param terminalId
+	 * @return
+	 * @throws DataAccessException
+	 */
+	
+	/**
 	 * @return
 	 */
 }

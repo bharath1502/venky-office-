@@ -2,7 +2,7 @@ package com.chatak.pg.util;
 
 public class Constants {
 
-  Constants() {
+ public Constants() {
     super();
   }
 
@@ -36,7 +36,7 @@ public class Constants {
 
   public static final boolean CHATAK_LICENSE_VALID = false;
 
-  public static final int CHATAK_DOWNSTREAM_SOCKET_TIMEOUT = 20000;
+  public static int CHATAK_DOWNSTREAM_SOCKET_TIMEOUT = 20000;
 
   public static final String CHATAK_ACQ_ISO_PACKET_FIRST_4_BYTES_VALUE = "0000";
 
@@ -996,5 +996,8 @@ public class Constants {
   public static final String SETTLEMENT_DATE_FORMAT = "MM-dd-yyyy";
   
   public static final String TIMEZONE_DATE_FORMAT = "dd-MM-yyyy HH:mm:ss z";
+  
+  
+  
   
 }

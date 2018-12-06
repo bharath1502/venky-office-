@@ -30,7 +30,7 @@ public class CardData implements Serializable {
 
   private String cardHolderName;
 
-  private MethodOfPaymentTypeEnum cardType;
+ private MethodOfPaymentTypeEnum cardType;
 
   private String track1;
 

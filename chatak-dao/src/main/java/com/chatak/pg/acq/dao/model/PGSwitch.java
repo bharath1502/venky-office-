@@ -64,6 +64,10 @@ public class PGSwitch implements Serializable {
   
   @Column(name = "REASON")
   private String reason;
+  
+  
+  
+  
 
   public Timestamp getCreatedDate() {
 	return createdDate;

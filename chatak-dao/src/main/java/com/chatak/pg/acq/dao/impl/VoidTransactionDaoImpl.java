@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
@@ -376,6 +377,26 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
     }
     return Collections.emptyList();
   }
+  
+  /**
+   * Method to search transaction record on Invoice number
+   * 
+   * @param merchantId
+   * @param terminalId
+   * @param inVoiceNum
+   * @return Transaction record
+   * @throws DataAccessException
+   */
+  public PGTransaction getTransactionOnInvoiceNum(String merchantId, String terminalId,
+      String inVoiceNum) {
+    log.debug("TransactionDaoImpl | getTransactionOnInvoiceNum | Entering");
+    PGTransaction transaction = null;
+    List<PGTransaction> pgTxnlist = transactionRepository
+        .findByMerchantIdAndTerminalIdAndInvoiceNumber(merchantId, terminalId, inVoiceNum);
+    transaction = getPGTransaction(pgTxnlist);
+    log.debug("TransactionDaoImpl | getTransactionOnInvoiceNum | Exiting");
+    return transaction;
+  }
 
   @Override
   public PGTransaction findTransaction(String merchantId, String terminalId, String authId,
@@ -591,4 +612,63 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   public List<PGTransaction> getAllTransactionsOnMerchantCode(String merchantCode) {
     return transactionRepository.getAllTransactionsOnMerchantCode(merchantCode);
   }
+
+/**
+ * @param merchantId
+ * @param terminalId
+ * @param txnId
+ * @param txnType
+ * @param authId
+ * @return
+ */
+@Override
+public PGTransaction getAuthTransaction(String merchantId, String terminalId, String txnId, String txnType,
+		String authId) {
+	 log.debug("TransactionDaoImpl | getAuthTransaction | Entering");
+	    PGTransaction transaction = null;
+	    List<PGTransaction> pgTxnlist = transactionRepository
+	        .findByMerchantIdAndTerminalIdAndTransactionIdAndTransactionTypeAndAuthId(merchantId,
+	            terminalId, txnId, txnType, authId);
+	    transaction = getPGTransaction(pgTxnlist);
+	    log.debug("TransactionDaoImpl | getAuthTransaction | Exiting");
+	    return transaction;
+}
+
+/**
+ * @param pan
+ * @param invoiceNumber
+ * @param merchantId
+ * @param terminalId
+ * @param txnAmount
+ * @return
+ */
+@Override
+public PGTransaction findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount(String pan,
+		String invoiceNumber, String merchantId, String terminalId, Long txnAmount) {
+	log.debug(
+	        "TransactionDaoImpl | findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount | Entering");
+	    PGTransaction transaction = null;
+	    List<PGTransaction> pgTxnlist =
+	        transactionRepository.findByMerchantIdAndTerminalIdAndInvoiceNumberAndTxnAmountAndPan(
+	            merchantId, terminalId, invoiceNumber, txnAmount, pan);
+	    transaction = getPGTransaction(pgTxnlist);
+	    log.debug(
+	        "TransactionDaoImpl | findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount | Exiting");
+	    return transaction;
+	  }
+@Override
+public PGTransaction findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId(
+    String transactionId, String merchantId, String terminalId) {
+  log.debug(
+      "TransactionDaoImpl | findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId | Entering");
+  PGTransaction transaction = null;
+  List<PGTransaction> pgTxnlist =
+      transactionRepository.findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId(
+          transactionId, merchantId, terminalId);
+  transaction = getPGTransaction(pgTxnlist);
+  log.debug(
+      "TransactionDaoImpl | findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId | Exiting");
+  return transaction;
+}
+
 }

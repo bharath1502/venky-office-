@@ -21,6 +21,7 @@ import com.chatak.pg.util.Constants;
 import com.chatak.switches.jpos.util.JPOSUtil;
 import com.chatak.switches.sb.exception.ChatakSwitchException;
 
+
 /**
  * << Add Comments Here >>
  * 
@@ -31,9 +32,7 @@ import com.chatak.switches.sb.exception.ChatakSwitchException;
 public class ChatakSwitchChannel extends BaseChannel {
 
   protected Logger logger = LogManager.getLogger(this.getClass());
-
-  private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ChatakSwitchChannel.class);
-
+  
   private String switchName;
 
   /**
@@ -59,13 +58,19 @@ public class ChatakSwitchChannel extends BaseChannel {
     logger.info("Entering :: ChatakSwitchChannel :: send");
     try {
       if(!isConnected()) {
-    	log.info(switchName + " Connection is not available");
+    	logger.info(switchName + " Connection is not available");
         throw new ISOException(switchName + " Connection is not available");
       }
-      log.info(">> Sending ISO Packet to Switch - "+switchName+"\n");
-      String field22 = isoMsg.getString(Constants.TWENTYTWO);
-      if(field22.length() > Constants.THREE) {
-        isoMsg.set(Constants.TWENTYTWO, field22.substring(0, Constants.THREE));
+      logger.info(">> Sending ISO Packet to Switch - "+switchName+"\n");
+//      String field22 = isoMsg.getString(22);
+//      if(field22.contains("007")) {
+//        isoMsg.set(22, "071");
+//      } else if(field22.contains("020")) {
+//        isoMsg.set(22, "910");
+//      }
+      String field22 = isoMsg.getString(22);
+      if(field22.length() > 3) {
+        isoMsg.set(22, field22.substring(0, 3));
       }
       JPOSUtil.logISOData(isoMsg, logger);
       isoMsg.setDirection(ISOMsg.OUTGOING);
@@ -105,8 +110,8 @@ public class ChatakSwitchChannel extends BaseChannel {
    */
   @Override
   public ISOMsg receive() throws IOException, ISOException {
-    logger.info("Entering :: ChatakSwitchChannel :: receive");
-    byte[] incomingBytes = new byte[Constants.NUMBER];
+
+    byte[] incomingBytes = new byte[1024];
 
     LogEvent evt = new LogEvent(this, switchName + "<< receive");
     ISOMsg isoMsg = new ISOMsg();
@@ -115,7 +120,7 @@ public class ChatakSwitchChannel extends BaseChannel {
 
     try {
       if(!isConnected()) {
-    	log.info(switchName + " Connection is not available");
+    	logger.info(switchName + " Connection is not available");
         throw new ISOException(switchName + " Connection is not available");
       }
 
@@ -144,26 +149,26 @@ public class ChatakSwitchChannel extends BaseChannel {
     }
     catch(EOFException e) {
       closeSocket();
-      logger.error("Error :: ChatakSwitchChannel :: receive :: Peer Disconnected while Receiving Transaction");
+      logger.info("Peer Disconnected while Receiving Transaction");
       throw e;
     }
     catch(SocketException e) {
       closeSocket();
       if(usable) {
-        logger.error("Error :: ChatakSwitchChannel :: receive :: Peer Disconnected while Receiving Transaction" + e.getMessage(), e);
+        logger.info("Peer Disconnected while Receiving Transaction due to "+e.getMessage());
       }
       throw e;
     }
     catch(InterruptedIOException e) {
       closeSocket();
-      logger.error("Error :: ChatakSwitchChannel :: receive :: Timeout while Receiving Transaction due to " + e.getMessage(), e);
+      logger.info("Timeout while Receiving Transaction due to "+e.getMessage());
       throw e;
     }
     catch(IOException e) {
       logger.error("Error :: ChatakSwitchChannel :: receive :: IOException :: " + e.getMessage(), e);
       closeSocket();
       if(usable) {
-        logger.error("Error :: ChatakSwitchChannel :: receive :: Input/Output while Receiving Transaction due to " + e.getMessage(), e);
+        logger.info("Input/Output while Receiving Transaction due to "+e.getMessage());
       }
       throw e;
     }
@@ -174,7 +179,7 @@ public class ChatakSwitchChannel extends BaseChannel {
       throw new ISOException("System Malfunction", e);
     }
     finally {
-    	log.info("Completed the Receive Transaction");
+      logger.info("Completed the Receive Transaction");
     }
     logger.info("<< Receiving ISO Packet from Switch - "+switchName+"\n");
     JPOSUtil.logISOData(isoMsg, logger);
@@ -187,7 +192,7 @@ public class ChatakSwitchChannel extends BaseChannel {
    * 
    */
   public void run()  {
-	// need to implement based on requirement
+    
   }
 
 }

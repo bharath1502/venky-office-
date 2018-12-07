@@ -62,12 +62,6 @@ public class ChatakSwitchChannel extends BaseChannel {
         throw new ISOException(switchName + " Connection is not available");
       }
       logger.info(">> Sending ISO Packet to Switch - "+switchName+"\n");
-//      String field22 = isoMsg.getString(22);
-//      if(field22.contains("007")) {
-//        isoMsg.set(22, "071");
-//      } else if(field22.contains("020")) {
-//        isoMsg.set(22, "910");
-//      }
       String field22 = isoMsg.getString(22);
       if(field22.length() > 3) {
         isoMsg.set(22, field22.substring(0, 3));

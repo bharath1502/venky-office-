@@ -178,7 +178,7 @@ public class LoginController implements URLMappingConstants {
         getError(bindingResult, modelAndView);
         return modelAndView;
       }
-      loginDetails.setLoginIpAddress(request.getRemoteAddr());//Setting remote ipaddress
+      loginDetails.setLoginIpAddress(request.getRemoteAddr() +" | " + request.getParameter("privateIp"));//Setting remote public ipaddress and remote private ipaddress
       userAgent = removeWhiteSpace(userAgent);
 
       //to maintain current login time
@@ -258,8 +258,8 @@ public class LoginController implements URLMappingConstants {
 			modelAndView.setViewName(Constants.CHATAK_INVALID_ACCESS);
 			return modelAndView;
 		}else if (loginResponseData.getLoginIpAddress().equals(exIpAdress)
-				&& null != session.getAttribute("exUserAgent")
-				&& session.getAttribute("exUserAgent").equals(userAgent)) {
+				&& !StringUtil.isNullAndEmpty(cookieValue)) {
+			sessionInformation.refreshLastRequest();
 			return modelAndView;
 		}else {
 			if (!loginResponseData.getjSession().equals(userAgent + cookieValue)) {
@@ -617,7 +617,6 @@ public class LoginController implements URLMappingConstants {
     myCookie.setMaxAge(Constants.MAX_AGE);
     response.addCookie(myCookie);
     loginDetails.setjSession(userAgent + encUName + session.getId());
-    session.setAttribute("exUserAgent", userAgent);
     // Registering logged in user to Spring Session registry
     sessionRegistry.registerNewSession(encUName, loginDetails);
     logger.info("Exiting:: LoginController:: setLoginSuccessResponse method");

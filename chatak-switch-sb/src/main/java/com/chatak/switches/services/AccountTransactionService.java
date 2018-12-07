@@ -143,9 +143,10 @@ public abstract class AccountTransactionService {
     pgAccountTransactions.setTimeZoneRegion(pgTransaction.getTimeZoneRegion());
     pgAccountTransactions.setDeviceLocalTxnTime(pgTransaction.getDeviceLocalTxnTime());
     pgAccountTransactions.setEntityType(PGConstants.MERCHANT);
-    pgAccountTransactions.setEntityId(request.getMerchantId());
+    pgAccountTransactions.setEntityId(Long.valueOf(request.getMerchantId()));
     pgAccountTransactions.setProcessedTime(timestamp);
     pgAccountTransactions.setCurrentBalance(account.getCurrentBalance());
+
     // Step-1 : Initially logging total amount into account transactions
     pgAccountTransactions = accountTransactionsDao.createOrUpdate(pgAccountTransactions);
 

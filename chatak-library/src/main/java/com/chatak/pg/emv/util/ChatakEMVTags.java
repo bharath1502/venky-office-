@@ -78,5 +78,40 @@ public interface ChatakEMVTags {
   public static final int ISR = 0x9F5B; // Issuer Script Result
 
   public static final int LAN = 0x5F2D; // Language Preference
+  
+  public final static String[] EMV_TAGS = { "71","72",
+                                            "82",
+                                            "84",
+                                            "90",
+                                            "91",
+                                            "95",
+                                            "5A",
+                                            "6F",
+                                            "9A",
+                                            "9B",
+                                            "9C",
+                                            "A5",
+                                            "5F24",
+                                            "5F2A",
+                                            "5F34",
+                                            "9F02",
+                                            "9F03",
+                                            "9F09",
+                                            "9F10",
+                                            "9F1A",
+                                            "9F1E",
+                                            "9F26",
+                                            "9F27",
+                                            "9F33",
+                                            "9F34",
+                                            "9F35",
+                                            "9F36",
+                                            "9F37",
+                                            "9F41",
+                                            "9F53",
+                                            "9F5B",
+                                            "5F2D" };
+
+  
 
 }

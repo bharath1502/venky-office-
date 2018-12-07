@@ -51,7 +51,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.mobilephone"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="phone"
+														<form:input cssClass="form-control" path="phone" onkeypress="return numbersonly(this,event)"
 															id="phone" maxlength="10" onblur="this.value=this.value.trim();validatePhone()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="phoneEr" class="red-error">&nbsp;</span>

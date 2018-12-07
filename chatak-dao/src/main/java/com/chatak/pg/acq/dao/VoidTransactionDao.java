@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.chatak.pg.acq.dao;
 
 import java.util.List;

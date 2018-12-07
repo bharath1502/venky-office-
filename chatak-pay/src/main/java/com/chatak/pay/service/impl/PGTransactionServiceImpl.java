@@ -974,7 +974,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		// PERF >> Moving to async service
 		asyncService.logExit(pgOnlineTxnLog, txnState, reason, pgTxnId, processorResponse, processTxnId);
 		
-//		pgOnlineTxnLog.setPgTxnId(pgTxnId);
+pgOnlineTxnLog.setPgTxnId(pgTxnId);
 //		pgOnlineTxnLog.setProcessorResponse(processorResponse);
 //		pgOnlineTxnLog.setProcessorTxnId(processTxnId);
 //		pgOnlineTxnLog.setResponseDateTime(new Timestamp(System.currentTimeMillis()));
@@ -1465,7 +1465,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		 if(pgMerchant.getMerchantType().equals(PGConstants.MERCHANT)){
 			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(request.getMerchantId(), cardProgram.getCardProgramId());
 		 } else {
-			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(pgMerchant.getParentMerchantId(), cardProgram.getCardProgramId());
+			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(Long.valueOf(pgMerchant.getParentMerchantId()), cardProgram.getCardProgramId());
 		}
 			
 			if(pGMerchantCardProgramMap.getEntitytype().equals(Constants.PM_USER_TYPE)) {

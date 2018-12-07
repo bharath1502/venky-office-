@@ -2,7 +2,7 @@ package com.chatak.pg.util;
 
 public class Constants {
 
-  Constants() {
+ public Constants() {
     super();
   }
 

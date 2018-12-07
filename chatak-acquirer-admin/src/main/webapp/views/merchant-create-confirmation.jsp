@@ -437,12 +437,12 @@
 						<td><div id="confirmMcity"></div></td>
 					</tr>
 					<tr>
-						<td><spring:message code="common.label.state" />:</td>
-						<td><div id="confirmMstate"></div></td>
-					</tr>
-					<tr>
 						<td><spring:message code="common.label.country" />:</td>
 						<td><div id="confirmMcountry"></div></td>
+					</tr>
+					<tr>
+						<td><spring:message code="common.label.state" />:</td>
+						<td><div id="confirmMstate"></div></td>
 					</tr>
 					<tr>
 						<td><spring:message code="common.label.zipcode" />:</td>

@@ -363,7 +363,8 @@ var C_MERCHANT_MSG = {
 		maximumownloadLimit : "Max of 5000 records can be downloaded. Please contact system support for more records.",
 		address_should_contains_message : 'Only # , . / and alphanumerics are allowed',
 		merchantNotAssociatedToCurrentPM :"Merchant Code Not Associated To current Entity",
-		InvalidAmount : "Invalid Amount"
+		InvalidAmount : "Invalid Amount",
+		InvalidReasonLength : "Invalid Length"
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",
@@ -731,7 +732,8 @@ var C_MERCHANT_MSG = {
 		maximumownloadLimit : "Se puede descargar un máximo de 5000 registros. Por favor, póngase en contacto con el soporte del sistema para obtener más registros.",
 		address_should_contains_message : 'Solamente # , . / y alfanuméricos están permitidos',
 		merchantNotAssociatedToCurrentPM :"Merchant Code no asociado al Entity actual",
-		InvalidAmount : "Monto invalido"
+		InvalidAmount : "Monto invalido",
+		InvalidReasonLength : "Longitud invalido"
 	}
 };
 

@@ -423,6 +423,10 @@ function validatePopupDesc() {
 	if (isEmpty(text)) {
 		  setDiv("popDescError_div", webMessages.Enter_reason);
 		return false;
+	} 
+	if(text.length < 3) {
+		setDiv("popDescError_div", webMessages.InvalidReasonLength);
+		return false;
 	}
 	if (!invalidWords(text)) {
 		setDiv("popDescError_div", webMessages.virtualTerminalValidData);

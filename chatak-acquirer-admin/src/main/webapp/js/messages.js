@@ -103,7 +103,7 @@ var C_MERCHANT_MSG = {
 		virtualTerminalCardHolderName : "Please enter Card Holder Name",
 		virtualTerminalAlphabetic : "Should be alphabetic",
 		virtualTerminalAmount : "Please enter Amount",
-		virtualTerminalValidData : "Please Enter Valid Text For Reason",
+		virtualTerminalValidData : "Please enter 20 alphanumeric values",
 		virtualTerminalStreet : "Please enter Street",
 		invalidStreet : "Invalid Street",
 		virtualTerminalZipCode : "Please enter Zip Code",

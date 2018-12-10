@@ -39,6 +39,22 @@ var ValidationRules = {
 
 	},
 	
+	switch_port_validation : {
+		type : "numeric",
+		min : "4",
+		max : "6",
+		mandatory : true
+
+	},
+	
+	priority_validation : {
+		type : "numeric",
+		min : "1",
+		max : "6",
+		mandatory : true
+
+	},
+	
 	extension_not_mandatory : {
 		type : "numeric",
 		min : "0",

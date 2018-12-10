@@ -66,4 +66,16 @@ public interface VoidTransactionDao {
       GetTransactionsListRequest getTransactionsListRequest);
 
   public List<PGTransaction> getAllTransactionsOnMerchantCode(String merchantCode);
+  
+  public PGTransaction findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount(
+	      String pan, String invoiceNumber, String merchantId, String terminalId, Long txnAmount);
+  
+  public PGTransaction findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId(
+	      String transactionId, String merchantId, String terminalId);
+  
+  public PGTransaction getAuthTransaction(String merchantId, String terminalId, String txnId,
+	      String txnType, String authId);
+
+  public PGTransaction getTransactionOnInvoiceNum(String merchantId, String terminalId,
+	      String inVoiceNum);
 }

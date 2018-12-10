@@ -36,7 +36,7 @@ public class Constants {
 
   public static final boolean CHATAK_LICENSE_VALID = false;
 
-  public static final int CHATAK_DOWNSTREAM_SOCKET_TIMEOUT = 20000;
+  public static final Integer CHATAK_DOWNSTREAM_SOCKET_TIMEOUT = 20000;
 
   public static final String CHATAK_ACQ_ISO_PACKET_FIRST_4_BYTES_VALUE = "0000";
 

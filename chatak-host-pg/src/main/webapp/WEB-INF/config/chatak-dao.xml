@@ -29,20 +29,20 @@
 
 	<jpa:repositories base-package="com.chatak.pg.acq.dao.repository" />
 
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource"
 		destroy-method="close">
-		<property name="driverClass" value="${chatak.pg.db.driverClass}" />
+		<property name="driverClassName" value="${chatak.pg.db.driverClass}" />
 		<property name="jdbcUrl" value="${chatak.pg.db.jdbcUrl}" />
-		<property name="user" value="${chatak.pg.db.user}" />
+		<property name="username" value="${chatak.pg.db.user}" />
 		<property name="password" value="${chatak.pg.db.password}" />
-		<property name="initialPoolSize" value="${chatak.pg.db.initialPoolSize}" />
-		<property name="maxPoolSize" value="${chatak.pg.db.maxPoolSize}" />
-		<property name="minPoolSize" value="${chatak.pg.db.minPoolSize}" />
-		<property name="acquireIncrement" value="${chatak.pg.db.acquireIncrement}" />
-		<property name="acquireRetryAttempts" value="${chatak.pg.db.acquireRetryAttempts}" />
-		<property name="maxStatements" value="${chatak.pg.db.maxStatements}" />
-		<property name="idleConnectionTestPeriod" value="${chatak.pg.db.idleConnectionTestPeriod}" />
+		<property name="maximumPoolSize" value="${chatak.pg.db.maxPoolSize}" />
+		<property name="minimumIdle" value="${chatak.pg.db.minPoolSize}" />
+		<!-- <property name="acquireIncrement" value="${chatak.pg.db.acquireIncrement}" />
+		<property name="acquireRetryAttempts" value="${chatak.pg.db.acquireRetryAttempts}" /> -->
+		<!-- <property name="maxStatements" value="${chatak.pg.db.maxStatements}" /> -->
+		<property name="idleTimeout" value="${chatak.pg.db.idleConnectionTestPeriod}" />
 	</bean>
+
 
 	<!-- Transaction Manager -->
 	<bean id="txManager"

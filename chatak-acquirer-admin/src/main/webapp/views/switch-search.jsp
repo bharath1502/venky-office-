@@ -133,7 +133,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.primaryswitchport"/></label>
 														<form:input cssClass="form-control" path="primarySwitchPort"
-															id="primarySwitchPort" onkeypress="return numbersonly(this,event)" maxlength="5" onblur="clientValidation('primarySwitchPort','fax','primarySwitchPortEr')"/>
+															id="primarySwitchPort" onkeypress="return numbersonly(this,event)" maxlength="5" onblur="clientValidation('primarySwitchPort','switch_port_validation','primarySwitchPortEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="primarySwitchPortEr" class="red-error">&nbsp;</span>
 														</div>
@@ -149,7 +149,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.secondaryswitchport"/></label>
 														<form:input cssClass="form-control" path="secondarySwitchPort"
-															id="secondarySwitchPort" onkeypress="return numbersonly(this,event)" maxlength="5" onblur="clientValidation('secondarySwitchPort','fax','secondarySwitchPortEr')"/>
+															id="secondarySwitchPort" onkeypress="return numbersonly(this,event)" maxlength="5" onblur="clientValidation('secondarySwitchPort','switch_port_validation','secondarySwitchPortEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="secondarySwitchPortEr" class="red-error">&nbsp;</span>
 														</div>
@@ -157,7 +157,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.priority"/></label>
 														<form:input cssClass="form-control" path="priority"
-															id="priority" onkeypress="return numbersonly(this,event)" maxlength="1" onblur="clientValidation('priority','fax','priorityEr')"/>
+															id="priority" onkeypress="return numbersonly(this,event)" maxlength="1" onblur="clientValidation('priority','priority_validation','priorityEr')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="priorityEr" class="red-error">&nbsp;</span>
 														</div>

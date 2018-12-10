@@ -1012,5 +1012,7 @@ public class Constants {
   public static final String ACCOUNT_PAY_VALUE ="350";
   
   public static final String HYPHEN_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+  
+  public static final String BANK_VIEW_NAME = "bankViewName";
 
 }

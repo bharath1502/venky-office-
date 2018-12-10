@@ -58,7 +58,7 @@ import com.mysema.query.jpa.impl.JPAQuery;
 public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTransactionDao {
 
   private static Logger log = Logger.getLogger(VoidTransactionDaoImpl.class);
-
+   
   @Autowired
   private CardInfoRepository cardInfoRepository;
 
@@ -80,35 +80,35 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   @Override
   public PGTransaction getTransactionToVoid(String merchantId, String terminalId, String txnId,
       String authId) {
-    log.debug("TransactionDaoImpl | getTransactionToVoid | Entering");
+    log.debug("VoidTransactionDaoImpl | getTransactionToVoid | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist = transactionRepository.findByVoidTransactionType(merchantId,
         terminalId, new BigInteger(txnId), "sale", "refund");
     transaction = getPGTransaction(pgTxnlist);
-    log.debug("TransactionDaoImpl | getTransactionToVoid | Exiting");
+    log.debug("VoidTransactionDaoImpl | getTransactionToVoid | Exiting");
     return transaction;
   }
 
   @Override
   public PGTransaction findTransactionToVoidByIssuerTxnId(String issuerTxnRefNum) {
-    log.debug("TransactionDaoImpl | findTransactionToVoidByIssuerTxnId | Entering");
+    log.debug("VoidTransactionDaoImpl | findTransactionToVoidByIssuerTxnId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist =
         transactionRepository.findTransactionToVoidByIssuerTxnId(issuerTxnRefNum);
     transaction = getPGTransaction(pgTxnlist);
-    log.debug("TransactionDaoImpl | findTransactionToVoidByIssuerTxnId | Exiting");
+    log.debug("VoidTransactionDaoImpl | findTransactionToVoidByIssuerTxnId | Exiting");
     return transaction;
   }
 
   @Override
   public PGTransaction findTransactionToVoidByPGTxnIdAndIssuerTxnId(String txnId,
       String issuerTxnRefNum) {
-    log.debug("TransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnId | Entering");
+    log.debug("VoidTransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist =
         transactionRepository.findTransactionToVoidByPGTxnIdAndIssuerTxnId(txnId, issuerTxnRefNum);
     transaction = getPGTransaction(pgTxnlist);
-    log.debug("TransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnId | Exiting");
+    log.debug("VoidTransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnId | Exiting");
     return transaction;
   }
 
@@ -116,14 +116,14 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   public PGTransaction findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(
       String transactionId, String issuerTxnRefNum, String merchantId, String terminalId) {
     log.debug(
-        "TransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Entering");
+        "VoidTransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist = transactionRepository
         .findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(new BigInteger(transactionId),
             issuerTxnRefNum, merchantId, terminalId);
     transaction = getPGTransaction(pgTxnlist);
     log.debug(
-        "TransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Exiting");
+        "VoidTransactionDaoImpl | findTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Exiting");
     return transaction;
   }
 
@@ -131,41 +131,41 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   public PGTransaction findTransactionToVoidByPGTxnIdAndMerchantIdAndTerminalId(
       String transactionId, String merchantId, String terminalId) {
     log.debug(
-        "TransactionDaoImpl | findTransactionToVoidByPGTxnIdAndMerchantIdAndTerminalId | Entering");
+        "VoidTransactionDaoImpl | findTransactionToVoidByPGTxnIdAndMerchantIdAndTerminalId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist =
         transactionRepository.findTransactionToVoidByPGTxnIdAndMerchantIdAndTerminalId(
             transactionId, merchantId, terminalId);
     transaction = getPGTransaction(pgTxnlist);
     log.debug(
-        "TransactionDaoImpl | findTransactionToVoidByPGTxnIdAndMerchantIdAndTerminalId | Exiting");
+        "VoidTransactionDaoImpl | findTransactionToVoidByPGTxnIdAndMerchantIdAndTerminalId | Exiting");
     return transaction;
   }
 
   @Override
   public PGTransaction createTransaction(PGTransaction pgTransaction) {
-    log.debug("TransactionDaoImpl | createTransaction | Entering");
+    log.debug("VoidTransactionDaoImpl | createTransaction | Entering");
     if (null == pgTransaction.getAcqChannel()) {
       pgTransaction.setAcqChannel("POS");
     }
     if (null == pgTransaction.getAcqTxnMode()) {
       pgTransaction.setAcqTxnMode("POS");
     }
-    log.debug("TransactionDaoImpl | createTransaction | Exiting");
+    log.debug("VoidTransactionDaoImpl | createTransaction | Exiting");
     return transactionRepository.save(pgTransaction);
   }
 
   @Override
   public void createCardInfo(PGTxnCardInfo txnCardInfo) {
-    log.debug("TransactionDaoImpl | createCardInfo | Entering");
+    log.debug("VoidTransactionDaoImpl | createCardInfo | Entering");
     cardInfoRepository.save(txnCardInfo);
-    log.debug("TransactionDaoImpl | createCardInfo | Exiting");
+    log.debug("VoidTransactionDaoImpl | createCardInfo | Exiting");
   }
 
   @Override
   public List<Transaction> getTransactionListToDashBoard(
       GetTransactionsListRequest getTransactionsListRequest) {
-    log.info("TransactionDaoImpl | getTransactionListToDashBoard | Entering");
+    log.info("VoidTransactionDaoImpl | getTransactionListToDashBoard | Entering");
     List<Transaction> transactions = null;
     try {
       
@@ -211,9 +211,9 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
         }
       }
     } catch (Exception e) {
-      log.error("TransactionDaoImpl | getTransactionListToDashBoard | Exception ", e);
+      log.error("VoidTransactionDaoImpl | getTransactionListToDashBoard | Exception ", e);
     }
-    log.info("TransactionDaoImpl | getTransactionListToDashBoard | Exiting");
+    log.info("VoidTransactionDaoImpl | getTransactionListToDashBoard | Exiting");
     return transactions;
 
   }
@@ -402,26 +402,26 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   public PGTransaction findTransactionToCaptureByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(
       String transactionId, String issuerTxnRefNum, String merchantId, String terminalId) {
     log.debug(
-        "TransactionDaoImpl | findTransactionToCaptureByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Entering");
+        "VoidTransactionDaoImpl | findTransactionToCaptureByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist = transactionRepository
         .findTransactionToCaptureByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(transactionId,
             issuerTxnRefNum, merchantId, terminalId);
     transaction = getPGTransaction(pgTxnlist);
     log.debug(
-        "TransactionDaoImpl | findTransactionToCaptureByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Exiting");
+        "VoidTransactionDaoImpl | findTransactionToCaptureByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId | Exiting");
     return transaction;
   }
 
   @Override
   public PGTransaction findTransactionToReversalByMerchantIdAndPGTxnId(String merchantId,
       String transactionId) {
-    log.debug("TransactionDaoImpl | findTransactionToReversalByMerchantIdAndPGTxnId | Entering");
+    log.debug("VoidTransactionDaoImpl | findTransactionToReversalByMerchantIdAndPGTxnId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist = transactionRepository
         .findTransactionToReverseByPGTxnIdAndMerchantId(transactionId, merchantId);
     transaction = getPGTransaction(pgTxnlist);
-    log.debug("TransactionDaoImpl | findTransactionToReversalByMerchantIdAndPGTxnId | Exiting");
+    log.debug("VoidTransactionDaoImpl | findTransactionToReversalByMerchantIdAndPGTxnId | Exiting");
     return transaction;
   }
 
@@ -429,21 +429,21 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   public PGTransaction findTransactionToCaptureByPGTxnIdAndMerchantIdAndTerminalId(
       String transactionId, String merchantId, String terminalId) {
     log.debug(
-        "TransactionDaoImpl | findTransactionToCaptureByPGTxnIdAndMerchantIdAndTerminalId | Entering");
+        "VoidTransactionDaoImpl | findTransactionToCaptureByPGTxnIdAndMerchantIdAndTerminalId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist =
         transactionRepository.findTransactionToCaptureByPGTxnIdAndMerchantIdAndTerminalId(
             transactionId, merchantId, terminalId);
     transaction = getPGTransaction(pgTxnlist);
     log.debug(
-        "TransactionDaoImpl | findTransactionToCaptureByPGTxnIdAndMerchantIdAndTerminalId | Exiting");
+        "VoidTransactionDaoImpl | findTransactionToCaptureByPGTxnIdAndMerchantIdAndTerminalId | Exiting");
     return transaction;
   }
   
   @Override
   public List<Transaction> getSearchTransactions(
       GetTransactionsListRequest getTransactionsListRequest) {
-    log.info("TransactionDaoImpl | getSearchTransactions | Entering");
+    log.info("VoidTransactionDaoImpl | getSearchTransactions | Entering");
     List<Transaction> transactions = null;
     try {
       Timestamp startDate = null;
@@ -494,9 +494,9 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
         transactions = validateTupleList(tupleList);
       }
     } catch (Exception e) {
-      log.error("TransactionDaoImpl | getSearchTransactions | Exception " + e);
+      log.error("VoidTransactionDaoImpl | getSearchTransactions | Exception " + e);
     }
-    log.info("TransactionDaoImpl | getSearchTransactions | Exiting");
+    log.info("VoidTransactionDaoImpl | getSearchTransactions | Exiting");
     return transactions;
   }
 
@@ -604,14 +604,14 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   public PGTransaction findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount(String pan,
   		String invoiceNumber, String merchantId, String terminalId, Long txnAmount) {
   	log.debug(
-  	        "TransactionDaoImpl | findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount | Entering");
+  	        "VoidTransactionDaoImpl | findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount | Entering");
   	    PGTransaction transaction = null;
   	    List<PGTransaction> pgTxnlist =
   	        transactionRepository.findByMerchantIdAndTerminalIdAndInvoiceNumberAndTxnAmountAndPan(
   	            merchantId, terminalId, invoiceNumber, txnAmount, pan);
   	    transaction = getPGTransaction(pgTxnlist);
   	    log.debug(
-  	        "TransactionDaoImpl | findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount | Exiting");
+  	        "VoidTransactionDaoImpl | findDuplicateTransactionOnPanAndInvoiceNumberAndMerchantIdAndTerminalIdAndTxnAmount | Exiting");
   	    return transaction;
   	  }
   
@@ -619,14 +619,14 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   public PGTransaction findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId(
       String transactionId, String merchantId, String terminalId) {
     log.debug(
-        "TransactionDaoImpl | findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId | Entering");
+        "VoidTransactionDaoImpl | findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist =
         transactionRepository.findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId(
             transactionId, merchantId, terminalId);
     transaction = getPGTransaction(pgTxnlist);
     log.debug(
-        "TransactionDaoImpl | findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId | Exiting");
+        "VoidTransactionDaoImpl | findTransactionToRefundByPGTxnIdAndMerchantIdAndTerminalId | Exiting");
     return transaction;
   }
 
@@ -641,13 +641,13 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
   @Override
   public PGTransaction getAuthTransaction(String merchantId, String terminalId, String txnId, String txnType,
   		String authId) {
-  	 log.debug("TransactionDaoImpl | getAuthTransaction | Entering");
+  	 log.debug("VoidTransactionDaoImpl | getAuthTransaction | Entering");
   	    PGTransaction transaction = null;
   	    List<PGTransaction> pgTxnlist = transactionRepository
   	        .findByMerchantIdAndTerminalIdAndTransactionIdAndTransactionTypeAndAuthId(merchantId,
   	            terminalId, txnId, txnType, authId);
   	    transaction = getPGTransaction(pgTxnlist);
-  	    log.debug("TransactionDaoImpl | getAuthTransaction | Exiting");
+  	    log.debug("VoidTransactionDaoImpl | getAuthTransaction | Exiting");
   	    return transaction;
   }
 
@@ -662,12 +662,12 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
    */
   public PGTransaction getTransactionOnInvoiceNum(String merchantId, String terminalId,
       String inVoiceNum) {
-    log.debug("TransactionDaoImpl | getTransactionOnInvoiceNum | Entering");
+    log.debug("VoidTransactionDaoImpl | getTransactionOnInvoiceNum | Entering");
     PGTransaction transaction = null;
     List<PGTransaction> pgTxnlist = transactionRepository
         .findByMerchantIdAndTerminalIdAndInvoiceNumber(merchantId, terminalId, inVoiceNum);
     transaction = getPGTransaction(pgTxnlist);
-    log.debug("TransactionDaoImpl | getTransactionOnInvoiceNum | Exiting");
+    log.debug("VoidTransactionDaoImpl | getTransactionOnInvoiceNum | Exiting");
     return transaction;
   }
 }

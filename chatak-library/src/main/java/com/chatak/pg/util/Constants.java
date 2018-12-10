@@ -2,7 +2,7 @@ package com.chatak.pg.util;
 
 public class Constants {
 
-  Constants() {
+ public Constants() {
     super();
   }
 
@@ -148,9 +148,9 @@ public class Constants {
 
   public static final String SYSTEM_REVENUE_ACCOUNT = "SYSTEM REVENUE ACCOUNT";
 
-  public static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+  public static final String DATE_TIME_FORMAT = "MM/dd/yyyy HH:mm:ss";
 
-  public static final String DATE_TIME_FORMAT_MARKER = "dd/MM/yyyy HH:mm:ss a";
+  public static final String DATE_TIME_FORMAT_MARKER = "MM/dd/yyyy HH:mm:ss a";
 
   public static final String DELIMITER = "\\|";
 
@@ -1008,6 +1008,8 @@ public class Constants {
   public static final String JSESSIONID = "JSESSIONID";
   
   public static final String SETTELEMENT_AMOUNT_FORMAT ="#,##0.00";
+  
+  public static final String ACCOUNT_PAY_VALUE ="350";
   
   public static final String HYPHEN_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 

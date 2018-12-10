@@ -461,27 +461,27 @@ public class PayController implements URLMappingConstants, Constant {
       validateRequestToken(auth2Authentication);
 
       PaymentDetails paymentDetails = new PaymentDetails(null,
-                                                         TransactionType.valueOf(transactionType),
-                                                         orderId,
-                                                         totAmt,
-                                                         merAmt,
-                                                         null,
-                                                         description,
-                                                         billerName,
-                                                         billerEmail,
-                                                         billerCity,
-                                                         billerState,
-                                                         CountryTypeEnum.valueOf(billerCountry),
-                                                         billerZip,
-                                                         address,
-                                                         address2,
-                                                         mId,
-                                                         returnURL,
-                                                         (StringUtil.isNullEmpty(currency)) ? CurrencyCodeEnum.USD
-                                                                                           : CurrencyCodeEnum.valueOf(currency),
-                                                         typeEnum,
-                                                         cardToken,
-                                                         accessToken); // Default
+              TransactionType.valueOf(transactionType),
+              orderId,
+              totAmt,
+              merAmt,
+              null,
+              description,
+              billerName,
+              billerEmail,
+              billerCity,
+              billerState,
+              CountryTypeEnum.valueOf(billerCountry),
+              billerZip,
+              address,
+              address2,
+              mId,
+              returnURL,
+              (StringUtil.isNullEmpty(currency)) ? CurrencyCodeEnum.USD
+                                                : CurrencyCodeEnum.valueOf(currency),
+              typeEnum,
+              cardToken,
+              accessToken); // Default
       // USD
       // will
       // be

@@ -100,16 +100,16 @@ public class BankDaoImpl implements BankDao {
 		PGBank pgBankCode = bankRepository.findByBankCode(bankRequest.getBankCode());
 		if(pgBankCode != null){
 			bankResponse.setErrorCode(ActionErrorCode.DUPLICATE_BANK_CODE);
-			bankResponse.setErrorMessage(messageSource
-		            .getMessage(ActionErrorCode.DUPLICATE_BANK_CODE, null, LocaleContextHolder.getLocale()));
+			bankResponse.setErrorMessage(ActionErrorCode.getInstance()
+					.getMessage(ActionErrorCode.DUPLICATE_BANK_CODE));
 			return bankResponse;
 		}
 		pgBank = bankRepository.findByBankName(bankRequest.getBankName());
 		if (null != pgBank && !pgBank.getStatus().equals(PGConstants.S_STATUS_DELETED)) {
 			
 			bankResponse.setErrorCode(ActionErrorCode.ERROR_CODE_B1);
-			bankResponse.setErrorMessage(messageSource
-		            .getMessage(ActionErrorCode.ERROR_CODE_B1, null, LocaleContextHolder.getLocale()));
+			bankResponse.setErrorMessage(ActionErrorCode.getInstance()
+					.getMessage(ActionErrorCode.ERROR_CODE_B1));
 			return bankResponse;
 		}
 		PGBank bank = new PGBank();

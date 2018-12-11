@@ -32,4 +32,7 @@ public interface BankRepository extends JpaRepository<PGBank, Long>, QueryDslPre
 	public List<PGBank> findByCurrencyIdAndStatusLike(Long currencyId, String status);
 	
 	public List<PGBank> findByIssuanceBankId(Long issuanceBankId);
+	
+	@Query("select t from PGBank t where t.bankCode=:bankCode and t.status <> 'Deleted' ")
+	public PGBank findByBankCode(@Param("bankCode") String bankCode);
 }

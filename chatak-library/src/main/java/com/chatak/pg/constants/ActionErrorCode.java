@@ -144,6 +144,7 @@ public class ActionErrorCode {
   public static final String ERROR_CODE_B4 = "B4";
   public static final String ERROR_CODE_B5 = "B5";
   public static final String ERROR_CODE_BANK_LINKED = "B6";
+  public static final String DUPLICATE_BANK_CODE = "DUPLICATE_BANK_CODE";
   
 //MCC Error codes
   public static final String ERROR_CODE_MCC0 = "MCC0";

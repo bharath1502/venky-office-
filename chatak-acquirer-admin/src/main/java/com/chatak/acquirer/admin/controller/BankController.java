@@ -125,9 +125,14 @@ public class BankController implements URLMappingConstants {
         modelAndView.addObject(Constants.SUCESS, messageSource
             .getMessage(ActionErrorCode.ERROR_CODE_B0, null, LocaleContextHolder.getLocale()));
         model.put("bank", new Bank());
-      } else {
+      } else if(null != bankResponse
+              && bankResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_B1)) {
         modelAndView.addObject(Constants.ERROR, messageSource
             .getMessage(ActionErrorCode.ERROR_CODE_B1, null, LocaleContextHolder.getLocale()));
+        model.put("bank", bank);
+      }  else{
+	    modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(ActionErrorCode.DUPLICATE_BANK_CODE, null, LocaleContextHolder.getLocale()));
         model.put("bank", bank);
       }
     } catch (Exception e) {

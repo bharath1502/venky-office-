@@ -43,7 +43,7 @@ var ValidationRules = {
 		type : "numeric",
 		min : "4",
 		max : "6",
-		mandatory : true
+		mandatory : false
 
 	},
 	
@@ -51,7 +51,7 @@ var ValidationRules = {
 		type : "numeric",
 		min : "1",
 		max : "6",
-		mandatory : true
+		mandatory : false
 
 	},
 	

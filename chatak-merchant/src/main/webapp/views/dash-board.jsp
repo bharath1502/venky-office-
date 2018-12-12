@@ -144,38 +144,12 @@
 											</a></td>
 
 											<td><span class="col-sm-6 tbl-text-align-right"><spring:message
-														code="dash-board.label.availablebalance" /> : </span> <c:choose>
-													<c:when test="${accountDetails.availableBalance lt 0}">
-														<span style="color: red;"
-															class="col-sm-6 tbl-text-align-right">
-															${currencyAlpha} <fmt:formatNumber
-																value="${accountDetails.availableBalance/100}"
-																currencyCode="${currencyAlpha}" minFractionDigits="2"/>
-														</span>
-													</c:when>
-													<c:otherwise>
-														<span class="col-sm-6 tbl-text-align-right">
-															${currencyAlpha} <fmt:formatNumber
-																value="${accountDetails.availableBalance/100}"
-																currencyCode="${currencyAlpha}" minFractionDigits="2"/>
-														</span>
-													</c:otherwise>
-												</c:choose> <br> <span class="col-sm-6 tbl-text-align-right"><spring:message
-														code="dash-board.label.currentbalance" /> &nbsp;&nbsp;: </span> <c:choose>
-													<c:when test="${accountDetails.currentBalance lt 0}">
-														<span style="color: red;"
-															class="col-sm-6 tbl-text-align-right">
-															${currencyAlpha} <fmt:formatNumber
-																value="${accountDetails.currentBalance/100}" minFractionDigits="2"/>
-														</span>
-													</c:when>
-													<c:otherwise>
-														<span class="col-sm-6 tbl-text-align-right">
-															${currencyAlpha} <fmt:formatNumber
-																value="${accountDetails.currentBalance/100}" minFractionDigits="2"/>
-														</span>
-													</c:otherwise>
-												</c:choose></td>
+														code="dash-board.label.availablebalance" /> : </span>
+														${currencyAlpha} ${accountDetails.availableBalanceString}
+														<br> <span class="col-sm-6 tbl-text-align-right"><spring:message
+														code="dash-board.label.currentbalance" /> &nbsp;&nbsp;: </span>
+														${currencyAlpha} ${accountDetails.currentBalanceString}
+											</td>
 										</c:catch>
 										<c:if test="${catchException != null}">
 											<p>
@@ -278,7 +252,7 @@
 									</c:when>
 									<c:otherwise>
 										<tr>
-											<td colspan="10" style="color: red; text-align: center;"><spring:message
+											<td colspan="12" style="color: red; text-align: center;"><spring:message
 													code="dash-board.label.norecordsfound" /></td>
 										</tr>
 									</c:otherwise>
@@ -397,7 +371,7 @@
 									</c:when>
 									<c:otherwise>
 										<tr>
-											<td colspan="8" style="color: red; text-align: center;"><spring:message
+											<td colspan="9" style="color: red; text-align: center;"><spring:message
 													code="dash-board.label.norecordsfound" /></td>
 										</tr>
 									</c:otherwise>

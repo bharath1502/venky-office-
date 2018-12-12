@@ -158,7 +158,6 @@ public class MerchantProfileController implements URLMappingConstants {
         model.put(Constants.SUCESS, messageSource.getMessage("change.password.error.message", null,
             LocaleContextHolder.getLocale()));
         resetCookie(request, response, session);
-        session.invalidate();
         modelAndView.setViewName(CHATAK_MERCHANT_LOGIN);
         LoginDetails loginDetails = new LoginDetails();
         model.put(Constants.LOGIN_DETAILS, loginDetails);

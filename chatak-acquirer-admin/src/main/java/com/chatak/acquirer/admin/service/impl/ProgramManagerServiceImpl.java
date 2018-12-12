@@ -287,7 +287,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 			setSecond(columns, c);
 			Timestamp serverTime = new Timestamp(c.getTimeInMillis());
 			String pmSchedulerRunTime = DateUtils.convertServerTimeToDeviceLocalTime(serverTime,
-					timeZoneRequest.getStandardTimeOffset());
+					timeZoneRequest.getStandardTimeOffset().split(" ")[0]);
 			String[] schedulerDate = pmSchedulerRunTime.split(" ");
 			String pmSchedulerConvertedTime = DateUtils.convertSchedulerTimeToSystemTime(schedulerDate[1],
 					programManagerRequest.getDeviceTimeZoneOffset());

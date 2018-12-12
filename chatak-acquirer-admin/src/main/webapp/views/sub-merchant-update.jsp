@@ -458,7 +458,7 @@
 														<input type="button"
 															class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="goToMerchantSearch()">
+															onclick="openCancelConfirmationPopup()">
 													</fieldset>
 												</div>
 												<div class="col-sm-12 button-content subMerchantDiv1"
@@ -646,7 +646,7 @@
 														<input type="button"
 															class="form-control button pull-right marginL10"
 															value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-															onclick="goToMerchantSearch()">
+															onclick="openCancelConfirmationPopup()">
 													</fieldset>
 												</div>
 												<div class="col-sm-12 button-content subMerchantDiv1"
@@ -724,9 +724,9 @@
 					validateOnlineOptions();
 					$("#navListId6").addClass("active-background");
 
-					$('#dummyParentMerchantId').val(
+					$('#parentMerchantId').val(
 							$('#parentMerchantId').val());
-					$('#dummyParentMerchantId').attr('disabled', true);
+					$('#parentMerchantId').attr('disabled', true);
 
 					/* populatePartnerAndAgentDetails($('#appMode').val(),
 							'sub-merchant', 'update', false); */

@@ -153,7 +153,7 @@
 															pattern="<%=Constants.AMOUNT_FORMAT %>" var="amount" />
 														<input name="inputAmount" class="form-control alignright" maxlength="7"
 															id="inputAmount" value="${amount}" onkeypress="return amountValidate(this,event)"
-															onblur="formatNum(id);this.value=this.value.trim();validInputAmount('inputAmount','inputAmountErrorDiv');" />
+															onblur="this.value=this.value.trim();validInputAmount('inputAmount','inputAmountErrorDiv');" />
 															<h3 class="currencySymbol" id="inputAmtCurrencyAlpha"></h3>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span class="red-error" id="inputAmountErrorDiv">&nbsp;</span>

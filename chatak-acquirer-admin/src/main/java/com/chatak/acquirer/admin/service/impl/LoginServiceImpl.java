@@ -166,7 +166,8 @@ public class LoginServiceImpl implements LoginService {
 			}
 		} else {
 			loginResponse.setStatus(false);
-			loginResponse.setMessage(Properties.getProperty("admin.service.login.inactive.error.message"));
+			loginResponse.setMessage(messageSource.getMessage("admin.service.login.inactive.user.err.msg", null,
+					LocaleContextHolder.getLocale()));
 		}
 	}
 
@@ -294,7 +295,7 @@ private void setAdminUser(int passRetryCount, LoginResponse loginResponse, PGAdm
     if (StringUtil.isNullAndEmpty(pgAdminUser.getPreviousPasswords())) {
     	verifyPassword(pgAdminUser, newPassword);
     } else if (pgAdminUser.getPreviousPasswords()
-        .contains(Constants.SAPARETOR + newPassword + Constants.SAPARETOR)) {
+        .contains(newPassword)) {
       throw new ChatakAdminException(messageSource.getMessage(
           "chatak.previous.password.error.message", null, LocaleContextHolder.getLocale()));
     } else {

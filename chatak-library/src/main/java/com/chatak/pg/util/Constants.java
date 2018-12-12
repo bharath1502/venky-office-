@@ -2,7 +2,7 @@ package com.chatak.pg.util;
 
 public class Constants {
 
-  Constants() {
+ public Constants() {
     super();
   }
 
@@ -36,7 +36,7 @@ public class Constants {
 
   public static final boolean CHATAK_LICENSE_VALID = false;
 
-  public static final int CHATAK_DOWNSTREAM_SOCKET_TIMEOUT = 20000;
+  public static final Integer CHATAK_DOWNSTREAM_SOCKET_TIMEOUT = 20000;
 
   public static final String CHATAK_ACQ_ISO_PACKET_FIRST_4_BYTES_VALUE = "0000";
 
@@ -1008,5 +1008,11 @@ public class Constants {
   public static final String JSESSIONID = "JSESSIONID";
   
   public static final String SETTELEMENT_AMOUNT_FORMAT ="#,##0.00";
+  
+  public static final String ACCOUNT_PAY_VALUE ="350";
+  
+  public static final String HYPHEN_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+  
+  public static final String BANK_VIEW_NAME = "bankViewName";
 
 }

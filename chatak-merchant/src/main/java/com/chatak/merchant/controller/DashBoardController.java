@@ -44,7 +44,9 @@ import com.chatak.pg.acq.dao.model.PGParams;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
+import com.chatak.pg.model.AccountBalanceDTO;
 import com.chatak.pg.model.AccountTransactionDTO;
+import com.chatak.pg.model.CurrencyDTO;
 import com.chatak.pg.model.ReportsDTO;
 import com.chatak.pg.user.bean.GetAccountHistoryListResponse;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
@@ -128,10 +130,22 @@ public class DashBoardController implements URLMappingConstants {
 
       try {
         merchantDetailsResponse = paymentService.getMerchantIdAndTerminalId(merchantId.toString());
-        PGAccount accountDetails =
+        PGAccount account =
             accountService.getAccountDetailsByEntityId(merchantDetailsResponse.getMerchantId());
+        AccountBalanceDTO accountDetails = new AccountBalanceDTO();
+        accountDetails.setEntityId(account.getEntityId());
+        accountDetails.setAccountNum(account.getAccountNum());
+        CurrencyDTO currencyConfig = accountService.getCurrencyConfigOnCurrencyCodeAlpha(account.getCurrency());
+        accountDetails.setAvailableBalanceString(
+        		CommonUtil.formatAmountOnCurrency(account.getAvailableBalance().toString(),
+        				currencyConfig.getCurrencyExponent(), currencyConfig.getCurrencySeparatorPosition(),
+        				currencyConfig.getCurrencyMinorUnit(), currencyConfig.getCurrencyThousandsUnit()));
+        accountDetails.setCurrentBalanceString(
+        		CommonUtil.formatAmountOnCurrency(account.getCurrentBalance().toString(),
+        				currencyConfig.getCurrencyExponent(), currencyConfig.getCurrencySeparatorPosition(),
+        				currencyConfig.getCurrencyMinorUnit(), currencyConfig.getCurrencyThousandsUnit()));
         modelAndView.addObject("accountDetails", accountDetails);
-        modelAndView.addObject("currencyAlpha", accountDetails.getCurrency());
+        modelAndView.addObject("currencyAlpha", account.getCurrency());
         modelAndView.addObject(Constants.MERCHANT_BUSINESS_NAME,
             merchantDetailsResponse.getBusinessName());
         session.setAttribute("accountDetails", accountDetails);
@@ -567,7 +581,7 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
   }
 
   private List<String> getTransactionHeaderList() {
-    String[] headerArr = {
+    String[] headerArr = { 
         messageSource.getMessage("dash-board.label.transactiontime", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant.common-deviceLocalTxnTime", null,
@@ -581,7 +595,7 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-terminalid", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transactionFileExportUtil.type", null,
+        messageSource.getMessage("transactionFileExportUtil.MerchantOrSubMerchantType", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transactionFileExportUtil.acount.number", null,
             LocaleContextHolder.getLocale()),
@@ -601,7 +615,7 @@ private List<AccountTransactionDTO> fetchProcessingTxnList(HttpSession session, 
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transactionFileExportUtil.txn.type", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transactionFileExportUtil.status", null,
+        messageSource.getMessage("merchant-batch-report.label.status", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("login.label.username", null, LocaleContextHolder.getLocale())};
     return new ArrayList<String>(Arrays.asList(headerArr));

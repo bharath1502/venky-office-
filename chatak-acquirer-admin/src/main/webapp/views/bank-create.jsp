@@ -356,8 +356,11 @@
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
 													value='<spring:message code="common.label.create"/>'
-													onclick="return validCreateBank();validateSpecialCharactersBankCreate()"> <input
-													type="button" class="form-control button pull-right"
+													onclick="return validCreateBank();validateSpecialCharactersBankCreate()"> 
+													<input type="button" class="form-control button pull-right"
+													value='<spring:message code="common.label.reset"/>'
+													onclick="resetBankCreate()">
+													<input type="button" class="form-control button pull-right"
 													value='<spring:message code="common.label.cancel"/>'
 													onclick="openCancelConfirmationPopup()">
 											</div>

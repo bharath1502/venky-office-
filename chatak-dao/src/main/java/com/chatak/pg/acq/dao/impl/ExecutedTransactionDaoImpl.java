@@ -179,7 +179,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
         transactionsReports.setTransactionId(tuple.get(QPGTransaction.pGTransaction.transactionId));
         transactionsReports.setDateTime(DateUtil.toDateStringFormat(
             tuple.get(QPGTransaction.pGTransaction.createdDate), PGConstants.DATE_FORMAT));
-        transactionsReports.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+        transactionsReports.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+    		.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+				Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
         transactionsReports.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
         transactionsReports.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
         statusMsg = getStatusMessage(tuple);
@@ -251,7 +253,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	    ? tuple.get(QPGTransaction.pGTransaction.acqChannel) : ""));
 	txnDto.setTransactionDate(DateUtil.toDateStringFormat(
 	    tuple.get(QPGTransaction.pGTransaction.createdDate), PGConstants.DATE_FORMAT));
-	txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	txnDto.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		  .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+			Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
 	txnDto.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
 	txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
   }
@@ -377,7 +381,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
               .setParentMerchantId(tuple.get(QPGAccountFeeLog.pGAccountFeeLog.parentEntityId));
           transactionsReports
               .setTotalTxnAmount(tuple.get(QPGTransaction.pGTransaction.txnAmount).toString());
-          transactionsReports.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+          transactionsReports.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+    		  .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+				  Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
           transactionsReports.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
           transactionsReports.setNoOfRecords(totalRecords);
           statusMsg = getStatusMessage(tuple);
@@ -453,7 +459,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
               .setParentMerchantId(tuple.get(QPGAccountFeeLog.pGAccountFeeLog.parentEntityId));
           transactionsReports
               .setTotalTxnAmount(tuple.get(QPGTransaction.pGTransaction.txnAmount).toString());
-          transactionsReports.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+          transactionsReports.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+    		  .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+				  Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
           transactionsReports.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
           statusMsg = getStatusMessage(tuple);
           setTxnPopUpData(txnDto, tuple);
@@ -563,7 +571,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	      ? PGConstants.DOLLAR_SYMBOL + StringUtils
 	          .amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))
 	      : PGConstants.DOLLAR_SYMBOL + "0.00");
-	  txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	  txnDto.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		  .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+			  Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
   }
 
   private void setTransactionPopUpData(TransactionPopUpDataDto txnDto, Tuple tuple) {
@@ -591,7 +601,9 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
 	      ? tuple.get(QPGTransaction.pGTransaction.acqChannel) : ""));
 	  txnDto.setTransactionDate(DateUtil.toDateStringFormat(
 	      tuple.get(QPGTransaction.pGTransaction.createdDate), PGConstants.DATE_FORMAT));
-	  txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	  txnDto.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		    .toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+			  Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
 	  txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
   }
 

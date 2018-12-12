@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<config>
+
+	<!-- Dial-up tcp ip plugin port 22401 -->
+	<tcpIp Version="32">
+		<port>33401</port>
+		<backlogSize>100</backlogSize>
+		<threadpoolSize>128</threadpoolSize>
+	</tcpIp>
+
+	<!-- SSL configuration parameters -->
+	<ssl>
+		<port>33402</port>
+		<backlogSize>100</backlogSize>
+		<threadpoolSize>128</threadpoolSize>
+		<keystorePath>payWiServer_keystore</keystorePath>
+		<keystorePassword>keyStorePasswd4</keystorePassword>
+		<keyPassword>keyPasswd3</keyPassword>
+	</ssl>
+
+	<!-- Dial-up tcp ip plugin port 22403 -->
+	<tcpIp Version="15">
+		<port>33403</port>
+		<backlogSize>100</backlogSize>
+		<threadpoolSize>128</threadpoolSize>
+	</tcpIp>
+	
+	<!-- Dial-up tcp ip plugin port 22404 -->
+	<tcpIp Version="31">
+		<port>33404</port>
+		<backlogSize>100</backlogSize>
+		<threadpoolSize>128</threadpoolSize>
+	</tcpIp>
+
+	<!-- Dial-up tcp ip plugin port 22405 -->
+	<tcpIp Version="30">
+		<port>33405</port>
+		<backlogSize>100</backlogSize>
+		<threadpoolSize>128</threadpoolSize>
+	</tcpIp>
+	
+	<mail>
+		<from>kumaras365@gmail.com</from>
+		<tos>kumaras365@gmail.com</tos>
+		<to>kumaras365@gmail.com</to>
+		<orderto>kumaras365@gmail.com</orderto>
+		<server>mail.gmail.com</server>
+		<user>kumaras365@gmail.com</user>
+		<pass>hghjgkgkj</pass>
+		<auth>false</auth>
+	</mail>
+	<receipt>
+		<content-length>275</content-length>
+	</receipt>
+
+</config>

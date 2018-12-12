@@ -651,7 +651,7 @@ public class RoleController implements URLMappingConstants {
 		} else if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_PM.getValue())) {
 			roleLevels = Arrays.asList(RoleLevel.CP_PM, RoleLevel.CP_ISO, RoleLevel.CP_MERCHANT);
 		} else if (loginResponse.getUserType().equalsIgnoreCase(RoleLevel.CP_ISO.getValue())) {
-			roleLevels = Arrays.asList(RoleLevel.CP_ISO, RoleLevel.CP_MERCHANT);
+			roleLevels = Arrays.asList(RoleLevel.CP_MERCHANT);
 		}
 		if (StringUtil.isListNotNullNEmpty(roleLevels)) {
 			model.put("roleLevelList", roleLevels);

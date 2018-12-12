@@ -29,6 +29,7 @@ import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.AccountType;
+import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
@@ -142,9 +143,10 @@ public abstract class AccountTransactionService {
     pgAccountTransactions.setTimeZoneRegion(pgTransaction.getTimeZoneRegion());
     pgAccountTransactions.setDeviceLocalTxnTime(pgTransaction.getDeviceLocalTxnTime());
     pgAccountTransactions.setEntityType(PGConstants.MERCHANT);
-    pgAccountTransactions.setEntityId(request.getMerchantId());
+    pgAccountTransactions.setEntityId(Long.valueOf(request.getMerchantId()));
     pgAccountTransactions.setProcessedTime(timestamp);
     pgAccountTransactions.setCurrentBalance(account.getCurrentBalance());
+
     // Step-1 : Initially logging total amount into account transactions
     pgAccountTransactions = accountTransactionsDao.createOrUpdate(pgAccountTransactions);
 
@@ -173,37 +175,37 @@ public abstract class AccountTransactionService {
 //                 totalFeeAmount,
 //                 AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT,
 //                 descriptionTemplate);
-
-    List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(pgTransaction.getCpId());
-    Double pmShare = feeProgram.get(0).getPmShare();
-    Double isoShare = feeProgram.get(0).getIsoShare();
-    Long pmFee = PGUtils.calculateAmountByPercentage((pgTransaction.getFeeAmount() / Double.parseDouble("100")), pmShare);
-    Long isoFee = PGUtils.calculateAmountByPercentage((pgTransaction.getFeeAmount() / Double.parseDouble("100")), isoShare);
-    if(request.getPmId() != null){
-      ProgramManagerAccount programManagerAccount = programManagerDao.findByProgramManagerIdAndAccountType(request.getPmId(), Constants.REVENUE_ACCOUNT);
-      // Crediting PM fee
-      descriptionTemplate = "PM Fee: " + StringUtils.amountToString(pmFee);
-      pgAccountTransactions.setAccountNumber(String.valueOf(programManagerAccount.getAccountNumber()));
-      pgAccountTransactions.setEntityType(Constants.PM_USER_TYPE);
-      pgAccountTransactions.setEntityId(request.getPmId());
-      logFeeAmount(pgAccountTransactions,
-          pmFee,
-          AccountTransactionCode.CC_PM_FEE_CREDIT,
-          descriptionTemplate);  
-    }
-    if(request.getIsoId() != null){
-    	List<IsoAccount> isoAccount = isoServiceDao.findByIsoIdAndAccountType(request.getIsoId(), AccountType.REVENUE_ACCOUNT.name());
-      // Crediting ISO fee
-      descriptionTemplate = "ISO Fee: " + StringUtils.amountToString(isoFee);
-      pgAccountTransactions.setAccountNumber(String.valueOf(isoAccount.get(0).getAccountNumber()));
-      pgAccountTransactions.setEntityType(Constants.ISO_USER_TYPE);
-      pgAccountTransactions.setEntityId(request.getIsoId());
-      logFeeAmount(pgAccountTransactions,
-          isoFee,
-          AccountTransactionCode.CC_ISO_FEE_CREDIT,
-          descriptionTemplate);      
-    }
-    
+	if (!request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+		List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(pgTransaction.getCpId());
+		Double pmShare = feeProgram.get(0).getPmShare();
+		Double isoShare = feeProgram.get(0).getIsoShare();
+		Long pmFee = PGUtils.calculateAmountByPercentage((pgTransaction.getFeeAmount() / Double.parseDouble("100")),
+				pmShare);
+		Long isoFee = PGUtils
+				.calculateAmountByPercentage((pgTransaction.getFeeAmount() / Double.parseDouble("100")), isoShare);
+		if (request.getPmId() != null) {
+			ProgramManagerAccount programManagerAccount = programManagerDao
+					.findByProgramManagerIdAndAccountType(request.getPmId(), Constants.REVENUE_ACCOUNT);
+				// Crediting PM fee
+			descriptionTemplate = "PM Fee: " + StringUtils.amountToString(pmFee);
+			pgAccountTransactions.setAccountNumber(String.valueOf(programManagerAccount.getAccountNumber()));
+			pgAccountTransactions.setEntityType(Constants.PM_USER_TYPE);
+			pgAccountTransactions.setEntityId(request.getPmId());
+			logFeeAmount(pgAccountTransactions, pmFee, AccountTransactionCode.CC_PM_FEE_CREDIT,
+					descriptionTemplate);
+		}
+		if (request.getIsoId() != null) {
+			List<IsoAccount> isoAccount = isoServiceDao.findByIsoIdAndAccountType(request.getIsoId(),
+					AccountType.REVENUE_ACCOUNT.name());
+				// Crediting ISO fee
+			descriptionTemplate = "ISO Fee: " + StringUtils.amountToString(isoFee);
+			pgAccountTransactions.setAccountNumber(String.valueOf(isoAccount.get(0).getAccountNumber()));
+			pgAccountTransactions.setEntityType(Constants.ISO_USER_TYPE);
+			pgAccountTransactions.setEntityId(request.getIsoId());
+			logFeeAmount(pgAccountTransactions, isoFee, AccountTransactionCode.CC_ISO_FEE_CREDIT,
+					descriptionTemplate);
+		}
+	}
     logger.info("Exiting:: AccountTransactionService:: logSaleToAccountTransaction method ");
     return account;
   }

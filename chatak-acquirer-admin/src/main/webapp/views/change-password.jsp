@@ -31,8 +31,19 @@
 		<div class="container-fluid">
 			<!--Header Block Start -->
 			<%-- <jsp:include page="header.jsp"></jsp:include> --%>
-			<%@include file="navigation-panel.jsp"%>
+			<header class="col-sm-12 all-page-header">
+				<!--Header Logo Start -->
+				<div class="col-sm-4">
+					<img src="../images/Chatak-logo.jpg" height="63px" alt="Logo" />
+				</div>
+				<!--Header Logo End -->
+			</header>
 			<!--Header Block End -->
+<!--Navigation Block Start -->
+<nav class="col-md-12 nav-bar">
+</nav>
+<!--Navigation Block End -->
+			<%-- <%@include file="navigation-panel.jsp"%> --%>
 			<!--Article Block Start-->
 			<article>
 				<!-- <div class="col-xs-3"></div> -->
@@ -132,6 +143,8 @@
 	<!--Body Wrapper block End -->
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="../js/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>

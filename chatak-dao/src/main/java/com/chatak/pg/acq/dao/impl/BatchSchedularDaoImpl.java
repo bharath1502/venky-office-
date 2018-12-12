@@ -256,10 +256,10 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
       Timestamp endDate = null;
       if (!CommonUtil.isNullAndEmpty(reportRequest.getFromDate())) {
         startDate =
-            DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
+            DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.YYYY_MM_DD);
       }
       if (!CommonUtil.isNullAndEmpty(reportRequest.getToDate())) {
-        endDate = DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.DD_MM_YYYY);
+        endDate = DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.YYYY_MM_DD);
       }
       List<String> merchantList = merchantRepository.findMerchantsList(reportRequest.getId());
       Integer totalRecords = reportRequest.getNoOfRecords();

@@ -526,3 +526,7 @@ function validateSpecialCharactersBankCreate() {
 	}
 	return true;
 }
+
+function resetBankCreate() {
+	window.location.href = 'bank-create';
+}

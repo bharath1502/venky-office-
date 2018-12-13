@@ -150,14 +150,14 @@ function validateReportsDates() {
 	var toDate = document.getElementById('transToDate').value;
 	var fromDate = document.getElementById('transFromDate').value;
 
-	var toDay = parseInt(toDate.split("/")[0]);
-	var toMonth = parseInt(toDate.split("/")[1]);
-	var toYear = parseInt(toDate.split("/")[2]);
+	var toYear = parseInt(toDate.split("-")[0]);
+	var toMonth = parseInt(toDate.split("-")[1]);
+	var toDay = parseInt(toDate.split("-")[2]);
 	var newToDate = new Date(toYear, toMonth-1, toDay);
 
-	var fromDay = parseInt(fromDate.split("/")[0]);
-	var fromMonth = parseInt(fromDate.split("/")[1]);
-	var fromYear = parseInt(fromDate.split("/")[2]);
+	var fromYear = parseInt(fromDate.split("-")[0]);
+	var fromMonth = parseInt(fromDate.split("-")[1]);
+	var fromDay = parseInt(fromDate.split("-")[2]);
 	var newFromDate = new Date(fromYear, fromMonth-1, fromDay);
 	
 	var today = new Date();

@@ -380,7 +380,8 @@
 	
 	function validate(){
 		setDiv('errorDiv','');
-		if(!clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
+		if(!validatePM()
+				| !clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
 				| !clientValidation('transToDate', 'endDate','transToDateErrorDiv') 
 				| !validateISO()){
 			return false;

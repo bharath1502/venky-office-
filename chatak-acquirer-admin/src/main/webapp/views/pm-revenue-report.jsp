@@ -16,7 +16,10 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
+<<<<<<< HEAD
 <link href="../css/jquery-datepicker.css" rel="stylesheet">
+=======
+>>>>>>> e9ffc45f2c25efc8ca80b93439f2a1d8b1d0b970
 <link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -290,7 +293,7 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/utils.js"></script>
-	 <script src="../js/jquery-datepicker.js"></script>
+	 <script src="../js/rome.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>

@@ -312,7 +312,7 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/utils.js"></script>
-	 <script src="../js/jquery-datepicker.js"></script>
+	 <script src="../js/rome.js"></script>
 	<script src="../js/reports.js"></script>
 	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
@@ -381,7 +381,8 @@
 	
 	function validate(){
 		setDiv('errorDiv','');
-		if(!clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
+		if(!validatePM()
+				| !clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
 				| !clientValidation('transToDate', 'endDate','transToDateErrorDiv') 
 				| !validateISO()
 				| !validatePM()

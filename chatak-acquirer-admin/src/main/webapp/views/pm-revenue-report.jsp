@@ -16,6 +16,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
+<link href="../css/jquery-datepicker.css" rel="stylesheet">
 <link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -291,6 +292,7 @@
 	<script src="../js/utils.js"></script>
 	 <script src="../js/rome.js"></script>
 	<script src="../js/reports.js"></script>
+	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
@@ -349,7 +351,8 @@
 		setDiv('errorDiv','');
 		if(!clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
 				| !clientValidation('transToDate', 'endDate','transToDateErrorDiv') 
-				| !validatePM()){
+				| !validatePM()
+				| !validateBatchFundingReportsDates()){
 			return false;
 		}
 		return true;

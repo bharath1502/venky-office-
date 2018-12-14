@@ -288,8 +288,8 @@ function submitVirtualFeeLogDateRange(){
 
 function submitBatchFundingDateRange() {
 	var flag = false;
-	if (!clientValidation('fromDate', 'startDate', 'transFromDateErrorDiv')
-			| !clientValidation('toDate', 'endDate', 'transToDateErrorDiv')
+	if (!clientValidation('transFromDate', 'startDate', 'transFromDateErrorDiv')
+			| !clientValidation('transToDate', 'endDate', 'transToDateErrorDiv')
 			| !validateBatchFundingReportsDates()) {
 		return flag;
 	} else {
@@ -299,8 +299,8 @@ function submitBatchFundingDateRange() {
 
 function validateBatchFundingReportsDates() {
 	var flag = true;
-	var toDate = document.getElementById('toDate').value;
-	var fromDate = document.getElementById('fromDate').value;
+	var toDate = document.getElementById('transToDate').value;
+	var fromDate = document.getElementById('transFromDate').value;
 
 	var toYear = parseInt(toDate.split("-")[0]);
 	var toMonth = parseInt(toDate.split("-")[1]);

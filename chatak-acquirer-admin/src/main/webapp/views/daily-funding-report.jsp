@@ -100,7 +100,7 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.fromdate" /><span class="required-field">*</span></label>
 													<div class="input-group focus-field jquery-datepicker">
-														<form:input path="fromDate" id="fromDate" onblur="return clientValidation('fromDate', 'startDate','transFromDateErrorDiv')"
+														<form:input path="fromDate" id="transFromDate" onblur="return clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')"
 															cssClass="form-control effectiveDate jquery-datepicker__input" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
@@ -112,8 +112,8 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.todate" /><span class="required-field">*</span></label>
 													<div class="input-group focus-field jquery-datepicker">
-														<form:input path="toDate" onblur="return clientValidation('toDate', 'endDate','transToDateErrorDiv');"
-															cssClass="form-control effectiveDate jquery-datepicker__input" id="toDate" />
+														<form:input path="toDate" onblur="return clientValidation('transToDate', 'endDate','transToDateErrorDiv');"
+															cssClass="form-control effectiveDate jquery-datepicker__input" id="transToDate" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -337,8 +337,8 @@
 			$(".focus-field").click(function() {
 				 $(this).children('.effectiveDate').focus();
 			});
-			 rome(fromDate, { time: false });
-			rome(toDate, { time: false }); 
+			 rome(transFromDate, { time: false });
+			rome(transToDate, { time: false }); 
 			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',

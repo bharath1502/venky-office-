@@ -350,9 +350,7 @@ function validateCreateMerchantStep5() {
 		    | !validateCallbackURL() | !validateCategory()
 			| !validateAutoPaymentMethod() | !validateAutoTransferLimit()
 			| !continueBtnValidateForOnline()
-			| !continueBtnValidateVirtualTerminal()
-			| !validateReturnURL()
-			| !validateCancelURL())
+			| !continueBtnValidateVirtualTerminal())
 			 {
 		if($('#autoTransferDay').prev().find('.required-field').is(':visible')) {
 			validateAutoTransferDayFields();

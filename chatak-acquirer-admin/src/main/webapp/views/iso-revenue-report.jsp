@@ -16,6 +16,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
+<link href="../css/jquery-datepicker.css" rel="stylesheet">
 <link href="../css/rome.css" rel="stylesheet">
 </head>
 <body>
@@ -313,6 +314,7 @@
 	<script src="../js/utils.js"></script>
 	 <script src="../js/rome.js"></script>
 	<script src="../js/reports.js"></script>
+	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
@@ -382,7 +384,9 @@
 		if(!validatePM()
 				| !clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
 				| !clientValidation('transToDate', 'endDate','transToDateErrorDiv') 
-				| !validateISO()){
+				| !validateISO()
+				| !validatePM()
+				| !validateBatchFundingReportsDates()){
 			return false;
 		}
 		return true;

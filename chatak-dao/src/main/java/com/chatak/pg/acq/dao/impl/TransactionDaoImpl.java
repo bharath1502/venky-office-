@@ -463,11 +463,9 @@ public class TransactionDaoImpl implements TransactionDao {
   }
   
   protected BooleanExpression isMerchantBusinessNameLike(String merchantBusinessName) {
-		return (merchantBusinessName != null && !"".equals(merchantBusinessName)) ? QPGMerchant.pGMerchant.businessName
-				.eq(merchantBusinessName).or(
-						QPGMerchant.pGMerchant.businessName.eq(merchantBusinessName))
-				: null;
-	}
+	    return (merchantBusinessName != null && !"".equals(merchantBusinessName)) ? QPGMerchant.pGMerchant.businessName
+	        .toUpperCase().like("%" + merchantBusinessName.toUpperCase().replace("*", "") + "%") : null;
+	  }
 
   protected BooleanExpression isRevenueType(String revenueType) {
     if (revenueType != null && !"".equals(revenueType)) {

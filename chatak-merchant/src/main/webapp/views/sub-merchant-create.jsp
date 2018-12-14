@@ -307,6 +307,8 @@
 															<span id="businessTypeEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
+												</fieldset>												
+												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.merchantcode" /><span

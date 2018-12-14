@@ -295,7 +295,7 @@ private void setAdminUser(int passRetryCount, LoginResponse loginResponse, PGAdm
     if (StringUtil.isNullAndEmpty(pgAdminUser.getPreviousPasswords())) {
     	verifyPassword(pgAdminUser, newPassword);
     } else if (pgAdminUser.getPreviousPasswords()
-        .contains(Constants.SAPARETOR + newPassword + Constants.SAPARETOR)) {
+        .contains(newPassword)) {
       throw new ChatakAdminException(messageSource.getMessage(
           "chatak.previous.password.error.message", null, LocaleContextHolder.getLocale()));
     } else {

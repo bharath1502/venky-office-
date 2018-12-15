@@ -337,8 +337,8 @@
 			$(".focus-field").click(function() {
 				 $(this).children('.effectiveDate').focus();
 			});
-			rome(fromDate, { time: false,"inputFormat": "DD/MM/YYYY" });
-			rome(toDate, { time: false,"inputFormat": "DD/MM/YYYY" });
+			rome(transFromDate, { time: false,"inputFormat": "DD/MM/YYYY" });
+			rome(transToDate, { time: false,"inputFormat": "DD/MM/YYYY" });
 			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',

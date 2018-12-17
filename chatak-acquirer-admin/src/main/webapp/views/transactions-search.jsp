@@ -208,9 +208,9 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.merchantname" /></label>
 													<form:input path="merchantBusinessName" cssClass="form-control"
-														id="merchantName" />
+														id="merchantName" onblur="clientValidation('merchantName','companyname_not_mandatory','merchantNameErrorMsg')"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span id="merchantNameErrorMsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 											</div>

@@ -167,7 +167,7 @@
 													<label><spring:message
 												code="fee-program-create.label.feeprogramname" /><span
 												class='required-field'>*</span></label>
-												<form:input path="feeProgramName" id="feeProgramName" readonly="true"
+												<form:input path="feeProgramName" id="feeProgramName"
 												cssClass="form-control"
 												onblur="this.value=this.value.trim();clientValidation('feeProgramName', 'fee_Program_Name','feeProgramNameErr')"/>
 													<div class="discriptionErrorMsg">

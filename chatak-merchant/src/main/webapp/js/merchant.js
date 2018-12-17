@@ -1712,7 +1712,7 @@ function doAjaxFetchMailIdEdit() {
 }
 
 function vlalidateUserNameEdit() {
-	var reg = /^[A-Za-z0-9 ]{8,16}$/;
+	var reg = /^[A-Za-z0-9 ]{6,16}$/;
 	var userName = get('userName').value.trim();
 
 	if (isEmpty(userName)) {
@@ -1739,7 +1739,7 @@ function vlalidateUserNameEdit() {
 
 function doAjaxFetchUsernameAvailableEdit() {
 	var userName = get('userName').value.trim();
-	var merchantCode = get('merchantCode').value.trim();
+	var merchantCode = get('parentMerchantcode').value.trim();
 
 	$
 			.ajax({

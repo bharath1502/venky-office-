@@ -17,7 +17,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
- <link href="../css/jquery-datepicker.css" rel="stylesheet">
+ <link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -689,7 +689,7 @@
 	<script src="../js/sortable.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
-	  <script src="../js/jquery-datepicker.js"></script>
+	  <script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script>
 	
@@ -734,11 +734,10 @@
 
 							$(".focus-field").click(function() {
 								 $(this).children('.effectiveDate').focus();
-								 $('.jquery-datepicker').datepicker();
 							});
 							 
-							/* rome(fromDate, { time: false });
-							rome(toDate, { time: false }); */
+							rome(fromDate, { time: false,"inputFormat": "DD/MM/YYYY" });
+							rome(toDate, { time: false,"inputFormat": "DD/MM/YYYY" });
 							/* $('.effectiveDate').datetimepicker({
 								timepicker : false,
 								format : 'd/m/Y',

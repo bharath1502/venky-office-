@@ -306,6 +306,15 @@ public class MerchantController implements URLMappingConstants {
 	modelAndView.setViewName(INVALID_REQUEST_PAGE);
 	return modelAndView;
   }
+  
+  @RequestMapping(value = CHATAK_ADMIN_CREATE_MERCHANT, method = RequestMethod.GET)
+  public ModelAndView createMerchantGetMethod(HttpServletRequest request, HttpServletResponse response,
+	    Merchant merchant, BindingResult bindingResult, Map model, HttpSession session) {
+    logger.info("Entering:: MerchantController:: createMerchantGetMethod method");
+    ModelAndView modelAndView = searchMerchantGetMethod(request, response, merchant, bindingResult, model, session);
+    logger.info("Exiting:: MerchantController:: createMerchantGetMethod method");
+    return modelAndView;
+  }
 
   /**
    * Method to show search merchant

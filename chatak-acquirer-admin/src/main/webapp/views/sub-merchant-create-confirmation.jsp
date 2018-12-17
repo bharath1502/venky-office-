@@ -449,12 +449,12 @@
 						<td><div id="confirmMcity"></div></td>
 					</tr>
 					<tr>
-						<td><spring:message code="manage.label.sub-merchant.state" />:</td>
-						<td><div id="confirmMstate"></div></td>
-					</tr>
-					<tr>
 						<td><spring:message code="manage.label.sub-merchant.country" />:</td>
 						<td><div id="confirmMcountry"></div></td>
+					</tr>
+					<tr>
+						<td><spring:message code="manage.label.sub-merchant.state" />:</td>
+						<td><div id="confirmMstate"></div></td>
 					</tr>
 					<tr>
 						<td><spring:message code="manage.label.sub-merchant.zipcode" />:</td>

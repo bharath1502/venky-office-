@@ -96,7 +96,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.bankcode" /><span
 														class="required-field">*</span></label>
-													<form:input path="bankCode" id="bankCode"
+													<form:input path="bankCode" id="bankCode" readonly="true"
 														cssClass="form-control"
 														onblur="this.value=this.value.trim();validBankCode()"
 														maxlength="<%=Constants.BANK_CODE.toString()%>" onkeypress="return numbersonly(this, event)" />

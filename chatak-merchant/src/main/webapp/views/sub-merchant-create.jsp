@@ -307,15 +307,14 @@
 															<span id="businessTypeEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
+												</fieldset>												
+												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.merchantcode" /><span
 															class="required-field">*</span></label>
 														<form:hidden path="parentMerchantId" id="parentMerchantId" />
-														<select class="form-control" id="parentMerchantcode"
-															onblur=" return clientValidation('parentMerchantcode','cardType','parentMerchantIdEr');" onchange="fetchPartnerName(this.value)">
-															<option value="">..:<spring:message code="sub-merchant-create.label.select" />:..
-															</option>
+														<select class="form-control" id="parentMerchantcode">
 															<c:forEach items="${mainMerchantList}" var="mainMerchant">
 																<option value="${mainMerchant.value}">${mainMerchant.label}</option>
 															</c:forEach>
@@ -673,6 +672,11 @@
 			}
 		}
 		document.getElementById('lookingFor').setAttribute('maxlength', '100');
+		
+		$(document).ready(function() {
+			 $("#parentMerchantcode").prop("disabled", true);
+			});
+
 	</script>
 </body>
 </html>

@@ -198,7 +198,7 @@
 								<c:when test="${!(fn:length(blackListedCardInfo) eq 0) }">
 									<c:forEach items="${blackListedCardInfo}" var="blackListedCardData">
 										<tr>
-											<td class="tbl-text-align-right">${blackListedCardData.cardNumber }</td>
+											<td class="tbl-text-align-left">${blackListedCardData.cardNumber }</td>
 											<td class="tbl-text-align-left">${blackListedCardData.statusDisp }</td>
 											<td style="white-space:nowrap;">
 											 <c:if test="${blackListedCardData.statusDisp == 'Active'}">

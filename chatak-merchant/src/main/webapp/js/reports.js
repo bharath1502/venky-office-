@@ -298,3 +298,133 @@ function validateDate(){
 	}
 	return flag;
 }
+
+function validateBothDates(dateId, divId) {
+	setDiv(divId, "");
+	var flag = true;
+	var datesId = getVal(dateId);
+	if (datesId == '' || datesId == '__/__/____') {
+		return flag;
+	}
+	if (compareValidDateForSearch(datesId, divId)) {
+		if (datesCompare()) {
+			return flag;
+		} else {
+			flag = false;
+			return flag;
+		}
+	} else {
+		flag = false;
+		return flag;
+	}
+}
+
+function datesCompare() {
+
+	var flag = true;
+	var today = new Date();
+
+	var temtoDate = document.getElementById("toDate").value.split('/');
+	var temfromDate = document.getElementById("fromDate").value.split('/');
+
+	var toDate = temtoDate[1] + '/' + temtoDate[0] + '/' + temtoDate[2];
+	var fromDate = temfromDate[1] + '/' + temfromDate[0] + '/' + temfromDate[2];
+
+	if (Date.parse(fromDate) > Date.parse(today)) {
+		flag = false;
+		setDiv("fromDateErrormsg", webMessages.fromDateAheadOfPresentDate);
+
+	}
+	if (Date.parse(toDate) > Date.parse(today)) {
+		flag = false;
+		setDiv("toDateErrormsg", webMessages.toDateAheadOfPresentDate);
+	}
+	if (Date.parse(fromDate) > Date.parse(toDate)) {
+		flag = false;
+		setDiv("toDateErrormsg", webMessages.toDateAheadOffromDate);
+		return flag;
+
+	}
+
+	return flag;
+}
+
+function DaysArray(n) {
+	for (var i = 1; i <= n; i++) {
+		this[i] = 31
+		if (i == 4 || i == 6 || i == 9 || i == 11) {
+			this[i] = 30
+		}
+		if (i == 2) {
+			this[i] = 29
+		}
+	}
+	return this
+}
+
+function searchSubmit() {
+	var toDate = document.getElementById("toDate").value;
+	var formDate = document.getElementById("fromDate").value;
+	var flag = true;
+
+	if (!compareValidDateForSearch(formDate, "fromDateErrormsg")
+			| !compareValidDateForSearch(toDate, "toDateErrormsg")
+			| !datesCompare()) {
+		flag = false;
+		return flag;
+	}
+	return flag
+}
+
+function compareValidDateForSearch(dtStr,divId) {
+	var dtCh= "/";
+	var daysInMonth = DaysArray(12)
+	var pos1=dtStr.indexOf(dtCh)
+	var pos2=dtStr.indexOf(dtCh,pos1+1)
+	var strDay=dtStr.substring(0,pos1)
+	var strMonth=dtStr.substring(pos1+1,pos2)
+	var strYear=dtStr.substring(pos2+1)
+	var strYr=strYear
+	if (strDay.charAt(0)=="0" && strDay.length>1) strDay=strDay.substring(1)
+	if (strMonth.charAt(0)=="0" && strMonth.length>1) strMonth=strMonth.substring(1)
+	for (var i = 1; i <= 3; i++) {
+		if (strYr.charAt(0)=="0" && strYr.length>1) strYr=strYr.substring(1)
+	}
+	
+	var month=parseInt(strMonth)
+	var day=parseInt(strDay)
+	var year=parseInt(strYr)
+	if (dtStr == '' || dtStr.length == 0) {
+		setDiv(divId, "&nbsp;");
+		return true
+	}
+	if (pos1==-1 || pos2==-1){
+		setDiv(divId, "&nbsp;");
+		return true
+	}
+	if(strMonth == "" || strMonth.indexOf("_") >= 0) {
+		setDiv(divId, "&nbsp;");
+		return true
+	 }
+	if(strDay == "" || strDay.indexOf("_") >= 0) {
+		setDiv(divId, "&nbsp;");
+		return true
+	 }
+	if(strYear == "" || strYear.length != 4 || year == "0000" || strYear.indexOf("_") >= 0) {
+		setDiv(divId, "&nbsp;");
+		return true
+	 }
+	if (strMonth.length<1 || month<1 || month>12){
+		 
+		 setDiv(divId, webMessages.EnterValidMonth);
+		return false
+	}
+	
+	if (strDay.length<1 || day<1 || day>31 || (month==2 && day>daysInFebruary(year)) || day > daysInMonth[month]){
+		 setDiv(divId, webMessages.EnterValidDay);
+		return false
+	}
+    setDiv(divId, " ");
+    setDiv("fromDateerrormsg", " ");
+    return true;
+}

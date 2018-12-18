@@ -364,7 +364,8 @@ var C_MERCHANT_MSG = {
 		address_should_contains_message : 'Only # , . / and alphanumerics are allowed',
 		merchantNotAssociatedToCurrentPM :"Merchant Code Not Associated To current Entity",
 		InvalidAmount : "Invalid Amount",
-		InvalidReasonLength : "Invalid Length"
+		InvalidReasonLength : "Invalid Length",
+		reportsTodatecannotbethefuturedate : "'To date' can not be the future date",
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",
@@ -733,7 +734,8 @@ var C_MERCHANT_MSG = {
 		address_should_contains_message : 'Solamente # , . / y alfanuméricos están permitidos',
 		merchantNotAssociatedToCurrentPM :"Merchant Code no asociado al Entity actual",
 		InvalidAmount : "Monto invalido",
-		InvalidReasonLength : "Longitud invalido"
+		InvalidReasonLength : "Longitud invalido",
+		reportsTodatecannotbethefuturedate : "'Hasta la fecha' no puede ser la fecha futura",
 	}
 };
 

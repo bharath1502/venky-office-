@@ -959,6 +959,10 @@ function resetAllFields() {
 	setValue('contactPhone', '');
 	setValue('extension', '');
 	setValue('programManagerEmailId', '');
+	setValue('country', '');
+	setValue('state', '');
+	setValue('timezone', '');
+	setValue('batchPrefix', '');
 	setValue('load', '');
 	document.getElementById('bankName').options.length = 0;
 	document.getElementById('cardprogramId').options.length = 0;

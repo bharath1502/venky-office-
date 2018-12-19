@@ -627,7 +627,7 @@
 	<div class="col-sm-12 button-content merchantDiv1">
 		<fieldset class="col-sm-7 pull-right">
 			<input type="submit" class="form-control button pull-right pos-next"
-				value="<spring:message code="manage.buttton.sub-merchant.confirm" />">
+				value="<spring:message code="commission-program-update.label.updatebutton" />">
 			<input type="button"
 				class="form-control button pull-right marginL10 pos-prev"
 				value="<spring:message code="manage.buttton.sub-merchant.previous" />">

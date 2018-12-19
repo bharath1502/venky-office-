@@ -12,6 +12,8 @@
 		<module>../chatak-acquirer-admin</module>
 		<module>../chatak-merchant</module>
 		<module>../chatak-pay</module>
+		<module>../chatak-host-pg</module>
+		
 	</modules>
 
 	<profiles>

@@ -148,7 +148,8 @@ public class MerchantAccountServiceImpl implements MerchantAccountService, PGCon
         && !(pgAccount.getStatus().equals(PGConstants.S_STATUS_TERMINATED)
             || pgAccount.getStatus().equals(PGConstants.S_STATUS_INACTIVE)
             || pgAccount.getStatus().equals(PGConstants.S_STATUS_PENDING)
-            || pgAccount.getStatus().equals(PGConstants.S_STATUS_DELETED))) {
+            || pgAccount.getStatus().equals(PGConstants.S_STATUS_DELETED)
+            || pgAccount.getStatus().equals(PGConstants.S_STATUS_DECLINED))) {
 
       if (!(pgAccount.getStatus().equals(PGConstants.S_STATUS_TERMINATED)
               || pgAccount.getStatus().equals(PGConstants.S_STATUS_SUSPENDED)

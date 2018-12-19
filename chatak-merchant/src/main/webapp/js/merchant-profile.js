@@ -106,7 +106,7 @@ function validatePin() {
 		setError(get('pin'), webMessages.pleasenterZipcode);
 		loadMsgTitleText();
 		return false;
-	} else if ((pin.length < 3) || (pin.length > 9)) {
+	} else if ((pin.length < 3) || (pin.length > 7)) {
 		setError(get('pin'), webMessages.invalidZipcode);
 		loadMsgTitleText();
 		return false;

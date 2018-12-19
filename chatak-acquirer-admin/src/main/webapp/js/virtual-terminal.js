@@ -805,8 +805,81 @@ var monthtext = [ '01', '02', '03', '04', '05', '06', '07', '08', '09',
 				| !clientValidation('fromAmtRange','amount_False','fromAmtRangeEr')
 				| !clientValidation('toAmtRange','amount_False','toAmtRangeEr')
 				| !clientValidation('merchantCode','merchant_ID','merchantCodeError')
-				| !clientValidation('merchantName','companyname_not_mandatory','merchantNameEr')){
+				| !clientValidation('merchantName','companyname_not_mandatory','merchantNameEr')
+				| !dateValidation()){
 			return false;
 		}
 		return true;
+	}
+  
+  function dateValidation() {
+		var flag = true;
+		var toDate = document.getElementById('transToDate').value;
+		var fromDate = document.getElementById('transFromDate').value;
+
+		var toDay = parseInt(toDate.split("/")[0]);
+		var toMonth = parseInt(toDate.split("/")[1]);
+		var toYear = parseInt(toDate.split("/")[2]);
+		var newToDate = new Date(toYear, toMonth-1, toDay);
+
+		var fromDay = parseInt(fromDate.split("/")[0]);
+		var fromMonth = parseInt(fromDate.split("/")[1]);
+		var fromYear = parseInt(fromDate.split("/")[2]);
+		var newFromDate = new Date(fromYear, fromMonth-1, fromDay);
+
+		var today = new Date();
+		var todayDate = today.getDate();
+		var todayMonth = today.getMonth()+1;
+		var todayYear = today.getFullYear();
+		var currentDate = new Date(todayYear, todayMonth-1, todayDate);
+		
+		if(fromDate == "" && toDate == ""){
+			flag = true;
+		} else if(fromDate != "" && toDate == ""){
+			if(newFromDate > currentDate) {
+				flag = false;
+				setDiv('tranToDateErrorDiv', "");
+				setDiv('tranFromDateErrorDiv',
+						webMessages.reportsFromdatecannotbethefuturedate);
+				loadMsgTitleText();
+			} else{
+				return flag;
+			}
+			
+		} else if(fromDate == "" && toDate != "") {
+			if(newToDate > currentDate) {
+				flag = false;
+				setDiv('tranFromDateErrorDiv', "");
+				setDiv('tranToDateErrorDiv',
+						webMessages.reportsTodatecannotbethefuturedate);
+				loadMsgTitleText();
+			} else{
+				return flag;
+			}
+		} else {
+			if (newFromDate > currentDate) {
+				flag = false;
+				setDiv('tranToDateErrorDiv', "");
+				setDiv('tranFromDateErrorDiv',
+						webMessages.reportsFromdatecannotbethefuturedate);
+				loadMsgTitleText();
+			}
+			else if (newFromDate > newToDate) {
+				flag = false;
+				setDiv('tranToDateErrorDiv', "");
+				setDiv('tranFromDateErrorDiv',
+						webMessages.reportsFromDateshouldnotbegreaterthanToDate);
+				loadMsgTitleText();
+			} else if (newToDate > currentDate) {
+				flag = false;
+				setDiv('tranFromDateErrorDiv', "");
+				setDiv('tranToDateErrorDiv',
+						webMessages.reportsTodatecannotbethefuturedate);
+				loadMsgTitleText();
+			} else {
+				setDiv('tranFromDateErrorDiv', "");
+				setDiv('tranToDateErrorDiv', "");
+			}
+		}
+		return flag;
 	}

@@ -366,6 +366,9 @@ var C_MERCHANT_MSG = {
 		InvalidAmount : "Invalid Amount",
 		InvalidReasonLength : "Invalid Length",
 		reportsTodatecannotbethefuturedate : "'To date' can not be the future date",
+		InvalidBankCode : "Invalid Bank Code",
+		InvalidSettlementRoutingNumber : "Invalid Settlement Number"
+		
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",
@@ -736,6 +739,8 @@ var C_MERCHANT_MSG = {
 		InvalidAmount : "Monto invalido",
 		InvalidReasonLength : "Longitud invalido",
 		reportsTodatecannotbethefuturedate : "'Hasta la fecha' no puede ser la fecha futura",
+		InvalidBankCode : "Código bancario inválido",
+		InvalidSettlementRoutingNumber : "Número de liquidación no válido"
 	}
 };
 

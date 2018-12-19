@@ -1061,7 +1061,7 @@ function zipCodeNotEmpty(id) {
 		setError(get(id), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
-	}else if ((pin.length < 3) || (pin.length > 7)) {
+	}else if ((pin.length < 3) || (pin.length > 7) || !(pin != 0)) {
 		setError(get(id), webMessages.invalidZipCode);
 		loadMsgTitleText();
 		return false;

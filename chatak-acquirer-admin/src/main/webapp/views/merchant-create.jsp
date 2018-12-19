@@ -249,7 +249,7 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.nameonaccount"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control"
 															path="bankNameOnAccount" id="bankNameOnAccount"
-															onblur="this.value=this.value.trim();return clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv');" />
+															onblur="this.value=this.value.trim();return clientValidation('bankNameOnAccount', 'general_name','bankNameOnAccountErrorDiv');" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankNameOnAccountErrorDiv" class="red-error">&nbsp;</span>
 														</div>

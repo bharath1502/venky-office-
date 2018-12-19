@@ -344,8 +344,6 @@ public class MerchantController implements URLMappingConstants {
     merchant.setPageIndex(Constants.ONE);
     session.setAttribute(Constants.PAGE_NUMBER, Constants.ONE);
     try {
-    	List<Option> countryList = merchantUpdateService.getCountries();
-        modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
     	MerchantSearchResponse searchResponse = null;
     	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     	getMerchantIdsMappedToEntity(merchant, loginResponse);
@@ -580,8 +578,6 @@ public class MerchantController implements URLMappingConstants {
       model.put(Constants.MERCHANT, merchant);
       merchant.setPageIndex(pageNumber);
       merchant.setNoOfRecords(totalRecords);
-      List<Option> countryList = merchantUpdateService.getCountries();
-      modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
       modelAndView =
           validateMerchantSearchResponse(session, pageNumber, totalRecords, modelAndView, merchant);
     } catch (Exception e) {

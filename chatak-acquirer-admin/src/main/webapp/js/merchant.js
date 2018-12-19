@@ -617,7 +617,7 @@ function validateBusinessName() {
 		setError(get('businessName'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
-	} else if (!businessNameRegx.test(businessName) || !(businessName.length == 2)) {
+	} else if (!businessNameRegx.test(businessName)) {
 		setError(get('businessName'), webMessages.invalidCompanyName);
 		loadMsgTitleText();
 		return false;
@@ -634,7 +634,7 @@ function validateFirstName() {
 		setError(get('firstName'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
-	} else if (!firstNameRegx.test(firstName) || !(firstName.length == 2)) {
+	} else if (!firstNameRegx.test(firstName)) {
 		setError(get('firstName'), webMessages.invalidFirstName);
 		loadMsgTitleText();
 		return false;
@@ -655,7 +655,7 @@ function validateLastName() {
 		setError(get('lastName'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
-	} else if (!lastNameRegx.test(lastName) || !(lastName.length == 2)) {
+	} else if (!lastNameRegx.test(lastName)) {
 		setError(get('lastName'), webMessages.invalidLastName);
 		loadMsgTitleText();
 		return false;

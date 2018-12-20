@@ -185,7 +185,6 @@ function validatecurrencyMinorSeparatorUnit() {
 
 function validateCreateCurrency() {
 	if (!validteCurrencyName() | !validateCurrencyCodeNumeric()
-			| !validateCurrencyCodeAlpha()
 			| !validateCurrencySeparatorPosition()
 			| !validatecurrencyMinorSeparatorUnit()
 			| !validatecurrencyThousSeparatorUnit()

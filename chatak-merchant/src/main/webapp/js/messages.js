@@ -195,7 +195,13 @@ var C_MERCHANT_MSG = {
 		RIGHT_CLICK_NOT_ALLOWED : "Right click is not allowed",
 		maximumownloadLimit : "Max of 5000 records can be downloaded. Please contact system support for more records.",
 		AlphabetsAndDotUnderScore :"Can contain alphanumerics,dot(.) and space",
-		address_should_contains_message : 'Only # , . / and alphanumerics are allowed'
+		address_should_contains_message : 'Only # , . / and alphanumerics are allowed',
+		fromDateAheadOfPresentDate : "From date ahead of present date",
+		toDateAheadOfPresentDate : "To date ahead of present date",
+		toDateAheadOffromDate : "From date ahead of To date",
+		EnterValidMonth : "Enter Valid Month",
+		EnterValidDay : "Enter a valid Day",
+		EnterValidYear : "Enter a valid Year"
 
 	},
 	es : {
@@ -396,6 +402,12 @@ var C_MERCHANT_MSG = {
 		maximumownloadLimit : "Se puede descargar un máximo de 5000 registros. Por favor, póngase en contacto con el soporte del sistema para obtener más registros.",
 		AlphabetsAndDotUnderScore :"Puede contener caracteres alfanuméricos, punto (.) Y espacio",
 		address_should_contains_message : 'Solamente # , . / y alfanuméricos están permitidos',
+		fromDateAheadOfPresentDate : "From date ahead of present date",
+		toDateAheadOfPresentDate : "To date ahead of present date",
+		toDateAheadOffromDate : "From date ahead of To date",
+		EnterValidMonth : "Enter Valid Month",
+		EnterValidDay : "Enter a valid Day",
+		EnterValidYear : "Enter a valid Year"
 	}
 };
 

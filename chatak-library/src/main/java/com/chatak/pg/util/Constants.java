@@ -1014,5 +1014,7 @@ public class Constants {
   public static final String HYPHEN_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
   
   public static final String BANK_VIEW_NAME = "bankViewName";
+  
+  public static final String MASK_DATE_FORMAT = "99/99/9999";
 
 }

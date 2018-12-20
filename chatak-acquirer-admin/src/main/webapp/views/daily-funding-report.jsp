@@ -315,7 +315,7 @@
 		<!--Container block End -->
 	</div>
 	<!--Body Wrapper block End -->
-
+	<script src="../js/jquery.maskedinput.js"></script>
 	<script src="../js/transactions.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -345,6 +345,8 @@
 				formatDate : 'd/m/Y',
 				maxDate:new Date()
 			}); */
+			$("#transFromDate").mask("<%=Constants.MASK_DATE_FORMAT%>"); 
+			$("#transToDate").mask("<%=Constants.MASK_DATE_FORMAT%>");
 			
 			$('#my_popup').popup({
 				blur : false

@@ -46,6 +46,8 @@ function validFirstName() {
 		setDiv('firstNameDiv', webMessages.invalidFirstName);
 		loadMsgTitleText();
 		return false;
+	} else if(!clientValidation('firstName','contact_person','firstNameDiv')){
+		return false;
 	} else {
 		setDiv('firstNameDiv', '');
 		return true;
@@ -64,6 +66,8 @@ function validLastName() {
 	} else if (!isCharacter(lastName)) {
 		setDiv('lastNameDiv', webMessages.invalidLastName);
 		loadMsgTitleText();
+		return false;
+	} else if(!clientValidation('lastName','contact_person','lastNameDiv')){
 		return false;
 	} else {
 		setDiv('lastNameDiv', '');

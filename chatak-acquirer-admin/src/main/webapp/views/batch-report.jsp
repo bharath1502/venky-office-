@@ -351,8 +351,8 @@
 			$(".focus-field").click(function() {
 				 $(this).children('.effectiveDate').focus();
 			});
-			 rome(transFromDate, { time: false });
-			rome(transToDate, { time: false }); 
+			 rome(fromDate, { time: false });
+			rome(toDate, { time: false }); 
 			
 			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,

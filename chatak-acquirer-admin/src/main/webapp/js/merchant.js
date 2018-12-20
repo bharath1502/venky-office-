@@ -972,7 +972,7 @@ function validateURL() {
 	// var reg =
 	// /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
 	/*var reg = /(\w)+\.(\w)+\.(\w)/;*/
-	var reg = /((http:\/\/|https:\/\/)[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
+	var reg = /((http:\/\/www.|https:\/\/www.)[A-Za-z0-9]+\.[A-Za-z]{2,}|www\.[A-Za-z0-9]+\.[A-Za-z]{2,})/;
 	var businessURL = get('businessURL').value.trim();
 	if (isEmpty(businessURL)) {
 		setError(get('businessURL'), webMessages.validationthisfieldismandatory);

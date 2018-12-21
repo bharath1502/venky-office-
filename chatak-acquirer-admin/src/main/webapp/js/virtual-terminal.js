@@ -651,7 +651,7 @@ function openConfirmPageSale(){
 	
 	if (!validCardNumber('cardNumberDiv','cardNumberErrorDiv') | !validCv2() | !validCardHolderName() | !validAmount('subTotalDiv','subTotalErrorDiv') | 
 	!validStreet() | !validCity() | !validZipcode() | !validInvoiceNumber('invoiceNumberDiv','invoiceNumberErrorDiv')
-	|!validState()|!clientValidation('feeAmountDiv', 'fee_amount','feeAmountErrorDiv')|!validMerchantCode('merchantIdDiv','merchantIdErrorDiv')) {
+	|!validState()|!clientValidation('feeAmountDiv', 'fee_amount','feeAmountErrorDiv')|!validMerchantCode('merchantIdDiv','errorMsgDiv')) {
 		return false;
 	} else {
 		setLable('confirmMerchantIdDiv', get('merchantIdDiv').value.trim());

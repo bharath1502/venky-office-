@@ -621,6 +621,10 @@ function validateBusinessName() {
 		setError(get('businessName'), webMessages.invalidCompanyName);
 		loadMsgTitleText();
 		return false;
+	} else if (businessName.length < 2){
+		setError(get('businessName'), webMessages.invalidLength);
+		loadMsgTitleText();
+		return false;
 	} else {
 		setError(get('businessName'), '');
 		setLable('confirmMbusinessName', businessName);
@@ -636,6 +640,10 @@ function validateFirstName() {
 		return false;
 	} else if (!firstNameRegx.test(firstName)) {
 		setError(get('firstName'), webMessages.invalidFirstName);
+		loadMsgTitleText();
+		return false;
+	}else if(firstName.length<2){
+		setError(get('firstName'), webMessages.invalidLength);
 		loadMsgTitleText();
 		return false;
 	}/*
@@ -657,6 +665,10 @@ function validateLastName() {
 		return false;
 	} else if (!lastNameRegx.test(lastName)) {
 		setError(get('lastName'), webMessages.invalidLastName);
+		loadMsgTitleText();
+		return false;
+	} else if(lastName.length<2){
+		setError(get('lastName'), webMessages.invalidLength);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -972,7 +984,7 @@ function validateURL() {
 	// var reg =
 	// /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
 	/*var reg = /(\w)+\.(\w)+\.(\w)/;*/
-	var reg = /((http:\/\/|https:\/\/)[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
+	var reg = /((http:\/\/www.|https:\/\/www.)[A-Za-z0-9]+\.[A-Za-z]{2,}|www\.[A-Za-z0-9]+\.[A-Za-z]{2,})/;
 	var businessURL = get('businessURL').value.trim();
 	if (isEmpty(businessURL)) {
 		setError(get('businessURL'), webMessages.validationthisfieldismandatory);

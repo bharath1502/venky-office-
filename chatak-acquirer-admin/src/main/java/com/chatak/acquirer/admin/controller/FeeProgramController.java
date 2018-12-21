@@ -559,13 +559,14 @@ public class FeeProgramController implements URLMappingConstants {
           StringUtil.isNull((Integer) session.getAttribute(Constants.PAGE_NUMBER)) ? 1
               : (Integer) session.getAttribute(Constants.PAGE_NUMBER),
           (Integer) session.getAttribute("totalRecords"), model);
-      if (ActionErrorCode.ERROR_CODE_00.equals(responseDetails.getErrorCode())) {
-        model.put(Constants.SUCESS, messageSource.getMessage("fee.program.status.change.sucess",
-            null, LocaleContextHolder.getLocale()));
-      } else {
-        model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
-            LocaleContextHolder.getLocale()));
-      }
+			if (ActionErrorCode.ERROR_CODE_00.equals(responseDetails.getErrorCode())) {
+				modelAndView = showFeeProgramSearch(request, response, model, session);
+				model.put(Constants.SUCESS, messageSource.getMessage("fee.program.status.change.sucess", null,
+						LocaleContextHolder.getLocale()));
+			} else {
+				model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+						LocaleContextHolder.getLocale()));
+			}
     } catch (Exception e) {
       logger.error("ERROR:: FeeProgramController:: changeFeeProgramStatus method", e);
       model.put(Constants.ERROR,

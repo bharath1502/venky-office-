@@ -184,13 +184,17 @@ function validBankCode() {
 
 function validateAddress1() {
 	var address1 = get('address1').value.trim();
-
+	var regex = /^[A-Za-z0-9,-._\/\s#]{1,60}$/;
 	if (isEmpty(address1)) {
 		setError(get('address1'), webMessages.pleaseEnterAddress1);
 		loadMsgTitleText();
 		return false;
 	} else if (address1.length < 5 || !(address1 != 0)) {
 		setError(get('address1'), webMessages.invalidAddress1Length);
+		loadMsgTitleText();
+		return false; 
+	}else if (!regex.test(address1)) {
+		setError(get('address1'), webMessages.address_should_contains_message);
 		loadMsgTitleText();
 		return false;
 	} else {

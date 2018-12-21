@@ -8,8 +8,10 @@ import java.util.List;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.bean.TransactionPopUpDataDto;
 import com.chatak.pg.model.EFTRefTxnData;
+import com.chatak.pg.model.TransactionHistoryRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.Transaction;
+import com.chatak.pg.user.bean.TransactionHistory;
 
 /**
  * @Author: Girmiti Software
@@ -61,4 +63,6 @@ public interface RefundTransactionDao {
   public List<PGTransaction> findByMerchantIdAndTerminalIdAndTransactionIdAndStatusAndMerchantSettlementStatusInAndRefundStatusNotLike(
       String merchantId, String terminalId, String refId, Integer status, Integer refundStatus,
       List<String> merchantSettlementStatus);
+  
+  public List<TransactionHistory> getMerchantTransactionList(TransactionHistoryRequest transactionHistoryRequest);
 }

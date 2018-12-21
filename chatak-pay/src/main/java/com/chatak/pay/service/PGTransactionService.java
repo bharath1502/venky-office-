@@ -4,8 +4,10 @@
 package com.chatak.pay.service;
 
 import com.chatak.pay.controller.model.Response;
+import com.chatak.pay.controller.model.TransactionHistoryResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.model.TransactionHistoryRequest;
 
 /**
  * @Author: Girmiti Software
@@ -20,4 +22,5 @@ public interface PGTransactionService {
   
   public Response processLoadFundTransaction(TransactionRequest transactionRequest, PGMerchant merchant);
 
+  public TransactionHistoryResponse getMerchantTransactionList(TransactionHistoryRequest transactionHistoryRequest);
 }

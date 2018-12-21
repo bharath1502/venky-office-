@@ -621,6 +621,10 @@ function validateBusinessName() {
 		setError(get('businessName'), webMessages.invalidCompanyName);
 		loadMsgTitleText();
 		return false;
+	} else if (businessName.length < 2){
+		setError(get('businessName'), webMessages.invalidLength);
+		loadMsgTitleText();
+		return false;
 	} else {
 		setError(get('businessName'), '');
 		setLable('confirmMbusinessName', businessName);
@@ -636,6 +640,10 @@ function validateFirstName() {
 		return false;
 	} else if (!firstNameRegx.test(firstName)) {
 		setError(get('firstName'), webMessages.invalidFirstName);
+		loadMsgTitleText();
+		return false;
+	}else if(firstName.length<2){
+		setError(get('firstName'), webMessages.invalidLength);
 		loadMsgTitleText();
 		return false;
 	}/*
@@ -657,6 +665,10 @@ function validateLastName() {
 		return false;
 	} else if (!lastNameRegx.test(lastName)) {
 		setError(get('lastName'), webMessages.invalidLastName);
+		loadMsgTitleText();
+		return false;
+	} else if(lastName.length<2){
+		setError(get('lastName'), webMessages.invalidLength);
 		loadMsgTitleText();
 		return false;
 	} else {

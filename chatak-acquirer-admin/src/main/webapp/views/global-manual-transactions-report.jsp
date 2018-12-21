@@ -269,6 +269,7 @@
 	<script src="../js/validation.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/jquery.maskedinput.js"></script>
 	<script>
 
 	$(document).ready(function() {
@@ -276,15 +277,16 @@
 		$(".focus-field").click(function() {
 			 $(this).children('.effectiveDate').focus();
 		});
-		rome(transFromDate, { time: false });
-		rome(transToDate, { time: false });
+		rome(transFromDate, { time: false,"inputFormat": "DD/MM/YYYY" });
+		rome(transToDate, { time: false,"inputFormat": "DD/MM/YYYY" });
 		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'd/m/Y',
 			maxDate:new Date()
 		}); */
-		
+		$("#transFromDate").mask("<%=Constants.MASK_DATE_FORMAT%>"); 
+		$("#transToDate").mask("<%=Constants.MASK_DATE_FORMAT%>");
 		
 		  if ("${transactionDiv}" == "true"){
 			 $('#checkb').show();

@@ -137,7 +137,7 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.fromdate" /></label>
 													<div class="input-group focus-field">
-														<form:input path="from_date" id="fromDate"
+														<form:input path="from_date" id="transFromDate"
 															cssClass="form-control effectiveDate" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
@@ -150,7 +150,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.todate" /></label>
 													<div class="input-group focus-field">
 														<form:input path="to_date"
-															cssClass="form-control effectiveDate" id="toDate" />
+															cssClass="form-control effectiveDate" id="transToDate" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -505,6 +505,7 @@
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	<script src="../js/messages.js"></script>
+	<script src="../js/jquery.maskedinput.js"></script>
 	<script>
 		/* DatePicker Javascript Strat*/
 		var selectedTxns;
@@ -514,15 +515,16 @@
 			$(".focus-field").click(function() {
 				$(this).children('.effectiveDate').focus();
 			});
-			rome(fromDate, { time: false });
-			rome(toDate, { time: false });
+			rome(transFromDate, { time: false,"inputFormat": "DD/MM/YYYY" });
+			rome(transToDate, { time: false,"inputFormat": "DD/MM/YYYY" });
 			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',
 				formatDate : 'd/m/Y',
 				maxDate:new Date()
 			}); */
-			
+			$("#transFromDate").mask("<%=Constants.MASK_DATE_FORMAT%>"); 
+			$("#transToDate").mask("<%=Constants.MASK_DATE_FORMAT%>");
 			$('#my_popup').popup({
 				blur : false
 			});

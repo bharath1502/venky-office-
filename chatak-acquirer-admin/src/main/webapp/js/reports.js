@@ -150,14 +150,14 @@ function validateReportsDates() {
 	var toDate = document.getElementById('transToDate').value;
 	var fromDate = document.getElementById('transFromDate').value;
 
-	var toYear = parseInt(toDate.split("-")[0]);
-	var toMonth = parseInt(toDate.split("-")[1]);
-	var toDay = parseInt(toDate.split("-")[2]);
+	var toDay = parseInt(toDate.split("/")[0]);
+	var toMonth = parseInt(toDate.split("/")[1]);
+	var toYear = parseInt(toDate.split("/")[2]);
 	var newToDate = new Date(toYear, toMonth-1, toDay);
 
-	var fromYear = parseInt(fromDate.split("-")[0]);
-	var fromMonth = parseInt(fromDate.split("-")[1]);
-	var fromDay = parseInt(fromDate.split("-")[2]);
+	var fromDay = parseInt(fromDate.split("/")[0]);
+	var fromMonth = parseInt(fromDate.split("/")[1]);
+	var fromYear = parseInt(fromDate.split("/")[2]);
 	var newFromDate = new Date(fromYear, fromMonth-1, fromDay);
 	
 	var today = new Date();
@@ -174,6 +174,11 @@ function validateReportsDates() {
 		} else if (newFromDate > currentDate) {
 			flag = false;
 			setDiv('transFromDateErrorDiv', webMessages.reportsFromdatecannotbethefuturedate);
+			loadMsgTitleText();
+		} else if (newToDate > currentDate) {
+			flag = false;
+			setDiv('transToDateErrorDiv',
+					webMessages.reportsTodatecannotbethefuturedate);
 			loadMsgTitleText();
 		} else  if (newFromDate == "Invalid Date") {	//If we won't select date then Value will become as "Invalid Date" String
 			flag = false;

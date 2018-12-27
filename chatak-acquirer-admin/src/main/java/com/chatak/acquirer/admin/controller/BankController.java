@@ -136,7 +136,7 @@ public class BankController implements URLMappingConstants {
           .getMessage(ActionErrorCode.DUPLICATE_BANK_CODE, null, LocaleContextHolder.getLocale()));
 	    List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
 	    modelAndView.addObject("currencyList", currencyList);
-        model.put("bank", new Bank());
+        model.put("bank", bank);
       }
     } catch (Exception e) {
       logger.error("ERROR:: BankController:: createBank method", e);

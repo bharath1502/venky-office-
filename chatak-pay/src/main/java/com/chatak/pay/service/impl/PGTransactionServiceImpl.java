@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.chatak.pay.constants.ChatakPayErrorCode;
 import com.chatak.pay.controller.model.CardData;
 import com.chatak.pay.controller.model.Response;
+import com.chatak.pay.controller.model.TransactionHistoryResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
 import com.chatak.pay.exception.InvalidRequestException;
@@ -86,7 +87,9 @@ import com.chatak.pg.enums.NationalPOSEntryModeEnum;
 import com.chatak.pg.enums.TransactionStatus;
 import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.model.ProcessingFee;
+import com.chatak.pg.model.TransactionHistoryRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
+import com.chatak.pg.user.bean.TransactionHistory;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.EncryptionUtil;
@@ -1524,5 +1527,31 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 		batch.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 		batchDao.save(batch);
 		request.setBatchId(batch.getBatchId());
+	}
+	
+	@Override
+	public TransactionHistoryResponse getMerchantTransactionList(TransactionHistoryRequest transactionHistoryRequest) {
+		log.info("Entering :: PGTransactionServiceImpl :: getMerchantTransactionList");
+		List<TransactionHistory> transactions = refundTransactionDao
+				.getMerchantTransactionList(transactionHistoryRequest);
+		TransactionHistoryResponse transactionHistoryResponse = new TransactionHistoryResponse();
+		try {
+			if (StringUtil.isListNotNullNEmpty(transactions)) {
+				transactionHistoryResponse.setTransactionList(transactions);
+				transactionHistoryResponse.setErrorCode(Constants.SUCCESS_CODE);
+				transactionHistoryResponse.setErrorMessage(Constants.SUCCESS);
+			} else {
+				transactionHistoryResponse.setTransactionList(transactions);
+				transactionHistoryResponse.setErrorCode(Constants.ERROR_CODE);
+				transactionHistoryResponse.setErrorMessage(Constants.ERROR);
+			}
+		} catch (Exception exp) {
+			log.error("Error :: PGTransactionServiceImpl :: getMerchantTransactionList method", exp);
+			transactionHistoryResponse.setErrorCode(ChatakPayErrorCode.TXN_0999.name());
+			transactionHistoryResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0999.name(),
+					null, LocaleContextHolder.getLocale()));
+		}
+		log.info("Exiting :: PGTransactionServiceImpl :: getMerchantTransactionList");
+		return transactionHistoryResponse;
 	}
 }

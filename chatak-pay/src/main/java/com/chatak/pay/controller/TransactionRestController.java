@@ -37,6 +37,7 @@ import com.chatak.pay.controller.model.Request;
 import com.chatak.pay.controller.model.Response;
 import com.chatak.pay.controller.model.SplitStatusRequest;
 import com.chatak.pay.controller.model.SplitStatusResponse;
+import com.chatak.pay.controller.model.TransactionHistoryResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
 import com.chatak.pay.controller.model.topup.GetOperatorsResponse;
@@ -60,6 +61,7 @@ import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.model.OAuthToken;
+import com.chatak.pg.model.TransactionHistoryRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
@@ -989,5 +991,27 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 			}
 		}
 		return false;
+	}
+	
+	@RequestMapping(value = "/clientTxnHistory", method = RequestMethod.POST)
+	public TransactionHistoryResponse clientTxnHistory(HttpServletRequest request, HttpServletResponse response,
+			HttpSession session, @RequestBody TransactionHistoryRequest transactionHistoryRequest) {
+		logger.info("Entering:: TransactionRestController:: clientTxnHistory method");
+		TransactionHistoryResponse transactionHistoryResponse = new TransactionHistoryResponse();
+		try {
+			validateCustomerUserName(transactionHistoryRequest.getUserName());
+			transactionHistoryResponse = pgTransactionService.getMerchantTransactionList(transactionHistoryRequest);
+			if (null != transactionHistoryResponse
+					&& transactionHistoryResponse.getErrorCode().equals(Constants.ERROR_CODE)) {
+				transactionHistoryResponse = new TransactionHistoryResponse();
+				transactionHistoryResponse.setErrorCode(Constants.ERROR_CODE);
+				transactionHistoryResponse.setErrorMessage(
+						messageSource.getMessage("chatak.transaction.error", null, LocaleContextHolder.getLocale()));
+			}
+		} catch (Exception e) {
+			logger.error("Error :: TransactionRestController :: clientTxnHistory", e);
+		}
+		logger.info("Exiting:: TransactionRestController:: clientTxnHistory method");
+		return transactionHistoryResponse;
 	}
 }

@@ -208,7 +208,7 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.zipcode"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="pin" id="pin"
-														maxlength="10" onblur="this.value=this.value.trim();validatePin()" disabled="true" />
+														maxlength="7" onblur="this.value=this.value.trim();validatePin()" disabled="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span id="pinEr" class="red-error">&nbsp;</span>
 													</div>

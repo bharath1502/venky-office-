@@ -1055,18 +1055,18 @@ function generalZipCode()
 }
 
 function zipCodeNotEmpty(id) {
-	var pin = getVal(id);
+	var zipcode = getVal(id);
 	var regex = /^[A-Za-z0-9 ]+$/;
-	if (isEmpty(pin)) {
+	if (isEmpty(zipcode)) {
 		setError(get(id), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
-	}else if ((pin.length < 3) || (pin.length > 7)) {
+	}else if ((zipcode.length < 3) || (zipcode.length > 7) || !(zipcode != 0)) {
 		setError(get(id), webMessages.invalidZipCode);
 		loadMsgTitleText();
 		return false;
 	}
-	else if (!regex.test(pin)) {
+	else if (!regex.test(zipcode)) {
 		setError(get(id), webMessages.invalidZipCode);
 		loadMsgTitleText();
 		return false;

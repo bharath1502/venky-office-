@@ -188,7 +188,8 @@ function validateCreateCurrency() {
 			| !validateCurrencySeparatorPosition()
 			| !validatecurrencyMinorSeparatorUnit()
 			| !validatecurrencyThousSeparatorUnit()
-			| !validateCurrencyExport()) {
+			| !validateCurrencyExport()
+			| !validateCurrencyCodeAlpha()) {
 		return false;
 	}
 	return true;
@@ -202,6 +203,9 @@ function isNumberKey(evt) {
 function fetchCurrencyData(currencyCodeNumeric) {
 	if (currencyCodeNumeric != '') {
 		getCurrencyData(currencyCodeNumeric);
+	} else{
+		setValue('currencyCodeNumeric', "");
+		setValue('currencyCodeAlpha', "");
 	}
 }
 

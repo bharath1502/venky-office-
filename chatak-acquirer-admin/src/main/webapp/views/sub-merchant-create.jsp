@@ -895,6 +895,14 @@ Include all compiled plugins (below), or include individual files as needed
 				$("#allowAutoSettlement").prop("checked", true);
 			}
 		}
+		
+		// avoid pressing of enter key
+		$(document).keypress(
+		  function(event){
+		    if (event.which == '13') {
+		      event.preventDefault();
+		    }
+		});
 
 		$('#legalSSN').keyup(function() {
 			var val = this.value.replace(/\D/g, '');

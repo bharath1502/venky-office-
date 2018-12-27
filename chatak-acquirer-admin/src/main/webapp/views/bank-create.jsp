@@ -93,6 +93,7 @@
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
+											<spring:message code="common.label.numericsonly" var="NumericOnly"/>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="bank.label.bankname" /><span class="required-field">*</span></label>
@@ -110,8 +111,8 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.bankcode" /><span
 														class="required-field">*</span></label>
-													<input name="bankCode" id="bankCode"
-														class="form-control" onKeyPress="return numbersonly(this, event)" placeholder="<spring:message code="common.label.numericsonly"/>"
+													<form:input path="bankCode" id="bankCode"
+														cssClass="form-control" onkeypress="return numbersonly(this, event)" 
 														onblur="this.value=this.value.trim();validBankCode()"
 														maxlength="<%=Constants.BANK_CODE.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
@@ -153,8 +154,8 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.settlementroutingnumber" /><span
 														class="required-field">*</span></label>
-													<input name="settlRoutingNumber" id="settlRoutingNumber"
-														class="form-control" onKeyPress="return numbersonly(this, event)" placeholder="<spring:message code="common.label.numericsonly" />"
+													<form:input path="settlRoutingNumber" id="settlRoutingNumber"
+														cssClass="form-control" onkeypress="return numbersonly(this, event)" 
 														onblur="this.value=this.value.trim();validSettlRoutingNumber()" title=""
 														maxlength="<%=Constants.ACCOUNT_ROUTING_NUMBER.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
@@ -166,8 +167,8 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.settlementaccountnumber" /><span
 														class="required-field">*</span></label>
-													<input name="settlAccountNumber" id="settleAccountNo"
-														class="form-control" onKeyPress="return numbersonly(this, event)" placeholder="<spring:message code="common.label.numericsonly"/>"
+													<form:input path="settlAccountNumber" id="settleAccountNo"
+														cssClass="form-control" onkeypress="return numbersonly(this, event)" 
 														onblur="this.value=this.value.trim();validSettlAccountNumber()"
 														maxlength="<%=Constants.BANK_ACCOUNT_NUMBER.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"

@@ -220,7 +220,7 @@
 														<form:option value="">..:<spring:message
 																code="reports.option.select" />:..</form:option>
 														<c:forEach items="${countryList}" var="country">
-															<form:option value="${country.id}">${country.name}</form:option>
+															<form:option value="${country.label}">${country.label}</form:option>
 														</c:forEach>
 													</form:select>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"

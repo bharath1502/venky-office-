@@ -145,7 +145,7 @@ public class VirtualTerminalController implements URLMappingConstants {
             .setExpDate(terminalSaleDTO.getYear().substring(Constants.TWO) + terminalSaleDTO.getMonth());
         TransactionResponse transactionResponse = paymentService.doSale(terminalSaleDTO);
         
-        setSaleTxnResponse(terminalSaleDTO, model, modelAndView, transactionResponse);
+        return setSaleTxnResponse(terminalSaleDTO, model, modelAndView, transactionResponse);
         
       } catch (ChatakPayException e) {
         logger.error("ERROR :: VirtualTerminalController :: processSale method:" + e);
@@ -354,7 +354,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           virtualTerminalVoidDTO.setSuccessDiv(true);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_VOID, virtualTerminalVoidDTO);
         } else {
-          setTransactionError(modelAndView, voidResponse);
+          return  setTransactionError(modelAndView, voidResponse);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_VOID, virtualTerminalVoidDTO);
         }
       } catch (ChatakPayException e) {

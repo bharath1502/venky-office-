@@ -70,6 +70,7 @@ public class BankController implements URLMappingConstants {
 
       List<Option> countryList = bankService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
+      modelAndView.addObject(Constants.STATE_LIST, "");
 
       List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
       modelAndView.addObject("currencyList", currencyList);
@@ -133,6 +134,8 @@ public class BankController implements URLMappingConstants {
       }  else{
 	    modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(ActionErrorCode.DUPLICATE_BANK_CODE, null, LocaleContextHolder.getLocale()));
+	    List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
+	    modelAndView.addObject("currencyList", currencyList);
         model.put("bank", bank);
       }
     } catch (Exception e) {

@@ -2,7 +2,7 @@
 <body>
 Welcome <b>$firstName</b>, <br/><br/>
 
-Your Program Manager/ISO/Merchant user account has been created  .<br/>
+Your Admin user account has been created  .<br/>
 Your Username is <b>$userName</b><br/>
 Your temporary password is <b>$tempPassword</b>
 <br/><br/>

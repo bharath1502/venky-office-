@@ -60,7 +60,7 @@ function validLastName() {
 
 	var lastName = get('lastName').value.trim();
 	if (isEmpty(lastName)) {
-		setDiv('lastNameDiv', webMessages.validationthisfieldismandatory);
+		setDiv('lastNameDiv', webMessages.adminUserLastName);
 		loadMsgTitleText();
 		return false;
 	} else if (!isCharacter(lastName)) {

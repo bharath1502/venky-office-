@@ -354,7 +354,7 @@ public class VirtualTerminalController implements URLMappingConstants {
           virtualTerminalVoidDTO.setSuccessDiv(true);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_VOID, virtualTerminalVoidDTO);
         } else {
-          return  setTransactionError(modelAndView, voidResponse);
+          setTransactionError(modelAndView, voidResponse);
           modelAndView.addObject(Constants.VIRTUAL_TEMINAL_VOID, virtualTerminalVoidDTO);
         }
       } catch (ChatakPayException e) {

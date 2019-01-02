@@ -113,7 +113,7 @@ public class BlackListedCardController implements URLMappingConstants {
         modelAndView = showSearchBlackListedCardPage(request, response,
             new BlackListedCardRequest(), bindingResult, model, session);
         modelAndView.addObject(Constants.ERROR, messageSource
-            .getMessage(ActionErrorCode.ERROR_CODE_Z5, null, LocaleContextHolder.getLocale()));
+            .getMessage("chatak.header.already.black.listed.card.messages", null, LocaleContextHolder.getLocale()));
       } else {
         modelAndView.setViewName(CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE);
         modelAndView.addObject(Constants.ERROR, messageSource

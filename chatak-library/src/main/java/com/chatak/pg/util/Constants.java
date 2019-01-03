@@ -34,7 +34,7 @@ public class Constants {
 
   public static final String CHATAK_PG_RELOAD = "reload";
 
-  public static final boolean CHATAK_LICENSE_VALID = false;
+  public static  boolean CHATAK_LICENSE_VALID = false;
 
   public static final Integer CHATAK_DOWNSTREAM_SOCKET_TIMEOUT = 20000;
 

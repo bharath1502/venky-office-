@@ -152,11 +152,11 @@ public class TcpServer {
     Socket socket = null;
     while(true) {
       try {
-        if(!Constants.CHATAK_LICENSE_VALID) {
+       /* if(!Constants.CHATAK_LICENSE_VALID) {
           log.info("Ooops..... Chatak Product License is expired! Please contact Administrator to continue with the services.");
           serverSocket.close();
           break;
-        }
+        }*/
         // wait for a connection request.
         socket = serverSocket.accept();
         if(socket != null) {

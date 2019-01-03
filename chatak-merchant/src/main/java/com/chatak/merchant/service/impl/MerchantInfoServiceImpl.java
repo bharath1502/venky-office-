@@ -393,7 +393,7 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
       if (null != pgMerchant) {
         Option merchantData = new Option();
         merchantData.setValue(mCode);
-        merchantData.setLabel(mCode + "-" + pgMerchant.getFirstName());
+        merchantData.setLabel(mCode + "-" + pgMerchant.getBusinessName());
         merchantNames.add(merchantData);
       }
     }

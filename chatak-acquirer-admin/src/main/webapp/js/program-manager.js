@@ -963,7 +963,6 @@ function resetAllFields() {
 	setValue('state', '');
 	setValue('timezone', '');
 	setValue('batchPrefix', '');
-	setValue('schedulerRunTime', '');
 	setValue('load', '');
 	document.getElementById('bankName').options.length = 0;
 	document.getElementById('cardprogramId').options.length = 0;

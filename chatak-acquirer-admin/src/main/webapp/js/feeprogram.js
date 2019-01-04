@@ -327,7 +327,7 @@ function validateAmountValue($this,inputType) {
 	
 }
 function validateFeeProgram() {
-	if (!clientValidation('feeProgramName', 'company_name','feeProgramNameErr')
+	if (!validateFeePrgmName()
 			| !clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')
 			| !clientValidation('flatFee', 'fee','flatFeeErr')
 			| !validateFeePercentValue()
@@ -462,6 +462,27 @@ function resetFeeprogramInfo() {
 	setError(get('otherFee.chargeFrequencyEr'), '');
 	get('otherFee.chargeBacKFee').value = "";
 	setError(get('otherFee.chargeBacKFeeEr'), '');
+}
+
+function validateFeePrgmName() {
+	var feeProgramName = get('feeProgramName').value.trim();
+	var regex = /^[a-zA-Z0-9 .]*$/;
+	if(isEmpty(feeProgramName)){
+		setDiv('feeProgramNameErr',webMessages.feeProgramMandatory);
+		loadMsgTitleText();
+		return false;
+	}else if (!regex.test(feeProgramName)) {
+		setDiv('feeProgramNameErr',webMessages.cancontain_alphanumerics_dot_space);
+		loadMsgTitleText();
+		return false;
+	} else {
+		doAjaxFeeprogramNameDuplicate();
+		if (feeProgramNameAlreadyExist == true) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 function doAjaxFeeprogramNameDuplicate() {

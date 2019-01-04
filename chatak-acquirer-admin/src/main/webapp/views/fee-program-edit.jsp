@@ -236,7 +236,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
-													value="<spring:message code="fee-program-edit.label.updatebutton" />" onclick="return validateFeeProgram()">
+													value="<spring:message code="fee-program-edit.label.updatebutton" />" onclick="return validateFeePrgm()">
 												<input type="button" class="form-control button pull-right marginL10" value="<spring:message code="fee-program-edit.label.cancelbutton" />" onclick="openCancelConfirmationPopup()"/>
 											</div>
 										</div>

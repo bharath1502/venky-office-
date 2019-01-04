@@ -327,7 +327,7 @@ function validateAmountValue($this,inputType) {
 	
 }
 function validateFeeProgram() {
-	if (!validateFeePrgmName()
+	if (validateFeePrgmName()
 			| !clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')
 			| !clientValidation('flatFee', 'fee','flatFeeErr')
 			| !validateFeePercentValue()
@@ -340,6 +340,16 @@ function validateFeeProgram() {
 	}
 	return true;
 }
+
+function validateFeePrgm() {
+	if (!clientValidation('flatFee', 'fee','flatFeeErr')
+			| !validateFeePercentValue()
+			| !validateSharing()) {
+		return false;
+	}
+	return true;
+}
+
 function validateSharing(){
 	if(!clientValidation('pmShare', 'fee','pmShareErr')
 			| !clientValidation('isoShare', 'fee','isoShareErr')){

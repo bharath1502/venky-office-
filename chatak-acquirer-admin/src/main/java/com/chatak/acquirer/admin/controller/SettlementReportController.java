@@ -110,7 +110,11 @@ public class SettlementReportController implements URLMappingConstants {
 			if (!file.isEmpty()) {
 				bytes = file.getBytes();
 				String[] strArray = file.getOriginalFilename().split("_");
+				int size = strArray.length;
 				String programName = strArray[0];
+				if(size>0 && size<2){
+					throw new ChatakAdminException(Properties.getProperty("admin.invalid.name"));
+				}
 				
 				String dateTime = strArray[1].substring(0, strArray[1].indexOf('.'));
 				

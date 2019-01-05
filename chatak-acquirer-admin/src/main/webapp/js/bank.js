@@ -407,7 +407,7 @@ function validSettlRoutingNumber() {
 		loadMsgTitleText();
 		return false;
 	} else if (!(settlRoutingNumber != 0) || !(settlRoutingNumber.length != 1)) {
-		setError(get('settlRoutingNumber'), webMessages.InvalidSettlementRoutingNumber);
+		setError(get('settlRoutingNumber'), webMessages.InvalidBankRoutingNumber);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -428,7 +428,7 @@ function validSettlAccountNumber() {
 		loadMsgTitleText();
 		return false;
 	} else if (!(settleAccountNo != 0) || !(settleAccountNo.length != 1)) {
-		setError(get('settleAccountNo'), webMessages.InvalidSettlementRoutingNumber);
+		setError(get('settleAccountNo'), webMessages.InvalidBankAccountNumber);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -545,4 +545,22 @@ function validateSpecialCharactersBankCreate() {
 
 function resetBankCreate() {
 	window.location.href = 'bank-create';
+}
+
+function validateBankCity() {
+	var city = get('bankCity').value.trim();
+	var cityRegx = /^[A-Za-z0-9\#\$\&]+(\s{0,1}[a-zA-Z0-9,])*$/;
+
+	if (isEmpty(city)) {
+		setError(get('bankCity'), webMessages.pleaseEnterCity);
+		loadMsgTitleText();
+		return false;
+	} else if (!cityRegx.test(city) || !(city != 0) || !(city.length != 1) ) {
+		setError(get('bankCity'), webMessages.invalidCity);
+		loadMsgTitleText();
+		return false;
+	} else {
+		setError(get('bankCity'), '');
+		return true;
+	}
 }

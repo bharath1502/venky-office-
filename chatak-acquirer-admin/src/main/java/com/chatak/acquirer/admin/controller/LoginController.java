@@ -127,7 +127,6 @@ public class LoginController implements URLMappingConstants {
     logger.info("Entering:: LoginController:: showLogin method");
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_LOGIN);
-    model.put("currentBuildRelease", Properties.getProperty("current.release.version"));
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
     model.put(Constants.LOGIN_DETAILS, new LoginDetails());

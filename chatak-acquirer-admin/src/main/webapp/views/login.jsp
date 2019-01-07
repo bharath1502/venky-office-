@@ -145,7 +145,7 @@
 		<!--Container block End -->
 	</div>
 	<div style="margin-top: -30px; margin-right: 10px; float: right;">
-		<p>${currentBuildRelease}</p>
+		<p><spring:message code="current.release.version"/></p>
 	</div>
 	<!--Body Wrapper block End -->
 

@@ -341,7 +341,7 @@ function validateFeeProgram() {
 	return true;
 }
 
-function validateFeePrgm() {
+function validateEditFeeProgram() {
 	if (!clientValidation('flatFee', 'fee','flatFeeErr')
 			| !validateFeePercentValue()
 			| !validateSharing()) {

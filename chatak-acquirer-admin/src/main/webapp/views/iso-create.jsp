@@ -88,7 +88,7 @@
 													<form:input id="isoName"
 														path="isoName" maxlength="100"
 														cssClass="form-control"
-														onblur="clientValidation('isoName','program_manager_name','isonameerrormsg')"
+														onblur="this.value=this.value.trim();clientValidation('isoName','program_manager_name','isonameerrormsg')"
 														onclick="clearErrorMsg('pgmmgrnameerrormsg');" />
 													<div class="discriptionErrorMsg">
 														<span id="isonameerrormsg" class="red-error">&nbsp;</span>
@@ -100,7 +100,7 @@
 														class="required-field">*</span></label>
 													<form:input path="programManagerRequest.businessName" maxlength="50"
 														cssClass="form-control" id="businessEntityName"
-														onblur="clientValidation('businessEntityName','business_entity_name','isobusinessentityerrormsg')"
+														onblur="this.value=this.value.trim();clientValidation('businessEntityName','business_entity_name','isobusinessentityerrormsg')"
 														onclick="clearErrorMsg('isobusinessentityerrormsg');" />
 													<div class="discriptionErrorMsg">
 														<span id="isobusinessentityerrormsg" class="red-error">&nbsp;</span>
@@ -112,7 +112,7 @@
 														class="required-field">*</span></label>
 													<form:input path="programManagerRequest.contactName" maxlength="50"
 														cssClass="form-control" id="contactPerson"
-														onblur="clientValidation('contactPerson','contact_person','isocontactpersonerrormsg')"
+														onblur="this.value=this.value.trim();clientValidation('contactPerson','contact_person','isocontactpersonerrormsg')"
 														onclick="clearErrorMsg('isocontactpersonerrormsg');" />
 													<div class="discriptionErrorMsg">
 														<span id="isocontactpersonerrormsg" class="red-error">&nbsp;</span>

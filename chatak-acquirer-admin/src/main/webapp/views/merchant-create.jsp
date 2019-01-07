@@ -165,7 +165,7 @@
 														<form:input cssClass="form-control"
 															path="bankAccountNumber" id="bankAccountNumber"
 															maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv');" />
+															onblur="this.value=this.value.trim();return clientValidation('bankAccountNumber', 'account_number','bankAccountNumberErrorDiv');" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankAccountNumberErrorDiv" class="red-error">&nbsp;</span>
 														</div>
@@ -205,7 +205,7 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/><!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');" />
+															onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_city_name','bankCityErrorDiv');" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankCityErrorDiv" class="red-error">&nbsp;</span>
 														</div>

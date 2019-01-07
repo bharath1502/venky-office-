@@ -345,6 +345,13 @@ var ValidationRules = {
 		mandatory : true
 
 	},
+	bank_city_name : {
+		type : "alpha",
+		min : "2",
+		max : "30",
+		mandatory : false
+
+	},
 
 	bank_state : {
 		type : "alpha",
@@ -1264,7 +1271,7 @@ function alphanumericDotAndSpace(data,div_id) {
 	}
 	
 	function numeric(data,div_id) {
-		var regex =/^\d+$/;
+		var regex =/^\d$/;
 		if(regex.test(data)){
 		setDiv(div_id,"");
 		return true;
@@ -1302,7 +1309,7 @@ function alphanumericDotAndSpace(data,div_id) {
 	}
 	
 	function mobile(data,div_id) {
-		var regex =/^[0-9()+-]*$/;
+		var regex =/^[0-9]*$/;
 		if(regex.test(data)){
 		setDiv(div_id,"");
 		return true;

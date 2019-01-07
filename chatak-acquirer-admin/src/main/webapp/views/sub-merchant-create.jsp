@@ -500,11 +500,11 @@ Include all compiled plugins (below), or include individual files as needed
 														<form:input cssClass="form-control"
 															path="bankRoutingNumber"
 															onkeypress="return amountValidate(this,event)"
-															id="bankRoutingNumber" maxlength="9"
-															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
+															id="settlRoutingNumber" maxlength="9"
+															onblur="this.value=this.value.trim();validSettlRoutingNumber()" />
 														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
+															<span id="settlRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
@@ -512,11 +512,11 @@ Include all compiled plugins (below), or include individual files as needed
 																code="manage.label.sub-merchant.bankaccountnumber" /><span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control"
-															path="bankAccountNumber" id="bankAccountNumber"
+															path="bankAccountNumber" id="settleAccountNo"
 															maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv');" />
+															onblur="this.value=this.value.trim();validSettlAccountNumber()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="bankAccountNumberErrorDiv" class="red-error">&nbsp;</span>
+															<span id="settleAccountNoEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
@@ -568,9 +568,9 @@ Include all compiled plugins (below), or include individual files as needed
 															<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');" />
+															onblur="this.value=this.value.trim();validateBankCity()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="bankCityErrorDiv" class="red-error">&nbsp;</span>
+															<span id="bankCityEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
@@ -722,6 +722,7 @@ Include all compiled plugins (below), or include individual files as needed
 	<script type="text/javascript" src="../js/merchant.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/validation.js"></script>
+	<script src="../js/bank.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 

@@ -489,6 +489,12 @@
 		$(".close-fetch-content").click(function() {
 			$(".fetch-content").slideUp();
 		});
+		
+		$(document).ready(function() {
+		if ("${virtualTerminalRefundDTO.successDiv}" == "true") {
+			$("#hideAllFields").hide();
+		}
+		});
 
 		function alertrefNum(refFlag, txnRefNum) {
 			if (refFlag) {

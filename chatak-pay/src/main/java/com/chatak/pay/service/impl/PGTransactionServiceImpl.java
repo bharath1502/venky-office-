@@ -1392,9 +1392,16 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 
     try {
       Request balanceRequest = new Request();
-      balanceRequest.setCardNum(transactionRequest.getCardData().getCardNumber());
-      balanceRequest.setCvv(transactionRequest.getCardData().getCvv());
-      balanceRequest.setExpDate(transactionRequest.getCardData().getExpDate());
+		if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			balanceRequest.setCardNum(transactionRequest.getCardData().getCardNumber());
+			balanceRequest.setCvv(transactionRequest.getCardData().getCvv());
+			balanceRequest.setExpDate(transactionRequest.getCardData().getExpDate());
+			balanceRequest.setUid(transactionRequest.getCardData().getUid());
+			balanceRequest.setCardHolderEmail(transactionRequest.getCardData().getCardHolderName());
+		} else {
+			balanceRequest.setAccountNumber(transactionRequest.getAccountNumber());
+			balanceRequest.setEntryMode(transactionRequest.getEntryMode());
+		}
       balanceRequest.setMerchantCode(transactionRequest.getMerchantCode());
       balanceRequest.setTerminalId(transactionRequest.getTerminalId());
       PGMerchant merchantData = merchantUpdateDao.getMerchant(transactionRequest.getMerchantCode());
@@ -1402,9 +1409,7 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
       balanceRequest.setCurrencyCode(currencyDetails.getCurrencyCodeNumeric());
       getMerchantDetails(merchantData, balanceRequest);
       
-      balanceRequest.setUid(transactionRequest.getCardData().getUid());
       balanceRequest.setPosEntryMode(transactionRequest.getPosEntryMode() + "0");
-      balanceRequest.setCardHolderEmail(transactionRequest.getCardData().getCardHolderName());
       balanceRequest.setInvoiceNumber(transactionRequest.getInvoiceNumber());
       balanceRequest.setUserName(transactionRequest.getUserName());
       balanceRequest.setTimeZoneOffset(transactionRequest.getTimeZoneOffset());

@@ -1392,15 +1392,15 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 
     try {
       Request balanceRequest = new Request();
-		if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+		if (transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			balanceRequest.setAccountNumber(transactionRequest.getAccountNumber());
+			balanceRequest.setEntryMode(transactionRequest.getEntryMode());
+		} else {
 			balanceRequest.setCardNum(transactionRequest.getCardData().getCardNumber());
 			balanceRequest.setCvv(transactionRequest.getCardData().getCvv());
 			balanceRequest.setExpDate(transactionRequest.getCardData().getExpDate());
 			balanceRequest.setUid(transactionRequest.getCardData().getUid());
 			balanceRequest.setCardHolderEmail(transactionRequest.getCardData().getCardHolderName());
-		} else {
-			balanceRequest.setAccountNumber(transactionRequest.getAccountNumber());
-			balanceRequest.setEntryMode(transactionRequest.getEntryMode());
 		}
       balanceRequest.setMerchantCode(transactionRequest.getMerchantCode());
       balanceRequest.setTerminalId(transactionRequest.getTerminalId());

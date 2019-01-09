@@ -1536,7 +1536,9 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 
     try {
       // validation of Request
-      validateRequest(balanceEnquiryRequest);
+    	if(!balanceEnquiryRequest.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE)) {
+			validateRequest(balanceEnquiryRequest);
+		}
 
       // Create Transaction record
       pgTransaction =

@@ -562,7 +562,9 @@ public class PaymentServiceImpl extends TransactionService implements PaymentSer
 
     try {
       // validation of Request
-      validateRequest(balanceEnquiryRequest);
+		if (!balanceEnquiryRequest.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE)) {
+			validateRequest(balanceEnquiryRequest);
+		}
       // Switch interface call
       SwitchTransaction switchTransaction = new ChatakPrepaidSwitchTransaction();
       PGSwitch pgSwitch = switchDao.getSwitchByName(ProcessorType.CHATAK.value());

@@ -258,11 +258,12 @@ public abstract class TransactionService extends AccountTransactionService {
     // In case the card number is from a HCE NFC transaction, it might be appended with an 'F'
     // to make it a whole 20 digit card number, 19 card digits + 'F'
     // In such cases, truncate the 'F'
-    String cardNumber = request.getCardNum().replace("F", "");
+    String cardNumber = null;
     if(request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE)) {
     	pgTransaction.setPanMasked(request.getAccountNumber());
         pgTransaction.setPan(EncryptionUtil.encrypt(request.getAccountNumber()));
     } else {
+    cardNumber = request.getCardNum().replace("F", "");
     pgTransaction.setPanMasked(StringUtils.getMaskedString(cardNumber, Integer.parseInt("5"), Integer.parseInt("4")));
     pgTransaction.setPan(EncryptionUtil.encrypt(cardNumber));
     }
@@ -316,9 +317,14 @@ public abstract class TransactionService extends AccountTransactionService {
 
     PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
     pgSwitchTransaction.setTxnAmount(request.getTxnAmount());
-    pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), 5, 4));
     pgSwitchTransaction.setPosEntryMode(request.getPosEntryMode());
-    pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getCardNum()));
+		if (request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getAccountNumber()));
+			pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getAccountNumber(), 5, 4));
+		} else {
+			pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getCardNum()));
+			pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), 5, 4));
+		}
     // PERF >> Commenting since PgTransactionId is auto increment
     //pgSwitchTransaction.setPgTransactionId(transactionDao.generateTransactionRefNumber())
     pgSwitchTransaction.setCreatedDate(timestamp);
@@ -922,6 +928,7 @@ public abstract class TransactionService extends AccountTransactionService {
       isoMsg.set(ISOConstants.RESERVED_FOR_PRIVATE_USE, request.getUid() != null ? request.getUid() : ""); //setting UID value if available.
       isoMsg.set(ISOConstants.TIMEZONE_OFFSET, request.getTimeZoneOffset());//setting  TimeZone Offset value.
       isoMsg.set(ISOConstants.TIMEZONE_REGION, request.getTimeZoneRegion());//setting  TimeZone Region value.
+      isoMsg.set(ISOConstants.ACCOUNT_NUMBER, request.getAccountNumber());//setting Account Number value
     } catch (NullPointerException | ISOException e) {
       logger.error("Error in IsoMessage", e);
       throw new ISOException("Invalid IsoMessage");

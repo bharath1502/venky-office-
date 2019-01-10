@@ -775,7 +775,9 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     try {
 
       // validation of Request
-      validateRequest(voidRequest);
+		if (!voidRequest.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE)) {
+			validateRequest(voidRequest);
+		}
 
       // Create Transaction record
       pgTransaction = populatePGTransaction(voidRequest, PGConstants.TXN_TYPE_VOID);
@@ -1610,12 +1612,16 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     	  pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_REJECTED);  
       }
       
+      Double currentBalance = Double.parseDouble(StringUtils.getAmount(balanceEnquiryResponse.getBalance())) * 100;
+      pgTransaction.setTxnAmount(currentBalance.longValue());
+      pgTransaction.setTxnTotalAmount(currentBalance.longValue());
+      
       switchTransactionDao.createTransaction(pgSwitchTransaction);
       voidTransactionDao.createTransaction(pgTransaction);
       
       balanceEnquiryResponse.setMerchantId(pgTransaction.getMerchantId());
       balanceEnquiryResponse.setTerminalId(pgTransaction.getTerminalId());
-      balanceEnquiryResponse.setTxnId(pgTransaction.getTransactionId());
+      balanceEnquiryResponse.setTxnId(pgTransaction.getId().toString());
       balanceEnquiryResponse.setProcTxnId(balanceEnquiryResponse.getUpStreamTxnRefNum());
 
       // Set Response fields

@@ -4,6 +4,7 @@
 package com.chatak.pay.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -49,10 +50,12 @@ import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pay.exception.InvalidRequestException;
 import com.chatak.pay.model.TSMRequest;
 import com.chatak.pay.model.TSMResponse;
+import com.chatak.pay.service.impl.ReceiptServiceImpl;
 import com.chatak.pay.util.JsonUtil;
 import com.chatak.pay.util.StringUtil;
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.bean.ChangePasswordRequest;
 import com.chatak.pg.bean.ForgotPasswordRequest;
 import com.chatak.pg.constants.PGConstants;
@@ -80,9 +83,16 @@ import com.sleepycat.je.utilint.Timestamp;
 public class TransactionRestController extends BaseController implements URLMappingConstants, Constant {
 
   private static Logger logger = LogManager.getLogger(TransactionRestController.class.getName());
+  
+  private static String vmFileName = "/email_receipt_template.vm";
+
+  private static String mailSubjectKey = "chatak.pay.email.reciept";
 
   @Autowired
   private MessageSource messageSource;	
+  
+  @Autowired
+  private ReceiptServiceImpl receiptServiceImpl;
 
   @RequestMapping(value = "/process", method = RequestMethod.POST)
   public Response process(HttpServletRequest request,
@@ -1013,5 +1023,40 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		}
 		logger.info("Exiting:: TransactionRestController:: clientTxnHistory method");
 		return transactionHistoryResponse;
+	}
+
+	@RequestMapping(value = "/sendMail", method = RequestMethod.POST)
+	public Response sendMail(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody TransactionRequest transactionRequest) {
+		Response resp = new Response();
+		logger.info("Entering:: TransactionRestController:: sendMail method");
+		PGTransaction details = null;
+		try {
+			if (transactionRequest.getEmail() != null && transactionRequest.getTxnId() != null) {
+				details = receiptServiceImpl.findTransactionDetails(transactionRequest.getTxnId());
+				Map<String, String> map = new HashMap<>();
+				map.put("Name", details.getCardHolderName());
+				map.put("PAN", details.getPanMasked());
+				map.put("Exp", details.getExpDate().toString());
+				map.put("TxnAmount", details.getTxnTotalAmount().toString());
+				map.put("TxnId", details.getTransactionId());
+				map.put("Date", details.getUpdatedDate().toString());
+				map.put("MerchantName", details.getUserName());
+				map.put("InvoiceNumber", details.getInvoiceNumber());
+				String toEmailAddress = transactionRequest.getEmail();
+				resp = receiptServiceImpl.sendEmail(map, vmFileName, mailSubjectKey, toEmailAddress);
+			}
+			if (resp.getErrorCode().equals(ChatakPayErrorCode.GEN_001.name())) {
+				resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(), null,
+						LocaleContextHolder.getLocale()));
+			} else if (resp.getErrorCode().equals(ChatakPayErrorCode.GEN_002.name())) {
+				resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_002.name(), null,
+						LocaleContextHolder.getLocale()));
+			}
+		} catch (Exception e) {
+			logger.info("Error:: TransactionRestController:: sendMail method", e);
+		}
+		logger.info("Exiting:: TransactionRestController:: sendMail method");
+		return resp;
 	}
 }

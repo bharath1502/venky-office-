@@ -63,8 +63,30 @@ public class TransactionRequest extends Request implements Serializable {
   private String timeZoneRegion;
 
   private String deviceSerial;
+  
+  private String email;
+  
+  private String txnId;
+  
+  
 
-  public String getCurrencyCode() {
+  public String getTxnId() {
+	return txnId;
+}
+
+public void setTxnId(String txnId) {
+	this.txnId = txnId;
+}
+
+public String getEmail() {
+	return email;
+}
+
+public void setEmail(String email) {
+	this.email = email;
+}
+
+public String getCurrencyCode() {
 		return currencyCode;
 	}
 

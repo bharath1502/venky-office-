@@ -1055,6 +1055,8 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 			}
 		} catch (Exception e) {
 			logger.info("Error:: TransactionRestController:: sendMail method", e);
+			resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0999.name(), null,
+					LocaleContextHolder.getLocale()));
 		}
 		logger.info("Exiting:: TransactionRestController:: sendMail method");
 		return resp;

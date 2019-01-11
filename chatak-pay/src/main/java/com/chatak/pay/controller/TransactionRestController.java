@@ -1047,16 +1047,16 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 				resp = receiptServiceImpl.sendEmail(map, vmFileName, mailSubjectKey, toEmailAddress);
 			}
 			if (resp.getErrorCode().equals(ChatakPayErrorCode.GEN_001.name())) {
+				resp.setErrorCode(ChatakPayErrorCode.GEN_001.name());
 				resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(), null,
 						LocaleContextHolder.getLocale()));
 			} else if (resp.getErrorCode().equals(ChatakPayErrorCode.GEN_002.name())) {
+				resp.setErrorCode(ChatakPayErrorCode.GEN_002.name());
 				resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_002.name(), null,
 						LocaleContextHolder.getLocale()));
 			}
 		} catch (Exception e) {
-			logger.info("Error:: TransactionRestController:: sendMail method", e);
-			resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0999.name(), null,
-					LocaleContextHolder.getLocale()));
+			logger.error("Error :: TransactionRestController :: clientTxnHistory", e);
 		}
 		logger.info("Exiting:: TransactionRestController:: sendMail method");
 		return resp;

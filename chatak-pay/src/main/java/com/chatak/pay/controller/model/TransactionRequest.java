@@ -8,85 +8,83 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionRequest extends Request implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  private Long txnAmount;
-  
-  private String merchantName;
+	private Long txnAmount;
 
-  private String invoiceNumber;
+	private String merchantName;
 
-  private String registerNumber;
+	private String invoiceNumber;
 
-  private String cardToken;
+	private String registerNumber;
 
-  private CardData cardData;
+	private String cardToken;
 
-  private com.chatak.pg.bean.BillingData billingData;
+	private CardData cardData;
 
-  private String orderId;
+	private com.chatak.pg.bean.BillingData billingData;
 
-  private String txnRefNumber;
+	private String orderId;
 
-  private String authId;
+	private String txnRefNumber;
 
-  private String ip_port;
+	private String authId;
 
-  private String cgRefNumber;
+	private String ip_port;
 
-  private Long merchantAmount;
+	private String cgRefNumber;
 
-  private Long feeAmount;
+	private Long merchantAmount;
 
-  private Long totalTxnAmount;
-  
-  private String description;
-  
-  private SplitTxnData splitTxnData;
-  
-  private String splitRefNumber;
-  
-  private String mobileNumber;
-  
-  private String accountNumber;
-  
-  private CardTokenData cardTokenData;
-  
-  private String qrCode;
-  
-  private String currencyCode;
-  
-  private String userName;
-  
-  private String timeZoneOffset;
-  
-  private String timeZoneRegion;
+	private Long feeAmount;
 
-  private String deviceSerial;
-  
-  private String email;
-  
-  private String txnId;
-  
-  
+	private Long totalTxnAmount;
 
-  public String getTxnId() {
-	return txnId;
-}
+	private String description;
 
-public void setTxnId(String txnId) {
-	this.txnId = txnId;
-}
+	private SplitTxnData splitTxnData;
 
-public String getEmail() {
-	return email;
-}
+	private String splitRefNumber;
 
-public void setEmail(String email) {
-	this.email = email;
-}
+	private String mobileNumber;
 
-public String getCurrencyCode() {
+	private String accountNumber;
+
+	private CardTokenData cardTokenData;
+
+	private String qrCode;
+
+	private String currencyCode;
+
+	private String userName;
+
+	private String timeZoneOffset;
+
+	private String timeZoneRegion;
+
+	private String deviceSerial;
+
+	private String email;
+
+	private String txnId;
+
+	public String getTxnId() {
+		return txnId;
+	}
+
+	public void setTxnId(String txnId) {
+		this.txnId = txnId;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getCurrencyCode() {
 		return currencyCode;
 	}
 
@@ -116,331 +114,337 @@ public String getCurrencyCode() {
 		return merchantName;
 	}
 
-  /**
-   * @param merchatntName
-   *          the merchatntName to set
-   */
-  public void setMerchantName(String merchantName) {
-    this.merchantName = merchantName;
-  }
+	/**
+	 * @param merchatntName
+	 *            the merchatntName to set
+	 */
+	public void setMerchantName(String merchantName) {
+		this.merchantName = merchantName;
+	}
 
-  /**
-   * @return the invoiceNumber
-   */
-  public String getInvoiceNumber() {
-    return invoiceNumber;
-  }
+	/**
+	 * @return the invoiceNumber
+	 */
+	public String getInvoiceNumber() {
+		return invoiceNumber;
+	}
 
-  /**
-   * @param cardData
-   *          the cardData to set
-   */
-  public void setCardData(CardData cardData) {
-    this.cardData = cardData;
-  }
+	/**
+	 * @param cardData
+	 *            the cardData to set
+	 */
+	public void setCardData(CardData cardData) {
+		this.cardData = cardData;
+	}
 
-  /**
-   * @param registerNumber
-   *          the registerNumber to set
-   */
-  public void setRegisterNumber(String registerNumber) {
-    this.registerNumber = registerNumber;
-  }
+	/**
+	 * @param registerNumber
+	 *            the registerNumber to set
+	 */
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
 
-  /**
-   * @return the cardToken
-   */
-  public String getCardToken() {
-    return cardToken;
-  }
-  
-  /**
-   * @param invoiceNumber
-   *          the invoiceNumber to set
-   */
-  public void setInvoiceNumber(String invoiceNumber) {
-    this.invoiceNumber = invoiceNumber;
-  }
+	/**
+	 * @return the cardToken
+	 */
+	public String getCardToken() {
+		return cardToken;
+	}
 
-  /**
-   * @return the registerNumber
-   */
-  public String getRegisterNumber() {
-    return registerNumber;
-  }
+	/**
+	 * @param invoiceNumber
+	 *            the invoiceNumber to set
+	 */
+	public void setInvoiceNumber(String invoiceNumber) {
+		this.invoiceNumber = invoiceNumber;
+	}
 
-  /**
-   * @param cardToken
-   *          the cardToken to set
-   */
-  public void setCardToken(String cardToken) {
-    this.cardToken = cardToken;
-  }
+	/**
+	 * @return the registerNumber
+	 */
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
 
-  /**
-   * @return the cardData
-   */
-  public CardData getCardData() {
-    return cardData;
-  }
+	/**
+	 * @param cardToken
+	 *            the cardToken to set
+	 */
+	public void setCardToken(String cardToken) {
+		this.cardToken = cardToken;
+	}
 
-  /**
-   * @return the billingData
-   */
-  public com.chatak.pg.bean.BillingData getBillingData() {
-    return billingData;
-  }
+	/**
+	 * @return the cardData
+	 */
+	public CardData getCardData() {
+		return cardData;
+	}
 
-  /**
-   * @param billingData
-   *          the billingData to set
-   */
-  public void setBillingData(com.chatak.pg.bean.BillingData billingData) {
-    this.billingData = billingData;
-  }
+	/**
+	 * @return the billingData
+	 */
+	public com.chatak.pg.bean.BillingData getBillingData() {
+		return billingData;
+	}
 
-  /**
-   * @return the orderId
-   */
-  public String getOrderId() {
-    return orderId;
-  }
+	/**
+	 * @param billingData
+	 *            the billingData to set
+	 */
+	public void setBillingData(com.chatak.pg.bean.BillingData billingData) {
+		this.billingData = billingData;
+	}
 
-  /**
-   * @param orderId
-   *          the orderId to set
-   */
-  public void setOrderId(String orderId) {
-    this.orderId = orderId;
-  }
+	/**
+	 * @return the orderId
+	 */
+	public String getOrderId() {
+		return orderId;
+	}
 
-  /**
-   * @return the authId
-   */
-  public String getAuthId() {
-    return authId;
-  }
+	/**
+	 * @param orderId
+	 *            the orderId to set
+	 */
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
 
-  /**
-   * @param authId
-   *          the authId to set
-   */
-  public void setAuthId(String authId) {
-    this.authId = authId;
-  }
-  
-  /**
-   * @return the txnRefNumber
-   */
-  public String getTxnRefNumber() {
-    return txnRefNumber;
-  }
+	/**
+	 * @return the authId
+	 */
+	public String getAuthId() {
+		return authId;
+	}
 
-  /**
-   * @param txnRefNumber
-   *          the txnRefNumber to set
-   */
-  public void setTxnRefNumber(String txnRefNumber) {
-    this.txnRefNumber = txnRefNumber;
-  }
+	/**
+	 * @param authId
+	 *            the authId to set
+	 */
+	public void setAuthId(String authId) {
+		this.authId = authId;
+	}
 
-  /**
-   * @return the ip_port
-   */
-  public String getIp_port() {
-    return ip_port;
-  }
+	/**
+	 * @return the txnRefNumber
+	 */
+	public String getTxnRefNumber() {
+		return txnRefNumber;
+	}
 
-  /**
-   * @param ip_port
-   *          the ip_port to set
-   */
-  public void setIp_port(String ip_port) {
-    this.ip_port = ip_port;
-  }
+	/**
+	 * @param txnRefNumber
+	 *            the txnRefNumber to set
+	 */
+	public void setTxnRefNumber(String txnRefNumber) {
+		this.txnRefNumber = txnRefNumber;
+	}
 
-  /**
-   * @return the merchatntAmount
-   */
-  public Long getMerchantAmount() {
-    return merchantAmount;
-  }
+	/**
+	 * @return the ip_port
+	 */
+	public String getIp_port() {
+		return ip_port;
+	}
 
-  /**
-   * @param merchatntAmount
-   *          the merchatntAmount to set
-   */
-  public void setMerchantAmount(Long merchantAmount) {
-    this.merchantAmount = merchantAmount;
-  }
-  
-  /**
-   * @return the issueerTxnRefNumber
-   */
-  public String getCgRefNumber() {
-    return cgRefNumber;
-  }
+	/**
+	 * @param ip_port
+	 *            the ip_port to set
+	 */
+	public void setIp_port(String ip_port) {
+		this.ip_port = ip_port;
+	}
 
-  /**
-   * @param issueerTxnRefNumber
-   *          the issueerTxnRefNumber to set
-   */
-  public void setCgRefNumber(String cgRefNumber) {
-    this.cgRefNumber = cgRefNumber;
-  }
+	/**
+	 * @return the merchatntAmount
+	 */
+	public Long getMerchantAmount() {
+		return merchantAmount;
+	}
 
-  /**
-   * @return the feeAmount
-   */
-  public Long getFeeAmount() {
-    return feeAmount;
-  }
+	/**
+	 * @param merchatntAmount
+	 *            the merchatntAmount to set
+	 */
+	public void setMerchantAmount(Long merchantAmount) {
+		this.merchantAmount = merchantAmount;
+	}
 
-  /**
-   * @param feeAmount
-   *          the feeAmount to set
-   */
-  public void setFeeAmount(Long feeAmount) {
-    this.feeAmount = feeAmount;
-  }
+	/**
+	 * @return the issueerTxnRefNumber
+	 */
+	public String getCgRefNumber() {
+		return cgRefNumber;
+	}
 
-  public String getDescription() {
-    return description;
-  }
+	/**
+	 * @param issueerTxnRefNumber
+	 *            the issueerTxnRefNumber to set
+	 */
+	public void setCgRefNumber(String cgRefNumber) {
+		this.cgRefNumber = cgRefNumber;
+	}
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-  
-  /**
-   * @return the totalTxnAmount
-   */
-  public Long getTotalTxnAmount() {
-    return totalTxnAmount;
-  }
+	/**
+	 * @return the feeAmount
+	 */
+	public Long getFeeAmount() {
+		return feeAmount;
+	}
 
-  /**
-   * @param totalTxnAmount
-   *          the totalTxnAmount to set
-   */
-  public void setTotalTxnAmount(Long totalTxnAmount) {
-    this.totalTxnAmount = totalTxnAmount;
-  }
+	/**
+	 * @param feeAmount
+	 *            the feeAmount to set
+	 */
+	public void setFeeAmount(Long feeAmount) {
+		this.feeAmount = feeAmount;
+	}
 
-  /**
-   * @return the txnAmount
-   */
-  public Long getTxnAmount() {
-    return txnAmount;
-  }
+	public String getDescription() {
+		return description;
+	}
 
-  /**
-   * @param txnAmount the txnAmount to set
-   */
-  public void setTxnAmount(Long txnAmount) {
-    this.txnAmount = txnAmount;
-  }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  /**
-   * @return the splitTxnData
-   */
-  public SplitTxnData getSplitTxnData() {
-    return splitTxnData;
-  }
+	/**
+	 * @return the totalTxnAmount
+	 */
+	public Long getTotalTxnAmount() {
+		return totalTxnAmount;
+	}
 
-  /**
-   * @param splitTxnData the splitTxnData to set
-   */
-  public void setSplitTxnData(SplitTxnData splitTxnData) {
-    this.splitTxnData = splitTxnData;
-  }
+	/**
+	 * @param totalTxnAmount
+	 *            the totalTxnAmount to set
+	 */
+	public void setTotalTxnAmount(Long totalTxnAmount) {
+		this.totalTxnAmount = totalTxnAmount;
+	}
 
-  /**
-   * @return the splitRefNumber
-   */
-  public String getSplitRefNumber() {
-    return splitRefNumber;
-  }
+	/**
+	 * @return the txnAmount
+	 */
+	public Long getTxnAmount() {
+		return txnAmount;
+	}
 
-  /**
-   * @param splitRefNumber the splitRefNumber to set
-   */
-  public void setSplitRefNumber(String splitRefNumber) {
-    this.splitRefNumber = splitRefNumber;
-  }
+	/**
+	 * @param txnAmount
+	 *            the txnAmount to set
+	 */
+	public void setTxnAmount(Long txnAmount) {
+		this.txnAmount = txnAmount;
+	}
 
-  /**
-   * @return the mobileNumber
-   */
-  public String getMobileNumber() {
-    return mobileNumber;
-  }
+	/**
+	 * @return the splitTxnData
+	 */
+	public SplitTxnData getSplitTxnData() {
+		return splitTxnData;
+	}
 
-  /**
-   * @param mobileNumber the mobileNumber to set
-   */
-  public void setMobileNumber(String mobileNumber) {
-    this.mobileNumber = mobileNumber;
-  }
+	/**
+	 * @param splitTxnData
+	 *            the splitTxnData to set
+	 */
+	public void setSplitTxnData(SplitTxnData splitTxnData) {
+		this.splitTxnData = splitTxnData;
+	}
 
-/**
- * @return the cardTokenData
- */
-public CardTokenData getCardTokenData() {
-	return cardTokenData;
-}
+	/**
+	 * @return the splitRefNumber
+	 */
+	public String getSplitRefNumber() {
+		return splitRefNumber;
+	}
 
-/**
- * @param cardTokenData the cardTokenData to set
- */
-public void setCardTokenData(CardTokenData cardTokenData) {
-	this.cardTokenData = cardTokenData;
-}
+	/**
+	 * @param splitRefNumber
+	 *            the splitRefNumber to set
+	 */
+	public void setSplitRefNumber(String splitRefNumber) {
+		this.splitRefNumber = splitRefNumber;
+	}
 
-/**
- * @return the accountNumber
- */
-public String getAccountNumber() {
-  return accountNumber;
-}
+	/**
+	 * @return the mobileNumber
+	 */
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-/**
- * @param accountNumber the accountNumber to set
- */
-public void setAccountNumber(String accountNumber) {
-  this.accountNumber = accountNumber;
-}
+	/**
+	 * @param mobileNumber
+	 *            the mobileNumber to set
+	 */
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-public String getUserName() {
-  return userName;
-}
+	/**
+	 * @return the cardTokenData
+	 */
+	public CardTokenData getCardTokenData() {
+		return cardTokenData;
+	}
 
-public void setUserName(String userName) {
-  this.userName = userName;
-}
+	/**
+	 * @param cardTokenData
+	 *            the cardTokenData to set
+	 */
+	public void setCardTokenData(CardTokenData cardTokenData) {
+		this.cardTokenData = cardTokenData;
+	}
 
-public String getTimeZoneOffset() {
-  return timeZoneOffset;
-}
+	/**
+	 * @return the accountNumber
+	 */
+	public String getAccountNumber() {
+		return accountNumber;
+	}
 
-public void setTimeZoneOffset(String timeZoneOffset) {
-  this.timeZoneOffset = timeZoneOffset;
-}
+	/**
+	 * @param accountNumber
+	 *            the accountNumber to set
+	 */
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
 
-public String getTimeZoneRegion() {
-  return timeZoneRegion;
-}
+	public String getUserName() {
+		return userName;
+	}
 
-public void setTimeZoneRegion(String timeZoneRegion) {
-  this.timeZoneRegion = timeZoneRegion;
-}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-  public String getDeviceSerial() {
-    return deviceSerial;
-  }
+	public String getTimeZoneOffset() {
+		return timeZoneOffset;
+	}
 
-  public void setDeviceSerial(String deviceSerial) {
-    this.deviceSerial = deviceSerial;
-  }
+	public void setTimeZoneOffset(String timeZoneOffset) {
+		this.timeZoneOffset = timeZoneOffset;
+	}
+
+	public String getTimeZoneRegion() {
+		return timeZoneRegion;
+	}
+
+	public void setTimeZoneRegion(String timeZoneRegion) {
+		this.timeZoneRegion = timeZoneRegion;
+	}
+
+	public String getDeviceSerial() {
+		return deviceSerial;
+	}
+
+	public void setDeviceSerial(String deviceSerial) {
+		this.deviceSerial = deviceSerial;
+	}
 
 }

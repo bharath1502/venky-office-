@@ -1309,7 +1309,7 @@ function alphanumericDotAndSpace(data,div_id) {
 	}
 	
 	function mobile(data,div_id) {
-		var regex =/^[0-9]*$/;
+		var regex =/^[0-9-]*$/;
 		if(regex.test(data)){
 		setDiv(div_id,"");
 		return true;

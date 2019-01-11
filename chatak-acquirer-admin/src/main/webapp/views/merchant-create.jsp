@@ -163,9 +163,9 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.bankaccountnumber"/><span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control"
-															path="bankAccountNumber" id="bankAccountNumber"
+															path="bankAccountNumber" id="bank_AccountNumber"
 															maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('bankAccountNumber', 'account_number','bankAccountNumberErrorDiv');" />
+															onblur="return banckAccountValidate();" onkeypress="return numbersonly(this, event)" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankAccountNumberErrorDiv" class="red-error">&nbsp;</span>
 														</div>

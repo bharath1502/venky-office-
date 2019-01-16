@@ -1271,7 +1271,7 @@ function alphanumericDotAndSpace(data,div_id) {
 	}
 	
 	function numeric(data,div_id) {
-		var regex =/^\d$/;
+		var regex =/^\d+$/;
 		if(regex.test(data)){
 		setDiv(div_id,"");
 		return true;

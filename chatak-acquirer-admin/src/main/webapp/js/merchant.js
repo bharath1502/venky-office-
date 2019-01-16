@@ -105,7 +105,7 @@ function validateCreateMerchantStep2() {
 	var flag = true;
 	if(!clientValidation('bankAccountName', 'first_name_SplChar','bankAccountNameErrorDiv')
 		//	|!validRoutingNumber()
-			|!banckAccountValidate()
+			|!clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv')
 			|!clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr')
 			|!clientValidation('bankAccountType', 'account_type','bankAccountTypeErrorDiv')
 			|!clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv')
@@ -121,7 +121,7 @@ function validateCreateMerchantStep2() {
 	} else {
 		setLable('confirmbankAccountName', get('bankAccountName').value.trim());
 		setLable('confirmbankRoutingNumber', get('bankRoutingNumber').value.trim());
-		setLable('confirmbankAccountNumber', get('bank_AccountNumber').value.trim());
+		setLable('confirmbankAccountNumber', get('bankAccountNumber').value.trim());
 	//	setLable('confirmbankAccountType', get('bankAccountType').value.trim());
 		setTypeValueToConfirmPage();
 		setLable('confirmbankAddress1', get('bankAddress1').value.trim());
@@ -3159,19 +3159,4 @@ function validateMerchantcreates(){
 	}
 	
 	return true;
-}
-
-function banckAccountValidate(){
-	var val_acc_number = getVal('bank_AccountNumber');
-	if(val_acc_number == ""){
-		setDiv('bankAccountNumberErrorDiv',webMessages.validationthisfieldismandatory);
-		return false;
-	}
-	if(val_acc_number.length>21){
-		setDiv('bankAccountNumberErrorDiv',webMessages.exceedinglength);
-		return false;
-	}
-	setDiv('bankAccountNumberErrorDiv',"");
-	return true;
-	
 }

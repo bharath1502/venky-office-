@@ -136,7 +136,7 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""> <spring:message code="users.label.address"/></label>
 													<form:input path="address" id="address"
-														cssClass="form-control"  maxlength="30" />
+														cssClass="form-control" onblur="this.value=this.value.trim(); validAddress();" maxlength="30" />
 
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error" id="addressDiv">&nbsp;</span>

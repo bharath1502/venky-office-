@@ -153,8 +153,6 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
       pgTransaction.setAcqTxnMode("POS");
     }
     log.debug("VoidTransactionDaoImpl | createTransaction | Exiting");
-    
-    
     List<BigInteger> list =
             entityManager.createNativeQuery(
                 "select max(ID) from PG_TRANSACTION ").getResultList();

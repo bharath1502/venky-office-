@@ -551,7 +551,6 @@ public class PGUtils {
   }
 
   public static boolean isValidCardExpiryDate(String expiryDate) {
-    logger.info("received format"+expiryDate);
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMM");
     simpleDateFormat.setLenient(false);
     Date expiry = null;

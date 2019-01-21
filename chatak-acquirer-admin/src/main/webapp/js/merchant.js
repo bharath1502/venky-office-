@@ -121,8 +121,8 @@ function validateCreateMerchantStep2() {
 		return flag;
 	} else {
 		setLable('confirmbankAccountName', get('bankAccountName').value.trim());
-		setLable('confirmbankRoutingNumber', get('bankRoutingNumber').value.trim());
-		setLable('confirmbankAccountNumber', get('bankAccountNumber').value.trim());
+		setLable('confirmbankRoutingNumber', get('settlRoutingNumber').value.trim());
+		setLable('confirmbankAccountNumber', get('settleAccountNo').value.trim());
 	//	setLable('confirmbankAccountType', get('bankAccountType').value.trim());
 		setTypeValueToConfirmPage();
 		setLable('confirmbankAddress1', get('bankAddress1').value.trim());

@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
+import com.chatak.pg.acq.dao.CurrencyConfigDao;
+import com.chatak.pg.acq.dao.MerchantUpdateDao;
 import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.VoidTransactionDao;
+import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 /*import com.chatak.pg.acq.service.PaymentService;
@@ -40,12 +43,12 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.NationalPOSEntryModeEnum;
 import com.chatak.pg.exception.ValidationException;
-import com.chatak.switches.sb.exception.ServiceException;
 /*import com.chatak.pg.upstream.BINUpstreamRouter;*/
 import com.chatak.pg.util.DateUtils;
 import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.Properties;
 import com.chatak.switches.sb.SwitchServiceBroker;
+import com.chatak.switches.sb.exception.ServiceException;
 
 /**
  * @Comments : This class process the purchase / sale transaction
@@ -63,6 +66,12 @@ public class Purchase extends Processor {
   private static Logger log = Logger.getLogger(Purchase.class);
 
   /* private PaymentService paymentService; */
+
+  @Autowired
+  CurrencyConfigDao currencyConfigDao;
+  
+  @Autowired
+  MerchantUpdateDao merchantUpdateDao;
 
   public Purchase(TxnAuthorizer txnAuth) {
     super(txnAuth);
@@ -110,6 +119,12 @@ public class Purchase extends Processor {
       purchaseRequest.setTxnFee(PGConstants.ZERO);// TODO: need to change
       purchaseRequest.setPulseData(Properties.getProperty("chatak-pay.pulse.data"));
       purchaseRequest.setMode(_txnAuthorizer.getMode());
+
+      PGMerchant merchant = merchantUpdateDao.getMerchant(purchaseRequest.getMerchantId().toString());
+      purchaseRequest.setAddress(merchant.getAddress1());
+      PGCurrencyConfig currencyConfig = currencyConfigDao.getCurrencyCodeNumeric(merchant.getLocalCurrency());
+      purchaseRequest.setCurrencyCode(currencyConfig.getCurrencyCodeNumeric());
+      purchaseRequest.setMerchantCode(purchaseRequest.getMerchantId().toString());
 
       /*
        * PurchaseResponse purchaseResponse =

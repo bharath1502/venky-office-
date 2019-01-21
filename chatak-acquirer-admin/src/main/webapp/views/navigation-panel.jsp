@@ -687,7 +687,7 @@ function closeBatch() {
 	
 	$(document).ready(function() {
 		$('#alertPopUp').popup({
-			blur:false;
+			blur:"false"
 		});
 	});
 	

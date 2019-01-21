@@ -90,6 +90,7 @@ public class TransactionHandler {
 
 				// 3. Call response message formatter
 				txnResponse = mResponseMessage.generateFormattedResponse();
+				logger.info("Txn Response : " + txnResponse);
 				
 				//Log Request and Response to ActivityLog table
 				logActivity();
@@ -102,10 +103,10 @@ public class TransactionHandler {
 			}
 		}
 		catch(ISOException e) {
-			logger.error("ERROR:: processTransaction method: "+e.getMessage());
+			logger.error("ERROR:: processTransaction method: "+e.getMessage(), e);
 		}
 		catch(Exception e) {
-			logger.error("ERROR:: processTransaction method: "+e.getMessage());
+			logger.error("ERROR:: processTransaction method: "+e.getMessage(), e);
 		}
 
 		if(txnResponse == null) {
@@ -142,6 +143,7 @@ public class TransactionHandler {
 	 * @param gatewayResponse
 	 */
 	private void logActivity() {
+		logger.info("Entering :: TransactionHandler :: logActivity");
 		PGActivityLog pgActivityLog = new PGActivityLog();
 
 		//set Request packet details
@@ -179,8 +181,10 @@ public class TransactionHandler {
 		//pgActivityLog.setFwdCountryCode(fwdCountryCode);
 		//pgActivityLog.setResponseCode(mResponseMessage.getGatewayResponse());
 
+		logger.info("Before committing pgActivityLog :: TransactionHandler :: logActivity");
 		//get Dao instance 
 		activityLogDao.logRequest(pgActivityLog);
+		logger.info("Exiting :: TransactionHandler :: logActivity");
 	}
 
 }

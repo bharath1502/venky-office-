@@ -3,7 +3,7 @@
 -------------------------------------------------------------------
 
 
-ALTER TABLE `acquirer_uat_test`.`PG_BANK`
+ALTER TABLE `chatak_acquirer`.`PG_BANK`
 ADD COLUMN `BANK_CODE` VARCHAR(50) NULL AFTER `SETTL_ACCOUNT_NUMBER`,
 ADD COLUMN `EXTENSION` VARCHAR(5) NULL AFTER `BANK_CODE`,
 ADD COLUMN `CONTACT_PERSON_CELL` VARCHAR(50) NULL AFTER `EXTENSION`,

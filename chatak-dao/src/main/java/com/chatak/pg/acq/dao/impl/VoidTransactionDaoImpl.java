@@ -32,6 +32,7 @@ import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.CardInfoRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.EntryModePortalDisplayEnum;
 import com.chatak.pg.model.DashBoardRecords;
 import com.chatak.pg.model.ReportsDTO;
@@ -152,6 +153,14 @@ public class VoidTransactionDaoImpl extends TransactionDaoImpl implements VoidTr
       pgTransaction.setAcqTxnMode("POS");
     }
     log.debug("VoidTransactionDaoImpl | createTransaction | Exiting");
+    
+    
+    List<BigInteger> list =
+            entityManager.createNativeQuery(
+                "select max(ID) from PG_TRANSACTION ").getResultList();
+        if (StringUtil.isListNotNullNEmpty(list) && list.get(0) != null) {
+        	pgTransaction.setId(list.get(0).add(new BigInteger("1")));
+        }
     return transactionRepository.save(pgTransaction);
   }
 

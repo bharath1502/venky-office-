@@ -469,7 +469,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       // Update account
       //statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
 
-      String autoSettlement = getAutoSettlement(pgMerchant);
+      String autoSettlement = Constants.AUTO_SETTLEMENT_STATUS_NO;
 
       if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
         pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);

@@ -104,13 +104,17 @@ public class RequestMessage extends PGMessage {
 
       logger.info("Raw Data Length: " + rawBytes.length);
       isoMessage.unpack(rawBytes);
+      logger.info("Unpacking process completed");
 
       ISOValidator isoValidator = JPOSUtil.getISOValidator();
+      logger.info("Got ISO Validator : " + isoValidator);
 
       isoMessage = (ISOMsg) isoValidator.validate(isoMessage);
+      logger.info("Got Iso Message : " + isoMessage);
       
       // Now if no error display the message
       JPOSUtil.logISOData(isoMessage, logger);
+      logger.info("log Iso Data");
       
       ISORequestValidator.validateBasicISOMsg(isoMessage);
 	  logger.info("RequestMessage | generateISOMessage | Basic iso fields check success");

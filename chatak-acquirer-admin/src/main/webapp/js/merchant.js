@@ -106,6 +106,7 @@ function validateCreateMerchantStep2() {
 	if(!clientValidation('bankAccountName', 'first_name_SplChar','bankAccountNameErrorDiv')
 		//	|!validRoutingNumber()
 			|!clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv')
+			|!validateRoutingNumber()
 			|!clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr')
 			|!clientValidation('bankAccountType', 'account_type','bankAccountTypeErrorDiv')
 			|!clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv')
@@ -3159,4 +3160,13 @@ function validateMerchantcreates(){
 	}
 	
 	return true;
+}
+
+function validateRoutingNumber() {
+	var bankRoutingNumber = getVal('bankRoutingNumber');
+	if (!(bankRoutingNumber != 0)) {
+		setError(get('bankRoutingNumber'), webMessages.InvalidBankRoutingNumber);
+		loadMsgTitleText();
+		return false;
+	}
 }

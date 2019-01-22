@@ -1296,3 +1296,18 @@ function validateSpecialCharactersPMSearch() {
 	}
 	return true;
 }
+function validateContactPhone(){
+	var contactPhone = get('contactPhone').value.trim();
+	var contactPhonespaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})?[-. ]?([0-9]{4})$/;
+	 if (!contactPhonespaceRegx.test(contactPhone) ||!(contactPhone != 0)) {
+		setDiv('pgmmgrcontactphoneerrormsg', webMessages.invalidContactPhoneNumber);
+		loadMsgTitleText();
+		return false;
+	}
+	 else {
+			setDiv('pgmmgrcontactphoneerrormsg', '');
+			return true;
+		}
+}
+
+

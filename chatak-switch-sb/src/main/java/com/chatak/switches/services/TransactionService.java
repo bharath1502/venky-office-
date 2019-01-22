@@ -239,8 +239,8 @@ public abstract class TransactionService extends AccountTransactionService {
     
     // PERF >> Replaced by fetching only auto-settlement status and ID based on merchant code
     PGMerchant pgMerchant = merchantUpdateDao.getMerchantAutoSettlementByCode(request.getMerchantCode());
-    String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() != null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
-    autoSettlement = (autoSettlement!=null && autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_NO : Constants.BATCH_STATUS_NA;
+    logger.info(pgMerchant != null ? pgMerchant.getId() : pgMerchant);
+    String autoSettlement = Constants.AUTO_SETTLEMENT_STATUS_NO;
     
     if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
       pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);
@@ -284,9 +284,9 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setCardHolderEmail(request.getCardHolderEmail());
     pgTransaction.setReason(request.getDescription());
     pgTransaction.setTxnCurrencyCode(request.getCurrencyCode());
-    pgTransaction.setTimeZoneOffset(request.getTimeZoneOffset());
-    pgTransaction.setTimeZoneRegion(request.getTimeZoneRegion());
-    pgTransaction.setDeviceLocalTxnTime(DateUtil.convertTimeZone(request.getTimeZoneOffset(), timestamp.toString()));
+    pgTransaction.setTimeZoneOffset("GMT+0530");
+    pgTransaction.setTimeZoneRegion("Asia/Calcutta");
+    pgTransaction.setDeviceLocalTxnTime(DateUtil.convertTimeZone("GMT+0530", timestamp.toString()));
     if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
     	pgTransaction
         .setExpDate(setExpDate(request));
@@ -444,9 +444,11 @@ public abstract class TransactionService extends AccountTransactionService {
     logger.info("PAN Number in Sale Txn Request : " + StringUtils.lastFourDigits(request.getCardNum()));
     logger.info("PAN Number in ISO Packet : " + StringUtils.lastFourDigits((String)isoMsg.getValue(ISOConstants.PAN)));
     isoMsg.set(ISOConstants.DATE_EXPIRATION, request.getExpDate());
-    isoMsg.set(ISOConstants.SYSTEM_TRACE_AUDIT_NUMBER, null != txnRef ? txnRef.substring(0, Integer.parseInt("6")) : txnRefNum.substring(0, Integer.parseInt("6")));
+				isoMsg.set(ISOConstants.SYSTEM_TRACE_AUDIT_NUMBER,
+						null != txnRef ? txnRef.length() > 6 ? txnRef.substring(0, Integer.parseInt("6")) : txnRef : txnRefNum.substring(0, Integer.parseInt("6")));
     } else {
-    	isoMsg.set(ISOConstants.SYSTEM_TRACE_AUDIT_NUMBER, null != txnRef ? txnRef.substring(0, Integer.parseInt("2")) : txnRefNum.substring(0, Integer.parseInt("6")));
+				isoMsg.set(ISOConstants.SYSTEM_TRACE_AUDIT_NUMBER,
+						null != txnRef ? txnRef.length() > 2 ? txnRef.substring(0, Integer.parseInt("2")) : txnRef : txnRefNum.substring(0, Integer.parseInt("6")));
     }
     isoMsg.set(ISOConstants.PROCESSING_CODE, procCode);
     isoMsg.set(ISOConstants.TXN_AMOUNT,
@@ -498,9 +500,9 @@ public abstract class TransactionService extends AccountTransactionService {
     // by
     // pulse
     isoMsg.set(ISOConstants.CARD_ACCEPTOR_IDENTIFICATION_CODE, ISOUtil.padleft(request.getMerchantCode(), Integer.parseInt("15"), '0'));
-    isoMsg.set(ISOConstants.CARD_ACCEPTOR_NAME_OR_LOCATION, ISOUtil.padleft(request.getBusinessName(), Integer.parseInt("23"), ' ')
-        + ISOUtil.padleft(request.getCity(), Integer.parseInt("13"), ' '));
-    isoMsg.set(ISOConstants.PRIVATE_ADDITIONAL_DATA, request.getAddress());// TODO: Merchant/Bank Name
+    isoMsg.set(ISOConstants.CARD_ACCEPTOR_NAME_OR_LOCATION, ISOUtil.padleft("Business Name", Integer.parseInt("23"), ' ')
+        + ISOUtil.padleft("City", Integer.parseInt("13"), ' '));
+    isoMsg.set(ISOConstants.PRIVATE_ADDITIONAL_DATA, "Additional Data");// TODO: Merchant/Bank Name
 
     isoMsg.set(ISOConstants.TXN_CURRENCY_CODE, request.getCurrencyCode());
 

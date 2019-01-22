@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.chatak.pay.controller.model.LoginRequest;
-import com.chatak.pg.constants.PGConstantsTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ResponseBody;
@@ -33,8 +32,7 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of GEN_001 is expected", PGConstantsTest.GEN_001,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of GEN_001 is expected", "GEN_001", responseJson.get("errorCode"));
 	}
 
 	@Test
@@ -43,8 +41,7 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of TXN_0131 is expected", PGConstantsTest.TXN_0131,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of TXN_0131 is expected", "TXN_0131", responseJson.get("errorCode"));
 	}
 
 	@Test
@@ -53,8 +50,7 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of GEN_002 is expected", PGConstantsTest.GEN_002,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of GEN_002 is expected", "GEN_002", responseJson.get("errorCode"));
 	}
 
 	@Test
@@ -63,8 +59,7 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of TXN_0134 is expected", PGConstantsTest.TXN_0134,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of TXN_0134 is expected", "TXN_0134", responseJson.get("errorCode"));
 	}
 
 	@Test
@@ -73,8 +68,7 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of TXN_0133 is expected", PGConstantsTest.TXN_0133,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of TXN_0133 is expected", "TXN_0133", responseJson.get("errorCode"));
 	}
 
 	@Test
@@ -83,8 +77,7 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of GEN_002 is expected", PGConstantsTest.GEN_002,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of GEN_002 is expected", "GEN_002", responseJson.get("errorCode"));
 	}
 
 	@Test
@@ -93,8 +86,7 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of GEN_002 is expected", PGConstantsTest.GEN_002,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of GEN_002 is expected", "GEN_002", responseJson.get("errorCode"));
 	}
 
 	@Test
@@ -103,8 +95,7 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of TXN_0130 is expected", PGConstantsTest.TXN_0130,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of TXN_0130 is expected", "TXN_0130", responseJson.get("errorCode"));
 	}
 
 	@Test
@@ -113,7 +104,6 @@ public class TransactionRestControllerTest {
 		ResponseBody<?> responseBody = RestAssured.given().contentType(ContentType.JSON).body(request).when()
 				.post(CLIENT_SSO_LOGIN).getBody();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("errorCode code of TXN_0129 is expected", PGConstantsTest.TXN_0129,
-				responseJson.get("errorCode"));
+		Assert.assertEquals("errorCode code of TXN_0129 is expected", "TXN_0129", responseJson.get("errorCode"));
 	}
 }

@@ -97,22 +97,20 @@ function validPhone() {
 }
 
 function validAddress() {
-	var name = get('address').value.trim();
-	if (isEmpty(name)) {
-		setDiv('addressDiv',  webMessages.adminUserAddress);
+	var address = get('address').value.trim();
+	var addressRegex = /^[A-Za-z0-9,-._\/\s#]{1,60}$/;
+	 if (address.length < 5) {
+		setDiv('addressDiv', webMessages.invalidAddress1Length);
 		loadMsgTitleText();
-		return false;
-	}/* else if (!isCharacter(name)) {
-		setDiv('addressDiv', 'Invalid Address ');
-		return false;
-	} */else if (address.length < 5) {
-		setDiv('addressDiv', webMessages.adminUserInvalidAddressLength);
+		return false; 
+	}else if (!addressRegex.test(address)) {
+		setDiv('addressDiv', webMessages.address_should_contains_message);
 		loadMsgTitleText();
 		return false;
 	} else {
 		setDiv('addressDiv', '');
 		return true;
-	} 
+	}
 }
 
 function validateEmail() {

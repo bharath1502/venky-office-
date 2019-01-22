@@ -192,7 +192,7 @@
 													<form:input path="contactPhone" maxlength="10"
 														cssClass="form-control" id="contactPhone"
 														onkeypress="return numbersonly(this,event)"
-														onblur="clientValidation('contactPhone','partner_phone','pgmmgrcontactphoneerrormsg')"
+														onblur="clientValidation('contactPhone','partner_phone','pgmmgrcontactphoneerrormsg');validateContactPhone()"
 														onclick="clearErrorMsg('contactphoneerrormsg');" />
 													<div class="discriptionErrorMsg">
 														<span id="pgmmgrcontactphoneerrormsg" class="red-error">&nbsp;</span>

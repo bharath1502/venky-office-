@@ -33,7 +33,7 @@ public class PGAccountTransactions implements Serializable {
   @Id
   /*@SequenceGenerator(name = "SEQ_PG_ACCOUNT_TRANSACTIONS_ID", sequenceName = "SEQ_PG_ACCOUNT_TRANSACTIONS")
   @GeneratedValue(generator = "SEQ_PG_ACCOUNT_TRANSACTIONS_ID")*/
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID")
   private Long id;
 

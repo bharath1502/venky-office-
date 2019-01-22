@@ -864,24 +864,18 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 		//return merchantRepository.getMerchantAutoSettlementByCode(merchantCode);
 		// PERF >> Return only 2 columns instead of the complete object
 		PGMerchant merchant = new PGMerchant();
-		
 		Query qry = entityManager
 				.createNativeQuery("select pgm.ID, pgmc.AUTO_SETTLEMENT from PG_MERCHANT pgm join PG_MERCHANT_CONFIG pgmc on pgm.MER_CONFIG_ID = pgmc.MER_CONFIG_ID "
 						+ "and pgm.MERCHANT_CODE = :merchantCode");
 		qry.setParameter("merchantCode", merchantCode);
-
+		logger.info("Merchant Code : " + merchantCode);
 		List<Object> list = qry.getResultList();
 		if (StringUtil.isListNotNullNEmpty(list)) {
 			Iterator it = list.iterator();
 			while (it.hasNext()) {
 				Object[] objs = (Object[]) it.next();
-
 				Long id = StringUtil.isNull(objs[0]) ? null : ((BigInteger) objs[0]).longValue();
-				Integer autoSettlement = StringUtil.isNull(objs[1]) ? null : ((BigInteger) objs[1]).intValue();
-				
 				PGMerchantConfig config = new PGMerchantConfig();
-				config.setAutoSettlement(autoSettlement);
-				
 				merchant.setId(id);
 				merchant.setMerchantConfig(config);
 			}

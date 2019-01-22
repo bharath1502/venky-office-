@@ -153,7 +153,7 @@
 															path="bankRoutingNumber"
 															onkeypress="return amountValidate(this,event)"
 															id="bankRoutingNumber" maxlength="9"
-															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
+															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr'),validateRoutingNumber();" />
 														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>

@@ -106,7 +106,6 @@ function validateCreateMerchantStep2() {
 	if(!clientValidation('bankAccountName', 'first_name_SplChar','bankAccountNameErrorDiv')
 		//	|!validRoutingNumber()
 			|!clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv')
-			|!validateRoutingNumber()
 			|!clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr')
 			|!clientValidation('bankAccountType', 'account_type','bankAccountTypeErrorDiv')
 			|!clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv')
@@ -116,13 +115,14 @@ function validateCreateMerchantStep2() {
 			|!clientValidation('currencyId', 'currencyValue','currencyEr')
 			|!clientValidation('bankState', 'state','bankStateErrorDiv')
 		    |!(zipCodeNotEmpty('bankPin'))
-		    |!clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv')){
+		    |!clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv')
+			|!validateRoutingNumber()){
 		flag = false;
 		return flag;
 	} else {
 		setLable('confirmbankAccountName', get('bankAccountName').value.trim());
-		setLable('confirmbankRoutingNumber', get('settlRoutingNumber').value.trim());
-		setLable('confirmbankAccountNumber', get('settleAccountNo').value.trim());
+		setLable('confirmbankRoutingNumber', get('bankRoutingNumber').value.trim());
+		setLable('confirmbankAccountNumber', get('bankAccountNumber').value.trim());
 	//	setLable('confirmbankAccountType', get('bankAccountType').value.trim());
 		setTypeValueToConfirmPage();
 		setLable('confirmbankAddress1', get('bankAddress1').value.trim());
@@ -3165,8 +3165,9 @@ function validateMerchantcreates(){
 function validateRoutingNumber() {
 	var bankRoutingNumber = getVal('bankRoutingNumber');
 	if (!(bankRoutingNumber != 0)) {
-		setError(get('bankRoutingNumber'), webMessages.InvalidBankRoutingNumber);
+		setDiv('bankRoutingNumberEr', webMessages.InvalidBankRoutingNumber);
 		loadMsgTitleText();
 		return false;
 	}
+	return true;
 }

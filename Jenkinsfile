@@ -18,6 +18,7 @@ node {
                 cat /usr/share/maven/conf/settings.xml | grep url
                 cd build
                 mvn clean
+				mvn clean install -Dmaven.test.skip=true
                 mvn sonar:sonar -Dsonar.host.url=http://admin:admin@192.168.0.82:9000 -Dsonar.projectKey="cl-acquirer" -Dsonar.projectName="Closed_loop-Acquiring"
               '''
             }

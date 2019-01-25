@@ -1010,6 +1010,10 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 			}
 		} catch (Exception e) {
 			logger.error("Error :: TransactionRestController :: clientTxnHistory", e);
+			transactionHistoryResponse.setErrorCode(PGConstants.TXN_0131);
+			transactionHistoryResponse.setErrorMessage(
+					messageSource.getMessage(PGConstants.TXN_0131, null, LocaleContextHolder.getLocale()));
+			return transactionHistoryResponse;
 		}
 		logger.info("Exiting:: TransactionRestController:: clientTxnHistory method");
 		return transactionHistoryResponse;

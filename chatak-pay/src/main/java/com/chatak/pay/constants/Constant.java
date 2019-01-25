@@ -120,6 +120,7 @@ public interface Constant {
   
   public static final String SEPARATOR = "|";
   
-  
+//url for paygate
+ public static final String ROOT_URL="http://192.168.0.92:8062/paygate/pg/transaction";
 
 }

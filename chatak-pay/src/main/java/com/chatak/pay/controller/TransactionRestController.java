@@ -386,7 +386,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
           return processInvalidRequest(PGConstants.TXN_0124, messageSource);
         } else if (!Pattern.compile(PGConstants.USER_NAME_REGEX).matcher(changePassword.getUserName())
             .matches()) {
-          return processInvalidRequest(PGConstants.TXN_0125, messageSource);
+          return processInvalidRequest(PGConstants.TXN_0131, messageSource);
         } else if (!Pattern.compile(PGConstants.PSWD_REGEX).matcher(changePassword.getCurrentPassword())
             .matches()) {
           return processInvalidRequest(PGConstants.TXN_0126, messageSource);

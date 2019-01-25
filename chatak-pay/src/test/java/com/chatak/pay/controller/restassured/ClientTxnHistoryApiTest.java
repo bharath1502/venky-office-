@@ -1,24 +1,26 @@
 package com.chatak.pay.controller.restassured;
 
 import static io.restassured.RestAssured.given;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+
 import com.chatak.pay.constants.Constant;
 import com.chatak.pay.controller.model.LoginRequest;
 import com.chatak.pg.model.TransactionHistoryRequest;
+
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
 
 public class ClientTxnHistoryApiTest {
-	final static String CLIENT_SSO_LOGIN = "/clientSsoLogin";
-	final static String CLIENT_TXN_HISTORY = "/clientTxnHistory";
+	private static final String CLIENT_SSO_LOGIN = "/clientSsoLogin";
+	private static final String CLIENT_TXN_HISTORY = "/clientTxnHistory";
 	private static final String AUTH_HEADER = "Authorization";
 	private static final String TOKEN_BEARER = "Bearer ";
-	final static String ERROR_CODE_00 = "00";
-	final static String ERROR_CODE_01 = "01";
-	final static String TXN_0131 = "TXN_0131";
+	private static final String GEN_001 = "GEN_001";
+	private static final String ERROR_CODE_01 = "01";
+	private static final String TXN_0131 = "TXN_0131";
 
 	private LoginRequest loginrequest;
 	private TransactionHistoryRequest transactionrequest;
@@ -45,35 +47,32 @@ public class ClientTxnHistoryApiTest {
 		return responseJson;
 	}
 
+	private JSONObject clientTxnResponse() {
+		JSONObject responseJson = getAccessToken();
+		Response responseBody = given().contentType(ContentType.JSON)
+				.header(AUTH_HEADER, TOKEN_BEARER + responseJson.getString("accessToken")).body(transactionrequest)
+				.when().post(Constant.ROOT_URL + CLIENT_TXN_HISTORY);
+		responseJson = new JSONObject(responseBody.asString());
+		return responseJson;
+	}
+
 	@Test
 	public void testWithTransactionHistoryValidCredentials() {
 		JSONObject responseJson = getAccessToken();
-		ResponseBody responseBody = given().contentType(ContentType.JSON)
-				.header(AUTH_HEADER, TOKEN_BEARER + responseJson.getString("accessToken")).body(transactionrequest)
-				.when().post(Constant.ROOT_URL + CLIENT_TXN_HISTORY).getBody();
-		responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("00", responseJson.get("errorCode"));
+		Assert.assertEquals(GEN_001, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void TransactionHistoryWithWrongUserName() {
 		transactionrequest.setUserName("hanef");
-		JSONObject responseJson = getAccessToken();
-		ResponseBody responseBody = given().contentType(ContentType.JSON)
-				.header(AUTH_HEADER, TOKEN_BEARER + responseJson.getString("accessToken")).body(transactionrequest)
-				.when().post(Constant.ROOT_URL + CLIENT_TXN_HISTORY).getBody();
-		responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("TXN_0131", responseJson.get("errorCode"));
+		JSONObject responseJson = clientTxnResponse();
+		Assert.assertEquals(TXN_0131, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void TransactionHistoryWithWrongTransactionId() {
 		transactionrequest.setTransactionId("18");
-		JSONObject responseJson = getAccessToken();
-		ResponseBody responseBody = given().contentType(ContentType.JSON)
-				.header(AUTH_HEADER, TOKEN_BEARER + responseJson.getString("accessToken")).body(transactionrequest)
-				.when().post(Constant.ROOT_URL + CLIENT_TXN_HISTORY).getBody();
-		responseJson = new JSONObject(responseBody.asString());
-		Assert.assertEquals("01", responseJson.get("errorCode"));
+		JSONObject responseJson = clientTxnResponse();
+		Assert.assertEquals(ERROR_CODE_01, responseJson.get("errorCode"));
 	}
 }

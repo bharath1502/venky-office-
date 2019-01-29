@@ -22,26 +22,26 @@ public class ClientTxnHistoryApiTest {
 	private static final String ERROR_CODE_01 = "01";
 	private static final String TXN_0131 = "TXN_0131";
 
-	private LoginRequest loginrequest;
-	private TransactionHistoryRequest transactionrequest;
+	private LoginRequest loginRequest;
+	private TransactionHistoryRequest transactionRequest;
 
 	public ClientTxnHistoryApiTest() {
-		loginrequest = new LoginRequest();
-		loginrequest.setUsername("haneef");
-		loginrequest.setPassword("Ipsidy@1234!");
-		loginrequest.setCurrentAppVersion("1.3.6");
-		loginrequest.setDeviceSerial("352308061370442");
+		loginRequest = new LoginRequest();
+		loginRequest.setUsername("haneef");
+		loginRequest.setPassword("Ipsidy@1234!");
+		loginRequest.setCurrentAppVersion("1.3.6");
+		loginRequest.setDeviceSerial("352308061370442");
 
-		transactionrequest = new TransactionHistoryRequest();
-		transactionrequest.setTransactionDate("2019-01-24");
-		transactionrequest.setMerchantCode("654454706617480");
-		transactionrequest.setTransactionId("128");
-		transactionrequest.setUserName("haneef");
+		transactionRequest = new TransactionHistoryRequest();
+		transactionRequest.setTransactionDate("2019-01-24");
+		transactionRequest.setMerchantCode("654454706617480");
+		transactionRequest.setTransactionId("128");
+		transactionRequest.setUserName("haneef");
 
 	}
 
 	private JSONObject getAccessToken() {
-		Response responseBody = (Response) given().contentType(ContentType.JSON).body(loginrequest).when()
+		Response responseBody = (Response) given().contentType(ContentType.JSON).body(loginRequest).when()
 				.post(Constant.ROOT_URL + CLIENT_SSO_LOGIN).then().extract().body();
 		JSONObject responseJson = new JSONObject(responseBody.asString());
 		return responseJson;
@@ -50,7 +50,7 @@ public class ClientTxnHistoryApiTest {
 	private JSONObject clientTxnResponse() {
 		JSONObject responseJson = getAccessToken();
 		Response responseBody = given().contentType(ContentType.JSON)
-				.header(AUTH_HEADER, TOKEN_BEARER + responseJson.getString("accessToken")).body(transactionrequest)
+				.header(AUTH_HEADER, TOKEN_BEARER + responseJson.getString("accessToken")).body(transactionRequest)
 				.when().post(Constant.ROOT_URL + CLIENT_TXN_HISTORY);
 		responseJson = new JSONObject(responseBody.asString());
 		return responseJson;
@@ -64,14 +64,14 @@ public class ClientTxnHistoryApiTest {
 
 	@Test
 	public void TransactionHistoryWithWrongUserName() {
-		transactionrequest.setUserName("hanef");
+		transactionRequest.setUserName("hanef");
 		JSONObject responseJson = clientTxnResponse();
 		Assert.assertEquals(TXN_0131, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void TransactionHistoryWithWrongTransactionId() {
-		transactionrequest.setTransactionId("18");
+		transactionRequest.setTransactionId("18");
 		JSONObject responseJson = clientTxnResponse();
 		Assert.assertEquals(ERROR_CODE_01, responseJson.get("errorCode"));
 	}

@@ -99,9 +99,9 @@ public class Purchase extends Processor {
       purchaseRequest.setMerchantId(Long.valueOf(_ISOInputRequest.get_merchantId()));
       purchaseRequest.setSysTraceNum(_ISOInputRequest.get_sysTraceNum());
       purchaseRequest.setInvoiceNumber(_ISOInputRequest.get_invoiceNumber());
-      //appended last 3 digit for 19th digit card 
+      //This is only for 16 digits card as our system will support 19 digts we are appending last three digits
       purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum()+"123");
-      //Reduced the length of last 2 digit exp date  
+      //Appended Exp Date to 4 because from request we are getting 6 digits which will not accept by our system
       purchaseRequest.setExpDate(_ISOInputRequest.get_expDate().substring(0,4));
       purchaseRequest.setTrack2(_ISOInputRequest.get_track2().replace(_ISOInputRequest.get_cardNum(),
       purchaseRequest.getCardNum()).replace("=" + _ISOInputRequest.get_expDate(), "=" + _ISOInputRequest.get_expDate().substring(0, 4)));

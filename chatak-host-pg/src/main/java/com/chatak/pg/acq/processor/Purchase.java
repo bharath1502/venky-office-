@@ -89,82 +89,76 @@ public class Purchase extends Processor {
   public boolean processAuthCapture() {
     log.debug("Purchase | processAuthCapture | Entering");
     boolean status = false;
-		try {
-			com.chatak.switches.sb.util.SpringDAOBeanFactory.appContext = appContext;
-			// validating duplicate invoice request
-			validateDuplicateRequest(_ISOInputRequest);
-			// Populate Request Object
-			PurchaseRequest purchaseRequest = new PurchaseRequest();
-			purchaseRequest.setTerminalId(_ISOInputRequest.get_terminalId());
-			purchaseRequest.setMerchantId(Long.valueOf(_ISOInputRequest.get_merchantId()));
-			purchaseRequest.setSysTraceNum(_ISOInputRequest.get_sysTraceNum());
-			purchaseRequest.setInvoiceNumber(_ISOInputRequest.get_invoiceNumber());
-			purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum());
-			// This is only for 16 digits card as our system will support 19
-			// digts we are appending last three digits
-			if (_ISOInputRequest.get_cardNum().length() < 19) {
-				purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum() + "123");
-			}
-			purchaseRequest.setExpDate(_ISOInputRequest.get_expDate());
-			// Appended Exp Date to 4 because from request we are getting 6
-			// digits which will not accept by our system
-			if (_ISOInputRequest.get_expDate().length() > 4) {
-				purchaseRequest.setExpDate(_ISOInputRequest.get_expDate().substring(0, 4));
-			}
-			purchaseRequest.setTrack2(
-					_ISOInputRequest.get_track2().replace(_ISOInputRequest.get_cardNum(), purchaseRequest.getCardNum())
-							.replace("=" + _ISOInputRequest.get_expDate(),
-									"=" + _ISOInputRequest.get_expDate().substring(0, 4)));
-			purchaseRequest.setPosEntryMode(_ISOInputRequest.get_Field22());
-			purchaseRequest.setTxnAmount(_ISOInputRequest.get_txnAmount());
-			purchaseRequest.setEmvData(_ISOInputRequest.getEmvData());
-			purchaseRequest.setChipTransaction(_ISOInputRequest.get_isChipTransaction());
-			purchaseRequest.setChipFallback(_ISOInputRequest.get_isFallback());
-			purchaseRequest.setAcq_channel("POS");// TODO: need to set proper
-													// value
-			purchaseRequest.setAcq_mode("CASH");// TODO: need to set proper
-												// value
-			purchaseRequest.setMti(_ISOInputRequest.get_MTI());
-			purchaseRequest.setProcessingCode(_ISOInputRequest.get_processingCode());
-			purchaseRequest.setIsoMsg(_ISOInputRequest.getIsoMsg());
-			purchaseRequest.setEntryMode(EntryModeEnum.fromValue(_ISOInputRequest.get_Field22().substring(0, 2)));
-			purchaseRequest.setNationalPOSEntryMode(
-					NationalPOSEntryModeEnum.valueOf(purchaseRequest.getEntryMode().toString() + "_DE58"));
-			purchaseRequest.setTotalTxnAmount(_ISOInputRequest.get_txnAmount());
-			purchaseRequest.setTxnFee(PGConstants.ZERO);// TODO: need to change
-			purchaseRequest.setPulseData(Properties.getProperty("chatak-pay.pulse.data"));
-			purchaseRequest.setMode(_txnAuthorizer.getMode());
+    try {
+      com.chatak.switches.sb.util.SpringDAOBeanFactory.appContext = appContext;
+      // validating duplicate invoice request
+      validateDuplicateRequest(_ISOInputRequest);
+      // Populate Request Object
+      PurchaseRequest purchaseRequest = new PurchaseRequest();
+      purchaseRequest.setTerminalId(_ISOInputRequest.get_terminalId());
+      purchaseRequest.setMerchantId(Long.valueOf(_ISOInputRequest.get_merchantId()));
+      purchaseRequest.setSysTraceNum(_ISOInputRequest.get_sysTraceNum());
+      purchaseRequest.setInvoiceNumber(_ISOInputRequest.get_invoiceNumber());
+      purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum());
+      //This is only for 16 digits card as our system will support 19 digts we are appending last three digits
+	  if (_ISOInputRequest.get_cardNum().length() < 19) {
+		  purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum() + "123");
+	  }
+	  purchaseRequest.setExpDate(_ISOInputRequest.get_expDate());
+	  // Appended Exp Date to 4 because from request we are getting 6
+	  // digits which will not accept by our system
+	  if (_ISOInputRequest.get_expDate().length() > 4) {
+		  purchaseRequest.setExpDate(_ISOInputRequest.get_expDate().substring(0, 4));
+	  }
+      purchaseRequest.setTrack2(_ISOInputRequest.get_track2().replace(_ISOInputRequest.get_cardNum(),
+      purchaseRequest.getCardNum()).replace("=" + _ISOInputRequest.get_expDate(), "=" + _ISOInputRequest.get_expDate().substring(0, 4)));
+      purchaseRequest.setPosEntryMode(_ISOInputRequest.get_Field22());
+      purchaseRequest.setTxnAmount(_ISOInputRequest.get_txnAmount());
+      purchaseRequest.setEmvData(_ISOInputRequest.getEmvData());
+      purchaseRequest.setChipTransaction(_ISOInputRequest.get_isChipTransaction());
+      purchaseRequest.setChipFallback(_ISOInputRequest.get_isFallback());
+      purchaseRequest.setAcq_channel("POS");// TODO: need to set proper value
+      purchaseRequest.setAcq_mode("CASH");// TODO: need to set proper value
+      purchaseRequest.setMti(_ISOInputRequest.get_MTI());
+      purchaseRequest.setProcessingCode(_ISOInputRequest.get_processingCode());
+      purchaseRequest.setIsoMsg(_ISOInputRequest.getIsoMsg());
+      purchaseRequest.setEntryMode(EntryModeEnum.fromValue(_ISOInputRequest.get_Field22().substring(0, 2)));
+      purchaseRequest.setNationalPOSEntryMode(NationalPOSEntryModeEnum.valueOf(purchaseRequest.getEntryMode().toString()
+                                                                               + "_DE58"));
+      purchaseRequest.setTotalTxnAmount(_ISOInputRequest.get_txnAmount());
+      purchaseRequest.setTxnFee(PGConstants.ZERO);// TODO: need to change
+      purchaseRequest.setPulseData(Properties.getProperty("chatak-pay.pulse.data"));
+      purchaseRequest.setMode(_txnAuthorizer.getMode());
 
-			PGMerchant merchant = merchantUpdateDao.getMerchant(purchaseRequest.getMerchantId().toString());
-			purchaseRequest.setAddress(merchant.getAddress1());
-			PGCurrencyConfig currencyConfig = currencyConfigDao.getCurrencyCodeNumeric(merchant.getLocalCurrency());
-			purchaseRequest.setCurrencyCode(currencyConfig.getCurrencyCodeNumeric());
-			purchaseRequest.setMerchantCode(purchaseRequest.getMerchantId().toString());
+      PGMerchant merchant = merchantUpdateDao.getMerchant(purchaseRequest.getMerchantId().toString());
+      purchaseRequest.setAddress(merchant.getAddress1());
+      PGCurrencyConfig currencyConfig = currencyConfigDao.getCurrencyCodeNumeric(merchant.getLocalCurrency());
+      purchaseRequest.setCurrencyCode(currencyConfig.getCurrencyCodeNumeric());
+      purchaseRequest.setMerchantCode(purchaseRequest.getMerchantId().toString());
 
-			/*
-			 * PurchaseResponse purchaseResponse =
-			 * getPaymentService().purchaseTransaction(purchaseRequest);
-			 */
-			PurchaseResponse purchaseResponse = new SwitchServiceBroker().purchaseTransaction(purchaseRequest,
-					new PGMerchant());
+      /*
+       * PurchaseResponse purchaseResponse =
+       * getPaymentService().purchaseTransaction(purchaseRequest);
+       */
+      PurchaseResponse purchaseResponse = new SwitchServiceBroker().purchaseTransaction(purchaseRequest, new PGMerchant());
 
-			// set fields to response
-			// SYSTEM DATE TIME
-			_txnAuthorizer.get_txnHandler().getResponseMessage().setFieldValue(12, DateUtils.getCurrentTime());
+      // set fields to response
+      // SYSTEM DATE TIME
+      _txnAuthorizer.get_txnHandler().getResponseMessage().setFieldValue(12, DateUtils.getCurrentTime());
 
-			if (purchaseResponse.getErrorCode().equalsIgnoreCase(ActionCode.ERROR_CODE_00)) {
-				// Transaction Reference Number
-				_txnAuthorizer.get_txnHandler().getResponseMessage().setFieldValue(37, purchaseResponse.getTxnRefNum());
-				// AuthId
-				_txnAuthorizer.get_txnHandler().getResponseMessage().setFieldValue(38, purchaseResponse.getAuthId());
-			}
+      if(purchaseResponse.getErrorCode().equalsIgnoreCase(ActionCode.ERROR_CODE_00)) {
+        // Transaction Reference Number
+        _txnAuthorizer.get_txnHandler().getResponseMessage().setFieldValue(37, purchaseResponse.getTxnRefNum());
+        // AuthId
+        _txnAuthorizer.get_txnHandler().getResponseMessage().setFieldValue(38, purchaseResponse.getAuthId());
+      }
 
-			// feild 39 and 44
-			setResponseFields(purchaseResponse.getErrorCode());
+      // feild 39 and 44
+      setResponseFields(purchaseResponse.getErrorCode());
 
-			status = true;
+      status = true;
 
-		}
+    }
     catch(ServiceException e) {
       log.error("Purchase | processAuthCapture | ServiceException :" + e.getMessage(), e);
       setResponseFields(ActionCode.ERROR_CODE_Z5);

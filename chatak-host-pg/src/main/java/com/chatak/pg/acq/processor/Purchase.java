@@ -99,9 +99,12 @@ public class Purchase extends Processor {
       purchaseRequest.setMerchantId(Long.valueOf(_ISOInputRequest.get_merchantId()));
       purchaseRequest.setSysTraceNum(_ISOInputRequest.get_sysTraceNum());
       purchaseRequest.setInvoiceNumber(_ISOInputRequest.get_invoiceNumber());
-      purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum());
-      purchaseRequest.setExpDate(_ISOInputRequest.get_expDate());
-      purchaseRequest.setTrack2(_ISOInputRequest.get_track2());
+      //appended last 3 digit for 19th digit card 
+      purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum()+"123");
+      //Reduced the length of last 2 digit exp date  
+      purchaseRequest.setExpDate(_ISOInputRequest.get_expDate().substring(0,4));
+      purchaseRequest.setTrack2(_ISOInputRequest.get_track2().replace(_ISOInputRequest.get_cardNum(),
+      purchaseRequest.getCardNum()).replace("=" + _ISOInputRequest.get_expDate(), "=" + _ISOInputRequest.get_expDate().substring(0, 4)));
       purchaseRequest.setPosEntryMode(_ISOInputRequest.get_Field22());
       purchaseRequest.setTxnAmount(_ISOInputRequest.get_txnAmount());
       purchaseRequest.setEmvData(_ISOInputRequest.getEmvData());

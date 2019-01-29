@@ -9,7 +9,6 @@ import org.junit.Test;
 import com.chatak.pay.constants.Constant;
 import com.chatak.pay.controller.model.LoginRequest;
 import com.chatak.pg.bean.ChangePasswordRequest;
-
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
@@ -34,7 +33,7 @@ public class ChangePasswordApiTest {
 	private static final String TXN_0403 = "TXN_0403";
 
 	private LoginRequest loginRequest;
-	private ChangePasswordRequest changepasswordRequest;
+	private ChangePasswordRequest changePasswordRequest;
 
 	public ChangePasswordApiTest() {
 		loginRequest = new LoginRequest();
@@ -43,11 +42,11 @@ public class ChangePasswordApiTest {
 		loginRequest.setCurrentAppVersion("1.3.6");
 		loginRequest.setDeviceSerial("352308061370442");
 
-		changepasswordRequest = new ChangePasswordRequest();
-		changepasswordRequest.setUserName("haneef");
-		changepasswordRequest.setCurrentPassword("Ipsidy@123!");
-		changepasswordRequest.setNewPassword("Ipsidy@1234!");
-		changepasswordRequest.setConfirmPassword("Ipsidy@1234!");
+		changePasswordRequest = new ChangePasswordRequest();
+		changePasswordRequest.setUserName("haneef");
+		changePasswordRequest.setCurrentPassword("Ipsidy@123!");
+		changePasswordRequest.setNewPassword("Ipsidy@1234!");
+		changePasswordRequest.setConfirmPassword("Ipsidy@1234!");
 
 	}
 
@@ -66,7 +65,7 @@ public class ChangePasswordApiTest {
 
 	@Test
 	public void changePasswordWithWrongUserName() {
-		changepasswordRequest.setUserName("haeef");
+		changePasswordRequest.setUserName("haeef");
 
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0131, responseJson.get("errorCode"));
@@ -75,7 +74,7 @@ public class ChangePasswordApiTest {
 	private JSONObject changePasswordResponse() {
 		JSONObject responseJson = getAccessToken();
 		Response responseBody = given().contentType(ContentType.JSON)
-				.header(AUTH_HEADER, TOKEN_BEARER + responseJson.getString("accessToken")).body(changepasswordRequest)
+				.header(AUTH_HEADER, TOKEN_BEARER + responseJson.getString("accessToken")).body(changePasswordRequest)
 				.when().post(Constant.ROOT_URL + CLIENT_CHANGE_PASSWORD);
 		responseJson = new JSONObject(responseBody.asString());
 		return responseJson;
@@ -83,78 +82,78 @@ public class ChangePasswordApiTest {
 
 	@Test
 	public void changePasswordWithWrongPassword() {
-		changepasswordRequest.setCurrentPassword("Ipsidy@123!");
+		changePasswordRequest.setCurrentPassword("Ipsidy@123!");
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(GEN_002, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithUserNameNull() {
-		changepasswordRequest.setUserName(null);
+		changePasswordRequest.setUserName(null);
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0121, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithCurrentPasswordNull() {
-		changepasswordRequest.setCurrentPassword(null);
+		changePasswordRequest.setCurrentPassword(null);
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0122, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithNewPasswordNull() {
-		changepasswordRequest.setNewPassword(null);
+		changePasswordRequest.setNewPassword(null);
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0123, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithConfirmPasswordNull() {
-		changepasswordRequest.setConfirmPassword(null);
+		changePasswordRequest.setConfirmPassword(null);
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0124, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithCurrentAndNewPasswordSame() {
-		changepasswordRequest.setNewPassword("Ipsidy@123!");
-		changepasswordRequest.setConfirmPassword("Ipsidy@123!");
+		changePasswordRequest.setNewPassword("Ipsidy@123!");
+		changePasswordRequest.setConfirmPassword("Ipsidy@123!");
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0119, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithNewAndConfirmPasswordNotSame() {
-		changepasswordRequest.setConfirmPassword("Ipsidy@123!");
+		changePasswordRequest.setConfirmPassword("Ipsidy@123!");
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0120, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithPasswordWithCapsLetters() {
-		changepasswordRequest.setCurrentPassword("IPSIDY@1234!");
+		changePasswordRequest.setCurrentPassword("IPSIDY@1234!");
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0126, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithUserNameWithCapsLetters() {
-		changepasswordRequest.setUserName("HANEEF");
+		changePasswordRequest.setUserName("HANEEF");
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0403, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordNewPasswordWithCapsLetters() {
-		changepasswordRequest.setNewPassword("IPSIDY@123!");
+		changePasswordRequest.setNewPassword("IPSIDY@123!");
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0127, responseJson.get("errorCode"));
 	}
 
 	@Test
 	public void changePasswordWithConfirmPasswordWithCapsLetters() {
-		changepasswordRequest.setConfirmPassword("IPSIDY@123!");
+		changePasswordRequest.setConfirmPassword("IPSIDY@123!");
 		JSONObject responseJson = changePasswordResponse();
 		Assert.assertEquals(TXN_0128, responseJson.get("errorCode"));
 	}

@@ -279,7 +279,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
-													onclick="return searchSubmit();searchValidationForTransaction();validateCardNum();"
+													onclick="return submitData()"
 													onclick="return trimUserData()"
 													value="<spring:message code="transactions-search.label.searchbutton"/>">
 												<input type="button" class="form-control button pull-right"
@@ -690,8 +690,9 @@
 	<script src="../js/sortable.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
-	  <script src="../js/rome.js"></script>
+	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
+	<script src="../js/transactions.js"></script>
 	<script>
 	
 	$(document).ready(function() {

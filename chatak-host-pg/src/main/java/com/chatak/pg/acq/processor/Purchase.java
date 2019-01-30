@@ -47,6 +47,7 @@ import com.chatak.pg.exception.ValidationException;
 import com.chatak.pg.util.DateUtils;
 import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.Properties;
+import com.chatak.pg.util.TransactionConstants;
 import com.chatak.switches.sb.SwitchServiceBroker;
 import com.chatak.switches.sb.exception.ServiceException;
 
@@ -101,13 +102,13 @@ public class Purchase extends Processor {
       purchaseRequest.setInvoiceNumber(_ISOInputRequest.get_invoiceNumber());
       purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum());
       //This is only for 16 digits card as our system will support 19 digts we are appending last three digits
-	  if (_ISOInputRequest.get_cardNum().length() < 19) {
-		  purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum() + "123");
+	  if (_ISOInputRequest.get_cardNum().length() < TransactionConstants.CARD_NUM_LENGTH) {
+		  purchaseRequest.setCardNum(_ISOInputRequest.get_cardNum() + TransactionConstants.APPEND_LAST_3_DIGIT);
 	  }
 	  purchaseRequest.setExpDate(_ISOInputRequest.get_expDate());
 	  // Appended Exp Date to 4 because from request we are getting 6
 	  // digits which will not accept by our system
-	  if (_ISOInputRequest.get_expDate().length() > 4) {
+	  if (_ISOInputRequest.get_expDate().length() > TransactionConstants.EXP_DATE_LENGTH) {
 		  purchaseRequest.setExpDate(_ISOInputRequest.get_expDate().substring(0, 4));
 	  }
       purchaseRequest.setTrack2(_ISOInputRequest.get_track2().replace(_ISOInputRequest.get_cardNum(),

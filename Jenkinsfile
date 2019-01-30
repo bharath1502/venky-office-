@@ -59,7 +59,6 @@ node {
             script {
               sh '''
               cd chatakpg
-              cat /usr/share/maven/conf/settings.xml | grep admin
 			  mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-admin -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-acquirer-admin/target/gateway-admin.war
           	  mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-merchant -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-merchant/target/gateway-merchant.war
           	  mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=paygate -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-pay/target/paygate.war

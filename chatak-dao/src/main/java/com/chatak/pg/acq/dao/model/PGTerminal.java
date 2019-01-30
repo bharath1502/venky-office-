@@ -29,7 +29,7 @@ public class PGTerminal implements Serializable {
   @Id
   /*@SequenceGenerator(name = "SEQ_PG_TERMINAL_ID", sequenceName = "SEQ_PG_TERMINAL")
   @GeneratedValue(generator = "SEQ_PG_TERMINAL_ID")*/
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID")
   private Long id;
 

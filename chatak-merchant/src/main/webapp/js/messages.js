@@ -201,7 +201,8 @@ var C_MERCHANT_MSG = {
 		toDateAheadOffromDate : "From date ahead of To date",
 		EnterValidMonth : "Enter Valid Month",
 		EnterValidDay : "Enter a valid Day",
-		EnterValidYear : "Enter a valid Year"
+		EnterValidYear : "Enter a valid Year",
+		EnterFourDigit : "Enter Four Digit Number"
 
 	},
 	es : {
@@ -407,7 +408,8 @@ var C_MERCHANT_MSG = {
 		toDateAheadOffromDate : "From date ahead of To date",
 		EnterValidMonth : "Enter Valid Month",
 		EnterValidDay : "Enter a valid Day",
-		EnterValidYear : "Enter a valid Year"
+		EnterValidYear : "Enter a valid Year",
+		EnterFourDigit : "Ingrese el número de cuatro dígitos"
 	}
 };
 

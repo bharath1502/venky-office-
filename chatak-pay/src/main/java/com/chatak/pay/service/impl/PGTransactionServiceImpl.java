@@ -579,6 +579,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 					request.setAccountNumber(pgTransaction.getPanMasked());
 					request.setEntryMode(transactionRequest.getEntryMode());
 				} else {
+					request.setEntryMode(transactionRequest.getEntryMode());
 					request.setCardType(transactionRequest.getCardData().getCardType().value());
 					request.setEmv(transactionRequest.getCardData().getEmv());
 				}

@@ -348,7 +348,7 @@ function validAmount(id,divId) {
 	loadMsgTitleText();
 		return false;
 	} else if (regex.test(val) == false) {
-	setDiv(divId, webMessages.virtualTerminalValidData);
+	setDiv(divId, webMessages.shouldContainonlyNumeric);
 	loadMsgTitleText();
 		return false;
 	} else {

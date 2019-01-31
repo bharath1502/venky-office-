@@ -23,7 +23,7 @@ public class PGSwitchTransaction implements Serializable {
 	@Id
 	/*@SequenceGenerator(name = "SEQ_PG_SWITCH_TRANSACTION_ID", sequenceName = "SEQ_PG_SWITCH_TRANSACTION")
 	@GeneratedValue(generator = "SEQ_PG_SWITCH_TRANSACTION_ID")*/
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
 	private Long id;  
 

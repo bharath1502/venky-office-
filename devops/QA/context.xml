@@ -33,7 +33,7 @@
     <!--
              <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
-<Environment name="java/tokenConfig" override="false" type="java.lang.String" value="file:///usr/local/tomcat/resources/token-config.properties"/>
+<Environment name="java/tokenConfig" override="false" type="java.lang.String" value="file:///usr/local/tomcat/resources/chatak-pg-acquirer.properties"/>
 
 
 </Context>

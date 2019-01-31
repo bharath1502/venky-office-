@@ -371,6 +371,8 @@ public class Constants {
   public static final String XLS_FILE_FORMAT = "XLS";
 
   public static final String EXPORT_FILE_NAME_DATE_FORMAT = Properties.getProperty("chatak.reportfilename.date.format");
+  
+  public static final String EXPORT_FILE_DATE_FORMAT_MMDDYY = Properties.getProperty("chatak.reportfile.date.format.mmddyy");
 
   public static final String EXPORT_HEADER_DATE_FORMAT = Properties.getProperty("chatak.reportdate.format");
 

@@ -256,7 +256,7 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     searchMerchant.setEmailId(merchant.getEmailId());
     searchMerchant.setFirstName(merchant.getFirstName());
     searchMerchant.setStatus(merchant.getStatus());
-    searchMerchant.setId(merchant.getId());
+    searchMerchant.setId(merchant.getParentMerchantId());
     searchMerchant.setLastName(merchant.getLastName());
     searchMerchant.setPhone(merchant.getPhone());
     searchMerchant.setPageSize(merchant.getPageSize());

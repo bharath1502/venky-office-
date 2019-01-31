@@ -254,6 +254,9 @@ public class SubMerchantController implements URLMappingConstants {
     	  session.setAttribute(Constants.TOTAL_RECORDS, searchResponse.getTotalNoOfRows());
           modelAndView.addObject(Constants.PAGE_SIZE, merchant.getPageSize());
       }
+      else {
+    	  session.setAttribute(Constants.TOTAL_RECORDS, Constants.ZERO);  
+      }
       modelAndView.addObject(Constants.MERCHANTS_MODEL, merchants);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,

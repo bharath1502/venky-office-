@@ -238,9 +238,9 @@
 												</fieldset>
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.zipcode"/><span class="required-field">*</span></label>
-													<form:input path="zip" cssClass="form-control"
+												<form:input path="zip" cssClass="form-control"
 														id="zipcodeDiv"
-														onblur="this.value=this.value.trim();validZipcode()" />
+															maxlength="6" onblur="this.value=this.value.trim(),validZipcode();" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error" id="zipcodeErrorDiv">&nbsp;</span>
 													</div>

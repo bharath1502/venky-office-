@@ -123,6 +123,8 @@ public class Purchase extends Processor {
       purchaseRequest.setMti(_ISOInputRequest.get_MTI());
       purchaseRequest.setProcessingCode(_ISOInputRequest.get_processingCode());
       purchaseRequest.setIsoMsg(_ISOInputRequest.getIsoMsg());
+      purchaseRequest.setTimeZoneOffset("GMT+0530");
+      purchaseRequest.setTimeZoneRegion("Asia/Calcutta");
       purchaseRequest.setEntryMode(EntryModeEnum.fromValue(_ISOInputRequest.get_Field22().substring(0, 2)));
       purchaseRequest.setNationalPOSEntryMode(NationalPOSEntryModeEnum.valueOf(purchaseRequest.getEntryMode().toString()
                                                                                + "_DE58"));

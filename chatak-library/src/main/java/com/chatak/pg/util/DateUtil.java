@@ -39,7 +39,15 @@ public final class DateUtil {
 
 	private static Pattern expDatePattern = Pattern.compile(dateRegex1);
 
-	private DateUtil() {
+	private static final String format = "%02d:%02d";
+
+	private static final int THOUSAND_HOURS_IN_MS = 3600000;
+
+	private static final int THOUSAND_HOURS_IN_MINS = 60000;
+
+	private static final int SIXTY = 60;
+
+  private DateUtil() {
     //To avoid instantiation
   }
 	/**
@@ -314,5 +322,23 @@ public final class DateUtil {
         logger.error("ERROR:: DateUtil:: convertTimeZone method", e);
       }
       return convertedTime;
+    }
+
+    public static String getTimezoneOffset() {
+
+      TimeZone tz = TimeZone.getDefault();
+      Calendar cal = GregorianCalendar.getInstance(tz);
+      int offsetInMillis = tz.getOffset(cal.getTimeInMillis());
+      String offset = String.format(format,
+                                    Math.abs(offsetInMillis / THOUSAND_HOURS_IN_MS),
+                                    Math.abs((offsetInMillis / THOUSAND_HOURS_IN_MINS) % SIXTY));
+      offset = "GMT" + (offsetInMillis >= 0 ? "+" : "-") + offset.replaceAll(":", "");
+      return offset;
+    }
+
+    public static String getTimezoneRegion() {
+      Calendar calendar = new GregorianCalendar();
+      TimeZone timeZone = calendar.getTimeZone();
+      return timeZone.getID();
     }
 }

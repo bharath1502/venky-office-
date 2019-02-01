@@ -167,7 +167,5 @@ public class TransactionConstants {
   
   public static final String APPEND_LAST_3_DIGIT = "123";
   
-  
- 
 
 }

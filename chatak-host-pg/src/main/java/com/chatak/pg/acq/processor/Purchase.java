@@ -43,6 +43,7 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.NationalPOSEntryModeEnum;
 import com.chatak.pg.exception.ValidationException;
+import com.chatak.pg.util.DateUtil;
 /*import com.chatak.pg.upstream.BINUpstreamRouter;*/
 import com.chatak.pg.util.DateUtils;
 import com.chatak.pg.util.EncryptionUtil;
@@ -126,11 +127,11 @@ public class Purchase extends Processor {
       purchaseRequest.setMti(_ISOInputRequest.get_MTI());
       purchaseRequest.setProcessingCode(_ISOInputRequest.get_processingCode());
       purchaseRequest.setIsoMsg(_ISOInputRequest.getIsoMsg());
-      if(!StringUtils.isNull(_ISOInputRequest.getSetTimeZoneOffset())){
-    	  purchaseRequest.setTimeZoneOffset(TransactionConstants.DEFAULT_TIMEZONE_OFFSET);
+      if(StringUtils.isNullAndEmpty(_ISOInputRequest.getSetTimeZoneOffset())){
+    	  purchaseRequest.setTimeZoneOffset(DateUtil.getTimezoneOffset());
       }
-      if(!StringUtils.isNull(_ISOInputRequest.getSetTimeZoneRegion())){
-    	  purchaseRequest.setTimeZoneRegion(TransactionConstants.DEFAULT_TIMEZONE_REGION);
+      if(StringUtils.isNullAndEmpty(_ISOInputRequest.getSetTimeZoneRegion())){
+    	  purchaseRequest.setTimeZoneRegion(DateUtil.getTimezoneRegion());
       }
       purchaseRequest.setEntryMode(EntryModeEnum.fromValue(_ISOInputRequest.get_Field22().substring(0, 2)));
       purchaseRequest.setNationalPOSEntryMode(NationalPOSEntryModeEnum.valueOf(purchaseRequest.getEntryMode().toString()

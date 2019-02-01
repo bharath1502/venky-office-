@@ -305,8 +305,8 @@ public class ReportsController implements URLMappingConstants {
   private void  setExportDetailsDataForDownloadRevenueGeneratedReport(
 	      List<ReportsDTO> overViewDownloadList, ExportDetails exportDetails) {
 	  Date date = new Date();
-	    String dateString = new SimpleDateFormat(Constants.EXPORT_FILE_NAME_DATE_FORMAT).format(date);
-	    String filename = "Revenue" + dateString + ".xls";
+	    String dateString = new SimpleDateFormat(Constants.EXPORT_FILE_DATE_FORMAT_MMDDYY).format(date);
+	    String filename = "Revenue_" + dateString + ".xls";
 	    exportDetails.setReportName(filename);
 	    exportDetails.setHeaderMessageProperty("chatak.system.overview.reports.header.message");
 

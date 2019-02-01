@@ -127,10 +127,10 @@ public class Purchase extends Processor {
       purchaseRequest.setProcessingCode(_ISOInputRequest.get_processingCode());
       purchaseRequest.setIsoMsg(_ISOInputRequest.getIsoMsg());
       if(!StringUtils.isNull(_ISOInputRequest.getSetTimeZoneOffset())){
-    	  purchaseRequest.setTimeZoneOffset("GMT+0530");
+    	  purchaseRequest.setTimeZoneOffset(TransactionConstants.DEFAULT_TIMEZONE_OFFSET);
       }
       if(!StringUtils.isNull(_ISOInputRequest.getSetTimeZoneRegion())){
-    	  purchaseRequest.setTimeZoneRegion("Asia/Calcutta");
+    	  purchaseRequest.setTimeZoneRegion(TransactionConstants.DEFAULT_TIMEZONE_REGION);
       }
       purchaseRequest.setEntryMode(EntryModeEnum.fromValue(_ISOInputRequest.get_Field22().substring(0, 2)));
       purchaseRequest.setNationalPOSEntryMode(NationalPOSEntryModeEnum.valueOf(purchaseRequest.getEntryMode().toString()

@@ -166,6 +166,10 @@ public class TransactionConstants {
   public static final int EXP_DATE_LENGTH = 4;
   
   public static final String APPEND_LAST_3_DIGIT = "123";
+   
+  public static final String DEFAULT_TIMEZONE_OFFSET = "GMT+0530";
+  
+  public static final String DEFAULT_TIMEZONE_REGION = "Asia/Calcutta";
   
   
  

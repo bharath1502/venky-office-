@@ -47,9 +47,12 @@ import com.chatak.pg.exception.ValidationException;
 import com.chatak.pg.util.DateUtils;
 import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.Properties;
+import com.chatak.pg.util.StringUtils;
 import com.chatak.pg.util.TransactionConstants;
 import com.chatak.switches.sb.SwitchServiceBroker;
 import com.chatak.switches.sb.exception.ServiceException;
+
+import bsh.StringUtil;
 
 /**
  * @Comments : This class process the purchase / sale transaction
@@ -123,8 +126,12 @@ public class Purchase extends Processor {
       purchaseRequest.setMti(_ISOInputRequest.get_MTI());
       purchaseRequest.setProcessingCode(_ISOInputRequest.get_processingCode());
       purchaseRequest.setIsoMsg(_ISOInputRequest.getIsoMsg());
-      purchaseRequest.setTimeZoneOffset("GMT+0530");
-      purchaseRequest.setTimeZoneRegion("Asia/Calcutta");
+      if(!StringUtils.isNull(_ISOInputRequest.getSetTimeZoneOffset())){
+    	  purchaseRequest.setTimeZoneOffset("GMT+0530");
+      }
+      if(!StringUtils.isNull(_ISOInputRequest.getSetTimeZoneRegion())){
+    	  purchaseRequest.setTimeZoneRegion("Asia/Calcutta");
+      }
       purchaseRequest.setEntryMode(EntryModeEnum.fromValue(_ISOInputRequest.get_Field22().substring(0, 2)));
       purchaseRequest.setNationalPOSEntryMode(NationalPOSEntryModeEnum.valueOf(purchaseRequest.getEntryMode().toString()
                                                                                + "_DE58"));

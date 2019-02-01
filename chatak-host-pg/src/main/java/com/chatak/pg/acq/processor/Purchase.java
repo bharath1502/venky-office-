@@ -709,14 +709,6 @@ public class Purchase extends Processor {
     catch(Exception e) {
       throw new ValidationException(e.getMessage());
     }
-    PGTransaction duplicateInvoiceTxn = transactionDao.getTransactionOnInvoiceNum(_InRequest.get_merchantId(),
-                                                                                  _InRequest.get_terminalId(),
-                                                                                  _InRequest.get_invoiceNumber());
-
-    if(null != duplicateInvoiceTxn) {
-      throw new ValidationException(ActionErrorCode.ERROR_CODE_DUPLICATE_INVOICE);
-    }
-
   }
 
 }

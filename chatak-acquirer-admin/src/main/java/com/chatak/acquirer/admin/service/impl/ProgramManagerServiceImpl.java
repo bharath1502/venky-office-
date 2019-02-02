@@ -34,6 +34,7 @@ import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
 import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGBank;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
+import com.chatak.pg.acq.dao.model.PanRanges;
 import com.chatak.pg.acq.dao.model.PmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
@@ -51,6 +52,7 @@ import com.chatak.pg.user.bean.BankResponse;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
+import com.chatak.pg.user.bean.PanRange;
 import com.chatak.pg.user.bean.PartnerGroupPartnerMapRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountResponse;
@@ -100,7 +102,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     // Check whether the program manager name already exists
     checkProgramManagerName(programManagerRequest);
     //Check whether PM already onboarded
-    getProgramManagerOnBoard(programManagerRequest);
+    //getProgramManagerOnBoard(programManagerRequest);
     try {
     //PM details from issuance and save in Acquirer 
     	PGCurrencyConfig pGCurrencyConfig = new PGCurrencyConfig();
@@ -125,7 +127,15 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     pManager.setSchedulerRunTime(programManagerRequest.getSchedulerRunTime());
     pManager.setDefaultProgramManager(programManagerRequest.getDefaultProgramManager());
     pManager.setAccountCurrency(programManagerRequest.getAccountCurrency()!=null ? programManagerRequest.getAccountCurrency() : programManagerRequest.getAcquirerCurrencyName());
-    
+    if (StringUtil.isListNotNullNEmpty(programManagerRequest.getPanRangeList())) {
+		Set<PanRanges> panRanges = new HashSet<PanRanges>();
+		for (PanRange panRange : programManagerRequest.getPanRangeList()) {
+			PanRanges panRanges2 = CommonUtil
+					.copyBeanProperties(panRange, PanRanges.class);
+			panRanges.add(panRanges2); 
+		}
+		pManager.setPanRanges(panRanges);
+	}
     ProgramManager pmResponse = programManagerDao.saveOrUpdateProgramManager(pManager);
     PGCurrencyConfig pGCurrencyCode = null ;
     pGCurrencyCode = setPGCurrencyCode(programManagerRequest);
@@ -153,56 +163,9 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 				setPGCurrencyConfigDetails(currencyDTO, pgCurrencyConfig);
 				pGCurrencyConfig = currencyConfigDao.saveCurrencyConfig(pgCurrencyConfig);
 			}
-    if(!programManagerRequest.getProgramManagerType().equals(Constants.CREATE_INDEPENDENT)){
-    	 //Bank Details from issuance from issuance and save in acquirer
-        BankRequest bankRequest = new BankRequest();
-        List<Long> bankList = new ArrayList<>();
-        String[] arrayList = programManagerRequest.getBankNames().split(",");
-        setBankList(bankList, arrayList);
-    bankRequest.setBankIds(bankList);
-    BankResponse bankResponse = getBankDetailsByBankIds(bankRequest);
-
-    BankRequest issuanceBankRequest = new BankRequest();
-    BankResponse bankResp = new BankResponse();
-    for( BankRequest bankReq : bankResponse.getBankRequests()){
-  	  issuanceBankRequest.setIssuanceBankId(bankReq.getBankId());
-  	  issuanceBankRequest.setBankName(bankReq.getBankName());
-  	  issuanceBankRequest.setBankCode(bankReq.getBankCode());
-  	  issuanceBankRequest.setStatus(bankReq.getStatus());
-  	  issuanceBankRequest.setAddress1(bankReq.getAddress1());
-  	  issuanceBankRequest.setAddress2(bankReq.getAddress2());
-  	  issuanceBankRequest.setCity(bankReq.getCity());
-  	  issuanceBankRequest.setState(bankReq.getState());
-  	  issuanceBankRequest.setZip(bankReq.getZip());
-  	  issuanceBankRequest.setCountry(bankReq.getCountry());
-  	  issuanceBankRequest.setContactPersonCell(bankReq.getContactPersonCell());
-  	  issuanceBankRequest.setContactPersonEmail(bankReq.getContactPersonEmail());
-  	  issuanceBankRequest.setContactPersonFax(bankReq.getContactPersonFax());
-  	  issuanceBankRequest.setContactPersonName(bankReq.getContactPersonName());
-  	  issuanceBankRequest.setContactPersonPhone(bankReq.getContactPersonPhone());
-  	  issuanceBankRequest.setCreatedBy(programManagerRequest.getCreatedBy());
-  	  setCurrencyCode(issuanceBankRequest, pGCurrencyCode, pGCurrencyConfig);
-  	  issuanceBankRequest.setSettlAccountNumber(bankReq.getSettlAccountNumber());
-  	  issuanceBankRequest.setSettlRoutingNumber(bankReq.getSettlRoutingNumber());
-  	  List<PGBank> pgBank = bankDao.findByIssuanceBankId(bankReq.getBankId());
-  	setBankIdAndSave(pgBank, bankResp, response, pmResponse, issuanceBankRequest);
-    }
-    
-    String[] selectedCardProgramIds = programManagerRequest.getCardProgramIds().split(",");
-    PartnerGroupPartnerMapRequest partnerGroupPartnerMapRequest = new PartnerGroupPartnerMapRequest();
-    List<Long> issuancePmId= new ArrayList<>();
-    issuancePmId.add(programManagerRequest.getProgramManagerId());
-    partnerGroupPartnerMapRequest.setProgramManagerId(issuancePmId);
-    //fetch Card program Details from issuance and save in acquirer
-    fetchIssuanceCardProgramByPM(partnerGroupPartnerMapRequest, pManager.getAccountCurrency(),
-        programManagerRequest.getCreatedBy(),selectedCardProgramIds,pmResponse.getId());
-	} else {
+			
 				String[] arrayList = programManagerRequest.getAcquirerBankName().split(",");
 				setBankResponse(arrayList, pmResponse, response);
-
-				String[] cardProgramArrayLists = programManagerRequest.getAcquirerCardProgramIds().split(",");
-				setCardProgramRequest(cardProgramArrayLists, pmResponse, response);
-			}
     
       if (StringUtil.isNull(programManagerRequest.getId())) {
         ProgramManagerAccount systemProgramManagerAccount = new ProgramManagerAccount();
@@ -265,16 +228,11 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 	
 	private PGCurrencyConfig setPGCurrencyCode(ProgramManagerRequest programManagerRequest) {
 		PGCurrencyConfig pGCurrencyCode = null;
-		if (programManagerRequest.getProgramManagerType().equals(Constants.CREATE_INDEPENDENT)) {
-			pGCurrencyCode = currencyConfigDao.getCurrencyCodeNumeric(programManagerRequest.getAcquirerCurrencyName());
-		} else {
-			pGCurrencyCode = currencyConfigDao.getCurrencyCodeNumeric(programManagerRequest.getAccountCurrency());
-		}
+		pGCurrencyCode = currencyConfigDao.getCurrencyCodeNumeric(programManagerRequest.getAcquirerCurrencyName());
 		return pGCurrencyCode;
 	}
   
   private void setProgramManager(ProgramManager pManager,ProgramManagerRequest programManagerRequest){
-	  if (programManagerRequest.getProgramManagerType().equals(Constants.CREATE_INDEPENDENT)) {
 			TimeZoneRequest timeZoneRequest = countryDao
 					.findTimeZoneByID(Long.valueOf(programManagerRequest.getPmTimeZone()));
 			CountryRequest countryRequest = countryDao
@@ -295,12 +253,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 			pManager.setPmTimeZone(timeZoneRequest.getStandardTimeOffset());
 			pManager.setCountry(countryRequest.getName());
 			pManager.setState(stateRequest.getName());
-		} else {
-			pManager.setCountry(programManagerRequest.getCountry());
-			pManager.setState(programManagerRequest.getState());
-			pManager.setPmSystemConvertedTime(programManagerRequest.getStandardTimeOffset());
-			pManager.setPmTimeZone(programManagerRequest.getPmTimeZone());
-		}
+		 
   }
 	private Calendar setSecond(String[] columns, Calendar c) {
 		if (columns.length == 3) {
@@ -644,24 +597,14 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     }
 
     try {
-    	if (programManagerRequest.getProgramManagerType().equalsIgnoreCase(Constants.ONBOARDED)) {
-    		CountryRequest countryName =  countryDao.getCountryByName(existingProgramManager.getCountry());
-    		countryRequest = countryDao.findCountryByID(countryName.getId());
-    		programManagerRequest.setCountry(countryRequest.getName());
-    		programManagerRequest.setState(existingProgramManager.getState());
-    		programManagerRequest.setPmTimeZone(existingProgramManager.getPmTimeZone());
-    		programManagerRequest.setPmSystemConvertedTime(existingProgramManager.getPmSystemConvertedTime());
-    	} else {
-    		countryRequest = countryDao.findCountryByID(Long.valueOf(programManagerRequest.getCountry()));
-    		 programManagerRequest.setCountry(countryRequest.getName());
-    	}
-     
+      countryRequest = countryDao.findCountryByID(Long.valueOf(programManagerRequest.getCountry()));
+      programManagerRequest.setCountry(countryRequest.getName());
       setUpdatedValues(programManagerRequest, existingProgramManager);
       ProgramManager programManager =
           CommonUtil.copyBeanProperties(existingProgramManager, ProgramManager.class);
 
       // Delete all the child records if already mapped
-      deleteCardProgramAndBankMap(programManager);
+      //deleteCardProgramAndBankMap(programManager);
       
       setBankAndCpDetails(programManagerRequest, programManager);
 
@@ -697,15 +640,13 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
         }
         programManager.setBankProgramManagerMaps(bankProgramManagerMaps);
         
-        Set<PmCardProgamMapping> cardProgamMapping = new HashSet<>();
-        PmCardProgamMapping cardProgamMap;
-        String carProgramIdList[] =  programManagerRequest.getCardProgramIds().split(",");
-        for(String carProgramId : carProgramIdList){
-            cardProgamMap = new PmCardProgamMapping();
-            cardProgamMap.setCardProgramId(Long.valueOf(carProgramId));
-            cardProgamMapping.add(cardProgamMap);
-        }
-        programManager.setCardProgamMapping(cardProgamMapping);
+        Set<PanRanges> panRanges = new HashSet<PanRanges>();
+		for (PanRange panRange : programManagerRequest.getPanRangeList()) {
+			PanRanges panRanges2 = CommonUtil
+					.copyBeanProperties(panRange, PanRanges.class);
+			panRanges.add(panRanges2); 
+		}
+		programManager.setPanRanges(panRanges);
   }
 
   private Boolean isPmNameAlreadyExist(ProgramManagerRequest programManagerRequest,

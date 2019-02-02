@@ -78,17 +78,6 @@
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
-											<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="admin.PM.OnBoarding.message" /><span class="required-field">*</span></label>
-														<form:input id="programManagerType"
-														path="programManagerType" maxlength="100" readonly="true"
-														cssClass="form-control" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="programManagerTypeError" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="admin.pm.Name.message" /><span
 														class="required-field">*</span></label>
@@ -264,18 +253,8 @@
 														<span id="pgmmgrschedulerRunTimeerrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-											<fieldset class="col-md-3 col-sm-6 acquirerBankNames">
-													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
-													 <select id="acquirerBankName" name="acquirerBankName"
-														class="form-control" 
-														onblur="clientValidation('acquirerBankName','bank_name_dropdown','acquirerBankNameerrormsg')"
-														onclick="clearErrorMsg('pgmmgrbankiderrormsg');banksForEFTORCheck();" multiple="multiple">
-													 </select>
-													<div class="discriptionErrorMsg">
-														<span id="acquirerBankNameerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6 bankNames">
+											
+												 <fieldset class="col-md-3 col-sm-6 bankNames">
 													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
 													 <select class="form-control" id="bankName" name="bankNames"  
 													 	onblur="validateBank('bankName','pgmmgrbankiderrormsg')"
@@ -289,28 +268,7 @@
 													<div class="discriptionErrorMsg">
 														<span id="pgmmgrbankiderrormsg" class="red-error">&nbsp;</span>
 													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message code="admin.bank.label.card.program"/><span class="required-field">*</span></label>
-													 <select id="cardprogramId" name="cardProgramIds"
-														class="form-control"
-														onblur="validateCardProgram('cardprogramId','pgmmgrCardProgramerrormsg')"
-														multiple="multiple" onclick="clearErrorMsg('pgmmgrCardProgramerrormsg');">
-														 <c:if test="${not empty selectedCardProgramList}">
-														<c:forEach items="${selectedCardProgramList}" var="cardProgramList">
-															<option value="${cardProgramList.cardProgramId}" selected>${cardProgramList.cardProgramName}</option>
-														</c:forEach>
-														</c:if>
-														<c:if test="${not empty unselectedCardProgramList}">
-														<c:forEach items="${unselectedCardProgramList}" var="unselectCpList">
-															<option value="${unselectCpList.cardProgramId}" >${unselectCpList.cardProgramName}</option>
-														</c:forEach>
-														</c:if>
-													 </select>
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrCardProgramerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
+												</fieldset> 
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message
 															code="reports.label.balancereports.currency" /></label>
@@ -346,6 +304,20 @@
 													<button type="button" onclick="fetchCardProgramByPmId()"><spring:message code="pm.edit.refresh.cp.label"/></button>												
 												</div>
 												</fieldset>
+												<div class="col-sm-12" id="customFieldsDiv">
+												<div
+													style="border: 1px solid #afafaf; padding: 5px; padding-top: 15px; margin-top: 10px; overflow: hidden;">
+													<div
+														style="background: #fff; position: absolute; top: 2px; color: #0072c6;"><spring:message code="admin.pm.label.paniinrange"/></div>
+													<div class="added-split-row"></div>
+												</div>
+												<div class="added-sub-row row"></div>
+												<br>
+												<div>
+													<span class="red-error">&nbsp;</span>
+													<br>
+												</div>
+											</div>
 											</div>
 										</div>
 										<!--Panel Action Button Start -->
@@ -437,10 +409,6 @@
 		
 		
 		$(document).ready(function() {
-			$(".issuanceProgramManager").hide();
-			$(".issuancePMlogo").hide();
-			$(".acquirerCurrencyNames").hide();
-			$(".acquirerBankNames").hide();
 			var issuancePmId = $('#issuancePmId').val();
 			if(issuancePmId == null || issuancePmId == ''){
 				$('#refresh').hide();
@@ -489,6 +457,7 @@
 		};
 		
 		$(document).ready(function() {
+			panRangeCustomEditValues();
 			/* Table Sorter includes Start*/
 			$(function() {
 				
@@ -503,6 +472,134 @@
 					});
 			});
 			});
+		
+		var rangeIndex = 0;
+        var totalCustomFieldRows = 0;
+        var idsArr = [];
+        function panRangeCustomEditValues() {
+        	
+        	var panRangeList = JSON.parse(JSON.stringify(${panRangeList}));
+        	if (panRangeList == null || panRangeList == '' || panRangeList.length == 0) {
+        		constructMainfeeContent(0);
+
+        	} else {
+        		$('#customFields').prop('checked', true);
+        		$("#customFieldsDiv").show();
+        		for (var k = 0; k < panRangeList.length; k++) {
+        			var rangeValue = panRangeList[k];
+        			var newFilterRow ="<fieldset class='col-sm-12 sub-row-field' data-sub-index="
+            			+ rangeIndex
+            			+ " id='custom-div"
+            			+ rangeIndex
+            			+"'><fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan Low</label><input type='text' value='"
+            			+((rangeValue.panLow == '' || rangeValue.panLow == null) ? '' : rangeValue.panLow)
+            			+"' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeList["+rangeIndex+"].panLowEr\",${6})' name='panRangeList["
+            			+rangeIndex
+            			+"].panLow' id='panRangeList["
+            			+ rangeIndex
+            			+ "].panLow' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeList["
+            			+ rangeIndex
+            			+ "].panLowEr' class='red-error'>&nbsp;</span></div></fieldset>"
+            			
+            			+"<fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan High</label><input type='text' value='"
+            			+((rangeValue.panHigh == '' || rangeValue.panHigh == null) ? '' : rangeValue.panHigh)
+            			+"' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeList["+rangeIndex+"].panHighEr\",${6})' name='panRangeList["
+            			+rangeIndex
+            			+"].panHigh' id='panRangeList["
+            			+ rangeIndex
+            			+ "].panHigh' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeList["
+            			+ rangeIndex
+            			+ "].panHighEr' class='red-error'>&nbsp;</span></div></fieldset>"
+            			+ ((rangeIndex == 0) ? "<button type='button' class='addSubRow add-btn-style' id='mainrangeValueBtn_"
+    							+ rangeIndex
+    							+"' onclick='addSubrow(this)' style='display: inline; float: left; margin: 23px 22px;'> <span class='glyphicon glyphicon-plus'></span> </button><div class='added-sub-row1 row'></div>"
+    							: "<fieldset class='col-sm-1 textCenter ' ><span class='glyphicon glyphicon-trash delete-refund-sub-icon' style='cursor:pointer;margin-top: 60%;margin-left: 20%;'></span></fieldset></fieldset>");
+            			
+            			newFilterRow = newFilterRow
+    					+ "<div class='added-sub-row row"
+    					+ "'></div>";
+    					
+            			if(rangeIndex >=1){
+    						$(".added-sub-row1").append(newFilterRow);
+    					}else{
+    						$(".added-split-row").append(newFilterRow);
+    					}
+    			rangeIndex++;
+    			totalCustomFieldRows++;
+        		}
+        	}
+        }
+        
+        var editPage = false;
+        var rangeIndex=0;
+        var totalCustomFieldRows = 0;
+        function addSubrow($this) {
+        	if(totalCustomFieldRows>9){
+        		return;
+        	}
+        	var currentMainPositionAr = $this.id.split('_');
+        	if(rangeIndex == 0){
+        		rangeIndex++;
+        		totalCustomFieldRows++;
+        	}
+        	var newFilterRow = "<fieldset class='col-sm-12 sub-row-field' data-sub-index="
+    			+ rangeIndex
+    			+ " id='custom-div"
+    			+ rangeIndex
+    			+"'><fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan Low</label><input type='text' value='' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeList["+rangeIndex+"].panLowEr\",${6})' name='panRangeList["
+    			+rangeIndex
+    			+"].panLow' id='panRangeList["
+    			+ rangeIndex
+    			+ "].panLow' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeList["
+    			+ rangeIndex
+    			+ "].panLowEr' class='red-error'>&nbsp;</span></div></fieldset>"
+    			+"<fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan High</label><input type='text' value=''onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeList["+rangeIndex+"].panHighEr\",${6})' name='panRangeList["
+    				+rangeIndex
+    				+"].panHigh' id='panRangeList["
+        			+ rangeIndex
+        			+ "].panHigh' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeList["
+        			+ rangeIndex
+        			+ "].panHighEr' class='red-error'>&nbsp;</span></div></fieldset><fieldset class='col-sm-1 textCenter ' ><span class='glyphicon glyphicon-trash delete-refund-sub-icon' style='cursor:pointer;margin-top: 60%;margin-left: 20%;'></span></fieldset></fieldset>";
+        	if(editPage) {
+        		if($($this).parent().children().hasClass('added-sub-row1')) {
+        			$($this).parent().find('.added-sub-row1').append(newFilterRow);
+        		} else {
+        			$($this).parent().siblings().find('.added-sub-row1').append(newFilterRow);
+        		}
+        		
+        	} else {
+        		$($this).parent().find('.added-sub-row1').append(newFilterRow);
+        	}
+        	if(rangeIndex>0){
+        		rangeIndex++;
+        		totalCustomFieldRows++;
+        	}
+        }
+        $('body')
+		.on(
+				'click',
+				'.delete-refund-sub-icon',
+				function() {
+					var deleteEle = $(this)[0];
+					$(this).parent().parent().remove();
+					totalCustomFieldRows = totalCustomFieldRows-1;
+				});
+        
+        function validateTextFieldData(textFieldData,textFieldId, messageLine_errDiv, textFieldLength){
+    		var flag = true;
+    		textFieldData = textFieldData.trim();
+    			var numericValues = /^[0-9]+$/;
+    			if(textFieldData == ''){
+    				setDiv(messageLine_errDiv, "Please Enter Pan Range");
+    				flag = false;
+    			} else if (textFieldData.length < textFieldLength) {
+    				setDiv(messageLine_errDiv, "Pan Range value should be more than " + textFieldLength);
+    				flag = false;
+    			} else {
+    				setDiv(messageLine_errDiv, '');
+    			}
+    		return flag;
+    	}
 	</script>
 </body>
 </html>

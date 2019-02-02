@@ -87,312 +87,285 @@
 										name="standardTimeOffset">
 										<form:hidden id="deviceTimeZoneOffset" path="deviceTimeZoneOffset" />
 								        <form:hidden id="deviceTimeZoneRegion" path="deviceTimeZoneRegion" />
-									<div
-										class="col-md-100 col-sm-12 padding100px border-style-section">
-										<div class="field-element-row">
-											<fieldset class="col-sm-3">
-												<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-														code="admin.PM.OnBoarding.message" /><span
-													class="required-field">*</span></label>
-												<form:select path="programManagerType"
-													cssClass="form-control" id="programManagerType"
-													onchange="fetchPmDetailsByPmType(this.value)"
-													onblur="validateProgramManagerId('programManagerType','programManagerTypeError')">
-													<option value=""><spring:message
-															code="commission-program-create.label.select" /></option>
-													<option value="<%=Constants.ONBOARDED%>"><spring:message
-															code="admin.PM.OnBoarding.issuance.message" /></option>
-													<option value="<%=Constants.CREATE_INDEPENDENT%>"><spring:message
-															code="admin.PM.OnBoarding.create.independent.message" /></option>
-												</form:select>
-												<div class="discriptionErrorMsg" data-toggle="tooltip"
-													data-placement="top" title="">
-													<span id="programManagerTypeError" class="red-error">&nbsp;</span>
+									<div class="col-md-100 col-sm-12 ">
+										<div class="col-sm-12">
+											<div class="row">
+												<div class="field-element-row">
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="admin.pm.Name.message" /><span
+															class="required-field">*</span></label>
+														<form:input path="programManagerName"
+															cssClass="form-control" id="programMangerName"
+															onblur="clientValidation('programMangerName', 'program_manager_name','pgmmgrNameErrormsg')"
+															onclick="clearErrorMsg('pgmmgrcompanynameerrormsg');" />
+
+														<div class="discriptionErrorMsg">
+															<span id="pgmmgrNameErrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="home.label.companyname" /><span
+															class="required-field">*</span></label>
+														<form:input path="companyName" cssClass="form-control"
+															id="companyName" maxlength="50"
+															onblur="clientValidation('companyName','company_name','pgmmgrcompanynameerrormsg')"
+															onclick="clearErrorMsg('pgmmgrcompanynameerrormsg');" />
+
+														<div class="discriptionErrorMsg">
+															<span id="pgmmgrcompanynameerrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="admin.BusinessEntityName.message" /><span
+															class="required-field">*</span></label>
+														<form:input path="businessName" maxlength="50"
+															cssClass="form-control" id="businessEntityName"
+															onblur="clientValidation('businessEntityName','business_entity_name','pgmmgrbusinessentityerrormsg')"
+															onclick="clearErrorMsg('pgmmgrbusinessentityerrormsg');" />
+														<div class="discriptionErrorMsg">
+															<span id="pgmmgrbusinessentityerrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="merchant.label.contactperson" /><span
+															class="required-field">*</span></label>
+														<form:input path="contactName" maxlength="50"
+															cssClass="form-control" id="contactPerson"
+															onblur="clientValidation('contactPerson','contact_person','pgmmgrcontactpersonerrormsg')"
+															onclick="clearErrorMsg('pgmmgrcontactpersonerrormsg');" />
+														<div class="discriptionErrorMsg">
+															<span id="pgmmgrcontactpersonerrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="users.label.phonenumber" /><span
+															class="required-field">*</span></label>
+														<form:input path="contactPhone" maxlength="10"
+															cssClass="form-control" id="contactPhone"
+															onkeypress="return numbersonly(this,event)"
+															onblur="clientValidation('contactPhone','partner_phone','pgmmgrcontactphoneerrormsg');validateContactPhone()"
+															onclick="clearErrorMsg('contactphoneerrormsg');" />
+														<div class="discriptionErrorMsg">
+															<span id="pgmmgrcontactphoneerrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<spring:message code="search.label.numericsOnly"
+														var="placeholder" />
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message code="label.extension" /></label>
+														<form:input path="extension" maxlength="5"
+															cssClass="form-control" id="extension"
+															onblur="clientValidation('extension','extension_not_mandatory','extensionerr')"
+															onkeypress="return numbersonly(this, event);" />
+														<div class="discriptionErrorMsg">
+															<span id="extensionerr" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="userList-file-exportutil-emailId" /><span
+															class="required-field">*</span></label>
+														<form:input path="contactEmail" id="programManagerEmailId"
+															cssClass="form-control" maxlength="50"
+															onblur="clientValidation('programManagerEmailId', 'email','programManagerEmailIdEmailId_ErrorDiv')" />
+														<div class="discriptionErrorMsg">
+															<span id="programManagerEmailIdEmailId_ErrorDiv"
+																class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6 acquirerCurrencyNames">
+														<label><spring:message
+																code="reports.label.balancereports.currency" /><span
+															class="required-field">*</span></label>
+														<form:select path="acquirerCurrencyName"
+															id="acquirerCurrencyName" cssClass="form-control"
+															onmouseover="fetchPmDetailsByPmType()"
+															onblur="clientValidation('acquirerCurrencyName','orderType','acquirerCurrencyNameErrormsg')"
+															onchange="fetchBankDetailsByCurrency(this.value)">
+														</form:select>
+														<div class="discriptionErrorMsg">
+															<span id="acquirerCurrencyNameErrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+
+													<fieldset class="col-sm-3">
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+																code="common.label.country" /><span
+															class="required-field">*</span></label>
+														<form:select cssClass="form-control" path="country"
+															id="country"
+															onblur="clientValidation('country','country','countryNameErrormsg')"
+															onchange="fetchPmState(this.value, 'state');fetchTimeZone(this.value)">
+															<form:option value="">..:<spring:message
+																	code="reports.option.select" />:..</form:option>
+															<c:forEach items="${countryList}" var="country">
+																<form:option value="${country.label}">${country.value}</form:option>
+															</c:forEach>
+														</form:select>
+														<div class="discriptionErrorMsg" data-toggle="tooltip"
+															data-placement="top" title="">
+															<span id="countryNameErrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-sm-3">
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+																code="common.label.state" /><span
+															class="required-field">*</span></label>
+														<form:select cssClass="form-control" path="state"
+															id="state"
+															onblur="clientValidation('state','state','stateNameErrormsg')">
+															<form:option value="">..:<spring:message
+																	code="reports.option.select" />:..</form:option>
+															<c:forEach items="${stateList}" var="item">
+																<form:option value="${item.label}">${item.label}</form:option>
+															</c:forEach>
+														</form:select>
+														<div class="discriptionErrorMsg" data-toggle="tooltip"
+															data-placement="top" title="">
+															<span id="stateNameErrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="prepaid-admin-program-manager-pm-timezone" /><span
+															class="required-field">*</span></label>
+														<form:select path="pmTimeZone" id="timezone"
+															cssClass="form-control"
+															onblur="clientValidation('timezone','state','timezone_ErrorDiv')">
+															<form:option value="">
+																<spring:message code="reports.option.select" />
+															</form:option>
+														</form:select>
+														<div class="discriptionErrorMsg">
+															<span id="timezone_ErrorDiv" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="prepaid-admin-program-manager-batch-prefix" /><span
+															class="required-field">*</span></label>
+														<form:input path="batchPrefix" cssClass="form-control"
+															id="batchPrefix"
+															onblur="clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')"
+															onclick="clearErrorMsg('pgmmgrbatchPrefixerrormsg');" />
+
+														<div class="discriptionErrorMsg">
+															<span id="pgmmgrbatchPrefixerrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="prepaid-admin-program-manager-scheduler-run-time" /><span
+															class="required-field">*</span></label> <input type="time"
+															name="schedulerRunTime" class="form-control"
+															id="schedulerRunTime" step='1' min="00:00:00"
+															max="24:00:00"
+															onblur="clientValidation('schedulerRunTime','txn_date','pgmmgrschedulerRunTimeerrormsg')"
+															onclick="clearErrorMsg('pgmmgrschedulerRunTimeerrormsg');" />
+
+														<div class="discriptionErrorMsg">
+															<span id="pgmmgrschedulerRunTimeerrormsg"
+																class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-md-3 col-sm-6 acquirerBankNames">
+														<label><spring:message
+																code="admin.bank.label.bankname" /><span
+															class="required-field">*</span></label> <select
+															id="acquirerBankName" name="acquirerBankName"
+															class="form-control"
+															onblur="validateBank('acquirerBankName','acquirerBankNameerrormsg')"
+															onclick="clearErrorMsg('acquirerBankNameerrormsg');"
+															multiple="multiple">
+														</select>
+														<div class="discriptionErrorMsg">
+															<span id="acquirerBankNameerrormsg" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+
+													<fieldset class="col-md-3 col-sm-6">
+														<label><spring:message
+																code="label.program.manager.logo" /></label>
+														<div class="input-group">
+															<span class="input-group-btn"> <span
+																class="btn btn-primary btn-file"><spring:message
+																		code="search.label.Browse" />&hellip; <input
+																	type="file" name="programManagerLogo"
+																	id="programManagerLogo" onchange="readURL(this);"
+																	onblur="return readPartnerLogo(this,'programManagerLogoErrorDiv')"
+																	onclick="clearErrorMsg('programManagerLogoErrorDiv');">
+															</span>
+															</span> <input type="text" id="load"
+																class="form-control readonly" readonly>
+														</div>
+														<div class="discriptionErrorMsg">
+															<span id="programManagerLogoErrorDiv" class="red-error">&nbsp;</span>
+														</div>
+
+														<div class="discriptionErrorMsg">
+															<span id="programManagerLogoErrorDiv" class="red-error">&nbsp;</span>
+														</div>
+														<div class="issuancePMlogo">
+															<a href="#" onclick="openPopup()"><spring:message
+																	code="admin-programmanager-search-label.ViewProgramManager" /></a>
+														</div>
+													</fieldset>
+
+													<div class="col-sm-12" id="customFieldsDiv">
+														<div
+															style="border: 1px solid #afafaf; padding: 5px; padding-top: 15px; margin-top: 10px; overflow: hidden;">
+															<div
+																style="background: #fff; position: absolute; top: 2px; color: #0072c6;">
+																<spring:message code="admin.pm.label.paniinrange" />
+															</div>
+															<fieldset class="col-md-3 col-sm-6">
+																<label><spring:message
+																		code="admin.pm.label.panlow" /></label> <input type="text"
+																	value="" name="panRangeList[0].panLow"
+																	id="panRangeList[0].panLow" class="form-control"
+																	onkeypress="return numbersonly(this, event);"
+																	maxlength="10"
+																	onblur="return validateTextFieldData(this.value,'panRangeList[0].panLow', 'panRangeList[0].panLowEr','${6}')"
+																	style="width: 200px;" />
+
+																<div class="discriptionErrorMsg">
+																	<span id="panRangeList[0].panLowEr" class="red-error">&nbsp;</span>
+																</div>
+															</fieldset>
+															<fieldset class="col-md-3 col-sm-6">
+																<label><spring:message
+																		code="admin.pm.label.panhigh" /></label> <input type="text"
+																	value="" name="panRangeList[0].panHigh"
+																	id="panRangeList[0].panHigh" class="form-control"
+																	onkeypress="return numbersonly(this, event);"
+																	onblur="return validateTextFieldData(this.value,'panRangeList[0].panHigh', 'panRangeList[0].panHighEr','${6}')"
+																	maxlength="10" style="width: 200px;" />
+
+																<div class="discriptionErrorMsg">
+																	<span id="panRangeList[0].panHighEr" class="red-error">&nbsp;</span>
+																</div>
+															</fieldset>
+															<button type="button" class="addSubRow add-btn-style"
+																id="mainFeeValueBtn_0" onclick='addSubrow(this)'
+																style="display: inline; float: left; margin: 23px 22px;">
+																<span class="glyphicon glyphicon-plus"></span>
+															</button>
+															<div class="added-sub-row1 row"></div>
+															<br>
+														</div>
+													</div>
 												</div>
-											</fieldset>
-											<fieldset class="col-sm-3 issuanceProgramManager">
-												<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-														code="admin.pm.Name.message" /><span
-													class="required-field">*</span></label>
-												<form:select path="programManagerId" id="programManagerId"
-													cssClass="form-control"
-													onchange="fetchPmDetailsByPmId(this.value);fetchPmCardProgramByPmId(this.value)"
-													onblur="validateProgramManagerId('programManagerId','programManagerIdEr')">
-													<form:option value="">
-														<spring:message
-															code="commission-program-create.label.select" />
-													</form:option>
-												</form:select>
-												<div class="discriptionErrorMsg" data-toggle="tooltip"
-													data-placement="top" title="">
-													<span id="programManagerIdEr" class="red-error">&nbsp;</span>
-												</div>
-											</fieldset>
+											</div>
 										</div>
 									</div>
-									<div
-										class="col-md-100 col-sm-12 padding100px border-style-section">
-									<div class="col-sm-12">
-										<div class="row">
-											<div class="field-element-row">
-											<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="admin.pm.Name.message" /><span
-														class="required-field">*</span></label>
-													<form:input path="programManagerName" cssClass="form-control"
-														id="programMangerName"
-														onblur="clientValidation('programMangerName', 'program_manager_name','pgmmgrNameErrormsg')"
-														onclick="clearErrorMsg('pgmmgrcompanynameerrormsg');"/>
-
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrNameErrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="home.label.companyname" /><span
-														class="required-field">*</span></label>
-													<form:input path="companyName" cssClass="form-control"
-														id="companyName" maxlength="50"
-														onblur="clientValidation('companyName','company_name','pgmmgrcompanynameerrormsg')"
-														onclick="clearErrorMsg('pgmmgrcompanynameerrormsg');" />
-
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrcompanynameerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="admin.BusinessEntityName.message" /><span
-														class="required-field">*</span></label>
-													<form:input path="businessName" maxlength="50"
-														cssClass="form-control" id="businessEntityName"
-														onblur="clientValidation('businessEntityName','business_entity_name','pgmmgrbusinessentityerrormsg')"
-														onclick="clearErrorMsg('pgmmgrbusinessentityerrormsg');" />
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrbusinessentityerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="merchant.label.contactperson" /><span
-														class="required-field">*</span></label>
-													<form:input path="contactName" maxlength="50"
-														cssClass="form-control" id="contactPerson"
-														onblur="clientValidation('contactPerson','contact_person','pgmmgrcontactpersonerrormsg')"
-														onclick="clearErrorMsg('pgmmgrcontactpersonerrormsg');" />
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrcontactpersonerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="users.label.phonenumber" /><span
-														class="required-field">*</span></label>
-													<form:input path="contactPhone" maxlength="10"
-														cssClass="form-control" id="contactPhone"
-														onkeypress="return numbersonly(this,event)"
-														onblur="clientValidation('contactPhone','partner_phone','pgmmgrcontactphoneerrormsg');validateContactPhone()"
-														onclick="clearErrorMsg('contactphoneerrormsg');" />
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrcontactphoneerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<spring:message code="search.label.numericsOnly"
-													var="placeholder" />
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message code="label.extension" /></label>
-													<form:input path="extension" maxlength="5"
-														cssClass="form-control" id="extension"
-														onblur="clientValidation('extension','extension_not_mandatory','extensionerr')"
-														onkeypress="return numbersonly(this, event);" />
-													<div class="discriptionErrorMsg">
-														<span id="extensionerr" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="userList-file-exportutil-emailId" /><span
-														class="required-field">*</span></label>
-													<form:input path="contactEmail" id="programManagerEmailId"
-														cssClass="form-control" maxlength="50"
-														onblur="clientValidation('programManagerEmailId', 'email','programManagerEmailIdEmailId_ErrorDiv')" />
-													<div class="discriptionErrorMsg">
-														<span id="programManagerEmailIdEmailId_ErrorDiv"
-															class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6 acquirerCurrencyNames">
-													<label><spring:message code="reports.label.balancereports.currency"/><span class="required-field">*</span></label>
-													 <form:select path="acquirerCurrencyName" id="acquirerCurrencyName"
-														cssClass="form-control" 
-														onblur = "clientValidation('acquirerCurrencyName','orderType','acquirerCurrencyNameErrormsg')"
-														onchange="fetchBankDetailsByCurrency(this.value)">
-													 </form:select>
-													<div class="discriptionErrorMsg">
-														<span id="acquirerCurrencyNameErrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6 currencyNames">
-													<label><spring:message code="reports.label.balancereports.currency"/><span class="required-field">*</span></label>
-													 <form:select path="accountCurrency" id="currencyName"
-														cssClass="form-control"
-														onblur = "clientValidation('currencyName','orderType','currencyNameErrormsg')"
-														onchange="return clientValidation('currencyName','orderType','currencyNameErrormsg')">
-													 </form:select>
-													<div class="discriptionErrorMsg">
-														<span id="currencyNameErrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-															code="common.label.country" /><span
-														class="required-field">*</span></label>
-													<form:select cssClass="form-control" path="country"
-														id="country" onblur="clientValidation('country','country','countryNameErrormsg')"
-														onchange="fetchPmState(this.value, 'state');fetchTimeZone(this.value)">
-														<form:option value="">..:<spring:message
-																code="reports.option.select" />:..</form:option>
-														<c:forEach items="${countryList}" var="country">
-															<form:option value="${country.label}">${country.value}</form:option>
-														</c:forEach>
-													</form:select>
-													<div class="discriptionErrorMsg" data-toggle="tooltip"
-														data-placement="top" title="">
-														<span id="countryNameErrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-															code="common.label.state" /><span class="required-field">*</span></label>
-													<form:select cssClass="form-control" path="state"
-														id="state" onblur="clientValidation('state','state','stateNameErrormsg')">
-														<form:option value="">..:<spring:message
-																code="reports.option.select" />:..</form:option>
-														<c:forEach items="${stateList}" var="item">
-															<form:option value="${item.label}">${item.label}</form:option>
-														</c:forEach>
-													</form:select>
-													<div class="discriptionErrorMsg" data-toggle="tooltip"
-														data-placement="top" title="">
-														<span id="stateNameErrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												 <fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="prepaid-admin-program-manager-pm-timezone" /><span
-														class="required-field">*</span></label>
-													<form:select path="pmTimeZone" id="timezone"
-														cssClass="form-control"
-														onblur="clientValidation('timezone','state','timezone_ErrorDiv')">
-														<form:option value="">
-															<spring:message code="reports.option.select" />
-														</form:option>
-													</form:select>
-													<div class="discriptionErrorMsg">
-														<span id="timezone_ErrorDiv" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="prepaid-admin-program-manager-batch-prefix" /><span
-														class="required-field">*</span></label>
-													<form:input path="batchPrefix" cssClass="form-control"
-														id="batchPrefix"
-														onblur="clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')"
-														onclick="clearErrorMsg('pgmmgrbatchPrefixerrormsg');" />
-
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrbatchPrefixerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="prepaid-admin-program-manager-scheduler-run-time" /><span
-														class="required-field">*</span></label>
-													<input type="time" name="schedulerRunTime"  class="form-control"
-														id="schedulerRunTime" step='1' min="00:00:00" max="24:00:00"
-														onblur="clientValidation('schedulerRunTime','txn_date','pgmmgrschedulerRunTimeerrormsg')"
-														onclick="clearErrorMsg('pgmmgrschedulerRunTimeerrormsg');" />
-
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrschedulerRunTimeerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6 acquirerBankNames">
-													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
-													 <select id="acquirerBankName" name="acquirerBankName"
-														class="form-control"
-														onblur="validateBank('acquirerBankName','acquirerBankNameerrormsg')"
-														onclick="clearErrorMsg('acquirerBankNameerrormsg');" multiple="multiple">
-													 </select>
-													<div class="discriptionErrorMsg">
-														<span id="acquirerBankNameerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6 bankNames">
-													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
-													 <select id="bankName" name="bankNames"
-														class="form-control" 
-														onblur="validateBank('bankName','pgmmgrbankiderrormsg')"
-														onclick="clearErrorMsg('pgmmgrbankiderrormsg');" multiple="multiple">
-													 </select>
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrbankiderrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6 acquirerCardProgram">
-													<label><spring:message code="admin.bank.label.card.program"/><span class="required-field">*</span></label>
-													 <select id="acquirerCardprogramId" name="acquirerCardProgramIds"
-														class="form-control" 
-														onblur="validateCardProgram('acquirerCardprogramId','pgmmgrCardProgramerrormsg')"
-															onclick="clearErrorMsg('pgmmgrCardProgramerrormsg');"
-														 multiple="multiple">
-													 </select>
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrCardProgramerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												
-												<fieldset class="col-md-3 col-sm-6 issuanceCardProgram">
-													<label><spring:message code="admin.bank.label.card.program"/><span class="required-field">*</span></label>
-													 <select id="cardprogramId" name="cardProgramIds"
-														class="form-control" 
-														onblur="validateCardProgram('cardprogramId','OnboardCardProgramerrormsg')"
-														onclick="clearErrorMsg('OnboardCardProgramerrormsg');"
-														 multiple="multiple">
-													 </select>
-													<div class="discriptionErrorMsg">
-														<span id="OnboardCardProgramerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message
-															code="label.program.manager.logo" /></label>
-													<div class="input-group">
-														<span class="input-group-btn"> <span
-															class="btn btn-primary btn-file"><spring:message code="search.label.Browse" />&hellip; <input
-																type="file" name="programManagerLogo"
-																id="programManagerLogo" onchange="readURL(this);"
-																onblur="return readPartnerLogo(this,'programManagerLogoErrorDiv')"
-																onclick="clearErrorMsg('programManagerLogoErrorDiv');">
-														</span>
-														</span> <input type="text" id="load" class="form-control readonly" readonly>
-													</div>
-													<div class="discriptionErrorMsg">
-														<span id="programManagerLogoErrorDiv" class="red-error">&nbsp;</span>
-													</div>
-													
-													<div  class="discriptionErrorMsg">
-															<span id="programManagerLogoErrorDiv" class="red-error">&nbsp;</span></div>
-														<div class="issuancePMlogo"><a href="#" onclick="openPopup()" ><spring:message code="admin-programmanager-search-label.ViewProgramManager"/></a></div>
-												</fieldset>
-											</div>
-											</div>
-											</div>
-											</div>
-											<!--Panel Action Button Start -->
-											<div class="col-sm-12 form-action-buttons">
+									<br>
+									<!--Panel Action Button Start -->
+											<div class="col-sm-12 form-action-buttons"style="padding-top: 25px;">
 												<div class="col-sm-5"></div>
 												<div class="col-sm-7">
 													<input type="submit" class="form-control button pull-right"
@@ -519,10 +492,6 @@
 		$(document).ready(function() {
 			$(".issuanceProgramManager").hide();
 			$(".issuancePMlogo").hide();
-			$(".acquirerCurrencyNames").hide();
-			$(".acquirerBankNames").hide();
-			$(".acquirerCardProgram").hide();
-		
 			if ('${programManagerRequest.programManagerType}' == 'onboarded') {
 				document.getElementById('programMangerName').readOnly = true;
 				document.getElementById('companyName').readOnly = true;
@@ -572,6 +541,72 @@
 				});
 			});
 		});
+		
+		var editPage = false;
+        var rangeIndex=0;
+        var totalCustomFieldRows = 0;
+        function addSubrow($this) {
+        	if(totalCustomFieldRows>8){
+        		return;
+        	}
+        	var currentMainPositionAr = $this.id.split('_');
+        	rangeIndex++;
+        	totalCustomFieldRows++;
+        	var newFilterRow = "<fieldset class='col-sm-12 sub-row-field' data-sub-index="
+    			+ rangeIndex
+    			+ " id='custom-div"
+    			+ rangeIndex
+    			+"'><fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan Low</label><input type='text' value='' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeList["+rangeIndex+"].panLowEr\",${6})' name='panRangeList["
+    			+rangeIndex
+    			+"].panLow' id='panRangeList["
+    			+ rangeIndex
+    			+ "].panLow' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeList["
+    			+ rangeIndex
+    			+ "].panLowEr' class='red-error'>&nbsp;</span></div></fieldset>"
+    			+"<fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan High</label><input type='text' value='' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeList["+rangeIndex+"].panHighEr\",${6})' name='panRangeList["
+    				+rangeIndex
+    				+"].panHigh' id='panRangeList["
+        			+ rangeIndex
+        			+ "].panHigh' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeList["
+        			+ rangeIndex
+        			+ "].panHighEr' class='red-error'>&nbsp;</span></div></fieldset><fieldset class='col-sm-1 textCenter ' ><span class='glyphicon glyphicon-trash delete-refund-sub-icon' style='cursor:pointer;margin-top: 60%;margin-left: 20%;'></span></fieldset></fieldset>";
+        	if(editPage) {
+        		if($($this).parent().children().hasClass('added-sub-row1')) {
+        			$($this).parent().find('.added-sub-row1').append(newFilterRow);
+        		} else {
+        			$($this).parent().siblings().find('.added-sub-row1').append(newFilterRow);
+        		}
+        		
+        	} else {
+        		$($this).parent().find('.added-sub-row1').append(newFilterRow);
+        	}
+        }
+        
+        $('body')
+		.on(
+				'click',
+				'.delete-refund-sub-icon',
+				function() {
+					var deleteEle = $(this)[0];
+					$(this).parent().parent().remove();
+					totalCustomFieldRows = totalCustomFieldRows-1;
+				});
+        
+        function validateTextFieldData(textFieldData,textFieldId, messageLine_errDiv, textFieldLength){
+    		var flag = true;
+    		textFieldData = textFieldData.trim();
+    			var numericValues = /^[0-9]+$/;
+    			if(textFieldData == ''){
+    				setDiv(messageLine_errDiv, "Please Enter Pan Range");
+    				flag = false;
+    			} else if (textFieldData.length < textFieldLength) {
+    				setDiv(messageLine_errDiv, "Pan Range value should be more than " + textFieldLength);
+    				flag = false;
+    			} else {
+    				setDiv(messageLine_errDiv, '');
+    			}
+    		return flag;
+    	}
 	</script>
 </body>
 </html>

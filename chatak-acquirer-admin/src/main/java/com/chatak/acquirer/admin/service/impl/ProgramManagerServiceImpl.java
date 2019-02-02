@@ -102,7 +102,6 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     // Check whether the program manager name already exists
     checkProgramManagerName(programManagerRequest);
     //Check whether PM already onboarded
-    //getProgramManagerOnBoard(programManagerRequest);
     try {
     //PM details from issuance and save in Acquirer 
     	PGCurrencyConfig pGCurrencyConfig = new PGCurrencyConfig();
@@ -604,8 +603,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
           CommonUtil.copyBeanProperties(existingProgramManager, ProgramManager.class);
 
       // Delete all the child records if already mapped
-      //deleteCardProgramAndBankMap(programManager);
-      
+      deleteCardProgramAndBankMap(programManager);
       setBankAndCpDetails(programManagerRequest, programManager);
 
       programManager.setUpdatedBy(programManagerRequest.getUpdatedBy());
@@ -625,7 +623,6 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 
   private void deleteCardProgramAndBankMap(ProgramManager programManager) {
         programManagerDao.deleteBankProgramManagerMap(programManager.getId());
-        programManagerDao.deleteCpProgramManagerMap(programManager.getId());
   }
 
   private void setBankAndCpDetails(ProgramManagerRequest programManagerRequest, ProgramManager programManager)

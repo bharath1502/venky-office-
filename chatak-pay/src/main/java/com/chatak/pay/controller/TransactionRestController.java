@@ -734,7 +734,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		} else if (transactionRequest.getDeviceSerial() == null) {
 			throw new InvalidRequestException(PGConstants.TXN_0129);
 		} else if (!Pattern.compile(PGConstants.USER_NAME_REGEX).matcher(transactionRequest.getUserName()).matches()) {
-			throw new InvalidRequestException(PGConstants.TXN_0125);
+			throw new InvalidRequestException(PGConstants.TXN_0131);
 		} else if (!isValidTransactionType(transactionRequest)) {
 			throw new InvalidRequestException(PGConstants.TXN_0139);
 		} else if (!Pattern.compile(PGConstants.IMEI_REGEX).matcher(transactionRequest.getMerchantCode()).matches()
@@ -785,7 +785,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		} else if (!Pattern.compile(PGConstants.REF_NUMBER_REGEX).matcher(transactionRequest.getCgRefNumber()).matches()
 				|| transactionRequest.getCgRefNumber().startsWith("0")) {
 			throw new InvalidRequestException(PGConstants.TXN_0146);
-		} else if (!Pattern.compile(PGConstants.REF_NUMBER_REGEX).matcher(transactionRequest.getTxnRefNumber())
+		} else if (!Pattern.compile(PGConstants.TXN_REF_NUMBER_REGEX).matcher(transactionRequest.getTxnRefNumber())
 				.matches() || transactionRequest.getTxnRefNumber().startsWith("0")) {
 			throw new InvalidRequestException(PGConstants.TXN_0147);
 		}

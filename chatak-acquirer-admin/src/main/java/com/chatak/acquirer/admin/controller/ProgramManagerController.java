@@ -448,6 +448,7 @@ public class ProgramManagerController implements URLMappingConstants {
       List<ProgramManagerRequest> programManagerList =
           programManagerResponse.getProgramManagersList();
       defaultPMValue = programManagerList.get(0).getDefaultProgramManager();
+      model.put("panRangeList", JsonUtil.convertObjectToJSON(programManagerResponse.getProgramManagersList().get(0).getPanRangeList())+"");
       model.put("selectedBankList", programManagerResponse.getProgramManagersList().get(0).getBankRequest());
       modelAndView.addObject("selectedCardProgramList", programManagerResponse.getProgramManagersList().get(0).getCardProgamMapping());
       if(programManagerList.get(0).getIssuancepmid()!=null){

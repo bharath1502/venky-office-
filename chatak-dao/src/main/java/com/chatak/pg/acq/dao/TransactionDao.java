@@ -109,4 +109,6 @@ public interface TransactionDao {
   public void saveorUpdate(List<String> pgTxnIdsList);
   
   public String generateTransactionRefNumber() throws DataAccessException;
+  
+  public PGTransaction getTransactionDetails(String txnId);
 }

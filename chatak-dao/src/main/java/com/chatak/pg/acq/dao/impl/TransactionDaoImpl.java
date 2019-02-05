@@ -1088,4 +1088,13 @@ public class TransactionDaoImpl implements TransactionDao {
 		return (entityId != null)
 				? QPGTransaction.pGTransaction.pmId.eq(entityId) : null;
 	}
+
+	/**
+	 * @param txnId
+	 * @return
+	 */
+	@Override
+	public PGTransaction getTransactionDetails(String txnId) {
+		return transactionRepository.findByTransactionId(txnId);
+	}
 }

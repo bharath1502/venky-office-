@@ -130,6 +130,10 @@ public class ProgramManagerRequest extends SearchRequest {
 	private Long entityId;
 	
 	private String loginuserType;
+	
+	private List<String> panLow;
+	
+	private List<String> panHigh;
 
 	 /**
     * @return the entityId
@@ -781,6 +785,36 @@ public class ProgramManagerRequest extends SearchRequest {
 	public void setPmSystemConvertedTime(String pmSystemConvertedTime) {
 		this.pmSystemConvertedTime = pmSystemConvertedTime;
 	}
+
+	/**
+	 * @return the panLow
+	 */
+	public List<String> getPanLow() {
+		return panLow;
+	}
+
+	/**
+	 * @param panLow the panLow to set
+	 */
+	public void setPanLow(List<String> panLow) {
+		this.panLow = panLow;
+	}
+
+	/**
+	 * @return the panHigh
+	 */
+	public List<String> getPanHigh() {
+		return panHigh;
+	}
+
+	/**
+	 * @param panHigh the panHigh to set
+	 */
+	public void setPanHigh(List<String> panHigh) {
+		this.panHigh = panHigh;
+	}
+	
+	
 	
 	
 }

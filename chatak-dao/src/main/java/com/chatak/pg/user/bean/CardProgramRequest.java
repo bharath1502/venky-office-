@@ -6,6 +6,8 @@ package com.chatak.pg.user.bean;
 import java.io.Serializable;
 import java.util.List;
 
+import com.chatak.pg.acq.dao.model.PanRange;
+
 /**
  * @Author: Girmiti Software
  * @Date: May 3, 2018
@@ -110,6 +112,10 @@ public class CardProgramRequest extends Response implements Serializable {
 	
 	private String partnerCode;
 	
+	private String panLow;
+
+	private String panHigh;
+	
 	private boolean selected=false;
 	
 	public String getPartnerIINCode() {
@@ -121,9 +127,9 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	private Long isoId;
-	
+
 	private String entityName;
-	
+
 	/**
 	 * @return the programManagerId
 	 */
@@ -132,7 +138,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param programManagerId the programManagerId to set
+	 * @param programManagerId
+	 *            the programManagerId to set
 	 */
 	public void setProgramManagerId(Long programManagerId) {
 		this.programManagerId = programManagerId;
@@ -146,7 +153,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param accountProgramId the accountProgramId to set
+	 * @param accountProgramId
+	 *            the accountProgramId to set
 	 */
 	public void setAccountProgramId(Long accountProgramId) {
 		this.accountProgramId = accountProgramId;
@@ -208,7 +216,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param bankId the bankId to set
+	 * @param bankId
+	 *            the bankId to set
 	 */
 	public void setBankId(Long bankId) {
 		this.bankId = bankId;
@@ -342,7 +351,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param statusList the statusList to set
+	 * @param statusList
+	 *            the statusList to set
 	 */
 	public void setStatusList(List<String> statusList) {
 		this.statusList = statusList;
@@ -436,7 +446,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param issuanceCardProgramId the issuanceCardProgramId to set
+	 * @param issuanceCardProgramId
+	 *            the issuanceCardProgramId to set
 	 */
 	public void setIssuanceCardProgramId(Long issuanceCardProgramId) {
 		this.issuanceCardProgramId = issuanceCardProgramId;
@@ -450,7 +461,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param currencyAlpaNumeric the currencyAlpaNumeric to set
+	 * @param currencyAlpaNumeric
+	 *            the currencyAlpaNumeric to set
 	 */
 	public void setCurrencyAlpaNumeric(String currencyAlpaNumeric) {
 		this.currencyAlpaNumeric = currencyAlpaNumeric;
@@ -464,7 +476,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param issuanceCardProgramName the issuanceCardProgramName to set
+	 * @param issuanceCardProgramName
+	 *            the issuanceCardProgramName to set
 	 */
 	public void setIssuanceCardProgramName(String issuanceCardProgramName) {
 		this.issuanceCardProgramName = issuanceCardProgramName;
@@ -478,12 +491,13 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param createdBy the createdBy to set
+	 * @param createdBy
+	 *            the createdBy to set
 	 */
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	
+
 	/**
 	 * @return the iin
 	 */
@@ -492,7 +506,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param iin the iin to set
+	 * @param iin
+	 *            the iin to set
 	 */
 	public void setIin(String iin) {
 		this.iin = iin;
@@ -506,7 +521,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param iinExt the iinExt to set
+	 * @param iinExt
+	 *            the iinExt to set
 	 */
 	public void setIinExt(String iinExt) {
 		this.iinExt = iinExt;
@@ -520,7 +536,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param programManagerName the programManagerName to set
+	 * @param programManagerName
+	 *            the programManagerName to set
 	 */
 	public void setProgramManagerName(String programManagerName) {
 		this.programManagerName = programManagerName;
@@ -534,7 +551,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param currency the currency to set
+	 * @param currency
+	 *            the currency to set
 	 */
 	public void setCurrency(String currency) {
 		this.currency = currency;
@@ -547,6 +565,7 @@ public class CardProgramRequest extends Response implements Serializable {
 	public void setIsoName(String isoName) {
 		this.isoName = isoName;
 	}
+
 	/**
 	 * @return
 	 */
@@ -555,7 +574,8 @@ public class CardProgramRequest extends Response implements Serializable {
 	}
 
 	/**
-	 * @param partnerCode the partnerCode to set
+	 * @param partnerCode
+	 *            the partnerCode to set
 	 */
 	public void setPartnerCode(String partnerCode) {
 		this.partnerCode = partnerCode;
@@ -577,18 +597,49 @@ public class CardProgramRequest extends Response implements Serializable {
 		this.entityName = entityName;
 	}
 
-  /**
-   * @return the selected
-   */
-  public boolean isSelected() {
-    return selected;
-  }
+	/**
+	 * @return the selected
+	 */
+	public boolean isSelected() {
+		return selected;
+	}
 
-  /**
-   * @param selected the selected to set
-   */
-  public void setSelected(boolean selected) {
-    this.selected = selected;
-  }
+	/**
+	 * @param selected
+	 *            the selected to set
+	 */
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	/**
+	 * @return the panLow
+	 */
+	public String getPanLow() {
+		return panLow;
+	}
+
+	/**
+	 * @param panLow the panLow to set
+	 */
+	public void setPanLow(String panLow) {
+		this.panLow = panLow;
+	}
+
+	/**
+	 * @return the panHigh
+	 */
+	public String getPanHigh() {
+		return panHigh;
+	}
+
+	/**
+	 * @param panHigh the panHigh to set
+	 */
+	public void setPanHigh(String panHigh) {
+		this.panHigh = panHigh;
+	}
+
+  
 }
 

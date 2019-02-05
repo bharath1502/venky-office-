@@ -2962,12 +2962,11 @@ function doAjaxToGetCardProgramByPmId(pmId,entityType){
 				if (obj.errorMessage == "SUCCESS") {
 					var count=0;
 					for (var i = 0; i < obj.cardProgramList.length; i++) {
+						var programManagerName = obj.cardProgramList[i].programManagerName;
+						var panLow = obj.cardProgramList[i].panLow;
+						var panHigh = obj.cardProgramList[i].panHigh;
+						var currency = obj.cardProgramList[i].currency;
 						var cardProgramId = obj.cardProgramList[i].cardProgramId;
-						var cardProgramName = obj.cardProgramList[i].cardProgramName;
-						var partnerName = obj.cardProgramList[i].partnerName;
-						var partnerCode = obj.cardProgramList[i].partnerCode;
-						var iin = obj.cardProgramList[i].iin;
-						var iinExt = obj.cardProgramList[i].iinExt;
 						if(obj.cardProgramList[i].programManagerName != null){
 							entityName = obj.cardProgramList[i].programManagerName;
 						}else{
@@ -2980,14 +2979,12 @@ function doAjaxToGetCardProgramByPmId(pmId,entityType){
 							entityId = obj.cardProgramList[i].isoId;
 						}
 						var recRow = '<tr id="rowId'+cardProgramId+entityId+'">'
-							+'<td>'+partnerName+'</td>'
-							+'<td>'+cardProgramName+'</td>'
-							+'<td>'+iin+'</td>'
-							+'<td>'+partnerCode+'</td>'
-							+'<td>'+iinExt+'</td>'
-							+'<td>'+entityName+'</td>'
+							+'<td>'+panLow+'</td>'
+							+'<td>'+panHigh+'</td>'
+							+'<td>'+programManagerName+'</td>'
 							+'<td>'+currency+'</td>'
-							+'<td data-title="Action"><input id="cpId'+cardProgramId+''+entityId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+',\''+cardProgramName+'\',\''+entityName+'\',\''+entityId+'\')"></td>'
+							+'<td>'+entityName+'</td>'
+							+'<td data-title="Action"><input id="cpId'+cardProgramId+''+entityId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+',\''+entityName+'\',\''+entityId+'\')"></td>'
 					       +'</tr>';	
 							jQuery('#serviceResults').append(recRow);
 							count++;

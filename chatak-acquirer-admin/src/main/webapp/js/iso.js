@@ -17,21 +17,14 @@ function doAjaxToGetCardProgramByPmId(pmId){
 				
 				if (obj.errorMessage == "SUCCESS" && obj.cardProgramList != null) {
 					for (var i = 0; i < obj.cardProgramList.length; i++) {
-						var cardProgramId = obj.cardProgramList[i].cardProgramId;
-						var cardProgramName = obj.cardProgramList[i].cardProgramName;
-						var partnerName = obj.cardProgramList[i].partnerName;
-						var iin = obj.cardProgramList[i].iin;
-						var iinExt = obj.cardProgramList[i].iinExt;
-						var partnerIIN = obj.cardProgramList[i].partnerCode;
 						var programManagerName = obj.cardProgramList[i].programManagerName;
+						var panLow = obj.cardProgramList[i].panLow;
+						var panHigh = obj.cardProgramList[i].panHigh;
 						var currency = obj.cardProgramList[i].currency;
-						
+						var cardProgramId = obj.cardProgramList[i].cardProgramId;
 						var recRow = '<tr id="rowId'+cardProgramId+pmId+'">'
-							+'<td>'+partnerName+'</td>'
-							+'<td>'+cardProgramName+'</td>'
-							+'<td>'+iin+'</td>'
-							+'<td>'+partnerIIN+'</td>'
-							+'<td>'+iinExt+'</td>'
+							+'<td>'+panLow+'</td>'
+							+'<td>'+panHigh+'</td>'
 							+'<td>'+programManagerName+'</td>'
 							+'<td>'+currency+'</td>'
 							+'<td data-title="Action" ><input id="cpId'+cardProgramId+pmId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+','+pmId+')"></td>'
@@ -190,22 +183,15 @@ function fetchCardProgramByIso(isoId){
 				if (obj.errorMessage == "SUCCESS" && obj.cardProgramRequestList != null) {
 					for (var i = 0; i < obj.cardProgramRequestList.length; i++) {
 						var cardProgramId = obj.cardProgramRequestList[i].cardProgramId;
-						var cardProgramName = obj.cardProgramRequestList[i].cardProgramName;
-						var partnerName = obj.cardProgramRequestList[i].partnerName;
-						var iin = obj.cardProgramRequestList[i].iin;
-						var iinExt = obj.cardProgramRequestList[i].iinExt;
-						var partnerIIN = obj.cardProgramRequestList[i].partnerCode;
 						var programManagerName = obj.cardProgramRequestList[i].programManagerName;
+						var panLow = obj.cardProgramList[i].panLow;
+						var panHigh = obj.cardProgramList[i].panHigh;
 						var currency = obj.cardProgramRequestList[i].currency;
-						var programManagerId = obj.cardProgramRequestList[i].programManagerId;
-						
+						var cardProgramId = obj.cardProgramList[i].cardProgramId;			
 						var recRow = '<tr id="rowId'+cardProgramId+programManagerId+'">'
-							+'<td>'+partnerName+'</td>'
-							+'<td>'+cardProgramName+'</td>'
-							+'<td>'+iin+'</td>'
-							+'<td>'+partnerIIN+'</td>'
-							+'<td>'+iinExt+'</td>'
 							+'<td>'+programManagerName+'</td>'
+							+'<td>'+panLow+'</td>'
+							+'<td>'+panHigh+'</td>'
 							+'<td>'+currency+'</td>'
 							+'<td data-title="Action" ><input id="cpId'+cardProgramId+programManagerId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+','+programManagerId+')"></td>'
 					       +'</tr>';	

@@ -94,12 +94,12 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 		CardProgramResponse response = new CardProgramResponse();
 		Long isoId=null;
 		
-		StringBuilder query = new StringBuilder("SELECT cp.Id,cp.CARD_PROGRAM_NAME,cp.IIN,cp.IIN_EXT,cp.ISSUANCE_PARTNER_NAME,cp.CURRENCY,")
-								.append(" pm.PROGRAM_MANAGER_NAME,cp.IIN_PARTNER_EXT FROM PG_PM_CARD_PROGRAM_MAPPING  as pmcpmap ")
+		StringBuilder query = new StringBuilder("SELECT cp.Id, cp.CURRENCY, pm.PAN_LOW, pm.PAN_HIGH,")
+								.append(" pm.PROGRAM_MANAGER_NAME FROM PG_PM_CARD_PROGRAM_MAPPING  as pmcpmap ")
 								.append(" left join PG_CARD_PROGRAM as cp on pmcpmap.CARD_PROGRAM_ID = cp.ID")
 								.append(" left join PG_PROGRAM_MANAGER as pm on pm.ID = pmcpmap.PM_ID")
 								.append(" where pmcpmap.PM_ID = :pmId");
-								
+		
 		
 		Query qry = entityManager.createNativeQuery(query.toString());
 					qry.setParameter("pmId", id);
@@ -117,13 +117,10 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 			Object[] objs = (Object[]) itr.next();
 			cardProgramRequest= new CardProgramRequest();
 			cardProgramRequest.setCardProgramId(StringUtil.isNull(objs[0]) ? null : ((BigInteger) objs[0]).longValue());
-			cardProgramRequest.setCardProgramName(requestCardProgramName(objs));
-			cardProgramRequest.setIin(requestIin(objs));
-			cardProgramRequest.setIinExt(requestIinExt(objs));
-			cardProgramRequest.setPartnerName(StringUtil.isNull(objs[4]) ? null : ((String) objs[4]));
-			cardProgramRequest.setCurrency(StringUtil.isNull(objs[5]) ? null : ((String) objs[5]));
-			cardProgramRequest.setProgramManagerName(StringUtil.isNull(objs[6]) ? null : ((String) objs[6]));
-			cardProgramRequest.setPartnerCode(StringUtil.isNull(objs[7]) ? null : ((String)objs[7]));
+			cardProgramRequest.setCurrency(StringUtil.isNull(objs[1]) ? null : ((String) objs[1]));
+			cardProgramRequest.setPanLow(StringUtil.isNull(objs[2]) ? null : ((String) objs[2]));
+			cardProgramRequest.setPanHigh(StringUtil.isNull(objs[3]) ? null : ((String) objs[3]));
+			cardProgramRequest.setProgramManagerName(StringUtil.isNull(objs[4]) ? null : ((String) objs[4]));
 			cardProgramRequest.setProgramManagerId(pmId!=null ? pmId : null);
 			cardProgramRequest.setIsoId(isoId !=null ? isoId : null);
 			cardProgramList.add(cardProgramRequest);
@@ -458,11 +455,10 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 		List<CardProgramRequest> allCardProgramList = new ArrayList<>(0);
 		List<CardProgramRequest> selectedCardProgramList = new ArrayList<>(0);
 
-		StringBuilder allCardProgramQuery = new StringBuilder("select subqry.ID,subqry.CARD_PROGRAM_NAME,subqry.IIN,")
-        .append(" subqry.IIN_EXT,subqry.ISSUANCE_PARTNER_NAME, subqry.CURRENCY,")
-        .append(" subqry.PROGRAM_MANAGER_NAME,subqry.IIN_PARTNER_EXT, subqry.PM_ID ")
-        .append(" from (select distinct cp.ID,cp.CARD_PROGRAM_NAME,cp.IIN,")
-        .append(" cp.IIN_EXT,cp.ISSUANCE_PARTNER_NAME,cp.CURRENCY,pm.PROGRAM_MANAGER_NAME,cp.IIN_PARTNER_EXT,pmcp.PM_ID")
+		StringBuilder allCardProgramQuery = new StringBuilder("select subqry.ID,subqry.PAN_LOW,subqry.PAN_HIGH,")
+        .append(" subqry.CURRENCY, subqry.PROGRAM_MANAGER_NAME,  subqry.PM_ID")
+        .append(" from (select distinct cp.ID,pm.PAN_LOW,pm.PAN_HIGH,")
+        .append(" cp.CURRENCY,pm.PROGRAM_MANAGER_NAME,pmcp.PM_ID")
         .append(" from PG_PM_ISO_MAPPING as pmiso")
         .append(" left join PG_PM_CARD_PROGRAM_MAPPING as pmcp on pmiso.PM_ID =pmcp.PM_ID")
         .append(" right join PG_PROGRAM_MANAGER as pm on pmiso.PM_ID = pm.ID")
@@ -478,11 +474,10 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 		}
 		
 		//selected cp's
-		StringBuilder selectedCardProgramQuery = new StringBuilder("select subqry.ID,subqry.CARD_PROGRAM_NAME,subqry.IIN,")
-        .append(" subqry.IIN_EXT,subqry.ISSUANCE_PARTNER_NAME, subqry.CURRENCY,")
-        .append(" subqry.PROGRAM_MANAGER_NAME,subqry.IIN_PARTNER_EXT, subqry.AMBIGUITY_PM_ID ")
-        .append(" from (select distinct cp.ID,cp.CARD_PROGRAM_NAME,cp.IIN,")
-        .append(" cp.IIN_EXT,cp.ISSUANCE_PARTNER_NAME,cp.CURRENCY,pm.PROGRAM_MANAGER_NAME,cp.IIN_PARTNER_EXT,pmiso.AMBIGUITY_PM_ID")
+		StringBuilder selectedCardProgramQuery = new StringBuilder("select subqry.ID,subqry.PAN_LOW,subqry.PAN_HIGH,")
+        .append(" subqry.CURRENCY,subqry.PROGRAM_MANAGER_NAME,subqry.AMBIGUITY_PM_ID")
+        .append(" from (select distinct cp.ID,cp.CURRENCY,pm.PAN_LOW,")
+        .append(" pm.PAN_HIGH,pm.PROGRAM_MANAGER_NAME,pmiso.AMBIGUITY_PM_ID")
         .append(" from PG_ISO_CARD_PROGRAM_MAPPING as pmiso")
         .append(" right join PG_PROGRAM_MANAGER as pm on pmiso.AMBIGUITY_PM_ID = pm.ID")
         .append(" left join PG_CARD_PROGRAM as cp on pmiso.CARD_PROGRAM_ID = cp.ID")
@@ -525,14 +520,11 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
           Object[] objs = (Object[]) itr.next();
           cardProgramRequest= new CardProgramRequest();
           cardProgramRequest.setCardProgramId(StringUtil.isNull(objs[0]) ? null : ((BigInteger) objs[0]).longValue());
-          cardProgramRequest.setCardProgramName(requestCardProgramName(objs));
-          cardProgramRequest.setIin(requestIin(objs));
-          cardProgramRequest.setIinExt(requestIinExt(objs));
-          cardProgramRequest.setPartnerName(StringUtil.isNull(objs[4]) ? null : ((String) objs[4]));
-          cardProgramRequest.setCurrency(StringUtil.isNull(objs[5]) ? null : ((String) objs[5]));
-          cardProgramRequest.setProgramManagerName(StringUtil.isNull(objs[6]) ? null : ((String) objs[6]));
-          cardProgramRequest.setPartnerCode(StringUtil.isNull(objs[7]) ? null : ((String)objs[7]));
-          cardProgramRequest.setProgramManagerId(StringUtil.isNull(objs[8]) ? null : ((BigInteger) objs[8]).longValue());
+          cardProgramRequest.setPanLow(StringUtil.isNull(objs[1]) ? null : ((String) objs[1]));
+          cardProgramRequest.setPanHigh(StringUtil.isNull(objs[2]) ? null : ((String) objs[2]));
+          cardProgramRequest.setCurrency(StringUtil.isNull(objs[3]) ? null : ((String) objs[3]));
+          cardProgramRequest.setProgramManagerName(StringUtil.isNull(objs[4]) ? null : ((String) objs[4]));
+          cardProgramRequest.setProgramManagerId(StringUtil.isNull(objs[5]) ? null : ((BigInteger) objs[5]).longValue());
           cardProgramRequest.setIsoId(isoId !=null ? isoId : null);
           cardProgramList.add(cardProgramRequest);
       }

@@ -360,12 +360,9 @@
 								class="table table-striped table-bordered table-responsive table-condensed tablesorter marginBM1 common-table">
 								<thead>
 									<tr>
-										<th>Partner</th>
-										<th>Card Program Name</th>
-										<th>IIN</th>
-										<th>Partner IIN</th>
-										<th>IIN Ext</th>
 										<th style="width: 15%;">Program Manager</th>
+										<th>Pan Low</th>
+										<th>Pan High</th>
 										<th>Currency</th>
 										<th>Action</th>
 									</tr>
@@ -375,14 +372,11 @@
 										<c:forEach items="${cardProgramList}" var="cardProgramDetail">
 												<tr id="rowId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}">
 												<td  class="ellipsis"
-													id="15" >${cardProgramDetail.partnerName}&nbsp;</td>
+													id="15" >${cardProgramDetail.programManagerName}&nbsp;</td>
 												<td  class="ellipsis"
-													id="15" >${cardProgramDetail.cardProgramName}&nbsp;</td>
-												<td >${cardProgramDetail.iin}&nbsp;</td>
-												<td >${cardProgramDetail.partnerCode}&nbsp;</td>
-												<td >${cardProgramDetail.iinExt}&nbsp;</td>
-												<td>${cardProgramDetail.programManagerName}&nbsp;</td>
-												<td>${cardProgramDetail.currency}&nbsp;</td>
+													id="15" >${cardProgramDetail.panLow}&nbsp;</td>
+												<td >${cardProgramDetail.panHigh}&nbsp;</td>
+												<td >${cardProgramDetail.currency}&nbsp;</td>
 												<c:if test="${cardProgramDetail.selected eq true}">
 												<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}" type="checkbox" checked="checked" onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.programManagerId}')"></td>
 												<script>

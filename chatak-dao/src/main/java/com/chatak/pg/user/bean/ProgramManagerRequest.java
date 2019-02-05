@@ -130,8 +130,24 @@ public class ProgramManagerRequest extends SearchRequest {
 	private Long entityId;
 	
 	private String loginuserType;
+	
+	private List<PanRange> panRangeList;
 
 	 /**
+	 * @return the panRangeList
+	 */
+	public List<PanRange> getPanRangeList() {
+		return panRangeList;
+	}
+
+	/**
+	 * @param panRangeList the panRangeList to set
+	 */
+	public void setPanRangeList(List<PanRange> panRangeList) {
+		this.panRangeList = panRangeList;
+	}
+
+	/**
     * @return the entityId
     */
    public Long getEntityId() {

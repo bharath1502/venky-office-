@@ -49,6 +49,7 @@
 		<sec:intercept-url pattern="/pg/transaction/forgotPassword" access="hasAnyAuthority('ROLE_APP','WALLET_ADMIN')" />
 		<sec:intercept-url pattern="/pg/transaction/clientProcess" access="hasAnyAuthority('WALLET_ADMIN')" />
 		<sec:intercept-url pattern="/pg/transaction/clientTxnHistory" access="hasAnyAuthority('WALLET_ADMIN')" />
+		<sec:intercept-url pattern="/pg/transaction/sendMail" access="hasAnyAuthority('WALLET_ADMIN')" />
 		<sec:csrf disabled="true"/>
 		<sec:intercept-url pattern="/pg/**" access="hasAnyAuthority('ROLE_APP')" />
 

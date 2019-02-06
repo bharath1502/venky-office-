@@ -1032,7 +1032,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		logger.info("Entering:: TransactionRestController:: sendMail method");
 		PGTransaction details = null;
 		try {
-			if (transactionRequest.getEmail() != null && transactionRequest.getTxnId() != null) {
+			if (!transactionRequest.getEmail().equals("") && !transactionRequest.getTxnId().equals(null)) {
 				details = receiptServiceImpl.findTransactionDetails(transactionRequest.getTxnId());
 				Map<String, String> map = new HashMap<>();
 				map.put("Name", details.getCardHolderName());
@@ -1056,6 +1056,8 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 						LocaleContextHolder.getLocale()));
 			}
 		} catch (Exception e) {
+			resp.setErrorCode(ChatakPayErrorCode.GEN_002.name());
+			resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_002.name(), null,LocaleContextHolder.getLocale()));
 			logger.error("Error :: TransactionRestController :: clientTxnHistory", e);
 		}
 		logger.info("Exiting:: TransactionRestController:: sendMail method");

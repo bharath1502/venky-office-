@@ -336,12 +336,9 @@
 								class="table table-striped table-bordered table-responsive table-condensed tablesorter marginBM1 common-table">
 								<thead>
 									<tr>
-										<th>Partner</th>
-										<th>Card Program Name</th>
-										<th>IIN</th>
-										<th>Partner IIN</th>
-										<th>IIN Ext</th>
 										<th style="width: 15%;">Program Manager</th>
+										<th>Pan Low</th>
+										<th>Pan High</th>
 										<th>Currency</th>
 										<th>Action</th>
 									</tr>

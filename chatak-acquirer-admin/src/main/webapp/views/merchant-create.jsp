@@ -693,7 +693,7 @@
 		var cardProgramIdList = [];
         var cardProgramArr = [];
         var selectedCpId = [];
-		function addCardProgram(cardProgramId,cardProgramName,entityName,entityId){
+		function addCardProgram(cardProgramId,entityName,entityId){
 			var tempCardProgramIds = [];
 			var tempCardProgramArr = [];
 			var j=0;
@@ -702,7 +702,6 @@
 			if($('#' + selectedId).is(":checked")){
 				$('#ambiguityFlag').text('');
 				cardProgramIdList.push(cardProgramId+'@'+entityId);
-				cardProgramArr.push(cardProgramName);
 				selectedCpId.push(parseInt(cardProgramId));
 			}else if(!($('#' + selectedId).is(":checked"))){
 				for(var i=0; i < cardProgramIdList.length; i++){
@@ -721,7 +720,6 @@
 			}
 			//set selected card pogram ids
 		$('#cardProgramIds').val(cardProgramIdList);
-		$('#confirmCardProgramNames').text(cardProgramArr.toString());
 		}
 		function doUnCheckedToCardProgram(cardProgramId,cardProgramName,entityId) {
 			var tempCardProgramIds = [];

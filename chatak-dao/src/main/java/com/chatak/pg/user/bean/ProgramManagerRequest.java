@@ -3,6 +3,7 @@ package com.chatak.pg.user.bean;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.chatak.pg.acq.dao.model.PanRange;
 import com.chatak.pg.bean.SearchRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -131,6 +132,10 @@ public class ProgramManagerRequest extends SearchRequest {
 	
 	private String loginuserType;
 	
+	private List<String> panLow;
+	
+	private List<String> panHigh;
+
 	private List<PanRange> panRangeList;
 
 	 /**
@@ -797,6 +802,36 @@ public class ProgramManagerRequest extends SearchRequest {
 	public void setPmSystemConvertedTime(String pmSystemConvertedTime) {
 		this.pmSystemConvertedTime = pmSystemConvertedTime;
 	}
+
+	/**
+	 * @return the panLow
+	 */
+	public List<String> getPanLow() {
+		return panLow;
+	}
+
+	/**
+	 * @param panLow the panLow to set
+	 */
+	public void setPanLow(List<String> panLow) {
+		this.panLow = panLow;
+	}
+
+	/**
+	 * @return the panHigh
+	 */
+	public List<String> getPanHigh() {
+		return panHigh;
+	}
+
+	/**
+	 * @param panHigh the panHigh to set
+	 */
+	public void setPanHigh(List<String> panHigh) {
+		this.panHigh = panHigh;
+	}
+	
+	
 	
 	
 }

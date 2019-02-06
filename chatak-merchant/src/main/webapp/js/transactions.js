@@ -91,15 +91,21 @@ function validateTransactionsDates() {
 }
 
 function validateCardNum() {
+	var flag = true;
 	var cardNumber = document.getElementById('cardNumber').value;
 	if (!isDigit(cardNumber)) {
 		setDiv("cardNumberErrorDiv", webMessages.pleaseEnterValidCardNumber);
-		return false;
+		var flag = false;
+	} else if ((cardNumber.length < 4) && (cardNumber.length > 0)) {
+		setDiv("cardNumberErrorDiv", webMessages.EnterFourDigit);
+		flag = false;
 	} else {
 		setDiv("cardNumberErrorDiv", "");
-		return true;
+		var flag = true;
 	}
+	return flag;
 }
+
 function submitBatchFundingDateRange() {
 	var flag = false;
 	if (!clientValidation('fromDate', 'startDate', 'transFromDateErrorDiv')
@@ -152,6 +158,16 @@ function validateBatchFundingReportsDates() {
 		} else {
 			setDiv('transFromDateErrorDiv', "");
 		}
+	}
+	return flag;
+}
+
+function submitData(){
+	var flag = true;
+	if(!searchSubmit()
+			|!searchValidationForTransaction()
+			|!validateCardNum()){
+		flag=false;
 	}
 	return flag;
 }

@@ -160,5 +160,14 @@ public class TransactionConstants {
   public static final int MOBILE_OFFER_DESC_LEN = 40;
 
   public static final int MOBILE_OFFER_NAME_LEN = 15;
+  
+  public static final int CARD_NUM_LENGTH = 19;
+  
+  public static final int EXP_DATE_LENGTH = 4;
+  
+  public static final String APPEND_LAST_3_DIGIT = "123";
+  
+  
+ 
 
 }

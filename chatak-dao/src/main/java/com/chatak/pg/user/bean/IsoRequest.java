@@ -6,6 +6,7 @@ package com.chatak.pg.user.bean;
 import java.util.List;
 import java.util.Map;
 
+import com.chatak.pg.acq.dao.model.PanRange;
 import com.chatak.pg.bean.SearchRequest;
 
 /**
@@ -23,6 +24,8 @@ public class IsoRequest extends SearchRequest{
 	private String isoName;
 	private List<Long> programManagerIds;
 	private List<String> cardProgramIds;
+	private List<String> panLow;
+	private List<String> panHigh;
 	private Long id;
 	private String address;
 	private String country;
@@ -41,184 +44,239 @@ public class IsoRequest extends SearchRequest{
 	public String getIsoName() {
 		return isoName;
 	}
+
 	/**
-	 * @param isoName the isoName to set
+	 * @param isoName
+	 *            the isoName to set
 	 */
 	public void setIsoName(String isoName) {
 		this.isoName = isoName;
 	}
-	
+
 	/**
 	 * @return the id
 	 */
 	public Long getId() {
 		return id;
 	}
+
 	/**
-	 * @param id the id to set
+	 * @param id
+	 *            the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	/**
 	 * @return the address
 	 */
 	public String getAddress() {
 		return address;
 	}
+
 	/**
-	 * @param address the address to set
+	 * @param address
+	 *            the address to set
 	 */
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
 	/**
 	 * @return the country
 	 */
 	public String getCountry() {
 		return country;
 	}
+
 	/**
-	 * @param country the country to set
+	 * @param country
+	 *            the country to set
 	 */
 	public void setCountry(String country) {
 		this.country = country;
 	}
+
 	/**
 	 * @return the state
 	 */
 	public String getState() {
 		return state;
 	}
+
 	/**
-	 * @param state the state to set
+	 * @param state
+	 *            the state to set
 	 */
 	public void setState(String state) {
 		this.state = state;
 	}
+
 	/**
 	 * @return the city
 	 */
 	public String getCity() {
 		return city;
 	}
+
 	/**
-	 * @param city the city to set
+	 * @param city
+	 *            the city to set
 	 */
 	public void setCity(String city) {
 		this.city = city;
 	}
+
 	/**
 	 * @return the zipCode
 	 */
 	public String getZipCode() {
 		return zipCode;
 	}
+
 	/**
-	 * @param zipCode the zipCode to set
+	 * @param zipCode
+	 *            the zipCode to set
 	 */
 	public void setZipCode(String zipCode) {
 		this.zipCode = zipCode;
 	}
+
 	/**
 	 * @return the programManagerIds
 	 */
 	public List<Long> getProgramManagerIds() {
 		return programManagerIds;
 	}
+
 	/**
-	 * @param programManagerIds the programManagerIds to set
+	 * @param programManagerIds
+	 *            the programManagerIds to set
 	 */
 	public void setProgramManagerIds(List<Long> programManagerIds) {
 		this.programManagerIds = programManagerIds;
 	}
-	
+
 	/**
 	 * @return the programManagerRequest
 	 */
 	public ProgramManagerRequest getProgramManagerRequest() {
 		return programManagerRequest;
 	}
+
 	/**
-	 * @param programManagerRequest the programManagerRequest to set
+	 * @param programManagerRequest
+	 *            the programManagerRequest to set
 	 */
 	public void setProgramManagerRequest(ProgramManagerRequest programManagerRequest) {
 		this.programManagerRequest = programManagerRequest;
 	}
 
-  /**
-   * @return the ids
-   */
-  public List<Long> getIds() {
-    return ids;
-  }
+	/**
+	 * @return the ids
+	 */
+	public List<Long> getIds() {
+		return ids;
+	}
 
-  /**
-   * @param ids the ids to set
-   */
-  public void setIds(List<Long> ids) {
-    this.ids = ids;
-  }
+	/**
+	 * @param ids
+	 *            the ids to set
+	 */
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
+	}
 
 	/**
 	 * @return the bankName
 	 */
-  public String getBankName() {
-	return bankName;
-  }
+	public String getBankName() {
+		return bankName;
+	}
 
 	/**
 	 * @param bankName
 	 *            the bankName to set
 	 */
-  public void setBankName(String bankName) {
-	  this.bankName = bankName;
-  }
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
 
 	/**
 	 * @return the bankAccNum
 	 */
-  public String getBankAccNum() {
-	  return bankAccNum;
-  }
+	public String getBankAccNum() {
+		return bankAccNum;
+	}
 
 	/**
 	 * @param bankAccNum
 	 *            the bankAccNum to set
 	 */
-  public void setBankAccNum(String bankAccNum) {
-	  this.bankAccNum = bankAccNum;
-  }
+	public void setBankAccNum(String bankAccNum) {
+		this.bankAccNum = bankAccNum;
+	}
 
 	/**
 	 * @return the routingNumber
 	 */
-  public String getRoutingNumber() {
-	  return routingNumber;
-  }
+	public String getRoutingNumber() {
+		return routingNumber;
+	}
 
 	/**
 	 * @param routingNumber
 	 *            the routingNumber to set
 	 */
-  public void setRoutingNumber(String routingNumber) {
-	  this.routingNumber = routingNumber;
-  }
-  
-  public List<String> getCardProgramIds() {
-    return cardProgramIds;
-  }
-  
-  public void setCardProgramIds(List<String> cardProgramIds) {
-    this.cardProgramIds = cardProgramIds;
-  }
-  
-  public Map<Long, Long> getCardProgramAndEntityId() {
-    return cardProgramAndEntityId;
-  }
-  
-  public void setCardProgramAndEntityId(Map<Long, Long> cardProgramAndEntityId) {
-    this.cardProgramAndEntityId = cardProgramAndEntityId;
-  }
+	public void setRoutingNumber(String routingNumber) {
+		this.routingNumber = routingNumber;
+	}
+
+	public List<String> getCardProgramIds() {
+		return cardProgramIds;
+	}
+
+	public void setCardProgramIds(List<String> cardProgramIds) {
+		this.cardProgramIds = cardProgramIds;
+	}
+
+	public Map<Long, Long> getCardProgramAndEntityId() {
+		return cardProgramAndEntityId;
+	}
+
+	public void setCardProgramAndEntityId(Map<Long, Long> cardProgramAndEntityId) {
+		this.cardProgramAndEntityId = cardProgramAndEntityId;
+	}
+
+	/**
+	 * @return the panLow
+	 */
+	public List<String> getPanLow() {
+		return panLow;
+	}
+
+	/**
+	 * @param panLow
+	 *            the panLow to set
+	 */
+	public void setPanLow(List<String> panLow) {
+		this.panLow = panLow;
+	}
+
+	/**
+	 * @return the panHigh
+	 */
+	public List<String> getPanHigh() {
+		return panHigh;
+	}
+
+	/**
+	 * @param panHigh
+	 *            the panHigh to set
+	 */
+	public void setPanHigh(List<String> panHigh) {
+		this.panHigh = panHigh;
+	}
 	
 }

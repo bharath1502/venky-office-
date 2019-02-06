@@ -1032,7 +1032,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		logger.info("Entering:: TransactionRestController:: sendMail method");
 		PGTransaction details = null;
 		try {
-			if (!transactionRequest.getEmail().equals("") && !transactionRequest.getTxnId().equals(null)) {
+			if (!transactionRequest.getEmail().equals("") && !transactionRequest.getTxnId().equals("")) {
 				details = receiptServiceImpl.findTransactionDetails(transactionRequest.getTxnId());
 				Map<String, String> map = new HashMap<>();
 				map.put("Name", details.getCardHolderName());

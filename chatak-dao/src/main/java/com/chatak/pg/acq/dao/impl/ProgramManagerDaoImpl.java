@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
 import com.chatak.pg.acq.dao.model.PGBank;
+import com.chatak.pg.acq.dao.model.PanRanges;
 import com.chatak.pg.acq.dao.model.PmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
@@ -29,6 +30,7 @@ import com.chatak.pg.acq.dao.model.QCardProgram;
 import com.chatak.pg.acq.dao.model.QPGBank;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.model.QPGMerchantEntityMap;
+import com.chatak.pg.acq.dao.model.QPanRanges;
 import com.chatak.pg.acq.dao.model.QPmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.QProgramManager;
 import com.chatak.pg.acq.dao.model.QProgramManagerAccount;
@@ -45,6 +47,7 @@ import com.chatak.pg.user.bean.CardProgramMappingRequest;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
+import com.chatak.pg.user.bean.PanRange;
 import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
@@ -253,7 +256,21 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
         }
         programManagerRequest2.setProgramManagerAccountRequests(programManagerAccountRequests);
       }
-
+      
+      JPAQuery querys = new JPAQuery(entityManager);
+      List<Tuple> panRanges = querys.from(QPanRanges.panRanges)
+          .where(QPanRanges.panRanges.programManagerId.eq(programManagerRequest.getId()))
+          .list(QPanRanges.panRanges.panLow,QPanRanges.panRanges.panHigh);
+      
+      List<PanRange> panRange = new ArrayList<>(0);
+      PanRange range;
+      for(Tuple ranges: panRanges){
+    	  range = new PanRange();
+    	  range.setPanLow(ranges.get(QPanRanges.panRanges.panLow));
+    	  range.setPanHigh(ranges.get(QPanRanges.panRanges.panHigh));
+    	  panRange.add(range);
+      }
+      programManagerRequest2.setPanRangeList(panRange);
       
       JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> pmBanks = query.from(QPGBank.pGBank,QBankProgramManagerMap.bankProgramManagerMap)

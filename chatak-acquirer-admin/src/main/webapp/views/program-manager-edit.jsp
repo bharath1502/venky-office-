@@ -259,11 +259,23 @@
 													 <select class="form-control" id="bankName" name="bankNames"  
 													 	onblur="validateBank('bankName','pgmmgrbankiderrormsg')"
 														onclick="clearErrorMsg('pgmmgrbankiderrormsg');" MULTIPLE>
-														<c:if test="${not empty selectedBankList}">
-														<c:forEach items="${selectedBankList}" var="bankRequest">
-															<option value="${bankRequest.id}" selected>${bankRequest.bankName}</option>
-														</c:forEach>
-														</c:if>
+														<c:forEach var="current" items="${allBankList}">
+																<c:set var="contains" value="false" />
+																<c:forEach var="currentselect" items="${selectedBankList}">
+																	<c:if test="${currentselect.bankName eq current.label}">
+																		<c:set var="contains" value="true" />
+																	</c:if>
+																</c:forEach>
+																<c:choose>
+																<c:when test="${contains eq true}" >
+																	<option value="${current.value}" selected="selected"> ${current.label} </option>
+																</c:when>
+																<c:otherwise>
+																	<option value="${current.value}"> ${current.label} </option>
+																</c:otherwise>
+																</c:choose>
+															
+														</c:forEach> 
 													 </select>
 													<div class="discriptionErrorMsg">
 														<span id="pgmmgrbankiderrormsg" class="red-error">&nbsp;</span>
@@ -599,7 +611,7 @@
     				setDiv(messageLine_errDiv, '');
     			}
     		return flag;
-    	}
+    	} 
 	</script>
 </body>
 </html>

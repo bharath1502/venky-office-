@@ -52,7 +52,7 @@ import com.chatak.pg.user.bean.BankResponse;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
-import com.chatak.pg.user.bean.PanRange;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.PartnerGroupPartnerMapRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountResponse;
@@ -128,7 +128,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     pManager.setAccountCurrency(programManagerRequest.getAccountCurrency()!=null ? programManagerRequest.getAccountCurrency() : programManagerRequest.getAcquirerCurrencyName());
     if (StringUtil.isListNotNullNEmpty(programManagerRequest.getPanRangeList())) {
 		Set<PanRanges> panRanges = new HashSet<PanRanges>();
-		for (PanRange panRange : programManagerRequest.getPanRangeList()) {
+		for (PanRangeRequest panRange : programManagerRequest.getPanRangeList()) {
 			PanRanges panRanges2 = CommonUtil
 					.copyBeanProperties(panRange, PanRanges.class);
 			panRanges.add(panRanges2); 
@@ -638,7 +638,7 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
         programManager.setBankProgramManagerMaps(bankProgramManagerMaps);
         
         Set<PanRanges> panRanges = new HashSet<PanRanges>();
-		for (PanRange panRange : programManagerRequest.getPanRangeList()) {
+		for (PanRangeRequest panRange : programManagerRequest.getPanRangeList()) {
 			PanRanges panRanges2 = CommonUtil
 					.copyBeanProperties(panRange, PanRanges.class);
 			panRanges.add(panRanges2); 

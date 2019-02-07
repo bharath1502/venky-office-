@@ -6,8 +6,6 @@ package com.chatak.pg.user.bean;
 import java.io.Serializable;
 import java.util.List;
 
-import com.chatak.pg.acq.dao.model.PanRange;
-
 /**
  * @Author: Girmiti Software
  * @Date: May 3, 2018

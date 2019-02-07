@@ -13,7 +13,7 @@ import com.chatak.pg.bean.SearchRequest;
  * @Comments: 
  *
  */
-public class PanRange extends SearchRequest{
+public class PanRangeRequest extends SearchRequest{
 
 	/**
 	 * 

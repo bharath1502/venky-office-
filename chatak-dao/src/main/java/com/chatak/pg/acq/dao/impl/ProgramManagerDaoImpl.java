@@ -47,7 +47,7 @@ import com.chatak.pg.user.bean.CardProgramMappingRequest;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
-import com.chatak.pg.user.bean.PanRange;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
@@ -262,10 +262,10 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
           .where(QPanRanges.panRanges.programManagerId.eq(programManagerRequest.getId()))
           .list(QPanRanges.panRanges.panLow,QPanRanges.panRanges.panHigh);
       
-      List<PanRange> panRange = new ArrayList<>(0);
-      PanRange range;
+      List<PanRangeRequest> panRange = new ArrayList<>(0);
+      PanRangeRequest range;
       for(Tuple ranges: panRanges){
-    	  range = new PanRange();
+    	  range = new PanRangeRequest();
     	  range.setPanLow(ranges.get(QPanRanges.panRanges.panLow));
     	  range.setPanHigh(ranges.get(QPanRanges.panRanges.panHigh));
     	  panRange.add(range);

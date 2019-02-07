@@ -6,7 +6,6 @@ package com.chatak.pg.user.bean;
 import java.util.List;
 import java.util.Map;
 
-import com.chatak.pg.acq.dao.model.PanRange;
 import com.chatak.pg.bean.SearchRequest;
 
 /**

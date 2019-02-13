@@ -165,7 +165,7 @@ public class UserServiceImpl implements UserService, PGConstants {
       merchantUser.setPhone(userData.getPhone());
       merchantUser.setAddress(userData.getAddress());
       PGMerchantUsers pgMerchantUsers = merchantUserDao.createOrUpdateUser(merchantUser);
-      UpdateMposFeature(userData,pgMerchantUsers);
+      UpdateMposConfigFeature(userData,pgMerchantUsers);
 
       //Inserting into PgApplicationClient table for OAuth Token Related changes
       PGApplicationClient applicationClient =
@@ -213,25 +213,28 @@ public class UserServiceImpl implements UserService, PGConstants {
       throw new ChatakAdminException(e.getMessage());
     }
   }
-  private void UpdateMposFeature(UserData userData, PGMerchantUsers pgMerchantUsers) throws ReflectiveOperationException{
-		if(userData.getMpsoFeatures() != null) {
-			List<MposFeatures> features = userData.getMpsoFeatures();
-			if (StringUtil.isListNotNullNEmpty(features)) {
-				 for (MposFeatures pgMposFeatures : features) {
-			  PGMerchantUserFeatureMapping pgMerchantUserFeature = null;
-			  PGMerchantUserFeatureMapping pgMerchantUserFeatureMapping = new PGMerchantUserFeatureMapping();
-			  pgMerchantUserFeatureMapping.setMerchantUserID(pgMerchantUsers.getId().intValue());
-			  pgMerchantUserFeatureMapping.setFeatureId(pgMposFeatures.getId());
-			  pgMerchantUserFeatureMapping.setStatus(pgMposFeatures.getEnabled());
-			 pgMerchantUserFeature = CommonUtil.copyBeanProperties(pgMerchantUserFeatureMapping,
-					   PGMerchantUserFeatureMapping.class);
-			 merchantUserDao.saveOrUpdateUserRoleFeatureMap(pgMerchantUserFeature);
-				 }
-				 }
-		  }
-		  
-	  }
-  
+   
+  private void UpdateMposConfigFeature(UserData userData, PGMerchantUsers pgMerchantUsers)
+      throws ReflectiveOperationException {
+    if (userData.getMpsoFeatures() != null) {
+      List<MposFeatures> features = userData.getMpsoFeatures();
+      if (StringUtil.isListNotNullNEmpty(features)) {
+        for (MposFeatures pgMposFeatures : features) {
+          PGMerchantUserFeatureMapping pgMerchantUserFeature = null;
+          PGMerchantUserFeatureMapping pgMerchantUserFeatureMapping =
+              new PGMerchantUserFeatureMapping();
+          pgMerchantUserFeatureMapping.setMerchantUserID(pgMerchantUsers.getId().intValue());
+          pgMerchantUserFeatureMapping.setFeatureId(pgMposFeatures.getId());
+          pgMerchantUserFeatureMapping.setStatus(pgMposFeatures.getEnabled());
+          pgMerchantUserFeature = CommonUtil.copyBeanProperties(pgMerchantUserFeatureMapping,
+              PGMerchantUserFeatureMapping.class);
+          merchantUserDao.saveOrUpdateUserRoleFeatureMap(pgMerchantUserFeature);
+        }
+      }
+    }
+
+  }
+
   @Override
   public List<AdminUserDTO> searchUser(AdminUserDTO adminUserDTO) throws ChatakAdminException {
     try {

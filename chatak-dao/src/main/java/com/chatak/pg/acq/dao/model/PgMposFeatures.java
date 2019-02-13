@@ -24,36 +24,27 @@ public class PgMposFeatures implements Serializable {
  
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @return
-	 */
-	@Override
-	public String toString() {
-		return "PgMposFeatures [id=" + id + ", featureName=" + featureName + ", transactionType=" + transactionType
-				+ "]";
-	}
-
 	@Id
-	@Column(name = "id")
-	private int id;
+	@Column(name = "ID")
+	private Long id;
 	
-	@Column(name = "mPosF_Name")
+	@Column(name = "MPOS_FREATURE_NAME")
 	private String featureName;
 	
-	@Column(name = "Transcation_Type")
+	@Column(name = "TRANSCATION_TYPE")
 	private String transactionType;
 
 	/**
 	 * @return the id
 	 */
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

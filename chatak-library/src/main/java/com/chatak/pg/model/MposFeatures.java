@@ -2,7 +2,7 @@ package com.chatak.pg.model;
 
 public class MposFeatures {
 
-  private int id;
+  private Long id;
 
   private String featureName;
 
@@ -28,7 +28,7 @@ public class MposFeatures {
   /**
    * @return the id
    */
-  public int getId() {
+  public Long getId() {
     return id;
   }
 
@@ -44,7 +44,7 @@ public class MposFeatures {
    * @param id
    *          the id to set
    */
-  public void setId(int id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

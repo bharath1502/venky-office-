@@ -458,7 +458,7 @@ public class RoleServiceImpl implements RoleService {
 	}
 	
 	@Override
-	public List<MposFeatures> getMposeFeature() throws ReflectiveOperationException {
+	public List<MposFeatures> getMposeFeatures() throws ReflectiveOperationException {
 		 List<PgMposFeatures> features = usersRoleDao.getPgFeatures();
 		 List<MposFeatures> list = new ArrayList<>();
 		 if (StringUtil.isListNotNullNEmpty(features)) {

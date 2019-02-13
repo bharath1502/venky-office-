@@ -53,6 +53,6 @@ public interface RoleService {
 	
 	public FeatureResponse getFeatureDataByIds(List<Long> featureIds);
 	
-	public List<MposFeatures> getMposeFeature() throws ReflectiveOperationException;
+	public List<MposFeatures> getMposeFeatures() throws ReflectiveOperationException;
 
 } 

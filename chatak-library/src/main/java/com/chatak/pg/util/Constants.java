@@ -1018,5 +1018,7 @@ public class Constants {
   public static final String BANK_VIEW_NAME = "bankViewName";
   
   public static final String MASK_DATE_FORMAT = "99/99/9999";
+  
+  public static final String MPOS_MERCHANT = "Merchant";
 
 }

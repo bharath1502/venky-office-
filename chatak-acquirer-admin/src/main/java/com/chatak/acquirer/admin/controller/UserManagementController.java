@@ -741,8 +741,8 @@ public class UserManagementController implements URLMappingConstants {
       List<UserRoleDTO> userRoleList = roleService.getRoleListByType(rolesType);
       session.setAttribute("userRoleListData", userRoleList);
       List<MposFeatures> mposFeature = null;
-      if(rolesType.equals("Merchant")){
-    	  mposFeature = roleService.getMposeFeature();
+      if(rolesType.equals(Constants.MPOS_MERCHANT)){
+    	  mposFeature = roleService.getMposeFeatures();
           model.put("mposFeature", mposFeature);
       }
       ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();

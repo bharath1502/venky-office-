@@ -2366,3 +2366,7 @@ background-position:right 2px;
     white-space: nowrap;
     width: 215px;
 }
+
+.featurelist {
+	list-style: none;
+}

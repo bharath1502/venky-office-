@@ -1,6 +1,9 @@
 package com.chatak.acquirer.admin.model;
 
+import java.util.List;
+
 import com.chatak.pg.bean.SearchRequest;
+import com.chatak.pg.model.MposFeatures;
 
 public class UserData extends SearchRequest {
   /**
@@ -43,6 +46,23 @@ public class UserData extends SearchRequest {
   private String userType;
   
   private Long entityId;
+  
+  private List<MposFeatures> mpsoFeatures;
+  
+ 	/**
+ 	 * @return the mpsoFeatures
+ 	 */
+ 	public List<MposFeatures> getMpsoFeatures() {
+ 		return mpsoFeatures;
+ 	}
+
+ 	/**
+ 	 * @param mpsoFeatures
+ 	 *            the mpsoFeatures to set
+ 	 */
+ 	public void setMpsoFeatures(List<MposFeatures> mpsoFeatures) {
+ 		this.mpsoFeatures = mpsoFeatures;
+ 	}
   
   /**
    * @return the userId

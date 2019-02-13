@@ -45,6 +45,7 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.enums.RoleLevel;
 import com.chatak.pg.model.GenericUserDTO;
+import com.chatak.pg.model.MposFeatures;
 import com.chatak.pg.model.UserRoleDTO;
 import com.chatak.pg.model.UserRolesDTO;
 import com.chatak.pg.user.bean.IsoRequest;
@@ -739,6 +740,11 @@ public class UserManagementController implements URLMappingConstants {
     	roleController.getRoleListForRoles(session, model);
       List<UserRoleDTO> userRoleList = roleService.getRoleListByType(rolesType);
       session.setAttribute("userRoleListData", userRoleList);
+      List<MposFeatures> mposFeature = null;
+      if(rolesType.equals(Constants.MPOS_MERCHANT)){
+    	  mposFeature = roleService.getMposeFeatures();
+          model.put("mposFeature", mposFeature);
+      }
       ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
       IsoRequest isoRequest = new IsoRequest();
       CommonUtil.setEntityIdsFromUserType(programManagerRequest, isoRequest, session);

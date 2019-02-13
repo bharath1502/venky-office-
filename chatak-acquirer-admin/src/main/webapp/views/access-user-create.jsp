@@ -322,12 +322,12 @@
 			if($('#roleType').val() == 'Tms'){
 				$('#merchantDivId').hide();
 				$('#entityNameDiv').hide();
-				$('#mPos').show();
+				$('#mPos').hide();
 			}
 			if($('#roleType').val() == 'Reseller'){
 				$('#merchantDivId').hide();
 				$('#entityNameDiv').hide();
-				$('#mPos').show();
+				$('#mPos').hide();
 			}
 			
 			/* if($('#requestType').val() == 'ADMIN') {

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import com.chatak.pg.acq.dao.UsersRoleDao;
 import com.chatak.pg.acq.dao.model.PGUserRoles;
+import com.chatak.pg.acq.dao.model.PgMposFeatures;
 import com.chatak.pg.acq.dao.model.QPGUserRoles;
+import com.chatak.pg.acq.dao.repository.PgMposFeaturesRepository;
 import com.chatak.pg.acq.dao.repository.UsersRoleRepository;
 import com.chatak.pg.model.UserRolesDTO;
 import com.chatak.pg.util.Constants;
@@ -28,6 +30,9 @@ public class UsersRoleDaoImpl implements UsersRoleDao {
 
 	@PersistenceContext
 	private EntityManager entityManager;
+	
+	@Autowired
+	PgMposFeaturesRepository pgMposFeaturesRepository;
 
 	@Override
 	public PGUserRoles saveRole(PGUserRoles pGUserRoles) {
@@ -155,5 +160,14 @@ public class UsersRoleDaoImpl implements UsersRoleDao {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * @return
+	 */
+	@Override
+	public List<PgMposFeatures> getPgFeatures() {
+		List<PgMposFeatures> mposFeature = pgMposFeaturesRepository.findAll();
+		return mposFeature;
 	}
 }

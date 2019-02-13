@@ -29,6 +29,7 @@ import com.chatak.pg.acq.dao.UsersRoleDao;
 import com.chatak.pg.acq.dao.model.PGFeature;
 import com.chatak.pg.acq.dao.model.PGRolesFeatureMapping;
 import com.chatak.pg.acq.dao.model.PGUserRoles;
+import com.chatak.pg.acq.dao.model.PgMposFeatures;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.bean.RoleResponse;
 import com.chatak.pg.constants.ActionErrorCode;
@@ -36,6 +37,7 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.MapUtil;
 import com.chatak.pg.model.EditRoleResponse;
 import com.chatak.pg.model.FeatureDTO;
+import com.chatak.pg.model.MposFeatures;
 import com.chatak.pg.model.RolesFeatureMappingDTO;
 import com.chatak.pg.model.UserRoleDTO;
 import com.chatak.pg.model.UserRolesDTO;
@@ -453,5 +455,21 @@ public class RoleServiceImpl implements RoleService {
 		response.setFeatureDTO(featureDTOs);
 		logger.info("Exiting :: RoleServiceImpl :: getFeatureDataByIds");
 		return response;
+	}
+	
+	@Override
+	public List<MposFeatures> getMposeFeature() throws ReflectiveOperationException {
+		 List<PgMposFeatures> features = usersRoleDao.getPgFeatures();
+		 List<MposFeatures> list = new ArrayList<>();
+		 if (StringUtil.isListNotNullNEmpty(features)) {
+			 for (PgMposFeatures pgMposFeatures : features) {
+				 MposFeatures mposFeatures = new MposFeatures();
+				 mposFeatures.setId(pgMposFeatures.getId());
+				 mposFeatures.setFeatureName(pgMposFeatures.getFeaturename());
+				 mposFeatures.setTransactionType(pgMposFeatures.getTransactiontype());
+				 list.add(mposFeatures);
+			}
+		}
+		 return list;
 	}
 }

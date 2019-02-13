@@ -19,6 +19,5 @@ import com.chatak.pg.acq.dao.model.PGMerchantUserFeatureMapping;
  *
  */
 public interface PGMerchantUserFeatureMappingRepository extends JpaRepository<PGMerchantUserFeatureMapping, Long>, QueryDslPredicateExecutor<PGMerchantUserFeatureMapping> {
-	/*public List<PGMerchantUserFeatureMapping> findByRoleId(Long Id);*/
 
 }

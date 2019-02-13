@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.acq.dao.model.PGMerchantUserFeatureMapping;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.GenericUserDTO;
@@ -61,4 +62,6 @@ public interface MerchantUserDao {
   public PGMerchantUsers getMerchantUserByStatus(String userName) throws DataAccessException;
   
   public List<GenericUserDTO> searchMerchantUsersForPM(GenericUserDTO genericUserDTO, Long entityId);
+  
+  public PGMerchantUserFeatureMapping saveOrUpdateUserRoleFeatureMap(PGMerchantUserFeatureMapping gGMerchantUserFeatureMapping);
 }

@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.acq.dao.model.PGMerchantUserFeatureMapping;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.model.QPGMerchantUsers;
@@ -26,6 +27,7 @@ import com.chatak.pg.acq.dao.model.QPGUserRoles;
 import com.chatak.pg.acq.dao.repository.ApplicationClientRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.acq.dao.repository.MerchantUserRepository;
+import com.chatak.pg.acq.dao.repository.PGMerchantUserFeatureMappingRepository;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.AdminUserDTO;
@@ -52,6 +54,9 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
 	ApplicationClientRepository applicationClientRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
+	
+	@Autowired
+	PGMerchantUserFeatureMappingRepository pGMerchantUserFeatureMappingRepository;
 
 	private static Logger logger = Logger.getLogger(MerchantUpdateDaoImpl.class);
 
@@ -528,6 +533,11 @@ private OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
     }
 
     logger.info("Exiting :: MerchantUserDaoImpl :: saveOrUpdateApplicationClient");
+  }
+  @Override
+  public PGMerchantUserFeatureMapping saveOrUpdateUserRoleFeatureMap(
+		  PGMerchantUserFeatureMapping pGMerchantUserFeatureMapping) {
+    return pGMerchantUserFeatureMappingRepository.save(pGMerchantUserFeatureMapping);
   }
   
 }

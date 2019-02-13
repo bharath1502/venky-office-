@@ -165,7 +165,7 @@ public class UserServiceImpl implements UserService, PGConstants {
       merchantUser.setPhone(userData.getPhone());
       merchantUser.setAddress(userData.getAddress());
       PGMerchantUsers pgMerchantUsers = merchantUserDao.createOrUpdateUser(merchantUser);
-      SaveMposConfigFeature(userData,pgMerchantUsers);
+      saveMposConfigFeature(userData,pgMerchantUsers);
 
       //Inserting into PgApplicationClient table for OAuth Token Related changes
       PGApplicationClient applicationClient =
@@ -214,7 +214,7 @@ public class UserServiceImpl implements UserService, PGConstants {
     }
   }
    
-  private void SaveMposConfigFeature(UserData userData, PGMerchantUsers pgMerchantUsers)
+  private void saveMposConfigFeature(UserData userData, PGMerchantUsers pgMerchantUsers)
       throws ReflectiveOperationException {
     if (userData.getMpsoFeatures() != null) {
       List<MposFeatures> features = userData.getMpsoFeatures();

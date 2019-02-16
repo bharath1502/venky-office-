@@ -593,9 +593,7 @@ public class UserManagementController implements URLMappingConstants {
         && requestType.equalsIgnoreCase(Constants.USERS_GROUP_MERCHANT)) {
       userData.setRequestType(Constants.USERS_GROUP_MERCHANT);
     }
-    List<MposFeatures> mposFeature = null;
     if(userData.getUserType().equals(Constants.MPOS_MERCHANT)){
-        //mposFeature = roleService.getMposeFeatures();
         model.put("mposFeature", userData.getMpsoFeatures());
     }
     ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();

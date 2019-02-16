@@ -217,8 +217,6 @@
 														<span class="red-error" id="merchantNameDiv">&nbsp;</span>
 													</div>
 												</fieldset>
-												
-												
 												<!-- mpos Features start -->
 												<fieldset class="col-sm-12" id="mPos">
 														<fieldset class="col-sm-12 padding0 border-style-section">
@@ -242,7 +240,7 @@
 															</fieldset>
 														</fieldset>
 													</fieldset>
-													<!-- mpos Features end -->
+												<!-- mpos Features end -->
 											</div>
 										</div>
 										<!--Panel Action Button Start -->

@@ -212,7 +212,7 @@
 																	<div class="field-element-row">
 																	<fieldset class="col-sm-5">
 																	<c:forEach items="${mposFeature}" var="feature" varStatus="featureIndex">
-																    <input type="hidden" name="mpsoFeatures[${featureIndex.index}].id" value='${feature.id}' id="featureIndex${feature.id}"/>
+																    <input type="hidden" name="mpsoFeatures[${featureIndex.index}].featureId" value='${feature.id}' id="featureIndex${feature.id}"/>
 																	<li class="featurelist"><label>
 																	
 																	<form:checkbox path="mpsoFeatures[${featureIndex.index}].enabled" id="featureId${feature.id}" />${feature.featureName}</label></li> 

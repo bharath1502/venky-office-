@@ -543,52 +543,52 @@ private OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
     return pGMerchantUserFeatureMappingRepository.save(pGMerchantUserFeatureMapping);
   }
   
- /* @Override
-  public PGMerchantUserFeatureMapping findByRoleId(Long roleId) {
-    
-    
-    
-    
-    return null;
-    //return pGMerchantUserFeatureMappingRepository.findByRoleId(roleId);
-  }*/
-  
-  
   @Override
   public List<MposFeatures> findByRoleId(Long userId) throws DataAccessException {
-      
-      List<MposFeatures> mposFeaturesList = null;
-      try {
-          JPAQuery query = new JPAQuery(entityManager);
-          List<Tuple> tupleList = query.from(QPgMposFeatures.pgMposFeatures, QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping)
-              .where(isMposConfigIdEq(userId)
-                  .and(QPgMposFeatures.pgMposFeatures.id.eq(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId)))
-              .list(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.id,QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId,QPgMposFeatures.pgMposFeatures.featureName,QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.status);
-          
-          if (!CollectionUtils.isEmpty(tupleList)) {
-            mposFeaturesList = new ArrayList<MposFeatures>();
-              MposFeatures mposFeatures = null;
-              for (Tuple tuple : tupleList) {
-                mposFeatures = new MposFeatures();
-                mposFeatures.setId(tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.id));
-                mposFeatures.setFeatureId(tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId));
-                mposFeatures.setFeatureName(tuple.get(QPgMposFeatures.pgMposFeatures.featureName));
-                mposFeatures.setEnabled((tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.status)));
-                mposFeaturesList.add(mposFeatures);
-              }
-          }
-          if (mposFeaturesList != null && !mposFeaturesList.isEmpty()) {
-              return mposFeaturesList;
-          } 
-      } catch (Exception e) {
-        logger.error("Error ::MerchantUserDaoImpl :: getMerchant", e);
+
+    List<MposFeatures> mposFeaturesList = null;
+    try {
+      JPAQuery query = new JPAQuery(entityManager);
+      List<Tuple> tupleList = query
+          .from(QPgMposFeatures.pgMposFeatures,
+              QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping)
+          .where(isMposConfigIdEq(userId).and(QPgMposFeatures.pgMposFeatures.id
+              .eq(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId)))
+          .list(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.id,
+              QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId,
+              QPgMposFeatures.pgMposFeatures.featureName,
+              QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.status);
+
+      if (!CollectionUtils.isEmpty(tupleList)) {
+        mposFeaturesList = new ArrayList<MposFeatures>();
+        MposFeatures mposFeatures = null;
+        for (Tuple tuple : tupleList) {
+          mposFeatures = new MposFeatures();
+          mposFeatures
+              .setId(tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.id));
+          mposFeatures.setFeatureId(
+              tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId));
+          mposFeatures.setFeatureName(tuple.get(QPgMposFeatures.pgMposFeatures.featureName));
+          mposFeatures.setEnabled(
+              (tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.status)));
+          mposFeaturesList.add(mposFeatures);
+        }
       }
-      logger.info("Exiting ::MerchantUserDaoImpl :: getMerchant");
-      return Collections.emptyList();
+      if (mposFeaturesList != null && !mposFeaturesList.isEmpty()) {
+        return mposFeaturesList;
+      }
+    } catch (Exception e) {
+      logger.error("Error ::MerchantUserDaoImpl :: getMerchant", e);
+    }
+    logger.info("Exiting ::MerchantUserDaoImpl :: getMerchant");
+    return Collections.emptyList();
   }
-  
-  private BooleanExpression isMposConfigIdEq(Long userId) { 
-    return userId != null ? QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.merchantUserID.eq(userId.intValue()): null;
-}
+
+  private BooleanExpression isMposConfigIdEq(Long userId) {
+    return userId != null
+        ? QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.merchantUserID
+            .eq(userId.intValue())
+        : null;
+  }
   
 }

@@ -4,14 +4,6 @@ public class MposFeatures {
 
   private Long id;
 
-  public Long getFeatureId() {
-    return featureId;
-  }
-
-  public void setFeatureId(Long featureId) {
-    this.featureId = featureId;
-  }
-
   private Long featureId;
   
   private String featureName;
@@ -86,6 +78,14 @@ public class MposFeatures {
    */
   public void setTransactionType(String transactionType) {
     this.transactionType = transactionType;
+  }
+  
+  public Long getFeatureId() {
+    return featureId;
+  }
+
+  public void setFeatureId(Long featureId) {
+    this.featureId = featureId;
   }
 
 }

@@ -578,9 +578,9 @@ private OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
         return mposFeaturesList;
       }
     } catch (Exception e) {
-      logger.error("Error ::MerchantUserDaoImpl :: getMerchant", e);
+      logger.error("Error ::MerchantUserDaoImpl :: findByRoleId", e);
     }
-    logger.info("Exiting ::MerchantUserDaoImpl :: getMerchant");
+    logger.info("Exiting ::MerchantUserDaoImpl :: findByRoleId");
     return Collections.emptyList();
   }
 

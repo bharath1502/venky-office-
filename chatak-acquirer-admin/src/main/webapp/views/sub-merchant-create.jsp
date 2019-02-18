@@ -282,49 +282,6 @@ Include all compiled plugins (below), or include individual files as needed
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.applicationmode" /><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="appMode"
-															id="appMode" onblur="validateAppMode()">
-															<form:option value="">..:<spring:message
-																	code="manage.option.sub-merchant.select" />:..</form:option>
-															<form:option value="DEMO">
-																<spring:message code="manage.option.sub-merchant.demo" />
-															</form:option>
-															<form:option value="PRELIVE">
-																<spring:message
-																	code="manage.option.sub-merchant.pre-live" />
-															</form:option>
-															<form:option value="LIVE">
-																<spring:message code="manage.option.sub-merchant.live" />
-															</form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="appModeEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.businessurl" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="businessURL"
-															maxlength="100" id="businessURL"
-															onblur="this.value=this.value.trim();validateURL()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="businessURLEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.lookingfor" /></label>
-														<form:textarea cssClass="form-control" path="lookingFor"
-															id="lookingFor" onblur="this.value=this.value.trim();" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="lookingForEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.businesstype" /></label>
 														<form:select cssClass="form-control" path="businessType"
 															id="businessType">

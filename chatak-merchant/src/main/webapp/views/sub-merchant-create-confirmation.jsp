@@ -66,18 +66,6 @@
 																	<td><div id="confirmMstatus"></div></td>
 																</tr> --%>
 																<tr>
-																	<td><spring:message code="sub-merchant-create.label.applicationmode"/>:</td>
-																	<td><div id="confirmMappMode"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="sub-merchant-create.label.businessURL"/>:</td>
-																	<td><div id="confirmMbusinessURL"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="sub-merchant-create.label.lookingfor"/>?</td>
-																	<td><div id="confirmLookingFor"></div></td>
-																</tr>
-																<tr>
 																	<td><spring:message code="sub-merchant-create.label.businesstype"/>:</td>
 																	<td><div id="confirmBusinessType"></div></td>
 																</tr>

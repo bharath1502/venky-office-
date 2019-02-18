@@ -459,21 +459,6 @@
 					</tr>
 					<tr>
 						<td><spring:message
-								code="manage.label.sub-merchant.applicationmode" />:</td>
-						<td><div id="confirmMappMode"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.businessurl" />:</td>
-						<td><div id="confirmMbusinessURL"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.lookingfor" /></td>
-						<td><div id="confirmLookingFor"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
 								code="manage.label.sub-merchant.businesstype" />:</td>
 						<td><div id="confirmBusinessType"></div></td>
 					</tr>

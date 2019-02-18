@@ -449,14 +449,6 @@
 						<td><div id="confirmMpin"></div></td>
 					</tr>
 					<tr>
-						<td><spring:message code="merchant.label.applicationmode" />:</td>
-						<td><div id="confirmMappMode"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.businessURL" />:</td>
-						<td><div id="confirmMbusinessURL"></div></td>
-					</tr>
-					<tr>
 						<td><spring:message code="merchant.label.lookingfor" />:</td>
 						<td><div id="confirmLookingFor"></div></td>
 					</tr>

@@ -19,5 +19,4 @@ import com.chatak.pg.acq.dao.model.PGMerchantUserFeatureMapping;
  *
  */
 public interface PGMerchantUserFeatureMappingRepository extends JpaRepository<PGMerchantUserFeatureMapping, Long>, QueryDslPredicateExecutor<PGMerchantUserFeatureMapping> {
-
 }

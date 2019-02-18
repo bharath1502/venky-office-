@@ -224,7 +224,8 @@ public class UserServiceImpl implements UserService, PGConstants {
           PGMerchantUserFeatureMapping pgMerchantUserFeatureMapping =
               new PGMerchantUserFeatureMapping();
           pgMerchantUserFeatureMapping.setMerchantUserID(pgMerchantUsers.getId().intValue());
-          pgMerchantUserFeatureMapping.setFeatureId(pgMposFeatures.getId());
+          pgMerchantUserFeatureMapping.setId(pgMposFeatures.getId());
+          pgMerchantUserFeatureMapping.setFeatureId(pgMposFeatures.getFeatureId());
           pgMerchantUserFeatureMapping.setStatus(pgMposFeatures.getEnabled());
           pgMerchantUserFeature = CommonUtil.copyBeanProperties(pgMerchantUserFeatureMapping,
               PGMerchantUserFeatureMapping.class);
@@ -278,6 +279,7 @@ public class UserServiceImpl implements UserService, PGConstants {
           PGMerchant pgMerchant = merchantUserDao.findById(pgMerchantUsers.getPgMerchantId());
           
           updateMerchantUser(userData, pgMerchantUsers, pgMerchant);
+          saveMposConfigFeature(userData,pgMerchantUsers);
         
         } else {
           List<PGAdminUser> adminUser = adminUserDao.findByUserName(userData.getUserName());
@@ -535,8 +537,10 @@ public class UserServiceImpl implements UserService, PGConstants {
 
         PGMerchantUsers merchantUser = merchantUserDao.findByMerchantUserId(userId);
         if (merchantUser != null) {
-          PGMerchant merchant =
+          PGMerchant merchant = 
               merchantProfileDao.getMerchantById(merchantUser.getPgMerchantId());
+          List<MposFeatures> PGMerchantUserFeatureMapping = merchantUserDao.findByRoleId(userId);
+          userData.setMpsoFeatures(PGMerchantUserFeatureMapping);
           userData.setMerchantName(merchant.getBusinessName());
           userData.setEmailId(merchantUser.getEmail());
           userData.setFirstName(merchantUser.getFirstName());

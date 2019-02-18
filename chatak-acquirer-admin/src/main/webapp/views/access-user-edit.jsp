@@ -217,6 +217,30 @@
 														<span class="red-error" id="merchantNameDiv">&nbsp;</span>
 													</div>
 												</fieldset>
+												<!-- mpos Features start -->
+												<fieldset class="col-sm-12" id="mPos">
+														<fieldset class="col-sm-12 padding0 border-style-section">
+															<fieldset class="col-sm-12">
+																<div class="container-heading-separator">
+																	<span><spring:message code="merchant.label.mPosFeatures"/></span>
+																	<div class="row">
+																	<div class="field-element-row">
+																	<fieldset class="col-sm-5">
+																	<c:forEach items="${mposFeature}" var="feature" varStatus="featureIndex">
+																    <input type="hidden" name="mpsoFeatures[${featureIndex.index}].featureId" value='${feature.featureId}' id="featureIndex${feature.featureId}"/>
+																	<li class="featurelist"><label>
+																	<input type="hidden" name ="mpsoFeatures[${featureIndex.index}].id" value ='${feature.id}'/>
+																	<input type="hidden" name ="mpsoFeatures[${featureIndex.index}].featureName" value ='${feature.featureName}'/>
+																	<form:checkbox path="mpsoFeatures[${featureIndex.index}].enabled" id="featureId${feature.id}" />${feature.featureName}</label></li> 
+																	</c:forEach>
+																	</fieldset>
+																	</div>
+																	</div>
+																</div>
+															</fieldset>
+														</fieldset>
+													</fieldset>
+												<!-- mpos Features end -->
 											</div>
 										</div>
 										<!--Panel Action Button Start -->
@@ -299,25 +323,32 @@
 				$('#merchantDivId').hide();
 				$('#merchantNameId').hide();
 				$('#entityNameDiv').hide();
+				$('#mPos').hide();
 			} else if($('#userType').val() == 'Program Manager' || $('#userType').val() == 'ISO') {
 				$('#merchantDivId').hide();
 				$('#merchantNameId').hide();
 				$('#entityNameDiv').show();
+				$('#mPos').hide();
 				if($('#userType').val() == 'Program Manager') {
 					document.getElementById("entityLabel").innerHTML=webMessages.entityProgramManager;
 					$("#red-color").addClass("required-field");
+					$('#mPos').hide();
 				} else if($('#userType').val() == 'ISO') {
 					document.getElementById("entityLabel").innerHTML=webMessages.entityIso;
 					$("#red-color").addClass("required-field");
+					$('#mPos').hide();
 				}
 			} else if($('#userType').val() == 'Merchant') {
 				$('#entityNameDiv').hide();
+				$('#mPos').show();
 			}
 			if($('#userType').val() == 'Tms'){
 				$('#merchantDivId').hide();
+				$('#mPos').hide();
 			}
 			if($('#userType').val() == 'Reseller'){
 				$('#merchantDivId').hide();
+				$('#mPos').hide();
 			}
 		});
 		$('#my_popup1').popup({

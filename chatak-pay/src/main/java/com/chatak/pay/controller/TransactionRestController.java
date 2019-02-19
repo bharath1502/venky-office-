@@ -58,6 +58,7 @@ import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.bean.ChangePasswordRequest;
 import com.chatak.pg.bean.ForgotPasswordRequest;
+import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.TransactionType;
@@ -69,6 +70,8 @@ import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.Properties;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
+import com.chatak.switches.sb.exception.ServiceException;
 import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 import com.sleepycat.je.utilint.Timestamp;
 /**
@@ -150,6 +153,10 @@ public class TransactionRestController extends BaseController implements URLMapp
 
       getTransactionResponse(transactionResponse);
 
+    } catch(ChatakInvalidTransactionException ce) {
+      logger.error("Error :: TransactionRestController :: process: ChatakPayException", ce);
+      transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0027.name());
+      transactionResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0027.name(), null, LocaleContextHolder.getLocale()));
     } catch(ChatakPayException ce) {
       logger.error("Error :: TransactionRestController :: process: ChatakPayException", ce);
       transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0099.name());
@@ -158,14 +165,13 @@ public class TransactionRestController extends BaseController implements URLMapp
       logger.error("Error :: TransactionRestController :: process: InvalidRequestException", e);
       transactionResponse.setErrorCode(e.getErrorCode());
       transactionResponse.setErrorMessage(messageSource.getMessage(e.getErrorCode(), null, LocaleContextHolder.getLocale()));
-    } catch(Exception e) {
+    }catch(Exception e) {
       logger.error("Error :: TransactionRestController :: process: Exception", e);
       transactionResponse = new TransactionResponse();
       logger.error("ERROR: " + e.getMessage());
       transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0099.name());
       transactionResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0999.name(), null, LocaleContextHolder.getLocale()));
     }
-
     logger.info("Exiting:: SaleTransactionController:: process method");
     validateTxnResponse(transactionRequest, transactionResponse);
     return transactionResponse;
@@ -187,7 +193,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 	return null != transactionRequest.getEntryMode() && EntryModeEnum.QR_SALE.name().equalsIgnoreCase(transactionRequest.getEntryMode().name());
 }
 
-  private Response validateTransactionType(TransactionRequest transactionRequest) throws InvalidRequestException,IOException, HttpClientException {
+  private Response validateTransactionType(TransactionRequest transactionRequest) throws InvalidRequestException,IOException, HttpClientException, ChatakInvalidTransactionException {
 	TSMRequest tmsRequest = new TSMRequest();
 	  tmsRequest.setMerchantCode(transactionRequest.getMerchantCode());
 	  tmsRequest.setTid(transactionRequest.getTerminalId());
@@ -228,7 +234,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
   }
 
   private Response processRequest(TransactionRequest transactionRequest, PGMerchant pgMerchant)
-      throws InvalidRequestException {
+      throws InvalidRequestException, ChatakInvalidTransactionException {
     if(null != pgMerchant) {
     	logger.info("validateProcessRequest :: LOAD_FUND :: Proceeding");  
     	return pgTransactionService.processTransaction(transactionRequest, pgMerchant);
@@ -497,6 +503,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
             	return clientLoginResponse;
             }
             clientLoginResponse = CommonUtil.copyBeanProperties(loginResponse, ClientSsoLoginResponse.class);
+            clientLoginResponse.setMpsoFeatures(clientLoginResponse.getMpsoFeatures());
             if (loginResponse.getCurrencyDTO() != null) {
               ClientCurrencyDTO currencyDTO = CommonUtil.copyBeanProperties(loginResponse.getCurrencyDTO(), ClientCurrencyDTO.class);
               clientLoginResponse.setCurrencyDTO(currencyDTO);

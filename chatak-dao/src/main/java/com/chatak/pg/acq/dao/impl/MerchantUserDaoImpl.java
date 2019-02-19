@@ -591,4 +591,31 @@ private OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
         : null;
   }
   
+  @Override
+  public List<String> findByFeatureStatus(Long userId) throws DataAccessException {
+
+    try {
+      JPAQuery query = new JPAQuery(entityManager);
+      List<String> tupleList = query
+          .from(QPgMposFeatures.pgMposFeatures,
+              QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping)
+          .where(isMposConfigIdEq(userId),
+              isFeatureStatusEq()
+              .and(QPgMposFeatures.pgMposFeatures.id
+              .eq(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId)))
+          .list(QPgMposFeatures.pgMposFeatures.featureName);
+      if (tupleList != null && !tupleList.isEmpty()) {
+        return tupleList;
+      }
+    } catch (Exception e) {
+      logger.error("Error ::MerchantUserDaoImpl :: findByRoleId", e);
+    }
+    logger.info("Exiting ::MerchantUserDaoImpl :: findByRoleId");
+    return Collections.emptyList();
+  }
+  
+  private BooleanExpression isFeatureStatusEq() {
+
+    return QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.status.eq(true);
+}
 }

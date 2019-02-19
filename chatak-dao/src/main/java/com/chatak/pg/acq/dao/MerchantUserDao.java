@@ -66,5 +66,9 @@ public interface MerchantUserDao {
   
   public PGMerchantUserFeatureMapping saveOrUpdateUserRoleFeatureMap(PGMerchantUserFeatureMapping gGMerchantUserFeatureMapping);
   
-  public List<MposFeatures> findByRoleId(Long userId);
+  public List<MposFeatures> findByRoleId(Long userId);
+  
+  public List<String> findByFeatureStatus(Long userId);
+  
+  
 }

@@ -67,6 +67,7 @@ public enum ChatakPayErrorCode {
   TXN_0116("Fee program is not created"),
   TXN_0117("Fee amount should not be more than transaction amount"),
   TXN_0403("Access Denied"),
+  TXN_0027("Invalid transaction"),
 	
   GEN_001("Success"),
   GEN_002("Error"),

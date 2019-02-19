@@ -130,26 +130,6 @@ public class ProgramManagerRequest extends SearchRequest {
 	private Long entityId;
 	
 	private String loginuserType;
-	
-	private List<String> panLow;
-	
-	private List<String> panHigh;
-
-	private List<PanRangeRequest> panRangeList;
-
-	 /**
-	 * @return the panRangeList
-	 */
-	public List<PanRangeRequest> getPanRangeList() {
-		return panRangeList;
-	}
-
-	/**
-	 * @param panRangeList the panRangeList to set
-	 */
-	public void setPanRangeList(List<PanRangeRequest> panRangeList) {
-		this.panRangeList = panRangeList;
-	}
 
 	/**
     * @return the entityId
@@ -802,35 +782,4 @@ public class ProgramManagerRequest extends SearchRequest {
 		this.pmSystemConvertedTime = pmSystemConvertedTime;
 	}
 
-	/**
-	 * @return the panLow
-	 */
-	public List<String> getPanLow() {
-		return panLow;
-	}
-
-	/**
-	 * @param panLow the panLow to set
-	 */
-	public void setPanLow(List<String> panLow) {
-		this.panLow = panLow;
-	}
-
-	/**
-	 * @return the panHigh
-	 */
-	public List<String> getPanHigh() {
-		return panHigh;
-	}
-
-	/**
-	 * @param panHigh the panHigh to set
-	 */
-	public void setPanHigh(List<String> panHigh) {
-		this.panHigh = panHigh;
-	}
-	
-	
-	
-	
 }

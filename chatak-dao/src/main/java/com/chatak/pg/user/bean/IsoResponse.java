@@ -22,6 +22,9 @@ public class IsoResponse extends Response{
 	private List<ProgramManagerRequest> programManagerRequestList;
 	private List<CardProgramRequest> cardProgramRequestList;
 	
+	private List<PanRangeRequest> panRangeRequests;
+	
+	
 	/**
 	 * @return the programManagerRequestList
 	 */
@@ -53,5 +56,17 @@ public class IsoResponse extends Response{
 	}
 	public void setIsoRequest(List<IsoRequest> isoRequest) {
 		this.isoRequest = isoRequest;
+	}
+	/**
+	 * @return the panRangeRequests
+	 */
+	public List<PanRangeRequest> getPanRangeRequests() {
+		return panRangeRequests;
+	}
+	/**
+	 * @param panRangeRequests the panRangeRequests to set
+	 */
+	public void setPanRangeRequests(List<PanRangeRequest> panRangeRequests) {
+		this.panRangeRequests = panRangeRequests;
 	}
 }

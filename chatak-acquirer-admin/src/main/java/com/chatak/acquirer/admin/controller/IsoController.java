@@ -33,6 +33,7 @@ import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.BankService;
 import com.chatak.acquirer.admin.service.CurrencyConfigService;
 import com.chatak.acquirer.admin.service.IsoService;
+import com.chatak.acquirer.admin.service.ProgramManagerService;
 import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
@@ -43,6 +44,7 @@ import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.IsoRequest;
 import com.chatak.pg.user.bean.IsoResponse;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
+import com.chatak.pg.user.bean.ProgramManagerResponse;
 import com.chatak.pg.user.bean.Response;
 import com.chatak.pg.util.Constants;
 
@@ -64,13 +66,21 @@ public class IsoController implements URLMappingConstants{
 	  @Autowired
 	  private BankService bankService;
 	  
+	  @Autowired
+	  private ProgramManagerService programManagerService;
+	  
 	 
 	  @RequestMapping(value = SHOW_ISO_CREATE, method = RequestMethod.GET)
 	  public ModelAndView showIsoCreate(Map model, HttpSession session) {
 		logger.info("Entering :: IsoController :: showIsoCreate");
 	    ModelAndView modelAndView = new ModelAndView(ISO_CREATE_VIEW);
 	    try {
-	    	
+	    	String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
+	    	ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
+	        programManagerRequest.setStatuses(Arrays.asList(Constants.ACTIVE));
+	        programManagerRequest.setLoginuserType(userType);
+	        ProgramManagerResponse programManagerResponse = programManagerService.getAllProgramManagers(programManagerRequest);
+	        modelAndView.addObject("programManagerList",programManagerResponse.getProgramManagersList());
 	    	 List<Option> countryList = bankService.getCountries();
 	         modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
 	    	List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
@@ -236,7 +246,8 @@ public class IsoController implements URLMappingConstants{
 	    	IsoRequest isoRequest = new IsoRequest();
 	    	isoRequest.setId(isoId);
 	    	IsoResponse isoResponse = isoService.getIsoById(isoRequest);
-	    	model.put("isoEdit", isoResponse);	    
+	    	model.put("isoEdit", isoResponse);
+	    	model.put("panRangeList", JsonUtil.convertObjectToJSON(isoResponse.getIsoRequest().get(0).getPanRangeList())+"");
 	    	model.put("selectedPmList", isoResponse.getProgramManagerRequestList());
 	    	model.put("cardProgramList", isoResponse.getCardProgramRequestList());
 	    	 List<Option> countryList = bankService.getCountries();
@@ -273,6 +284,7 @@ public class IsoController implements URLMappingConstants{
 		try {
 			IsoRequest isoReq;
 			isoReq=isoRequest.getIsoRequest().get(0);
+			isoReq.setPanRangeList(isoRequest.getPanRangeRequests());
 			if (!file.isEmpty()) {
 				isoReq.getProgramManagerRequest().setProgramManagerLogo(file.getBytes());
 			}

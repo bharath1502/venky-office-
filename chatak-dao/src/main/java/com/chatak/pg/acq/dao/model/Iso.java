@@ -113,7 +113,25 @@ public class Iso implements Serializable{
 
 	  @Column(name = "ROUTING_NUMBER")
 	  private String routingNumber;
+	  
+	  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	  @JoinColumn(name = "ISO_ID", referencedColumnName = "ID")
+	  private Set<PanRanges> panRanges;
 
+
+	/**
+	 * @return the panRanges
+	 */
+	public Set<PanRanges> getPanRanges() {
+		return panRanges;
+	}
+
+	/**
+	 * @param panRanges the panRanges to set
+	 */
+	public void setPanRanges(Set<PanRanges> panRanges) {
+		this.panRanges = panRanges;
+	}
 
 	/**
 	 * @return the id

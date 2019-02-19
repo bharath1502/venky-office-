@@ -31,6 +31,7 @@ import com.chatak.pg.acq.dao.model.QIsoCardProgramMap;
 import com.chatak.pg.acq.dao.model.QIsoPmMap;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.model.QPGMerchantEntityMap;
+import com.chatak.pg.acq.dao.model.QPanRanges;
 import com.chatak.pg.acq.dao.model.QProgramManager;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.IsoAccountRepository;
@@ -45,6 +46,7 @@ import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.IsoRequest;
 import com.chatak.pg.user.bean.IsoResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
@@ -398,9 +400,24 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 				isoDTO.setBankName(iso.getBankName());
 				isoDTO.setBankAccNum(iso.getBankAccNum());
 				isoDTO.setRoutingNumber(iso.getRoutingNumber());
+				JPAQuery querys = new JPAQuery(entityManager);
+			      List<Tuple> panRanges = querys.from(QPanRanges.panRanges)
+			          .where(QPanRanges.panRanges.IsoId.eq(isoRequest.getId()))
+			          .list(QPanRanges.panRanges.panLow,QPanRanges.panRanges.panHigh);
+			      
+			      List<PanRangeRequest> panRange = new ArrayList<>(0);
+			      PanRangeRequest range;
+			      for(Tuple ranges: panRanges){
+			    	  range = new PanRangeRequest();
+			    	  range.setPanLow(ranges.get(QPanRanges.panRanges.panLow));
+			    	  range.setPanHigh(ranges.get(QPanRanges.panRanges.panHigh));
+			    	  panRange.add(range);
+			      }
+			      isoDTO.setPanRangeList(panRange);
 				isoRequests.add(isoDTO);
 			}			
 		}
+		
 		isoResponse.setIsoRequest(isoRequests);
 		
 		JPAQuery query = new JPAQuery(entityManager);
@@ -419,7 +436,6 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 			programManagerRequests.add(programManager);
 		}
 		isoResponse.setProgramManagerRequestList(programManagerRequests);
-		isoResponse.setCardProgramRequestList(fetchCardProgramByIso(isoRequest.getId()));
 		return isoResponse;
 	}
 

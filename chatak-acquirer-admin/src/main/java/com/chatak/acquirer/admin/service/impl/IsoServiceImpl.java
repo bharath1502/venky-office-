@@ -19,11 +19,13 @@ import com.chatak.acquirer.admin.constants.StatusConstants;
 import com.chatak.acquirer.admin.controller.model.Option;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.IsoService;
+import com.chatak.acquirer.admin.util.CommonUtil;
 import com.chatak.pg.acq.dao.IsoServiceDao;
 import com.chatak.pg.acq.dao.model.Iso;
 import com.chatak.pg.acq.dao.model.IsoAccount;
 import com.chatak.pg.acq.dao.model.IsoCardProgramMap;
 import com.chatak.pg.acq.dao.model.IsoPmMap;
+import com.chatak.pg.acq.dao.model.PanRanges;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionCode;
 import com.chatak.pg.constants.PGConstants;
@@ -34,6 +36,7 @@ import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.IsoRequest;
 import com.chatak.pg.user.bean.IsoResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
@@ -140,6 +143,15 @@ public class IsoServiceImpl implements IsoService{
 			iso.setBankAccNum(isoRequest.getBankAccNum());
 			iso.setRoutingNumber(isoRequest.getRoutingNumber());
 			setPmAndCpMapping(isoRequest, iso);
+			if (StringUtil.isListNotNullNEmpty(isoRequest.getPanRangeList())) {
+				Set<PanRanges> panRanges = new HashSet<PanRanges>();
+				for (PanRangeRequest panRange : isoRequest.getPanRangeList()) {
+					PanRanges panRanges2 = CommonUtil
+							.copyBeanProperties(panRange, PanRanges.class);
+					panRanges.add(panRanges2); 
+				}
+				iso.setPanRanges(panRanges);
+			}
 			iso = isoServiceDao.saveIso(iso);
 			//save iso account
 			createIsoAccount(isoRequest, iso, accountNumber);
@@ -237,6 +249,13 @@ public class IsoServiceImpl implements IsoService{
 			iso.setBankAccNum(isoRequest.getBankAccNum());
 			iso.setBankName(isoRequest.getBankName());
 			iso.setRoutingNumber(isoRequest.getRoutingNumber());
+			Set<PanRanges> panRanges = new HashSet<PanRanges>();
+			for (PanRangeRequest panRange : isoRequest.getPanRangeList()) {
+				PanRanges panRanges2 = CommonUtil
+						.copyBeanProperties(panRange, PanRanges.class);
+				panRanges.add(panRanges2); 
+			}
+			iso.setPanRanges(panRanges);
 			if(isoRequest.getProgramManagerRequest().getProgramManagerLogo()!=null){
 				iso.setIsoLogo(isoRequest.getProgramManagerRequest().getProgramManagerLogo());				
 			}
@@ -285,11 +304,9 @@ public class IsoServiceImpl implements IsoService{
 	}
 	private void setPmAndCpMapping(IsoRequest isoRequest,Iso iso){
 		Set<IsoPmMap> isoPmMap = new HashSet<>();
-		for(Long id : isoRequest.getProgramManagerIds()){
 			IsoPmMap pgIsoPmMap = new IsoPmMap();
-			pgIsoPmMap.setPmId(id);
+			pgIsoPmMap.setPmId(isoRequest.getProgramManagerRequest().getProgramManagerId());
 			isoPmMap.add(pgIsoPmMap);
-		}
 		iso.setPgIsoPmMap(isoPmMap);
 		Set<IsoCardProgramMap> isoCardProgramMap = new HashSet<>();
 		for(Map.Entry<Long, Long> id : isoRequest.getCardProgramAndEntityId().entrySet()){

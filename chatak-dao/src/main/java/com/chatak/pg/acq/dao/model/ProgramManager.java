@@ -106,24 +106,6 @@ public class ProgramManager implements Serializable {
 	
 	@Column(name = "SCHEDULER_RUN_STATUS")
 	private String schedulerRunStatus;
-	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "PROGRAM_MANAGER_ID", referencedColumnName = "ID")
-	private Set<PanRanges> panRanges;
-
-	/**
-	 * @return the panRanges
-	 */
-	public Set<PanRanges> getPanRanges() {
-		return panRanges;
-	}
-
-	/**
-	 * @param panRanges the panRanges to set
-	 */
-	public void setPanRanges(Set<PanRanges> panRanges) {
-		this.panRanges = panRanges;
-	}
 
 	/**
 	 * @return the extension

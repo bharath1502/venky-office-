@@ -82,6 +82,25 @@
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
+											
+											<fieldset class="col-md-3 col-sm-6">
+													<label><spring:message
+															code="admin.program.manager.list" /><span
+														class="required-field">*</span></label>
+													<form:select cssClass="form-control" id="programManagerId" onblur="clientValidation('programManagerName','program_manager_name','isoPmerrormsg')"
+														path="programManagerRequest.programManagerId">
+														<form:option value="">
+															<spring:message code="iso-create.currency.label.select" />
+														</form:option>
+														<c:forEach items="${programManagerList}" var="pmList">
+															<form:option value="${pmList.id}">${pmList.programManagerName}</form:option>
+														</c:forEach>
+													</form:select>
+													<div class="discriptionErrorMsg">
+														<span id="isoPmerrormsg" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="admin.iso.Name.message" /><span
 														class="required-field">*</span></label>
@@ -285,7 +304,7 @@
 														<span id="isoLogoErrorDiv" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-													<fieldset class="col-sm-12">
+													<%-- <fieldset class="col-sm-12">
 													<fieldset class="col-sm-5 multi-select-box">
 													<label><spring:message code="admin.program.manager.list" /></label>
 														<select class="pm-list form-control features left-select-box" multiple="multiple" id="programManagers">
@@ -312,12 +331,55 @@
 																id="selectedProgramManager_ErrorDiv">&nbsp;</span>
 														</div>
 													</fieldset>
-												</fieldset>
+												</fieldset> --%>
+												<div class="col-sm-12" id="customFieldsDiv">
+														<div
+															style="border: 1px solid #afafaf; padding: 5px; padding-top: 15px; margin-top: 10px; overflow: hidden;">
+															<div
+																style="background: #fff; position: absolute; top: 2px; color: #0072c6;">
+																<spring:message code="admin.pm.label.paniinrange" />
+															</div>
+															<fieldset class="col-md-3 col-sm-6">
+																<label><spring:message
+																		code="admin.pm.label.panlow" /></label> <input type="text"
+																	value="" name="panRangeList[0].panLow"
+																	id="panRangeList[0].panLow" class="form-control"
+																	onkeypress="return numbersonly(this, event);"
+																	maxlength="10"
+																	onblur="return validateTextFieldData(this.value,'panRangeList[0].panLow', 'panRangeList[0].panLowEr','${6}')"
+																	style="width: 200px;" />
+
+																<div class="discriptionErrorMsg">
+																	<span id="panRangeList[0].panLowEr" class="red-error">&nbsp;</span>
+																</div>
+															</fieldset>
+															<fieldset class="col-md-3 col-sm-6">
+																<label><spring:message
+																		code="admin.pm.label.panhigh" /></label> <input type="text"
+																	value="" name="panRangeList[0].panHigh"
+																	id="panRangeList[0].panHigh" class="form-control"
+																	onkeypress="return numbersonly(this, event);"
+																	onblur="return validateTextFieldData(this.value,'panRangeList[0].panHigh', 'panRangeList[0].panHighEr','${6}')"
+																	maxlength="10" style="width: 200px;" />
+
+																<div class="discriptionErrorMsg">
+																	<span id="panRangeList[0].panHighEr" class="red-error">&nbsp;</span>
+																</div>
+															</fieldset>
+															<button type="button" class="addSubRow add-btn-style"
+																id="mainFeeValueBtn_0" onclick='addSubrow(this)'
+																style="display: inline; float: left; margin: 23px 22px;">
+																<span class="glyphicon glyphicon-plus"></span>
+															</button>
+															<div class="added-sub-row1 row"></div>
+															<br>
+														</div>
+													</div>
 												
 											</div>
 											<!-- Content Block End -->
 					<!-- Search Table Block Start -->
-						<div class="search-results-table">
+						<%-- <div class="search-results-table">
 						<table
 								class="table table-striped table-bordered table-condensed marginBM1">
 								<!-- Search Table Header Start -->
@@ -345,7 +407,7 @@
 								</thead>
 							</table>
 							<!-- Search Table Content End -->
-											</div>
+											</div> --%>
 											<!--Panel Action Button Start -->
 											<div class="col-sm-12 form-action-buttons">
 												<div class="col-sm-5"></div>
@@ -614,6 +676,72 @@
 					});
 			});
 			});
+		
+		var editPage = false;
+        var rangeIndex=0;
+        var totalCustomFieldRows = 0;
+        function addSubrow($this) {
+        	if(totalCustomFieldRows>8){
+        		return;
+        	}
+        	var currentMainPositionAr = $this.id.split('_');
+        	rangeIndex++;
+        	totalCustomFieldRows++;
+        	var newFilterRow = "<fieldset class='col-sm-12 sub-row-field' data-sub-index="
+    			+ rangeIndex
+    			+ " id='custom-div"
+    			+ rangeIndex
+    			+"'><fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan Low</label><input type='text' value='' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeList["+rangeIndex+"].panLowEr\",${6})' name='panRangeList["
+    			+rangeIndex
+    			+"].panLow' id='panRangeList["
+    			+ rangeIndex
+    			+ "].panLow' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeList["
+    			+ rangeIndex
+    			+ "].panLowEr' class='red-error'>&nbsp;</span></div></fieldset>"
+    			+"<fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan High</label><input type='text' value='' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeList["+rangeIndex+"].panHighEr\",${6})' name='panRangeList["
+    				+rangeIndex
+    				+"].panHigh' id='panRangeList["
+        			+ rangeIndex
+        			+ "].panHigh' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeList["
+        			+ rangeIndex
+        			+ "].panHighEr' class='red-error'>&nbsp;</span></div></fieldset><fieldset class='col-sm-1 textCenter ' ><span class='glyphicon glyphicon-trash delete-refund-sub-icon' style='cursor:pointer;margin-top: 60%;margin-left: 20%;'></span></fieldset></fieldset>";
+        	if(editPage) {
+        		if($($this).parent().children().hasClass('added-sub-row1')) {
+        			$($this).parent().find('.added-sub-row1').append(newFilterRow);
+        		} else {
+        			$($this).parent().siblings().find('.added-sub-row1').append(newFilterRow);
+        		}
+        		
+        	} else {
+        		$($this).parent().find('.added-sub-row1').append(newFilterRow);
+        	}
+        }
+        
+        $('body')
+		.on(
+				'click',
+				'.delete-refund-sub-icon',
+				function() {
+					var deleteEle = $(this)[0];
+					$(this).parent().parent().remove();
+					totalCustomFieldRows = totalCustomFieldRows-1;
+				});
+        
+        function validateTextFieldData(textFieldData,textFieldId, messageLine_errDiv, textFieldLength){
+    		var flag = true;
+    		textFieldData = textFieldData.trim();
+    			var numericValues = /^[0-9]+$/;
+    			if(textFieldData == ''){
+    				setDiv(messageLine_errDiv, "Please Enter Pan Range");
+    				flag = false;
+    			} else if (textFieldData.length < textFieldLength) {
+    				setDiv(messageLine_errDiv, "Value should be more than " + textFieldLength);
+    				flag = false;
+    			} else {
+    				setDiv(messageLine_errDiv, '');
+    			}
+    		return flag;
+    	}
 	</script>
 	</script>
 	

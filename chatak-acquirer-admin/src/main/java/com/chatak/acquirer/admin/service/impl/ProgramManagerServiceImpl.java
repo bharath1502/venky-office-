@@ -126,15 +126,6 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
     pManager.setSchedulerRunTime(programManagerRequest.getSchedulerRunTime());
     pManager.setDefaultProgramManager(programManagerRequest.getDefaultProgramManager());
     pManager.setAccountCurrency(programManagerRequest.getAccountCurrency()!=null ? programManagerRequest.getAccountCurrency() : programManagerRequest.getAcquirerCurrencyName());
-    if (StringUtil.isListNotNullNEmpty(programManagerRequest.getPanRangeList())) {
-		Set<PanRanges> panRanges = new HashSet<PanRanges>();
-		for (PanRangeRequest panRange : programManagerRequest.getPanRangeList()) {
-			PanRanges panRanges2 = CommonUtil
-					.copyBeanProperties(panRange, PanRanges.class);
-			panRanges.add(panRanges2); 
-		}
-		pManager.setPanRanges(panRanges);
-	}
     ProgramManager pmResponse = programManagerDao.saveOrUpdateProgramManager(pManager);
     PGCurrencyConfig pGCurrencyCode = null ;
     pGCurrencyCode = setPGCurrencyCode(programManagerRequest);
@@ -637,13 +628,13 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
         }
         programManager.setBankProgramManagerMaps(bankProgramManagerMaps);
         
-        Set<PanRanges> panRanges = new HashSet<PanRanges>();
+        /*Set<PanRanges> panRanges = new HashSet<PanRanges>();
 		for (PanRangeRequest panRange : programManagerRequest.getPanRangeList()) {
 			PanRanges panRanges2 = CommonUtil
 					.copyBeanProperties(panRange, PanRanges.class);
 			panRanges.add(panRanges2); 
 		}
-		programManager.setPanRanges(panRanges);
+		programManager.setPanRanges(panRanges);*/
   }
 
   private Boolean isPmNameAlreadyExist(ProgramManagerRequest programManagerRequest,

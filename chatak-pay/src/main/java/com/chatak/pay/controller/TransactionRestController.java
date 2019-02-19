@@ -165,7 +165,7 @@ public class TransactionRestController extends BaseController implements URLMapp
       logger.error("Error :: TransactionRestController :: process: InvalidRequestException", e);
       transactionResponse.setErrorCode(e.getErrorCode());
       transactionResponse.setErrorMessage(messageSource.getMessage(e.getErrorCode(), null, LocaleContextHolder.getLocale()));
-    }catch(Exception e) {
+    } catch(Exception e) {
       logger.error("Error :: TransactionRestController :: process: Exception", e);
       transactionResponse = new TransactionResponse();
       logger.error("ERROR: " + e.getMessage());

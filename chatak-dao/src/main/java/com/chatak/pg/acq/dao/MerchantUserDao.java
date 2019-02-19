@@ -69,6 +69,4 @@ public interface MerchantUserDao {
   public List<MposFeatures> findByRoleId(Long userId);
   
   public List<String> findByFeatureStatus(Long userId);
-  
-  
 }

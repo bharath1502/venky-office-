@@ -61,21 +61,21 @@ public class LoginResponse extends Response {
 
 	private String state;
 
-	public List<String> getMpsoFeatures() {
-    return mpsoFeatures;
-  }
-
-  public void setMpsoFeatures(List<String> mpsoFeatures) {
-    this.mpsoFeatures = mpsoFeatures;
-  }
-
-  private String country;
+	private String country;
 
 	private String pin;
 
 	private String refreshToken;
 	
 	private List<String> mpsoFeatures;
+	
+	public List<String> getMpsoFeatures() {
+	  return mpsoFeatures;
+	}
+
+	public void setMpsoFeatures(List<String> mpsoFeatures) {
+	  this.mpsoFeatures = mpsoFeatures;
+	}
 
   /**
 	 * @return the subServiceProviderId

@@ -34,8 +34,8 @@ public class PanRanges implements Serializable{
 	@Column(name = "ID")
 	private Long id;
 	
-	@Column(name = "PROGRAM_MANAGER_ID")
-	private Long programManagerId;
+	@Column(name = "ISO_ID")
+	private Long IsoId;
 	
 	@Column(name = "PAN_LOW")
 	private Long panLow;
@@ -44,17 +44,17 @@ public class PanRanges implements Serializable{
 	private Long panHigh;
 
 	/**
-	 * @return the programManagerId
+	 * @return the isoId
 	 */
-	public Long getProgramManagerId() {
-		return programManagerId;
+	public Long getIsoId() {
+		return IsoId;
 	}
 
 	/**
-	 * @param programManagerId the programManagerId to set
+	 * @param isoId the isoId to set
 	 */
-	public void setProgramManagerId(Long programManagerId) {
-		this.programManagerId = programManagerId;
+	public void setIsoId(Long isoId) {
+		IsoId = isoId;
 	}
 
 	/**

@@ -5,7 +5,7 @@ package com.chatak.pg.enums;
  * 
  */
 public enum ProcessorType {
-  LITLE("Vantiv"), CHATAK("ClosedLoopChatak"),PULSE("Pulse");
+  LITLE("Vantiv"), CHATAK("ChatakSwitch"),PULSE("Pulse");
 
   private final String value;
 
@@ -14,6 +14,10 @@ public enum ProcessorType {
   }
 
   public String value() {
+    return value;
+  }
+  
+  public String getValue(){
     return value;
   }
 

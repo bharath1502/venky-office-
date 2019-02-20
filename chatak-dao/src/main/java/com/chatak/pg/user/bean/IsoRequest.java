@@ -19,12 +19,10 @@ import com.chatak.pg.bean.SearchRequest;
 public class IsoRequest extends SearchRequest{
 
 	private static final long serialVersionUID = 3389321489649862234L;
-	private ProgramManagerRequest programManagerRequest;	
+	private ProgramManagerRequest programManagerRequest;
 	private String isoName;
-	private List<Long> programManagerIds;
+	private Long programManagerIds;
 	private List<String> cardProgramIds;
-	private List<String> panLow;
-	private List<String> panHigh;
 	private Long id;
 	private String address;
 	private String country;
@@ -36,6 +34,24 @@ public class IsoRequest extends SearchRequest{
 	private String bankAccNum;
 	private String routingNumber;
 	private Map<Long, Long> cardProgramAndEntityId;
+	
+	private List<PanRangeRequest> panRangeList;
+	
+	private String processor;
+
+	/**
+	 * @return the panRangeList
+	 */
+	public List<PanRangeRequest> getPanRangeList() {
+		return panRangeList;
+	}
+
+	/**
+	 * @param panRangeList the panRangeList to set
+	 */
+	public void setPanRangeList(List<PanRangeRequest> panRangeList) {
+		this.panRangeList = panRangeList;
+	}
 	
 	/**
 	 * @return the isoName
@@ -145,7 +161,7 @@ public class IsoRequest extends SearchRequest{
 	/**
 	 * @return the programManagerIds
 	 */
-	public List<Long> getProgramManagerIds() {
+	public Long getProgramManagerIds() {
 		return programManagerIds;
 	}
 
@@ -153,7 +169,7 @@ public class IsoRequest extends SearchRequest{
 	 * @param programManagerIds
 	 *            the programManagerIds to set
 	 */
-	public void setProgramManagerIds(List<Long> programManagerIds) {
+	public void setProgramManagerIds(Long programManagerIds) {
 		this.programManagerIds = programManagerIds;
 	}
 
@@ -248,34 +264,12 @@ public class IsoRequest extends SearchRequest{
 		this.cardProgramAndEntityId = cardProgramAndEntityId;
 	}
 
-	/**
-	 * @return the panLow
-	 */
-	public List<String> getPanLow() {
-		return panLow;
+	public String getProcessor() {
+		return processor;
 	}
 
-	/**
-	 * @param panLow
-	 *            the panLow to set
-	 */
-	public void setPanLow(List<String> panLow) {
-		this.panLow = panLow;
+	public void setProcessor(String processor) {
+		this.processor = processor;
 	}
 
-	/**
-	 * @return the panHigh
-	 */
-	public List<String> getPanHigh() {
-		return panHigh;
-	}
-
-	/**
-	 * @param panHigh
-	 *            the panHigh to set
-	 */
-	public void setPanHigh(List<String> panHigh) {
-		this.panHigh = panHigh;
-	}
-	
 }

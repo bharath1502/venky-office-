@@ -98,6 +98,25 @@
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
+											<fieldset class="col-md-3 col-sm-6">
+											<label><spring:message
+															code="admin.program.manager.list" /><span
+														class="required-field">*</span></label>
+														<select  id="selectedProgramManager"
+															class="features-codes form-control"  name="to" id="undo_redo_to" readonly="true">
+															<c:forEach items="${selectedPmList}"
+																	var="programManager">
+																	<script>
+																	setProgramManagerId('${programManager.id}');
+																	</script>
+															        <option value="${programManager.id}">${programManager.programManagerName}</option>
+															</c:forEach>
+														</select>
+														<div class="discriptionErrorMsg">
+															<span class="red-error"
+																id="selectedProgramManager_ErrorDiv">&nbsp;</span>
+														</div>
+													</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="admin.iso.Name.message" /><span
 														class="required-field">*</span></label>
@@ -145,6 +164,19 @@
 														onclick="clearErrorMsg('isoCurrencyerrormsg');" />
 													<div class="discriptionErrorMsg">
 														<span id="isoCurrencyerrormsg" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.processor"/><span class="required-field">*</span></label>
+														<form:select cssClass="form-control" path="isoRequest[0].processor"
+															id="processor" onblur="validateProcessor()">
+															<form:option value=""><spring:message code="reports.option.select"/></form:option>
+															<c:forEach items="${processorNames}" var="processorName">
+																<form:option value="${processorName.value}">${processorName.value}</form:option>
+															</c:forEach>
+														</form:select>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span id="processorEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -298,99 +330,30 @@
 													</div>
 													<div><a href="#" onclick="openPopup()" ><spring:message code="view.iso.logo"/></a></div>
 												</fieldset>
-													<fieldset class="col-sm-12">
-													<fieldset class="col-sm-5 multi-select-box">
-													<label><spring:message code="admin.program.manager.list" /></label>
-														<select class="features form-control left-select-box" id="programManagers"  name="from"  size="8" multiple="multiple">
-																<c:forEach items="${programManagers}"
-																	var="programManager">
-															        <option value="${programManager.id}">${programManager.programManagerName}</option>
-																</c:forEach>
-														</select>
-													</fieldset>
-													<fieldset class="col-sm-1 multi-select-btn marginT60">
-															<span class="left-right-btn form-control" id="undo_redo_rightSelected"
-																onClick="SelectMoveRows(document.getElementsByClassName('features')[0],document.getElementsByClassName('features-codes')[0],'ADD')">
-																&gt; </span>
-																
-																 <span class="right-left-btn form-control" id="undo_redo_leftSelected"
-																onClick="SelectMoveRows(document.getElementsByClassName('features-codes')[0],document.getElementsByClassName('features')[0],'REMOVE')">
-																&lt; </span>
-																
-														</fieldset>
-													<label><spring:message code="admin.associated.pm" /><span
-														class="required-field">*</span></label>
-													<fieldset class="col-sm-5 multi-select-box">
-														<select  id="selectedProgramManager"
-															class="features-codes form-control right-select-box"  name="to" id="undo_redo_to"  size="8" multiple="multiple">
-															<c:forEach items="${selectedPmList}"
-																	var="programManager">
-																	<script>
-																	setProgramManagerId('${programManager.id}');
-																	</script>
-															        <option value="${programManager.id}">${programManager.programManagerName}</option>
-															</c:forEach>
-														</select>
-														<div class="discriptionErrorMsg">
-															<span class="red-error"
-																id="selectedProgramManager_ErrorDiv">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset>
-												
 											</div>
+											 
 											<!-- Content Block End -->
 					<!-- Search Table Block Start -->
-						<div class="search-results-table">
-						<table
-								class="table table-striped table-bordered table-condensed marginBM1">
-								<!-- Search Table Header Start -->
-								<tr>
-									<td class="search-table-header-column widthP80"></span>
-										<span><spring:message code="admin.Associated.Card.Program.List" /></span>
-								</tr>
-							</table>
 							<!-- Search Table Header End -->
 							<div class="discriptionErrorMsg" data-toggle="tooltip"
 								data-placement="top" title="">
 								<span id="ambiguityFlag" class="red-error">&nbsp;</span>
 							</div>
+							<div class="col-sm-12" id="customFieldsDiv">
+												<div
+													style="border: 1px solid #afafaf; padding: 5px; padding-top: 15px; margin-top: 10px; overflow: hidden;">
+													<div
+														style="background: #fff; position: absolute; top: 2px; color: #0072c6;"><spring:message code="admin.pm.label.paniinrange"/></div>
+													<div class="added-split-row"></div>
+												</div>
+												<div class="added-sub-row row"></div>
+												<br>
+												<div>
+													<span class="red-error">&nbsp;</span>
+													<br>
+												</div>
+											</div>
 							<!-- Search Table Content Start -->
-							<table id="serviceResults"
-								class="table table-striped table-bordered table-responsive table-condensed tablesorter marginBM1 common-table">
-								<thead>
-									<tr>
-										<th style="width: 15%;">Program Manager</th>
-										<th>Pan Low</th>
-										<th>Pan High</th>
-										<th>Currency</th>
-										<th>Action</th>
-									</tr>
-								</thead>
-								<c:choose>
-									<c:when test="${!(fn:length(cardProgramList) eq 0) }">
-										<c:forEach items="${cardProgramList}" var="cardProgramDetail">
-												<tr id="rowId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}">
-												<td  class="ellipsis"
-													id="15" >${cardProgramDetail.programManagerName}&nbsp;</td>
-												<td  class="ellipsis"
-													id="15" >${cardProgramDetail.panLow}&nbsp;</td>
-												<td >${cardProgramDetail.panHigh}&nbsp;</td>
-												<td >${cardProgramDetail.currency}&nbsp;</td>
-												<c:if test="${cardProgramDetail.selected eq true}">
-												<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}" type="checkbox" checked="checked" onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.programManagerId}')"></td>
-												<script>
-												setCardProgramId('${cardProgramDetail.cardProgramId}','${cardProgramDetail.programManagerId}');
-												</script>												
-												</c:if>
-												<c:if test="${cardProgramDetail.selected eq false}">
-												<td><input id="cpId${cardProgramDetail.cardProgramId}${cardProgramDetail.programManagerId}" type="checkbox"  onclick="addCardProgram('${cardProgramDetail.cardProgramId}','${cardProgramDetail.programManagerId}')"></td>												
-												</c:if>
-											</tr>
-										</c:forEach>
-									</c:when>
-								</c:choose>
-							</table>
 							<!-- Search Table Content End -->
 											</div>
 											<!--Panel Action Button Start -->
@@ -406,7 +369,7 @@
 															code="common.label.cancel" /></a>
 												</div>
 											</div>
-
+											
 											<!--Panel Action Button End -->
 										</div>
 									</div>
@@ -632,47 +595,15 @@
 			return true;
 
 		}
-		function validateSelectedCardProgram() {
-			var selectedCardProgramIdList = selectedCpId;
-			if (selectedCardProgramIdList === undefined
-					|| selectedCardProgramIdList.length == 0) {
-				$('#ambiguityFlag').text(webMessages.SELECT_CARD_PROGRAM);
-				return false;
-			} else {
-				$('#ambiguityFlag').text(' ');
-				return true;
-			}
-		}
+	
 		function closePopup(){
 			$('#LogoDiv').popup("hide");
 		}
 		function openPopup(){
 			$('#LogoDiv').popup("show");
 		}
-		
-		$(document).ready(function() {
-			/* Table Sorter includes Start*/
-			$(function() {
-				
-					  // call the tablesorter plugin
-					  $('#serviceResults').sortable({
-						
-						 divBeforeTable: '#divbeforeid',
-						divAfterTable: '#divafterid',
-						initialSort: false,
-						locale: 'th',
-						//negativeSort: [1, 2]
-					});
-			});
-			});
 	</script>
 	<script type="text/javascript">
-	$(document).ready(function() {
-
-
-		$('#programManagers').multiselect();
-	});
-	
 	</script>
 <script type="text/javascript">
 
@@ -686,7 +617,138 @@
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
+  
+  $(document).ready(function() {
+		panRangeCustomEditValues();	
+		});
+	
+	 var rangeIndex = 0;
+  var totalCustomFieldRows = 0;
+  var idsArr = [];
+  function panRangeCustomEditValues() {
+  	
+  	var panRangeRequests = JSON.parse(JSON.stringify(${panRangeList}));
+  	if (panRangeRequests == null || panRangeRequests == '' || panRangeRequests.length == 0) {
+  		constructMainfeeContent(0);
 
+  	} else {
+  		$('#customFields').prop('checked', true);
+  		$("#customFieldsDiv").show();
+  		for (var k = 0; k < panRangeRequests.length; k++) {
+  			var rangeValue = panRangeRequests[k];
+  			var newFilterRow ="<fieldset class='col-sm-12 sub-row-field' data-sub-index="
+      			+ rangeIndex
+      			+ " id='custom-div"
+      			+ rangeIndex
+      			+"'><fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan Low</label><input type='text' value='"
+      			+((rangeValue.panLow == '' || rangeValue.panLow == null) ? '' : rangeValue.panLow)
+      			+"' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeRequests["+rangeIndex+"].panLowEr\",${6})' name='panRangeRequests["
+      			+rangeIndex
+      			+"].panLow' id='panRangeRequests["
+      			+ rangeIndex
+      			+ "].panLow' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeRequests["
+      			+ rangeIndex
+      			+ "].panLowEr' class='red-error'>&nbsp;</span></div></fieldset>"
+      			
+      			+"<fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan High</label><input type='text' value='"
+      			+((rangeValue.panHigh == '' || rangeValue.panHigh == null) ? '' : rangeValue.panHigh)
+      			+"' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeRequests["+rangeIndex+"].panHighEr\",${6})' name='panRangeRequests["
+      			+rangeIndex
+      			+"].panHigh' id='panRangeRequests["
+      			+ rangeIndex
+      			+ "].panHigh' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeRequests["
+      			+ rangeIndex
+      			+ "].panHighEr' class='red-error'>&nbsp;</span></div></fieldset>"
+      			+ ((rangeIndex == 0) ? "<button type='button' class='addSubRow add-btn-style' id='mainrangeValueBtn_"
+							+ rangeIndex
+							+"' onclick='addSubrow(this)' style='display: inline; float: left; margin: 23px 22px;'> <span class='glyphicon glyphicon-plus'></span> </button><div class='added-sub-row1 row'></div>"
+							: "<fieldset class='col-sm-1 textCenter ' ><span class='glyphicon glyphicon-trash delete-refund-sub-icon' style='cursor:pointer;margin-top: 60%;margin-left: 20%;'></span></fieldset></fieldset>");
+      			
+      			newFilterRow = newFilterRow
+					+ "<div class='added-sub-row row"
+					+ "'></div>";
+					
+      			if(rangeIndex >=1){
+						$(".added-sub-row1").append(newFilterRow);
+					}else{
+						$(".added-split-row").append(newFilterRow);
+					}
+			rangeIndex++;
+			totalCustomFieldRows++;
+  		}
+  	}
+  }
+  
+  var editPage = false;
+  var rangeIndex=0;
+  var totalCustomFieldRows = 0;
+  function addSubrow($this) {
+  	if(totalCustomFieldRows>9){
+  		return;
+  	}
+  	var currentMainPositionAr = $this.id.split('_');
+  	if(rangeIndex == 0){
+  		rangeIndex++;
+  		totalCustomFieldRows++;
+  	}
+  	var newFilterRow = "<fieldset class='col-sm-12 sub-row-field' data-sub-index="
+			+ rangeIndex
+			+ " id='custom-div"
+			+ rangeIndex
+			+"'><fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan Low</label><input type='text' value='' onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeRequests["+rangeIndex+"].panLowEr\",${6})' name='panRangeRequests["
+			+rangeIndex
+			+"].panLow' id='panRangeRequests["
+			+ rangeIndex
+			+ "].panLow' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeRequests["
+			+ rangeIndex
+			+ "].panLowEr' class='red-error'>&nbsp;</span></div></fieldset>"
+			+"<fieldset class='col-sm-4 marginML-subMenu create_partner_field'><label class='partner-custom-field-label'>Pan High</label><input type='text' value=''onkeypress='return numbersonly(this, event);' onblur='return validateTextFieldData(this.value, this.id ,\"panRangeRequests["+rangeIndex+"].panHighEr\",${6})' name='panRangeRequests["
+				+rangeIndex
+				+"].panHigh' id='panRangeRequests["
+  			+ rangeIndex
+  			+ "].panHigh' class='form-control feePercentage txnamount' maxlength='10' style='width: 200px;'><div class='discriptionErrorMsg'><span id='panRangeRequests["
+  			+ rangeIndex
+  			+ "].panHighEr' class='red-error'>&nbsp;</span></div></fieldset><fieldset class='col-sm-1 textCenter ' ><span class='glyphicon glyphicon-trash delete-refund-sub-icon' style='cursor:pointer;margin-top: 60%;margin-left: 20%;'></span></fieldset></fieldset>";
+  	if(editPage) {
+  		if($($this).parent().children().hasClass('added-sub-row1')) {
+  			$($this).parent().find('.added-sub-row1').append(newFilterRow);
+  		} else {
+  			$($this).parent().siblings().find('.added-sub-row1').append(newFilterRow);
+  		}
+  		
+  	} else {
+  		$($this).parent().find('.added-sub-row1').append(newFilterRow);
+  	}
+  	if(rangeIndex>0){
+  		rangeIndex++;
+  		totalCustomFieldRows++;
+  	}
+  }
+  $('body')
+	.on(
+			'click',
+			'.delete-refund-sub-icon',
+			function() {
+				var deleteEle = $(this)[0];
+				$(this).parent().parent().remove();
+				totalCustomFieldRows = totalCustomFieldRows-1;
+			});
+  
+  function validateTextFieldData(textFieldData,textFieldId, messageLine_errDiv, textFieldLength){
+		var flag = true;
+		textFieldData = textFieldData.trim();
+			var numericValues = /^[0-9]+$/;
+			if(textFieldData == ''){
+				setDiv(messageLine_errDiv, "Please Enter Pan Range");
+				flag = false;
+			} else if (textFieldData.length < textFieldLength) {
+				setDiv(messageLine_errDiv, "Pan Range value should be more than " + textFieldLength);
+				flag = false;
+			} else {
+				setDiv(messageLine_errDiv, '');
+			}
+		return flag;
+	  }
 </script>
 </body>
 </html>

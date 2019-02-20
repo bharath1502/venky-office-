@@ -257,21 +257,6 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
         programManagerRequest2.setProgramManagerAccountRequests(programManagerAccountRequests);
       }
       
-      JPAQuery querys = new JPAQuery(entityManager);
-      List<Tuple> panRanges = querys.from(QPanRanges.panRanges)
-          .where(QPanRanges.panRanges.programManagerId.eq(programManagerRequest.getId()))
-          .list(QPanRanges.panRanges.panLow,QPanRanges.panRanges.panHigh);
-      
-      List<PanRangeRequest> panRange = new ArrayList<>(0);
-      PanRangeRequest range;
-      for(Tuple ranges: panRanges){
-    	  range = new PanRangeRequest();
-    	  range.setPanLow(ranges.get(QPanRanges.panRanges.panLow));
-    	  range.setPanHigh(ranges.get(QPanRanges.panRanges.panHigh));
-    	  panRange.add(range);
-      }
-      programManagerRequest2.setPanRangeList(panRange);
-      
       JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> pmBanks = query.from(QPGBank.pGBank,QBankProgramManagerMap.bankProgramManagerMap)
           .where(QBankProgramManagerMap.bankProgramManagerMap.programManagerId.eq(programManagerRequest.getId())

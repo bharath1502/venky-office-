@@ -396,6 +396,7 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 				isoDTO.setCountry(iso.getCountry());
 				isoDTO.setState(iso.getState());
 				isoDTO.setZipCode(iso.getZipCode());
+				isoDTO.setProcessor(iso.getProcessor());
 				isoDTO.setProgramManagerRequest(programManagerRequest);
 				isoDTO.setBankName(iso.getBankName());
 				isoDTO.setBankAccNum(iso.getBankAccNum());

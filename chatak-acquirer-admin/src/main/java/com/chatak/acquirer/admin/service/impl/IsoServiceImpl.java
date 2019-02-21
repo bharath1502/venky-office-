@@ -142,6 +142,7 @@ public class IsoServiceImpl implements IsoService{
 			iso.setBankName(isoRequest.getBankName());
 			iso.setBankAccNum(isoRequest.getBankAccNum());
 			iso.setRoutingNumber(isoRequest.getRoutingNumber());
+			iso.setProcessor(isoRequest.getProcessor());
 			setPmAndCpMapping(isoRequest, iso);
 			if (StringUtil.isListNotNullNEmpty(isoRequest.getPanRangeList())) {
 				Set<PanRanges> panRanges = new HashSet<PanRanges>();
@@ -245,10 +246,14 @@ public class IsoServiceImpl implements IsoService{
 			iso.setCountry(isoRequest.getCountry());
 			iso.setState(isoRequest.getState());
 			iso.setCity(isoRequest.getCity());
+			iso.setProcessor(isoRequest.getProcessor());
 			iso.setZipCode(isoRequest.getZipCode());
 			iso.setBankAccNum(isoRequest.getBankAccNum());
 			iso.setBankName(isoRequest.getBankName());
 			iso.setRoutingNumber(isoRequest.getRoutingNumber());
+			ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
+			programManagerRequest.setProgramManagerId(isoRequest.getProgramManagerIds());
+			isoRequest.setProgramManagerRequest(programManagerRequest);
 			Set<PanRanges> panRanges = new HashSet<PanRanges>();
 			for (PanRangeRequest panRange : isoRequest.getPanRangeList()) {
 				PanRanges panRanges2 = CommonUtil

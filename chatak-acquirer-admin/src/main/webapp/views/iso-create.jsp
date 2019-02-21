@@ -155,6 +155,19 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.processor"/><span class="required-field">*</span></label>
+														<form:select cssClass="form-control" path="processor"
+															id="processor" onblur="validateProcessor()">
+															<form:option value=""><spring:message code="reports.option.select"/></form:option>
+															<c:forEach items="${processorNames}" var="processorName">
+																<form:option value="${processorName.value}">${processorName.value}</form:option>
+															</c:forEach>
+														</form:select>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span id="processorEr" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="users.label.address" /><span
 														class="required-field">*</span></label>
@@ -318,17 +331,47 @@
 															id="undo_redo_leftSelected"
 															onClick="SelectMoveRows(document.getElementsByClassName('features-codes')[0],document.getElementsByClassName('features')[0],'REMOVE')">
 															&lt; </span>
+												<div class="col-sm-12" id="customFieldsDiv">
+														<div
+															style="border: 1px solid #afafaf; padding: 5px; padding-top: 15px; margin-top: 10px; overflow: hidden;">
+															<div
+																style="background: #fff; position: absolute; top: 2px; color: #0072c6;">
+																<spring:message code="admin.pm.label.paniinrange" />
+															</div>
+															<fieldset class="col-md-3 col-sm-6">
+																<label><spring:message
+																		code="admin.pm.label.panlow" /></label> <input type="text"
+																	value="" name="panRangeList[0].panLow"
+																	id="panRangeList[0].panLow" class="form-control"
+																	onkeypress="return numbersonly(this, event);"
+																	maxlength="10"
+																	onblur="return validateTextFieldData(this.value,'panRangeList[0].panLow', 'panRangeList[0].panLowEr','${6}')"
+																	style="width: 200px;" />
 
-													</fieldset>
-													<label><spring:message code="admin.associated.pm" /><span
-														class="required-field">*</span></label>
-													<fieldset class="col-sm-5 multi-select-box">
-														<select  id="selectedProgramManager"
-															class="selected-pm form-control features-codes right-select-box"  MULTIPLE>
-														</select>
-														<div class="discriptionErrorMsg">
-															<span class="red-error"
-																id="selectedProgramManager_ErrorDiv">&nbsp;</span>
+																<div class="discriptionErrorMsg">
+																	<span id="panRangeList[0].panLowEr" class="red-error">&nbsp;</span>
+																</div>
+															</fieldset>
+															<fieldset class="col-md-3 col-sm-6">
+																<label><spring:message
+																		code="admin.pm.label.panhigh" /></label> <input type="text"
+																	value="" name="panRangeList[0].panHigh"
+																	id="panRangeList[0].panHigh" class="form-control"
+																	onkeypress="return numbersonly(this, event);"
+																	onblur="return validateTextFieldData(this.value,'panRangeList[0].panHigh', 'panRangeList[0].panHighEr','${6}')"
+																	maxlength="10" style="width: 200px;" />
+
+																<div class="discriptionErrorMsg">
+																	<span id="panRangeList[0].panHighEr" class="red-error">&nbsp;</span>
+																</div>
+															</fieldset>
+															<button type="button" class="addSubRow add-btn-style"
+																id="mainFeeValueBtn_0" onclick='addSubrow(this)'
+																style="display: inline; float: left; margin: 23px 22px;">
+																<span class="glyphicon glyphicon-plus"></span>
+															</button>
+															<div class="added-sub-row1 row"></div>
+															<br>
 														</div>
 													</fieldset>
 												</fieldset> --%>
@@ -408,6 +451,8 @@
 							</table>
 							<!-- Search Table Content End -->
 											</div> --%>
+							<!-- Search Table Content End -->
+											</div> 
 											<!--Panel Action Button Start -->
 											<div class="col-sm-12 form-action-buttons">
 												<div class="col-sm-5"></div>
@@ -443,7 +488,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
-	
+	<script type="text/javascript" src="../js/feeprogram.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
@@ -744,7 +789,5 @@
     	}
 	</script>
 	</script>
-	
-
 </body>
 </html>

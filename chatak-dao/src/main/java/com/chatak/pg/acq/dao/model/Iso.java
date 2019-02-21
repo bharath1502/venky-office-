@@ -114,6 +114,11 @@ public class Iso implements Serializable{
 	  @Column(name = "ROUTING_NUMBER")
 	  private String routingNumber;
 	  
+
+	  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	  @Column(name = "PROCESSOR")
+	  private String processor;
+	
 	  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	  @JoinColumn(name = "ISO_ID", referencedColumnName = "ID")
 	  private Set<PanRanges> panRanges;
@@ -483,6 +488,12 @@ public class Iso implements Serializable{
 	public void setRoutingNumber(String routingNumber) {
 		this.routingNumber = routingNumber;
 	}
-	  
-	  
+	
+	public String getProcessor() {
+		return processor;
+	}
+		
+	public void setProcessor(String processor) {
+		this.processor = processor;
+	}
 }

@@ -40,6 +40,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
+import com.chatak.pg.enums.ProcessorType;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.IsoRequest;
 import com.chatak.pg.user.bean.IsoResponse;
@@ -75,16 +76,21 @@ public class IsoController implements URLMappingConstants{
 		logger.info("Entering :: IsoController :: showIsoCreate");
 	    ModelAndView modelAndView = new ModelAndView(ISO_CREATE_VIEW);
 	    try {
-	    	String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
-	    	ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
-	        programManagerRequest.setStatuses(Arrays.asList(Constants.ACTIVE));
-	        programManagerRequest.setLoginuserType(userType);
-	        ProgramManagerResponse programManagerResponse = programManagerService.getAllProgramManagers(programManagerRequest);
-	        modelAndView.addObject("programManagerList",programManagerResponse.getProgramManagersList());
-	    	 List<Option> countryList = bankService.getCountries();
-	         modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
-	    	List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
-	        modelAndView.addObject("currencyList", currencyList);
+			String userType = (String) session.getAttribute(Constants.LOGIN_USER_TYPE);
+			ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
+			programManagerRequest.setStatuses(Arrays.asList(Constants.ACTIVE));
+			programManagerRequest.setLoginuserType(userType);
+			ProgramManagerResponse programManagerResponse = programManagerService
+					.getAllProgramManagers(programManagerRequest);
+			modelAndView.addObject("programManagerList", programManagerResponse.getProgramManagersList());
+			List<ProcessorType> processorNames = Arrays.asList(ProcessorType.values());
+			if (StringUtil.isListNotNullNEmpty(processorNames)) {
+				modelAndView.addObject("processorNames", processorNames);
+			}
+			List<Option> countryList = bankService.getCountries();
+			modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
+			List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
+			modelAndView.addObject("currencyList", currencyList);
 	    } catch (Exception e) {
 	      modelAndView.addObject(Constants.ERROR, messageSource
 	          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -250,6 +256,10 @@ public class IsoController implements URLMappingConstants{
 	    	model.put("panRangeList", JsonUtil.convertObjectToJSON(isoResponse.getIsoRequest().get(0).getPanRangeList())+"");
 	    	model.put("selectedPmList", isoResponse.getProgramManagerRequestList());
 	    	model.put("cardProgramList", isoResponse.getCardProgramRequestList());
+	    	List<ProcessorType> processorNames = Arrays.asList(ProcessorType.values());
+			if(StringUtil.isListNotNullNEmpty(processorNames)) {
+				modelAndView.addObject("processorNames",processorNames);
+			}
 	    	 List<Option> countryList = bankService.getCountries();
 			modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
 			session.setAttribute(Constants.COUNTRY_LIST, new ArrayList(countryList));

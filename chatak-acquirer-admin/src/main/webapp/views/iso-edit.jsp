@@ -98,8 +98,6 @@
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
-											
-											
 											<fieldset class="col-md-3 col-sm-6">
 											<label><spring:message
 															code="admin.program.manager.list" /><span
@@ -181,6 +179,19 @@
 														onclick="clearErrorMsg('isoCurrencyerrormsg');" />
 													<div class="discriptionErrorMsg">
 														<span id="isoCurrencyerrormsg" class="red-error">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.processor"/><span class="required-field">*</span></label>
+														<form:select cssClass="form-control" path="isoRequest[0].processor"
+															id="processor" onblur="validateProcessor()">
+															<form:option value=""><spring:message code="reports.option.select"/></form:option>
+															<c:forEach items="${processorNames}" var="processorName">
+																<form:option value="${processorName.value}">${processorName.value}</form:option>
+															</c:forEach>
+														</form:select>
+													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span id="processorEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -373,7 +384,6 @@
 														</div>
 													</fieldset>
 												</fieldset> --%>
-												
 											</div>
 											 
 											<!-- Content Block End -->
@@ -441,7 +451,6 @@
 									</c:when>
 								</c:choose>
 							</table> --%>
-							
 							<!-- Search Table Content End -->
 											</div>
 											<!--Panel Action Button Start -->

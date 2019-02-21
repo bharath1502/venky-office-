@@ -34,8 +34,8 @@ public class IsoRequest extends SearchRequest{
 	private String bankAccNum;
 	private String routingNumber;
 	private Map<Long, Long> cardProgramAndEntityId;
-	
 	private List<PanRangeRequest> panRangeList;
+	private String processor;
 
 	/**
 	 * @return the panRangeList
@@ -262,4 +262,11 @@ public class IsoRequest extends SearchRequest{
 		this.cardProgramAndEntityId = cardProgramAndEntityId;
 	}
 
+	public String getProcessor() {
+		return processor;
+	}
+
+	public void setProcessor(String processor) {
+		this.processor = processor;
+	}
 }

@@ -115,7 +115,6 @@ public class Iso implements Serializable{
 	  private String routingNumber;
 	  
 
-	  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	  @Column(name = "PROCESSOR")
 	  private String processor;
 	

@@ -153,7 +153,7 @@
 											<jsp:include page="merchant-update-remaning.jsp"></jsp:include>
 											<!-- Account Details Content End -->
 											<!-- PG ISO CardProgram Content Start -->
-											<jsp:include page="merchant-edit-PmIsoCardProgram.jsp"></jsp:include>
+											<%-- <jsp:include page="merchant-edit-PmIsoCardProgram.jsp"></jsp:include> --%>
 											<!-- PG ISO CardProgram Content End -->
 											<!-- ATM Transactions Content Start -->
 											<section class="field-element-row atm-transaction-content"
@@ -438,6 +438,22 @@
 														<span id="localCurrencyEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
+												
+												<fieldset class="col-sm-3">
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+																code="merchant.label.iso" /><span
+															class="required-field">*</span></label>
+														<form:select cssClass="form-control" path="associatedTo"
+															id="associatedTo" onblur="clientValidation('associatedTo', 'associated_To','associatedToEr')">
+															<form:option value="">
+																<spring:message code="reports.option.select" />
+															</form:option>
+														</form:select>
+														<div class="discriptionErrorMsg">
+															<span id="associatedToEr" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+												
 
 												<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS START-->
 
@@ -1133,24 +1149,25 @@
 									".account-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content, .pm-iso-carprogram-content")
 									.hide();
 						});
-		$(".pm-iso-carprogram-list, .bank-next, .atm-prev")
+		$(".atm-transactions-list, .bank-next, .pos-prev")
 		.click(
 				function() {
-					if (!validateCreateMerchantStep2edit()
-							| !validateCreateMerchantStep1edit()) {
+					if (!validateCreateMerchantStep2()
+							| !validateCreateMerchantStep1()
+							| resetConfigurationsInfoErrorMsg()) {
 						return false;
 					}
-					$(".pic-circle-tab").addClass("active-circle");
+					$(".bank-circle-tab").addClass("active-circle");
 					$(
-							".merchant-circle-tab,.bank-info-circle-tab, .bank-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab, .contact-circle-tab")
+							".merchant-circle-tab,.bank-info-circle-tab, .contact-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab,.pic-circle-tab")
 							.removeClass("active-circle");
-					$(".pic-arrow").show();
+					$(".configuration-arrow").show();
 					$(
-							".merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .configuration-arrow, .bank-arrow, .final-arrow, .contact-arrow")
+							".contact-arrow, .merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .final-arrow,.pic-arrow")
 							.hide()
-					$(".pm-iso-carprogram-content").show();
+					$(".atm-transaction-content").show();
 					$(
-							".atm-transaction-content, .legal-details-content, .legal-details-rep-content, .bank-info-details-content, .pos-transaction-content, .account-details-content, .free-transactions-content")
+							".free-transactions-content, .bank-info-details-content, .legal-details-content, .legal-details-rep-content, .pos-transaction-content, .account-details-content,.pm-iso-carprogram-content")
 							.hide();
 				});
 		$(".atm-transactions-list, .pic-next, .pos-prev")

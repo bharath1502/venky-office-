@@ -19,14 +19,15 @@ import com.chatak.pg.acq.dao.AcquirerFeeValueDao;
 import com.chatak.pg.acq.dao.CardProgramDao;
 import com.chatak.pg.acq.dao.FeeCodeDao;
 import com.chatak.pg.acq.dao.FeeProgramDao;
-import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAcquirerFeeValue;
 import com.chatak.pg.acq.dao.model.PGFeeProgram;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGOtherFeeValue;
+import com.chatak.pg.acq.dao.model.PanRanges;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
+import com.chatak.pg.acq.dao.repository.PanRangeRepository;
 import com.chatak.pg.bean.FeeprogramNameResponse;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
@@ -62,6 +63,9 @@ public class FeeProgramServiceImpl implements FeeProgramService {
   
   @Autowired
   CardProgramDao cardProgramDao;
+  
+  @Autowired
+  PanRangeRepository panRangeRepository;
 
   @Override
   public Response createFeeProgram(FeeProgramDTO feeProgramDTO) throws ChatakAdminException {
@@ -159,9 +163,9 @@ public class FeeProgramServiceImpl implements FeeProgramService {
           feeProgramDao.getByFeeProgramId(feeProgramDTO.getFeeProgramId());
 
       if (StringUtil.isListNotNullNEmpty(feeProgramModel)) {
-        CardProgram cardProgram = cardProgramDao.findByCardProgramId(feeProgramModel.get(0).getPanId());
-        feeProgram.setCardProgramId(cardProgram.getCardProgramId());
-        feeProgram.setCardProgramName(cardProgram.getCardProgramName());
+    	  
+       //CardProgram cardProgram = cardProgramDao.findByCardProgramId(feeProgramModel.get(0).getPanId());
+    	PanRanges panRange = panRangeRepository.findById(feeProgramModel.get(0).getPanId());
         feeProgram.setFeeProgramId(feeProgramModel.get(0).getFeeProgramId());
         feeProgram.setFeeProgramName(feeProgramModel.get(0).getFeeProgramName());
         feeProgram.setFeeProgramDescription(feeProgramModel.get(0).getFeeProgramDescription());
@@ -169,6 +173,8 @@ public class FeeProgramServiceImpl implements FeeProgramService {
         feeProgram.setProcessor(feeProgramModel.get(0).getProcessor());
         feeProgram.setPmShare(feeProgramModel.get(0).getPmShare());
         feeProgram.setIsoShare(feeProgramModel.get(0).getIsoShare());
+        String str = panRange.getPanLow() + "::" + panRange.getPanHigh();
+        feeProgram.setPanRange(str);
         // Setting other fee
         OtherFeesDTO otherFeesDTO = new OtherFeesDTO();
         feeProgram.setOtherFee(otherFeesDTO);

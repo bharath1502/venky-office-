@@ -370,7 +370,7 @@ public class FeeProgramController implements URLMappingConstants {
       feeProgramDTO.setOtherFee(feeProgramResponse.getFeeCodeList().get(0).getOtherFee());
       feeProgramDTO.setPmShare(feeProgramResponse.getFeeCodeList().get(0).getPmShare());
       feeProgramDTO.setIsoShare(feeProgramResponse.getFeeCodeList().get(0).getIsoShare());
-      feeProgramDTO.setCardProgramName(feeProgramResponse.getFeeCodeList().get(0).getCardProgramName());
+      feeProgramDTO.setPanRange(feeProgramResponse.getFeeCodeList().get(0).getPanRange());
       model.put("feeValuesList", feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());
       session.setAttribute("feeValuesList",
           feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());

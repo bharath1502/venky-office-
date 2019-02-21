@@ -174,15 +174,13 @@
 														<span id="feeProgramNameErr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-										<fieldset class="col-md-3 col-sm-6">
-													<label data-toggle='tooltip' data-placement='top'><spring:message code="admin.cardprogramname"/><span
-												class='required-field'>*</span></label>
-												<form:input path="cardProgramName" id="cardProgramId" readonly="true"
-												cssClass="form-control" onblur="clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')"/>
-													<div class="discriptionErrorMsg" data-toggle="tooltip"
-												data-placement="top" title="">
-												<span id="cardProgramIdErrDiv" class="red-error">&nbsp;</span>
-											</div>
+										<fieldset class="col-sm-3">
+													<label><spring:message code="admin.panLow-panHigh.label.message"/><span
+														class="required-field">*</span></label>
+														<form:input path="panRange" id="panLow" readonly="true" cssClass="form-control"/>
+													<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span class="red-error" id="isoError">&nbsp;</span>
+													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label data-toggle='tooltip' data-placement='top' title=''><spring:message

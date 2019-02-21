@@ -21,5 +21,7 @@ import com.chatak.pg.acq.dao.model.PanRanges;
 public interface PanRangeRepository extends JpaRepository<PanRanges, Long>, QueryDslPredicateExecutor<PanRanges> {
 	
 	public List<PanRanges> findByIsoId(Long isoId);
+	
+	public PanRanges findById(Long panId);
 
 }

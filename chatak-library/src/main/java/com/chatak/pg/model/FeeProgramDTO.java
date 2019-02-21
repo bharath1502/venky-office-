@@ -58,6 +58,8 @@ public class FeeProgramDTO extends SearchRequest {
   private Long panHigh;
   
   private Long panId;
+  
+  private String panRange;
 
   public String getUserType() {
     return userType;
@@ -370,6 +372,14 @@ public class FeeProgramDTO extends SearchRequest {
 
   public void setPanId(Long panId) {
     this.panId = panId;
+  }
+
+  public String getPanRange() {
+    return panRange;
+  }
+
+  public void setPanRange(String panRange) {
+    this.panRange = panRange;
   }
   
 

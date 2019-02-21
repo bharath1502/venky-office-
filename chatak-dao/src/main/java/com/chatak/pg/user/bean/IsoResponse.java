@@ -22,11 +22,6 @@ public class IsoResponse extends Response{
 	private List<ProgramManagerRequest> programManagerRequestList;
 	private List<CardProgramRequest> cardProgramRequestList;	
 	private List<PanRangeRequest> panRangeRequests;
-	
-	
-	private List<PanRangeRequest> panRangeRequests;
-	
-	
 	/**
 	 * @return the programManagerRequestList
 	 */

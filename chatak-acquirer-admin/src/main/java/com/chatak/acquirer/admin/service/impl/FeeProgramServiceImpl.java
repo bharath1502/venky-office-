@@ -73,7 +73,7 @@ public class FeeProgramServiceImpl implements FeeProgramService {
     PGOtherFeeValue otherFeeValue = new PGOtherFeeValue();
 
     try {
-      List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(feeProgramDTO.getCardProgramId());
+      List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(feeProgramDTO.getPanId());
       if(StringUtil.isListNotNullNEmpty(feeProgram)){
         response.setErrorCode(Constants.CARD_PROGRAM_ALREADY_MAPPED);
         response.setErrorMessage(messageSource.getMessage(response.getErrorCode(), null, LocaleContextHolder.getLocale()));
@@ -159,7 +159,7 @@ public class FeeProgramServiceImpl implements FeeProgramService {
           feeProgramDao.getByFeeProgramId(feeProgramDTO.getFeeProgramId());
 
       if (StringUtil.isListNotNullNEmpty(feeProgramModel)) {
-        CardProgram cardProgram = cardProgramDao.findByCardProgramId(feeProgramModel.get(0).getCardProgramId());
+        CardProgram cardProgram = cardProgramDao.findByCardProgramId(feeProgramModel.get(0).getPanId());
         feeProgram.setCardProgramId(cardProgram.getCardProgramId());
         feeProgram.setCardProgramName(cardProgram.getCardProgramName());
         feeProgram.setFeeProgramId(feeProgramModel.get(0).getFeeProgramId());
@@ -264,7 +264,7 @@ public class FeeProgramServiceImpl implements FeeProgramService {
         otherFeeValue = feeProgramDetails.get(0).getPgOtherFeeValue();
         otherFeeValue.setUpdatedBy(feeProgramDTO.getUpdatedBy());
         otherFeeValue.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-        feeProgramDaoDetails.setCardProgramId(feeProgramDetails.get(0).getCardProgramId());
+        feeProgramDaoDetails.setPanId(feeProgramDetails.get(0).getPanId());
         feeProgramDaoDetails.setPgOtherFeeValue(otherFeeValue);
         feeProgramDao.createFeeProgram(feeProgramDaoDetails);
         response.setErrorCode(Constants.SUCCESS_CODE);

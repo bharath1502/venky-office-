@@ -10,8 +10,10 @@ import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.user.bean.BankRequest;
+import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 
@@ -107,4 +109,7 @@ public interface ProgramManagerDao {
   public ProgramManagerRequest findStatusAndBatchPrefixByProgramManagerId(Long id);
   
   public Response findProgramManagerNameAndIdByEntityId(Long entityId, Long merchantId);
+  
+  public List<PanRangeRequest> getPanListForIso(Long isoId);
+  
 }

@@ -10,6 +10,7 @@ import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.bean.settlement.SettlementEntity;
 import com.chatak.pg.model.TransactionRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.Transaction;
 
 public interface TransactionDao {
@@ -109,4 +110,6 @@ public interface TransactionDao {
   public void saveorUpdate(List<String> pgTxnIdsList);
   
   public String generateTransactionRefNumber() throws DataAccessException;
+
+  public List<PanRangeRequest> getPgPanRanges(String merchantId);
 }

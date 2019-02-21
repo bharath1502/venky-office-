@@ -49,6 +49,7 @@ import com.chatak.pg.acq.dao.OnlineTxnLogDao;
 import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.RefundTransactionDao;
 import com.chatak.pg.acq.dao.SplitTransactionDao;
+import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGAccount;
@@ -88,6 +89,7 @@ import com.chatak.pg.enums.TransactionStatus;
 import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.model.TransactionHistoryRequest;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.user.bean.TransactionHistory;
 import com.chatak.pg.util.CommonUtil;
@@ -192,6 +194,9 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	@Autowired
 	private AsyncService asyncService;
 	
+	@Autowired
+	private TransactionDao transactionDao;
+	
 	@Transactional
 	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) {
 		MDCLoggerUtil.setMDCLoggerParamsAdmin(transactionRequest.getInvoiceNumber());
@@ -270,13 +275,16 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			pgOnlineTxnLog = logEntry(TransactionStatus.INITATE, transactionRequest);
 			// PERF >> Replaced with card program id
 			if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
-				cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
-						CommonUtil.getIIN(transactionRequest.getCardData().getCardNumber()),
-						CommonUtil.getPartnerIINExt(transactionRequest.getCardData().getCardNumber()),
-						CommonUtil.getIINExt(transactionRequest.getCardData().getCardNumber()));
-
+				
+				List<PanRangeRequest> panRangesList = transactionDao.getPgPanRanges(transactionRequest.getMerchantCode());
+				Long panId = cardRangeValidation( panRangesList, transactionRequest, request);
+				if(panId == null) {
+					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0115.name());
+					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0115.value());
+					return transactionResponse;
+				}
 				List<PGAcquirerFeeValue> feeValues = feeProgramDao
-						.getAcquirerFeeValueByCardProgramId(cardprogram.getCardProgramId());
+						.getAcquirerFeeValueByCardProgramId(panId);
 				if (StringUtil.isListNullNEmpty(feeValues)) {
 					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0116.name());
 					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0116.value());
@@ -1478,22 +1486,12 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
   }
 
   private void getMerchantBatchId(Request request, CardProgram cardProgram, PGMerchant pgMerchant)throws ServiceException {
-	    log.info("Entering :: PGTransactionServiceImpl :: getMerchantBatchId ::  Card program ID " + cardProgram.getCardProgramId());
+	    //log.info("Entering :: PGTransactionServiceImpl :: getMerchantBatchId ::  Card program ID " + cardProgram.getCardProgramId());
 		Long pmId;
 			
-			//find by merchnat id and cp id
-		PGMerchantCardProgramMap pGMerchantCardProgramMap = null;
-		 if(pgMerchant.getMerchantType().equals(PGConstants.MERCHANT)){
-			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(request.getMerchantId(), cardProgram.getCardProgramId());
-		 } else {
-			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(Long.valueOf(pgMerchant.getParentMerchantId()), cardProgram.getCardProgramId());
-		}
 			
-			if(pGMerchantCardProgramMap.getEntitytype().equals(Constants.PM_USER_TYPE)) {
-			  pmId = pGMerchantCardProgramMap.getEntityId();
-			} else {
-			  pmId = isoServiceDao.findByIsoIdAndCardProgramId(pGMerchantCardProgramMap.getEntityId(), cardProgram.getCardProgramId());
-			}
+			  List<ProgramManagerRequest> programManagerRequestsList = isoServiceDao.findPmByIsoId(request.getIsoId());
+			  pmId = programManagerRequestsList.get(0).getProgramManagerId();
 			
 			if (null != pmId) {
 			    log.info(" Program Manager ID "+pmId);
@@ -1571,5 +1569,21 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 		}
 		log.info("Exiting :: PGTransactionServiceImpl :: getMerchantTransactionList");
 		return transactionHistoryResponse;
+	}
+	
+	private Long cardRangeValidation(List<PanRangeRequest> panRangesList, TransactionRequest transactionRequest,
+			PurchaseRequest request) {
+		Long panId = 0l;
+		for (PanRangeRequest panRangeRequest : panRangesList) {
+			int panLength = (panRangeRequest.getPanLow().toString()).length();
+			String cardNumber = transactionRequest.getCardData().getCardNumber().substring(0, panLength);
+			if (panRangeRequest.getPanLow() <= Long.valueOf(cardNumber)
+					&& Long.valueOf(cardNumber) <= panRangeRequest.getPanHigh()) {
+				request.setIsoId(panRangeRequest.getIsoId());
+				request.setPanId(panRangeRequest.getId());
+				return panRangeRequest.getId();
+			}
+		}
+		return panId;
 	}
 }

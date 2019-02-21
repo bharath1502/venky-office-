@@ -402,7 +402,7 @@ public class IsoServiceDaoImpl implements IsoServiceDao {
 				isoDTO.setRoutingNumber(iso.getRoutingNumber());
 				JPAQuery querys = new JPAQuery(entityManager);
 			      List<Tuple> panRanges = querys.from(QPanRanges.panRanges)
-			          .where(QPanRanges.panRanges.IsoId.eq(isoRequest.getId()))
+			          .where(QPanRanges.panRanges.isoId.eq(isoRequest.getId()))
 			          .list(QPanRanges.panRanges.panLow,QPanRanges.panRanges.panHigh);
 			      
 			      List<PanRangeRequest> panRange = new ArrayList<>(0);

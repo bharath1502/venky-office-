@@ -20,5 +20,5 @@ public interface FeeProgramRepository extends JpaRepository<PGFeeProgram, Long>,
 	
 	public PGFeeProgram findByFeeProgramName(String feeProgramName);
 	
-	public List<PGFeeProgram> findByCardProgramId(Long cardProgramId);
+	public List<PGFeeProgram> findByPanId(Long panId);
 }

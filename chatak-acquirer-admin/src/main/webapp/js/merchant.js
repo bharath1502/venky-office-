@@ -98,7 +98,6 @@ function validateCreateMerchantStep2() {
 			|!clientValidation('bankCountry', 'country','bankCountryErrorDiv')
 			|!clientValidation('currencyId', 'currencyValue','currencyEr')
 			|!clientValidation('bankState', 'state','bankStateErrorDiv')
-		    |!(zipCodeNotEmpty('bankPin'))
 		    |!clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv')
 			|!validateRoutingNumber()){
 		flag = false;
@@ -2518,7 +2517,6 @@ $('#emailId').keypress(function( e ) {
 });
 
 function fetchCurrency(currencyId,elementId) {
-	validateAssocated();
 	if (currencyId == '') {
 		//clearLocalCurrency(localCurrency);
 		return null;
@@ -2801,20 +2799,7 @@ function resetpmIsoCardprogarmErrorMsg() {
 }
 
 function fetchEntityNameByPmIso(entityType,elementId) {
-	setError(get('associatedTo'), '');
-	document.getElementById("programManagerName").innerHTML = "";
-	document.getElementById('programManagerName').options.length = 0;
-	if(null != entityType && entityType == "Program Manager"){
-		document.getElementById("entityType").innerHTML = "PM Name";
-		document.getElementById("associatedID").innerHTML = "Associated with PM Name";
-		document.getElementById("userType").innerHTML = "PM Name";
 		getAllEntityName(entityType,elementId);
-	}else if(null != entityType && entityType == "ISO"){
-		document.getElementById("entityType").innerHTML = "ISO Name";
-		document.getElementById("associatedID").innerHTML = "Associated with ISO Name";
-		document.getElementById("userType").innerHTML = "ISO Name";
-		getAllEntityName(entityType,elementId);
-	}
 }
 
 

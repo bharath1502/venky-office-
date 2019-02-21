@@ -280,7 +280,7 @@ function validCardNumber(id,divId) {
 		setDiv(divId, webMessages.virtualTerminalCardNumber);
 		loadMsgTitleText();
 		return false;
-	} else if (!isDigit(val) || len != 19) {
+	} else if (!isDigit(val)) {
 		setDiv(divId, webMessages.virtualTerminalNumericUpto19);
 		loadMsgTitleText();
 		return false;

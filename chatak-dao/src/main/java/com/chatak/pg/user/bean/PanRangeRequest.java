@@ -3,6 +3,8 @@
  */
 package com.chatak.pg.user.bean;
 
+import java.util.List;
+
 import com.chatak.pg.bean.SearchRequest;
 
 /**
@@ -25,6 +27,12 @@ public class PanRangeRequest extends SearchRequest{
 	private Long panLow;
 	
 	private Long panHigh;
+	
+	private Long isoId;
+	
+	private String panRange;
+
+	private List<PanRangeRequest> panRangeRequests;
 
 	/**
 	 * @return the programManagerId
@@ -67,6 +75,31 @@ public class PanRangeRequest extends SearchRequest{
 	public void setPanHigh(Long panHigh) {
 		this.panHigh = panHigh;
 	}
-	
 
+	public Long getIsoId() {
+		return isoId;
+	}
+
+	public void setIsoId(Long isoId) {
+		this.isoId = isoId;
+	}
+
+	public List<PanRangeRequest> getPanRangeRequests() {
+		return panRangeRequests;
+	}
+
+	public void setPanRangeRequests(List<PanRangeRequest> panRangeRequests) {
+		this.panRangeRequests = panRangeRequests;
+	}
+
+	public String getPanRange() {
+		return panRange;
+	}
+
+	public void setPanRange(String panRange) {
+		this.panRange = panRange;
+	}
+	
+	
+	
 }

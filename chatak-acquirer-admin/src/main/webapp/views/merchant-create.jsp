@@ -85,14 +85,6 @@
 										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.bankinfo"/></label>
 										<div class="arrow-down bank-info-arrow"></div>
 									</li>
-									<li class="pm-iso-carprogram-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="pic-circle-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
-												code="merchant.label.pmisoandcardprogram" /></label>
-										<div class="arrow-down pic-arrow"></div>
-									</li>
 									<li class="atm-transactions-list">
 										<div class="circle-div">
 											<div class="hr"></div>
@@ -258,7 +250,7 @@
 														<label><spring:message code="merchant.label.currency"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="currencyId"
 															id="currencyId" 
-															onchange="fetchCurrency(this.value,'bankId')"
+															onchange="fetchCurrency(this.value,'bankId'),fetchEntityNameByPmIso(this.value, 'associatedTo')"
 															onblur="clientValidation('currencyId', 'currencyValue','currencyEr')">
 															<form:option value="">..:<spring:message code="reports.option.select"/>:..</form:option>
 															<c:forEach items="${currencyCodeList}" var="currencyValue">
@@ -267,6 +259,20 @@
 														</form:select>
 														<div class="discriptionErrorMsg">
 															<span id="currencyEr" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>
+													<fieldset class="col-sm-3">
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
+																code="merchant.label.iso" /><span
+															class="required-field">*</span></label>
+														<form:select cssClass="form-control" path="associatedTo"
+															id="associatedTo" onblur="clientValidation('associatedTo', 'associated_To','associatedToEr')">
+															<form:option value="">
+																<spring:message code="reports.option.select" />
+															</form:option>
+														</form:select>
+														<div class="discriptionErrorMsg">
+															<span id="associatedToEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 												</fieldset>
@@ -289,9 +295,7 @@
 												<!--Panel Action Button End -->
 											</section>
 											<!-- Bank Details Content End -->
-											<!-- PM ISO CardProgram Content Start -->
-											<jsp:include page="merchant-create-PmIsoCardProgram.jsp"></jsp:include>
-											<!-- PM ISO CardProgram Content End -->
+										
 											<jsp:include page="merchant-create-confirmation.jsp"></jsp:include>
 											<!-- POS Transactions Content End -->
 										</div>
@@ -458,38 +462,14 @@
 									.hide();
 							$(".bank-info-details-content").show();
 							$(
-									".account-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content,.pm-iso-carprogram-content")
+									".account-details-content, .legal-details-content, .legal-details-rep-content, .atm-transaction-content, .pos-transaction-content, .free-transactions-content")
 									.hide();
 						});
-
-		$(".pm-iso-carprogram-list, .bank-next , .atm-prev")
+		$(".atm-transactions-list, .bank-next, .pos-prev")
 				.click(
 						function() {
-							if (!validateCreateMerchantStep1()
-									| !validateCreateMerchantStep2()) {
-								return false;
-							}
-							$(".pic-circle-tab").addClass("active-circle");
-							$(
-									".merchant-circle-tab,.bank-info-circle-tab, .bank-circle-tab, .legal-circle-tab, .legal-circle-rep-tab, .final-circle-tab,.contact-circle-tab")
-									.removeClass("active-circle");
-							$(".pic-arrow").show();
-							$(
-									".merchant-arrow, .legal-arrow, .legal-rep-arrow, .bank-info-arrow, .configuration-arrow, .bank-arrow, .final-arrow,.contact-arrow")
-									.hide()
-							$(".pm-iso-carprogram-content").show();
-							$(
-									".atm-transaction-content, .legal-details-content, .legal-details-rep-content, .bank-info-details-content, .pos-transaction-content, .account-details-content,.free-transactions-content")
-									.hide();
-						});
-
-		$(".atm-transactions-list, .pic-next, .pos-prev")
-				.click(
-						function() {
-							if (!validatePmIsoCardprogram()
-									| !validateCreateMerchantStep2()
+							if (!validateCreateMerchantStep2()
 									| !validateCreateMerchantStep1()
-									| !checkAmbiguity()
 									| resetConfigurationsInfoErrorMsg()) {
 								return false;
 							}
@@ -510,8 +490,6 @@
 				.click(
 						function() {
 							if (!validateCreateMerchantStep5()
-									| !validatePmIsoCardprogram()
-									| !checkAmbiguity()
 									| !validateCreateMerchantStep1()
 									| !validateCreateMerchantStep2()) {
 								return false
@@ -547,8 +525,6 @@
 							if (!validateCreateMerchantStep5()
 									| !validateCreateMerchantStep1()
 									| !validateCreateMerchantStep2()
-									| !validatePmIsoCardprogram()
-									| !checkAmbiguity()
 									| !validateMerchantcreates()) {
 								return false
 							}
@@ -741,28 +717,9 @@
 		}
 		
 		
-		function checkAmbiguity() {
-			if (!validateSelectedCardProgram()) {
-				return false;
-			}
-			var sortedCardProgramIdList = selectedCpId.sort();
-			for (var i = 0; i < sortedCardProgramIdList.length; i++) {
-				for (var j = i + 1; j < sortedCardProgramIdList.length; j++) {
-					if (sortedCardProgramIdList[i] == sortedCardProgramIdList[j]) {
-						$('#ambiguityFlag').text(
-								webMessages.DUPLICATE_CARD_RPOGRAM);
-						return false;
-					}
-				}
-			}
-			$('#ambiguityFlag').text('');
-			return true;
-
-		}
 		function validateAssocated() {
 			document.getElementById("programManagerNameId").innerHTML = "";
 			document.getElementById('programManagerNameId').options.length = 0;
-			$('#ambiguityFlag').text(' ');
 			$("#serviceResults").find("tr:gt(0)").remove();
 			cardProgramIdList = [];
 			entityNameArr = [];

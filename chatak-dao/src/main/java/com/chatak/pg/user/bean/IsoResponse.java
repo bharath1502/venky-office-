@@ -20,8 +20,7 @@ public class IsoResponse extends Response{
 	private static final long serialVersionUID = -7099418964280882168L;
 	private List<IsoRequest> isoRequest;
 	private List<ProgramManagerRequest> programManagerRequestList;
-	private List<CardProgramRequest> cardProgramRequestList;
-	
+	private List<CardProgramRequest> cardProgramRequestList;	
 	private List<PanRangeRequest> panRangeRequests;
 	
 	

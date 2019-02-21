@@ -1071,6 +1071,8 @@ public interface URLMappingConstants {
    
    String PREPAID_ADMIN_FETCH_PARTNER_FOR_ENTITY = "getPartnersEntites";
    
+   String PREPAID_ADMIN_FETCH_PAN_FOR_ENTITY= "getPanEntites";
+   
    String SHOW_MATCHED_TRANSACTIONS_REPORT_PAGE = "getAllMatchedTxnsByEntityId";
    
    String SHOW_MERCHANT_REVENUE_REPORT_PAGE = "showMerchantRevenueReport";

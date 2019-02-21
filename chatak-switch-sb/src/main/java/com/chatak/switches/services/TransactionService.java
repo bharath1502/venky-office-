@@ -287,11 +287,10 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setTimeZoneOffset("GMT+0530");
     pgTransaction.setTimeZoneRegion("Asia/Calcutta");
     pgTransaction.setDeviceLocalTxnTime(DateUtil.convertTimeZone("GMT+0530", timestamp.toString()));
+    pgTransaction.setCpId(request.getPanId());	  
     if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
     	pgTransaction
         .setExpDate(setExpDate(request));
-    getCardProgramDetailsByCardNumber(CommonUtil.getIIN(cardNumber), CommonUtil.getPartnerIINExt(cardNumber), 
-    		CommonUtil.getIINExt(cardNumber), pgTransaction, pgMerchant.getId(),request); 
     }
     logger.info("Exiting :: TransactionService :: populatePGTransaction");
     return pgTransaction;

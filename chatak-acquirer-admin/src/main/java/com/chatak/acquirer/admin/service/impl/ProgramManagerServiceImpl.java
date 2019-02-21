@@ -1211,4 +1211,17 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
 	public Response findProgramManagerNameAndIdByEntityId(Long entityId, Long merchantId) {
 		return programManagerDao.findProgramManagerNameAndIdByEntityId(entityId, merchantId);
 	}
+
+	@Override
+	public List<PanRangeRequest> getPanRangesByIsoId(Long isoId) {
+		logger.info("Entering:: ProgramManagerServiceImpl :: getPanRangesByIsoId method: ");
+		try {
+			List<PanRangeRequest> panList = programManagerDao.getPanListForIso(isoId);
+			logger.info("Exiting:: ProgramManagerServiceImpl :: getPanRangesByIsoId method: ");
+			return panList;		
+		} catch (Exception e) {
+			logger.error("ERROR:: ProgramManagerServiceImpl :: getUnselectedCpForIndependentPm method: ", e);
+			throw e;
+		}
+	}
 }

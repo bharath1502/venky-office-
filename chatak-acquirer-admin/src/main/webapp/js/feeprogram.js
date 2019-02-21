@@ -328,7 +328,6 @@ function validateAmountValue($this,inputType) {
 }
 function validateFeeProgram() {
 	if (validateFeePrgmName()
-			| !clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')
 			| !clientValidation('flatFee', 'fee','flatFeeErr')
 			| !validateFeePercentValue()
 			| !validateSharing()) {

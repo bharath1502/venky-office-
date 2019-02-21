@@ -35,6 +35,7 @@ import com.chatak.pg.acq.dao.model.QPmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.QProgramManager;
 import com.chatak.pg.acq.dao.model.QProgramManagerAccount;
 import com.chatak.pg.acq.dao.repository.BankProgramManagerRepository;
+import com.chatak.pg.acq.dao.repository.PanRangeRepository;
 import com.chatak.pg.acq.dao.repository.PmCardProgramMappingRepository;
 import com.chatak.pg.acq.dao.repository.ProgramManagerAccountRepository;
 import com.chatak.pg.acq.dao.repository.ProgramManagerRepository;
@@ -79,6 +80,9 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   
   @Autowired
   private PmCardProgramMappingRepository pmCardProgramMappingRepository;
+  
+  @Autowired
+  private PanRangeRepository panRangeRepository;
 
   public Long getProgramManagerAccountNumber() {
     List<BigInteger> list =
@@ -974,5 +978,24 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 			}
 		}
 		return response;
+	}
+
+	@Override
+	public List<PanRangeRequest> getPanListForIso(Long isoId) {
+		List<PanRangeRequest> panRangeRequests = new ArrayList<>();
+		List<PanRanges> panRangesList = panRangeRepository.findByIsoId(isoId);
+		if (StringUtil.isListNotNullNEmpty(panRangesList)) {
+			for (PanRanges panRanges : panRangesList) {
+				
+				PanRangeRequest panRangeRequest = new PanRangeRequest();
+				panRangeRequest.setPanHigh(panRanges.getPanHigh());
+				panRangeRequest.setPanLow(panRanges.getPanLow());
+				String str = panRangeRequest.getPanLow().toString() + "::" + panRangeRequest.getPanHigh().toString();
+				panRangeRequest.setPanRange(str);
+				panRangeRequest.setIsoId(Long.valueOf(panRanges.getIsoId()));
+				panRangeRequests.add(panRangeRequest);
+			}
+		}
+		return panRangeRequests;
 	}
 }

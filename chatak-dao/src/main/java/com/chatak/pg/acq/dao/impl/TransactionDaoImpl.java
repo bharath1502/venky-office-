@@ -26,8 +26,10 @@ import com.chatak.pg.acq.dao.model.QPGBankCurrencyMapping;
 import com.chatak.pg.acq.dao.model.QPGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.model.QPGMerchantCardProgramMap;
+import com.chatak.pg.acq.dao.model.QPGMerchantEntityMap;
 import com.chatak.pg.acq.dao.model.QPGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.QPGTransaction;
+import com.chatak.pg.acq.dao.model.QPanRanges;
 import com.chatak.pg.acq.dao.repository.AccountTransactionsRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
 import com.chatak.pg.bean.settlement.SettlementEntity;
@@ -39,6 +41,7 @@ import com.chatak.pg.enums.OriginalChannelEnum;
 import com.chatak.pg.model.TransactionRequest;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
@@ -1088,4 +1091,37 @@ public class TransactionDaoImpl implements TransactionDao {
 		return (entityId != null)
 				? QPGTransaction.pGTransaction.pmId.eq(entityId) : null;
 	}
+	
+	/**
+	 * @param transaction
+	 * @return
+	 */
+	@Override
+	public List<PanRangeRequest> getPgPanRanges(String merchantId) {
+ 	  log.info("TransactionDaoImpl | getPgTransactions :: Entry");
+	  
+	    List<PanRangeRequest> panRangeRequests = new ArrayList<>();
+		JPAQuery query = new JPAQuery(entityManager);
+		List<Tuple> tuples = query.from(QPGMerchant.pGMerchant, QPGMerchantEntityMap.pGMerchantEntityMap, QPanRanges.panRanges)
+				.where(isMerchantCodeEq(merchantId)
+						.and(QPGMerchant.pGMerchant.id.eq(QPGMerchantEntityMap.pGMerchantEntityMap.merchantId))
+						.and(QPGMerchantEntityMap.pGMerchantEntityMap.entityId.eq(QPanRanges.panRanges.isoId)))
+				.list(QPanRanges.panRanges.id, QPanRanges.panRanges.panHigh, QPanRanges.panRanges.panLow, QPGMerchantEntityMap.pGMerchantEntityMap.entityId);
+
+		log.info("TransactionDaoImpl | getPgTransactions :: List: " + tuples.size());
+		
+		if (!CollectionUtils.isEmpty(tuples)) {
+			for (Tuple tuple : tuples) {
+			 PanRangeRequest  panRangeRequest = new PanRangeRequest();
+			  panRangeRequest.setId(tuple.get((QPanRanges.panRanges.id)));
+			  panRangeRequest.setPanLow(tuple.get((QPanRanges.panRanges.panLow)));
+			  panRangeRequest.setPanHigh(tuple.get((QPanRanges.panRanges.panHigh)));
+			  panRangeRequest.setIsoId(tuple.get((QPGMerchantEntityMap.pGMerchantEntityMap.entityId)));
+			  panRangeRequests.add(panRangeRequest);
+			}
+		}
+		log.info("TransactionDaoImpl | getPgTransactions :: Exit");
+		return panRangeRequests;
+	}
+	
 }

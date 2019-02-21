@@ -35,7 +35,7 @@ public class PanRanges implements Serializable{
 	private Long id;
 	
 	@Column(name = "ISO_ID")
-	private Long IsoId;
+	private Long isoId;
 	
 	@Column(name = "PAN_LOW")
 	private Long panLow;
@@ -47,14 +47,14 @@ public class PanRanges implements Serializable{
 	 * @return the isoId
 	 */
 	public Long getIsoId() {
-		return IsoId;
+		return isoId;
 	}
 
 	/**
 	 * @param isoId the isoId to set
 	 */
 	public void setIsoId(Long isoId) {
-		IsoId = isoId;
+		this.isoId = isoId;
 	}
 
 	/**

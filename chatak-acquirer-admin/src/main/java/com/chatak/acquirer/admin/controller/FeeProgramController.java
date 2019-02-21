@@ -130,7 +130,6 @@ public class FeeProgramController implements URLMappingConstants {
       FeeCodeResponseDetails codeResponse = feeCodeService.getAllFeeCodeList();
       managerRequest.setLoginuserType(loginResponse.getUserType());
       ProgramManagerResponse managerResponse=programManagerServices.getAllProgramManagers(managerRequest);
-     /* CardProgramResponse cardProgramResponse = cardProgramServices.getCardProgramListForFeeProgram();*/
       session.setAttribute(Constants.LOGIN_RESPONSE_DATA, loginResponse);
       model.put("feeCodeList", codeResponse.getFeeCodeList());
       List<FeeCodeDTO> codeResponseName = codeResponse.getFeeCodeList();
@@ -138,10 +137,6 @@ public class FeeProgramController implements URLMappingConstants {
         modelAndView.addObject("feeCodeList", codeResponseName);
       }
       modelAndView.addObject("cardProgramList", managerResponse.getProgramManagersList());
-     /* List<PanRangeRequest> panRangeRequests = programManagerServices.getPanRangesByIsoId(feeProgramDTO.getIsoId());
-      if (StringUtil.isListNotNullNEmpty(panRangeRequests)) {
-    	  modelAndView.addObject("panRequestsList", panRangeRequests);
-      }*/
     } catch (Exception e) {
       logger.error("ERROR:: FeeProgramController:: showFeeProgramCreate method", e);
       modelAndView.addObject(Constants.ERROR,

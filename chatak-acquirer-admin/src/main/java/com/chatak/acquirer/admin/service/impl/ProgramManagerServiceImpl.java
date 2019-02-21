@@ -627,14 +627,6 @@ public class ProgramManagerServiceImpl implements ProgramManagerService {
             bankProgramManagerMaps.add(bankProgramManagerMap);
         }
         programManager.setBankProgramManagerMaps(bankProgramManagerMaps);
-        
-        /*Set<PanRanges> panRanges = new HashSet<PanRanges>();
-		for (PanRangeRequest panRange : programManagerRequest.getPanRangeList()) {
-			PanRanges panRanges2 = CommonUtil
-					.copyBeanProperties(panRange, PanRanges.class);
-			panRanges.add(panRanges2); 
-		}
-		programManager.setPanRanges(panRanges);*/
   }
 
   private Boolean isPmNameAlreadyExist(ProgramManagerRequest programManagerRequest,

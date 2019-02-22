@@ -613,4 +613,9 @@ public class PGMerchantServiceImpl implements PGMerchantService {
   public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient) {
     merchantUserDao.saveOrUpdateApplicationClient(applicationClient);
   }
+  
+  public PGMerchantUsers fetchMerchantUserByUserName(String userName) {
+	  return merchantUserDao.findByUserName(userName);
+  }
+  
 }

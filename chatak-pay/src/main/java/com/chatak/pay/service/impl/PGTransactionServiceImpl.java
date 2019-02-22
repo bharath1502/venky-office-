@@ -208,16 +208,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		MDCLoggerUtil.setMDCLoggerParamsAdmin(transactionRequest.getInvoiceNumber());
 		log.info("Entering :: processTransaction :: TxnType :  " + transactionRequest.getTransactionType());
 		try {
-		  PGMerchantUsers merchantUsers = merchantUserDao.findByUserName(merchant.getUserName());
-		  List<String> PGMerchantUserFeatureMapping = merchantUserDao.findByFeatureStatus(merchantUsers.getId());
-		  boolean flag = false;
-		  for (String FeatureName : PGMerchantUserFeatureMapping) {
-		    if (FeatureName.equalsIgnoreCase(transactionRequest.getTransactionType().name())) {
-		      flag = true;
-		    }
-		  } if (!flag) {
-		    throw new ChatakInvalidTransactionException(ChatakPayErrorCode.TXN_0027.name());
-		  }
+		  
 			SpringDAOBeanFactory.setAppContext(appContext);
 			if(null != transactionRequest.getTransactionType()) {
 				switch(transactionRequest.getTransactionType()) {
@@ -246,15 +237,15 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 					break;
 				}
 			} else {
-				log.error("invalid transactiontype:: processCardPayment method");
+				log.error("invalid transactiontype:: processCardPaymevirtual-terminal-salent method");
 				return getErrorResponse(ChatakPayErrorCode.TXN_0001.name());
 			}
 			MDCLoggerUtil.clearMDCLoggerParams();
 			return null;
-		} catch(ChatakInvalidTransactionException e) {
+		} /*catch(ChatakInvalidTransactionException e) {
           log.error("ERROR:: processCardPayment method", e);
           throw new ChatakInvalidTransactionException(ChatakPayErrorCode.TXN_0027.name());
-         } catch(Exception e) {
+         } */catch(Exception e) {
 			log.error("ERROR:: processCardPayment method", e);
 			return getErrorResponse(ChatakPayErrorCode.TXN_0999.name());
 		}

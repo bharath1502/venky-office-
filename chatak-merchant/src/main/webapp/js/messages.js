@@ -460,7 +460,7 @@ function validCardNumber(id, divId) {
 		setDiv(divId, webMessages.pleaseentercardnumber);
 		loadMsgTitleText();
 		return false;
-	} else if (!isDigit(val) || len != 19) {
+	} else if (!isDigit(val)) {
 		setDiv(divId, webMessages.shouldbenumeric1);
 		loadMsgTitleText();
 		return false;

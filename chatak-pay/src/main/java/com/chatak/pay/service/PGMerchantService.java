@@ -5,6 +5,7 @@ import com.chatak.pay.controller.model.LoginResponse;
 import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pay.model.MerchantListResponse;
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
+import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.user.bean.AddMerchantBankRequest;
 import com.chatak.pg.user.bean.AddMerchantBankResponse;
@@ -83,4 +84,6 @@ public interface PGMerchantService {
   public ApplicationClientDTO getApplicationClientAuth(String appAuthUser);
 
   public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient);
+  
+  public PGMerchantUsers fetchMerchantUserByUserName(String userName);
 }

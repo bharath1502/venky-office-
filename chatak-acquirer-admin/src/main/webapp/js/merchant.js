@@ -321,7 +321,7 @@ function validateCreateMerchantStep4edit() {
 
 function validateCreateMerchantStep5() {
 	var flag = true;
-	if (!validateProcessor() | !validateVirtualTerminal()
+	if (!validateVirtualTerminal()
 			| !validateOnlineOptions()
 			| !validateCategory()
 			| !validateAutoPaymentMethod() | !validateAutoTransferLimit()
@@ -332,7 +332,6 @@ function validateCreateMerchantStep5() {
 		return false;
 	}
 	var fieldsValue = get('autoTransferDay').value;
-	var processor = get('processor').value.trim();
 	
 	 if ($('#dcc_enable').is(':checked')) {
 		if(get('confirmDccEnable')) {
@@ -424,11 +423,6 @@ function validateCreateMerchantStep5() {
 			setLable('confirmAutoTransferMonthlyDay',
 					get('autoTransferMonthlyDay').value.trim());
 		}
-	}
-	if (processor == "LITLE") {
-		return validatelitleMID();
-	} else {
-		setLable('confirmLitleMID', '');
 	}
 	return flag;
 }
@@ -1040,26 +1034,6 @@ function validatelitleMID() {
 	}
 }
 
-function validateRadio() {
-	var autoSettlement = document.getElementsByName('autoSettlement');
-	if ((autoSettlement[0].checked == false)
-			&& (autoSettlement[1].checked == false)) {
-		setError(get('noAutoSettlement'), webMessages.pleaseSelectOne);
-	loadMsgTitleText();
-		return false;
-	} else {
-		if (autoSettlement[0].checked == true) {
-			setError(get('noAutoSettlement'), '');
-			setLable('confirmMautoSettlement', 'yes');
-			return true;
-		} else {
-			setError(get('noAutoSettlement'), '');
-			setLable('confirmMautoSettlement', 'no');
-			return true;
-		}
-	}
-}
-
 function validateVirtualTerminalCheckBox() {
 	var list1 = "";
 	if (get('virtualTerminal').checked)
@@ -1560,7 +1534,6 @@ function resetConfigurationsInfo() {
 }
 
 function resetConfigurationsInfoErrorMsg() {
-	setError(get('processor'), '');
 	setError(get('refunds'), '');
 	setError(get('autoPaymentMethod'), '');
 	setError(get('autoTransferMonthlyDay'), '');

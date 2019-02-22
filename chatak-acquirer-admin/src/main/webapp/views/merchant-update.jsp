@@ -101,14 +101,6 @@
 												code="merchant.label.bankinfo" /></label>
 										<div class="arrow-down bank-info-arrow"></div>
 									</li>
-									<li class="pm-iso-carprogram-list">
-										<div class="circle-div">
-											<div class="hr"></div>
-											<span class="pic-circle-tab"></span>
-										</div> <label data-toggle="tooltip" data-placement="top" title=""><spring:message
-												code="merchant.label.pmisoandcardprogram" /></label>
-										<div class="arrow-down pic-arrow"></div>
-									</li>
 									<li class="atm-transactions-list">
 										<div class="circle-div">
 											<div class="hr"></div>
@@ -194,24 +186,6 @@
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
 														<span id="merchantCategoryEr" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-															code="merchant.label.processor" /><span
-														class="required-field">*</span></label>
-													<form:select cssClass="form-control" path="processor"
-														id="processor" onblur="validateProcessor()">
-														<form:option value="">
-															<spring:message code="reports.option.select" />
-														</form:option>
-														<c:forEach items="${processorNames}" var="processorName">
-															<form:option value="${processorName.value}">${processorName.label}</form:option>
-														</c:forEach>
-													</form:select>
-													<div class="discriptionErrorMsg" data-toggle="tooltip"
-														data-placement="top" title="">
-														<span id="processorEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -438,23 +412,6 @@
 														<span id="localCurrencyEr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-												
-												<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="merchant.label.iso" /><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="associatedTo"
-															id="associatedTo" onblur="clientValidation('associatedTo', 'associated_To','associatedToEr')">
-															<form:option value="">
-																<spring:message code="reports.option.select" />
-															</form:option>
-														</form:select>
-														<div class="discriptionErrorMsg">
-															<span id="associatedToEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-												
-
 												<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS START-->
 
 												<fieldset class="col-sm-12" id="">
@@ -591,54 +548,6 @@
 												</fieldset>
 
 												<!-- ADDED VIRTUAL, POS and ONLINE TERMINALS END-->
-
-												<div class="col-sm-12 padding0 hide-block">
-													<fieldset class="col-sm-12">
-														<fieldset class="col-sm-3 multi-select-box"
-															style="padding: 0 15px;">
-															<label data-toggle="tooltip" data-placement="top"
-																title=""><spring:message
-																	code="merchant.label.availablecurrency" /><span
-																class="required-field">*</span></label> <select
-																class="features form-control left-select-box"
-																multiple="true">
-																<c:forEach items="${currencyListData}" var="currency">
-																	<option value="${currency.label}">${currency.value}</option>
-																</c:forEach>
-															</select>
-														</fieldset>
-														<fieldset class="col-sm-1 multi-select-btn "
-															style="margin-top: 55px;">
-															<span class="left-right-btn form-control"
-																onClick="SelectMoveRows(document.getElementsByClassName('features')[0],document.getElementsByClassName('features-codes')[0])">
-																&gt; </span> <span class="right-left-btn form-control"
-																onClick="SelectMoveRows(document.getElementsByClassName('features-codes')[0],document.getElementsByClassName('features')[0])">
-																&lt; </span>
-														</fieldset>
-														<fieldset class="col-sm-5 multi-select-box"
-															style="padding: 0 15px;">
-															<label data-toggle="tooltip" data-placement="top"
-																title=""><spring:message
-																	code="merchant.label.DCCsupportedcurrency" /></label> <select
-																id="currencyCodes"
-																class="features-codes form-control right-select-box"
-																multiple="true" style="float: left">
-																<c:if test="${not empty selectedCurrencyCodes}">
-																	<c:forEach items="${selectedCurrencyCodes}"
-																		var="currency">
-																		<option value="${currency.label}">${currency.value}</option>
-																	</c:forEach>
-																</c:if>
-															</select>
-															<div class="discriptionErrorMsg" data-toggle="tooltip"
-																data-placement="top" title="">
-																<span class="red-error"
-																	style="width: 166px; float: left; margin-left: -234px; margin-top: 173px;"
-																	id="mccCodeErrorMsg">&nbsp;</span>
-															</div>
-														</fieldset>
-													</fieldset>
-												</div>
 												<fieldset class="col-sm-3" style="display: none;">
 													<form:input cssClass="form-control" path="programManagerId"
 														id="programManagerId" />
@@ -653,7 +562,7 @@
 														<input type="button"
 															class="form-control button pull-right atm-next"
 															value='<spring:message code="common.label.continue"/>'
-															onclick="validateRadio();"> <input type="button"
+															> <input type="button"
 															value='<spring:message code="common.label.previous"/>'
 															class="form-control button pull-right marginL10 atm-prev">
 														<input type="button"
@@ -809,27 +718,6 @@
 																<tr>
 																	<td><spring:message code="merchant.label.currency" />:</td>
 																	<td><div id="confirmcurrencyId"></div></td>
-																</tr>
-															</table>
-														</fieldset>
-													</fieldset>
-													<fieldset class="col-sm-6">
-														<fieldset class="fieldset merchant-content">
-															<legend class="legend content-space">
-																<spring:message code="merchant.label.pmisoandcardprogram" />
-															</legend>
-															<table class="confirm-info-table">
-																<tr>
-																	<td><spring:message code="merchant.label.associatedto"/>:</td>
-																	<td><div id="confirmAssociatedTo"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="admin.cardprogramname"/>:</td>
-																	<td><div id="confirmCardProgramNames"></div></td>
-																</tr>
-																<tr>
-																	<td><spring:message code="merchant.label.entityname"/>:</td>
-																	<td><div id="confirmEntityNames"></div></td>
 																</tr>
 															</table>
 														</fieldset>
@@ -1015,95 +903,6 @@
 		} */
 		/* Common Navigation Include End */
 		/* DatePicker Javascript Strat*/
-		$(document).ready(
-				function() {
-					if(associatedTo.defaultValue == "Program Manager"){
-						document.getElementById("entityType").innerHTML = "PM Name";
-						document.getElementById("associatedID").innerHTML = "Associated with PM Name";
-						document.getElementById("userType").innerHTML = "PM Name";
-					}else{
-						document.getElementById("entityType").innerHTML = "ISO Name";
-						document.getElementById("associatedID").innerHTML = "Associated with ISO Name";
-						document.getElementById("userType").innerHTML = "ISO Name";
-					}
-					validateMcc();
-					validateVirtualTerminal();
-					validateOnlineOptions();
-					$("#navListId6").addClass("active-background");
-					/* populatePartnerAndAgentDetails($('#appMode').val(),
-							'merchant', 'update', false); */
-					$(window).keydown(function(event) {
-						if (event.keyCode == 13) {
-							event.preventDefault();
-							return false;
-						}
-
-					});
-					$('#my_popup1').popup({
-						blur : false
-					});
-
-					if ("${merchant.dccEnable}" == "true") {
-						$(".hide-block").show();
-					} else {
-						$(".hide-block").hide();
-					}
-
-					/* if ($('#status').val() == 1) {
-					    $('#status').attr('disabled','disabled');
-					} else {
-					    $('#status').removeAttr('disabled');
-					    $('#status').children('option[value="1"]').css('display','none');
-					} */
-					$('#status').attr('disabled', 'disabled');
-
-					if ("${merchant.processor}" == "LITLE") {
-						$('#vantivMerchantId').show();
-					}
-
-					if ("${merchant.autoTransferDay}" == "M") {
-						$('#monthlySettlement').show();
-					}
-					if ("${merchant.autoTransferDay}" == "W") {
-						$('#weeklySettlement').show();
-					}
-
-					/* loadRadio('${merchant.autoSettlement}'); */
-					if ($('#status').val() != 1) {
-						$('#status').children('option[value="1"]').css(
-								'display', 'none');
-					}
-					if ($('#status').val() != 5) {
-						$('#status').children('option[value="5"]').css(
-								'display', 'none');
-
-					}
-					$(".focus-field").click(function() {
-						$(this).children('.effectiveDate').focus();
-					});
-					$('.effectiveDate').datetimepicker({
-						timepicker : false,
-						format : 'm/d/Y',
-						formatDate : 'Y/m/d',
-					});
-					showAddSubMerchant();
-					var prevAppMode = "";
-					$('#appMode').on(
-							'change',
-							function() {
-								var currentAppMode = $('#appMode').val();
-								if (currentAppMode.length > 0
-										&& currentAppMode != prevAppMode) {
-									prevAppMode = currentAppMode;
-									isParentAndAgentDetailsAvailable = false;
-									/* populatePartnerAndAgentDetails(
-											currentAppMode, 'merchant',
-											'create', true); */
-								} else {
-									prevAppMode = currentAppMode;
-								}
-							});
-				});
 		/* DatePicker Javascript End*/
 		$(
 				".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content, .pm-iso-carprogram-content")
@@ -1152,8 +951,8 @@
 		$(".atm-transactions-list, .bank-next, .pos-prev")
 		.click(
 				function() {
-					if (!validateCreateMerchantStep2()
-							| !validateCreateMerchantStep1()
+					if (!validateCreateMerchantStep2edit()
+							| !validateCreateMerchantStep1edit()
 							| resetConfigurationsInfoErrorMsg()) {
 						return false;
 					}
@@ -1173,9 +972,7 @@
 		$(".atm-transactions-list, .pic-next, .pos-prev")
 				.click(
 						function() {
-							if (!validateEditPmIsoCardprogram()
-									| !validateCreateMerchantStep2edit()
-									| !checkAmbiguity() 
+							if ( !validateCreateMerchantStep2edit()
 									| !validateCreateMerchantStep1edit()) {
 								return false;
 							}
@@ -1195,9 +992,7 @@
 		$(".pos-transactions-list, .atm-next")
 				.click(
 						function() {
-							if (!validateCreateMerchantStep5()
-									| !validateEditPmIsoCardprogram()
-									| !checkAmbiguity() 
+							if (!validateCreateMerchantStep5() 
 									| !validateCreateMerchantStep2edit()
 									| !validateCreateMerchantStep1edit()) {
 								return false;
@@ -1229,12 +1024,9 @@
 							$('#confirmcurrencyCodes').text(selectcurrencytype);
 							var length = $('#currencyCodes').children('option').length;
 							if (length == 0)
-								document.getElementById("mccCodeErrorMsg").innerHTML = 'Please Select Currency';
 							if (!validateCreateMerchantStep5()
 									| !validateCreateMerchantStep1()
-									| !validateCreateMerchantStep2()
-									| !validateEditPmIsoCardprogram()
-									| !checkAmbiguity()) {
+									| !validateCreateMerchantStep2()) {
 								return false
 							}
 							$(".final-circle-tab").addClass("active-circle");
@@ -1455,7 +1247,6 @@
 				return true;
 			}
 		}
-		document.getElementById('lookingFor').setAttribute('maxlength', '100');
 		
 	</script>
 </body>

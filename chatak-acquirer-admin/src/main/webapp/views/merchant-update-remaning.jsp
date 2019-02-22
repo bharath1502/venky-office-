@@ -344,6 +344,13 @@
 															<span id="countryEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
+													<fieldset class="col-sm-3">
+														<label><spring:message code="merchant.label.iso"/><span class="required-field">*</span></label>
+														<form:input path="associatedTo" id="associatedTo" readonly="true" cssClass="form-control"/>
+														<div class="discriptionErrorMsg">
+															<span id="associatedToEr" class="red-error">&nbsp;</span>
+														</div>
+													</fieldset>													
 												</fieldset>
 												<!--Panel Action Button Start2 -->
 												<div class="col-sm-12 button-content">

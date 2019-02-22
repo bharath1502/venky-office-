@@ -526,7 +526,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       
 		if (updateMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT
 				&& updateMerchantRequest.getProcess().equals(PGConstants.UPDATE)) {
-			processUpdateMerchant(updateMerchantRequest, merchantDb);
 		}
 		merchantRepository.save(merchantDb);
 		accountRepository.save(pgAccount);

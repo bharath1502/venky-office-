@@ -47,6 +47,7 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.model.CurrencyDTO;
+import com.chatak.pg.model.MposFeatures;
 import com.chatak.pg.user.bean.AddMerchantBankRequest;
 import com.chatak.pg.user.bean.AddMerchantBankResponse;
 import com.chatak.pg.user.bean.AddMerchantRequest;
@@ -318,6 +319,8 @@ public class PGMerchantServiceImpl implements PGMerchantService {
             .equals(merchantUsers.getMerPassword())) {
           PGMerchant pgMerchant =
               merchantProfileDao.getMerchantById(merchantUsers.getPgMerchantId());
+          List<String> PGMerchantUserFeatureMapping = merchantUserDao.findByFeatureStatus(merchantUsers.getId());
+          loginResponse.setMpsoFeatures(PGMerchantUserFeatureMapping);
           loginResponse.setMerchantCode(pgMerchant.getMerchantCode());
           loginResponse.setBussinessName(pgMerchant.getBusinessName());
           loginResponse.setAddress(pgMerchant.getAddress1());

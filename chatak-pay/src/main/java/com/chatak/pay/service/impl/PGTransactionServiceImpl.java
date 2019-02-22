@@ -45,6 +45,7 @@ import com.chatak.pg.acq.dao.IsoServiceDao;
 import com.chatak.pg.acq.dao.MerchantCardProgramMapDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
+import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.OnlineTxnLogDao;
 import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.RefundTransactionDao;
@@ -59,6 +60,7 @@ import com.chatak.pg.acq.dao.model.PGBatch;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantCardProgramMap;
+import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGSplitTransaction;
 import com.chatak.pg.acq.dao.model.PGTransaction;
@@ -100,6 +102,7 @@ import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 import com.chatak.switches.sb.SwitchServiceBroker;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
 import com.chatak.switches.sb.exception.ServiceException;
 import com.chatak.switches.sb.util.ProcessorConfig;
 import com.chatak.switches.sb.util.SpringDAOBeanFactory;
@@ -196,12 +199,25 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	
 	@Autowired
 	private TransactionDao transactionDao;
+
+	@Autowired
+	private MerchantUserDao merchantUserDao;
 	
 	@Transactional
-	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) {
+	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) throws ChatakInvalidTransactionException {
 		MDCLoggerUtil.setMDCLoggerParamsAdmin(transactionRequest.getInvoiceNumber());
 		log.info("Entering :: processTransaction :: TxnType :  " + transactionRequest.getTransactionType());
 		try {
+		  PGMerchantUsers merchantUsers = merchantUserDao.findByUserName(merchant.getUserName());
+		  List<String> PGMerchantUserFeatureMapping = merchantUserDao.findByFeatureStatus(merchantUsers.getId());
+		  boolean flag = false;
+		  for (String FeatureName : PGMerchantUserFeatureMapping) {
+		    if (FeatureName.equalsIgnoreCase(transactionRequest.getTransactionType().name())) {
+		      flag = true;
+		    }
+		  } if (!flag) {
+		    throw new ChatakInvalidTransactionException(ChatakPayErrorCode.TXN_0027.name());
+		  }
 			SpringDAOBeanFactory.setAppContext(appContext);
 			if(null != transactionRequest.getTransactionType()) {
 				switch(transactionRequest.getTransactionType()) {
@@ -235,7 +251,10 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			}
 			MDCLoggerUtil.clearMDCLoggerParams();
 			return null;
-		} catch(Exception e) {
+		} catch(ChatakInvalidTransactionException e) {
+          log.error("ERROR:: processCardPayment method", e);
+          throw new ChatakInvalidTransactionException(ChatakPayErrorCode.TXN_0027.name());
+         } catch(Exception e) {
 			log.error("ERROR:: processCardPayment method", e);
 			return getErrorResponse(ChatakPayErrorCode.TXN_0999.name());
 		}
@@ -587,6 +606,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 					request.setAccountNumber(pgTransaction.getPanMasked());
 					request.setEntryMode(transactionRequest.getEntryMode());
 				} else {
+					request.setEntryMode(transactionRequest.getEntryMode());
 					request.setCardType(transactionRequest.getCardData().getCardType().value());
 					request.setEmv(transactionRequest.getCardData().getEmv());
 				}

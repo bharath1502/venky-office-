@@ -13,6 +13,7 @@ import com.chatak.pg.bean.Response;
 import com.chatak.pg.bean.RoleResponse;
 import com.chatak.pg.model.EditRoleResponse;
 import com.chatak.pg.model.FeatureDTO;
+import com.chatak.pg.model.MposFeatures;
 import com.chatak.pg.model.UserRoleDTO;
 import com.chatak.pg.model.UserRolesDTO;
 
@@ -51,5 +52,7 @@ public interface RoleService {
 	public List<Long> getFeaturesByEntity(String entity)throws ChatakAdminException;
 	
 	public FeatureResponse getFeatureDataByIds(List<Long> featureIds);
+	
+	public List<MposFeatures> getMposeFeatures() throws ReflectiveOperationException;
 
 } 

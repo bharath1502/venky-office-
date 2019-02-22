@@ -112,4 +112,7 @@ public interface TransactionDao {
   public String generateTransactionRefNumber() throws DataAccessException;
 
   public List<PanRangeRequest> getPgPanRanges(String merchantId);
+  
+  public PGTransaction getTransactionDetails(String txnId);
+
 }

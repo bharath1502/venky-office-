@@ -1,8 +1,11 @@
 package com.chatak.pay.controller.model;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.chatak.pay.model.TSMResponse;
+import com.chatak.pg.model.MposFeatures;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -38,6 +41,16 @@ public class ClientSsoLoginResponse extends Response {
   private String pin;
 
   private ClientCurrencyDTO currencyDTO;
+  
+  private List<String> mposFeatures;
+
+  public List<String> getMpsoFeatures() {
+    return mposFeatures;
+  }
+
+  public void setMpsoFeatures(List<String> mpsoFeatures) {
+    this.mposFeatures = mpsoFeatures;
+  }
 
   public String getAccessToken() {
     return accessToken;

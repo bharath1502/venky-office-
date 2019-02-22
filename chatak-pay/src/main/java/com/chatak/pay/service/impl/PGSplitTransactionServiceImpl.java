@@ -40,6 +40,8 @@ import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.RandomGenerator;
 import com.chatak.pg.util.StringUtils;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
+import com.chatak.switches.sb.exception.ServiceException;
 
 /**
  * << Add Comments Here >>
@@ -147,9 +149,11 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
    * 
    * @param splitStatusRequest
    * @return
+   * @throws ServiceException 
+   * @throws ChatakInvalidTransactionException 
    */
   @Override
-  public SplitStatusResponse getSplitTxnStatus(SplitStatusRequest splitStatusRequest) {
+  public SplitStatusResponse getSplitTxnStatus(SplitStatusRequest splitStatusRequest) throws ChatakInvalidTransactionException {
     SplitStatusResponse statusResponse = new SplitStatusResponse();
     PGSplitTransaction pgSplitTransaction =
         splitTransactionDao.getPGSplitTransactionByMerchantIdAndPgRefTransactionIdAndSplitAmount(
@@ -174,7 +178,7 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
     }
   }
 
-  private void statusValidation(SplitStatusResponse statusResponse, PGSplitTransaction pgSplitTransaction) {
+  private void statusValidation(SplitStatusResponse statusResponse, PGSplitTransaction pgSplitTransaction) throws ChatakInvalidTransactionException {
 	Timestamp requestTime = pgSplitTransaction.getCreatedDate();
 	if (null != requestTime) {
 	  long minuites = validateRequestTime(requestTime);
@@ -197,7 +201,7 @@ public class PGSplitTransactionServiceImpl implements PGSplitTransactionService 
 	}
   }
 
-  private void validateStatus(PGSplitTransaction pgSplitTransaction) {
+  private void validateStatus(PGSplitTransaction pgSplitTransaction) throws ChatakInvalidTransactionException {
 	PGTransaction txnToVoid =
 	      voidTransactionDao.findTransactionToReversalByMerchantIdAndPGTxnId(
 	          pgSplitTransaction.getMerchantId(),

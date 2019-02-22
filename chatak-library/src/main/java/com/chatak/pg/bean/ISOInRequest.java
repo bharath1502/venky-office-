@@ -1,5 +1,7 @@
 package com.chatak.pg.bean;
 
+import javax.management.loading.PrivateClassLoader;
+
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 
@@ -87,6 +89,10 @@ public class ISOInRequest {
 	private Boolean _isOfflineTransaction = false;
 	
 	private ISOMsg isoMsg;
+	
+	private String setTimeZoneOffset;
+	
+	private String setTimeZoneRegion;
 
 	public ISOInRequest(ISOMsg isoMsg) throws ISOException,
 			MagneticStripeParseException, InvalidTLVDataFormatException,
@@ -571,4 +577,22 @@ public class ISOInRequest {
 		this.isoMsg = isoMsg;
 	}
 
+  public String getSetTimeZoneOffset() {
+    return setTimeZoneOffset;
+  }
+
+  public void setSetTimeZoneOffset(String setTimeZoneOffset) {
+    this.setTimeZoneOffset = setTimeZoneOffset;
+  }
+
+  public String getSetTimeZoneRegion() {
+    return setTimeZoneRegion;
+  }
+
+  public void setSetTimeZoneRegion(String setTimeZoneRegion) {
+    this.setTimeZoneRegion = setTimeZoneRegion;
+  }
+
+	
+	
 }

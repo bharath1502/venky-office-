@@ -8,6 +8,8 @@ import com.chatak.pay.controller.model.TransactionHistoryResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.model.TransactionHistoryRequest;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
+import com.chatak.switches.sb.exception.ServiceException;
 
 /**
  * @Author: Girmiti Software
@@ -18,7 +20,7 @@ import com.chatak.pg.model.TransactionHistoryRequest;
  */
 public interface PGTransactionService {
 
-  public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant);
+  public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) throws ChatakInvalidTransactionException;
   
   public Response processLoadFundTransaction(TransactionRequest transactionRequest, PGMerchant merchant);
 

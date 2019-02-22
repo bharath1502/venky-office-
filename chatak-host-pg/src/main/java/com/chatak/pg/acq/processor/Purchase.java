@@ -43,13 +43,17 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.NationalPOSEntryModeEnum;
 import com.chatak.pg.exception.ValidationException;
+import com.chatak.pg.util.DateUtil;
 /*import com.chatak.pg.upstream.BINUpstreamRouter;*/
 import com.chatak.pg.util.DateUtils;
 import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.Properties;
+import com.chatak.pg.util.StringUtils;
 import com.chatak.pg.util.TransactionConstants;
 import com.chatak.switches.sb.SwitchServiceBroker;
 import com.chatak.switches.sb.exception.ServiceException;
+
+import bsh.StringUtil;
 
 /**
  * @Comments : This class process the purchase / sale transaction
@@ -123,6 +127,12 @@ public class Purchase extends Processor {
       purchaseRequest.setMti(_ISOInputRequest.get_MTI());
       purchaseRequest.setProcessingCode(_ISOInputRequest.get_processingCode());
       purchaseRequest.setIsoMsg(_ISOInputRequest.getIsoMsg());
+      if(StringUtils.isNullAndEmpty(_ISOInputRequest.getSetTimeZoneOffset())){
+    	  purchaseRequest.setTimeZoneOffset(DateUtil.getTimezoneOffset());
+      }
+      if(StringUtils.isNullAndEmpty(_ISOInputRequest.getSetTimeZoneRegion())){
+    	  purchaseRequest.setTimeZoneRegion(DateUtil.getTimezoneRegion());
+      }
       purchaseRequest.setEntryMode(EntryModeEnum.fromValue(_ISOInputRequest.get_Field22().substring(0, 2)));
       purchaseRequest.setNationalPOSEntryMode(NationalPOSEntryModeEnum.valueOf(purchaseRequest.getEntryMode().toString()
                                                                                + "_DE58"));
@@ -699,14 +709,6 @@ public class Purchase extends Processor {
     catch(Exception e) {
       throw new ValidationException(e.getMessage());
     }
-    PGTransaction duplicateInvoiceTxn = transactionDao.getTransactionOnInvoiceNum(_InRequest.get_merchantId(),
-                                                                                  _InRequest.get_terminalId(),
-                                                                                  _InRequest.get_invoiceNumber());
-
-    if(null != duplicateInvoiceTxn) {
-      throw new ValidationException(ActionErrorCode.ERROR_CODE_DUPLICATE_INVOICE);
-    }
-
   }
 
 }

@@ -19,17 +19,22 @@ import org.springframework.util.CollectionUtils;
 import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.acq.dao.model.PGMerchantUserFeatureMapping;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
+import com.chatak.pg.acq.dao.model.QPGMerchantUserFeatureMapping;
 import com.chatak.pg.acq.dao.model.QPGMerchantUsers;
 import com.chatak.pg.acq.dao.model.QPGUserRoles;
+import com.chatak.pg.acq.dao.model.QPgMposFeatures;
 import com.chatak.pg.acq.dao.repository.ApplicationClientRepository;
 import com.chatak.pg.acq.dao.repository.MerchantRepository;
 import com.chatak.pg.acq.dao.repository.MerchantUserRepository;
+import com.chatak.pg.acq.dao.repository.PGMerchantUserFeatureMappingRepository;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.GenericUserDTO;
+import com.chatak.pg.model.MposFeatures;
 import com.chatak.pg.user.bean.GetMerchantListResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
@@ -52,6 +57,9 @@ public class MerchantUserDaoImpl implements MerchantUserDao {
 	ApplicationClientRepository applicationClientRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
+	
+	@Autowired
+	PGMerchantUserFeatureMappingRepository pGMerchantUserFeatureMappingRepository;
 
 	private static Logger logger = Logger.getLogger(MerchantUpdateDaoImpl.class);
 
@@ -529,5 +537,85 @@ private OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
 
     logger.info("Exiting :: MerchantUserDaoImpl :: saveOrUpdateApplicationClient");
   }
+  @Override
+  public PGMerchantUserFeatureMapping saveOrUpdateUserRoleFeatureMap(
+		  PGMerchantUserFeatureMapping pGMerchantUserFeatureMapping) {
+    return pGMerchantUserFeatureMappingRepository.save(pGMerchantUserFeatureMapping);
+  }
   
+  @Override
+  public List<MposFeatures> findByRoleId(Long userId) throws DataAccessException {
+
+    List<MposFeatures> mposFeaturesList = null;
+    try {
+      JPAQuery query = new JPAQuery(entityManager);
+      List<Tuple> tupleList = query
+          .from(QPgMposFeatures.pgMposFeatures,
+              QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping)
+          .where(isMposConfigIdEq(userId).and(QPgMposFeatures.pgMposFeatures.id
+              .eq(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId)))
+          .list(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.id,
+              QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId,
+              QPgMposFeatures.pgMposFeatures.featureName,
+              QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.status);
+
+      if (!CollectionUtils.isEmpty(tupleList)) {
+        mposFeaturesList = new ArrayList<MposFeatures>();
+        MposFeatures mposFeatures = null;
+        for (Tuple tuple : tupleList) {
+          mposFeatures = new MposFeatures();
+          mposFeatures
+              .setId(tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.id));
+          mposFeatures.setFeatureId(
+              tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId));
+          mposFeatures.setFeatureName(tuple.get(QPgMposFeatures.pgMposFeatures.featureName));
+          mposFeatures.setEnabled(
+              (tuple.get(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.status)));
+          mposFeaturesList.add(mposFeatures);
+        }
+      }
+      if (mposFeaturesList != null && !mposFeaturesList.isEmpty()) {
+        return mposFeaturesList;
+      }
+    } catch (Exception e) {
+      logger.error("Error ::MerchantUserDaoImpl :: findByRoleId", e);
+    }
+    logger.info("Exiting ::MerchantUserDaoImpl :: findByRoleId");
+    return Collections.emptyList();
+  }
+
+  private BooleanExpression isMposConfigIdEq(Long userId) {
+    return userId != null
+        ? QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.merchantUserID
+            .eq(userId.intValue())
+        : null;
+  }
+  
+  @Override
+  public List<String> findByFeatureStatus(Long userId) throws DataAccessException {
+
+    try {
+      JPAQuery query = new JPAQuery(entityManager);
+      List<String> tupleList = query
+          .from(QPgMposFeatures.pgMposFeatures,
+              QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping)
+          .where(isMposConfigIdEq(userId),
+              isFeatureStatusEq()
+              .and(QPgMposFeatures.pgMposFeatures.id
+              .eq(QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.featureId)))
+          .list(QPgMposFeatures.pgMposFeatures.featureName);
+      if (tupleList != null && !tupleList.isEmpty()) {
+        return tupleList;
+      }
+    } catch (Exception e) {
+      logger.error("Error ::MerchantUserDaoImpl :: findByRoleId", e);
+    }
+    logger.info("Exiting ::MerchantUserDaoImpl :: findByRoleId");
+    return Collections.emptyList();
+  }
+  
+  private BooleanExpression isFeatureStatusEq() {
+
+    return QPGMerchantUserFeatureMapping.pGMerchantUserFeatureMapping.status.eq(true);
+}
 }

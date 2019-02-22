@@ -1124,4 +1124,13 @@ public class TransactionDaoImpl implements TransactionDao {
 		return panRangeRequests;
 	}
 	
+
+	/**
+	 * @param txnId
+	 * @return
+	 */
+	@Override
+	public PGTransaction getTransactionDetails(String txnId) {
+		return transactionRepository.findByTransactionId(txnId);
+	}
 }

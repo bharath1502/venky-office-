@@ -171,14 +171,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 			merchantEntityMap.setEntitytype(Constants.ISO_USER_TYPE);
 			pgMerchantEntityMaps.add(merchantEntityMap);
 		merchant.setPgMerchantEntityMaps(pgMerchantEntityMaps);
-		//Merchant to CardProgram Mapping
-		/*Set<PGMerchantCardProgramMap> pgMerchantCardProgramMaps = new HashSet<>();
-			PGMerchantCardProgramMap merchantCardProgramMap = new PGMerchantCardProgramMap();
-			merchantCardProgramMap.setCardProgramId();
-			merchantCardProgramMap.setEntityId(Long.valueOf(addMerchantRequest.getAssociatedTo()));
-			merchantCardProgramMap.setEntitytype(addMerchantRequest.getAssociatedTo());
-			pgMerchantCardProgramMaps.add(merchantCardProgramMap);
-		merchant.setPgMerchantCardProgramMaps(pgMerchantCardProgramMaps);*/
       }
       merchant = merchantRepository.save(merchant);
 

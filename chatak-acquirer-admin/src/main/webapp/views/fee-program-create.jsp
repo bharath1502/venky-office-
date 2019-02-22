@@ -223,22 +223,6 @@
 														<span class="red-error" id="isoError">&nbsp;</span>
 													</div>
 												</fieldset>
-												<%-- <fieldset class="col-sm-3">
-													<label><spring:message code="admin.panHigh.label.message"/><span
-														class="required-field">*</span></label>
-													<form:select id="panHigh" path="panHigh"
-														cssClass="form-control" >
-														<form:option value=""><spring:message code="fee-report.label.select"/></form:option>
-														<c:if test="${not empty panRequestsList}">
-															<c:forEach items="${panRequestsList}" var="pan">
-																			<form:option value="${pan.id}" >${pan.panHigh}</form:option>
-															</c:forEach>
-														</c:if>
-													</form:select>
-													<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="isoError">&nbsp;</span>
-													</div>
-												</fieldset> --%>
 												<fieldset class="col-md-3 col-sm-6">
 													<label data-toggle='tooltip' data-placement='top' title=''><spring:message
 													code="fee-program-create.label.%value" /><span

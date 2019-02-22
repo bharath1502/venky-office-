@@ -316,20 +316,6 @@
 													<button type="button" onclick="fetchCardProgramByPmId()"><spring:message code="pm.edit.refresh.cp.label"/></button>												
 												</div>
 												</fieldset>
-												<%-- <div class="col-sm-12" id="customFieldsDiv">
-												<div
-													style="border: 1px solid #afafaf; padding: 5px; padding-top: 15px; margin-top: 10px; overflow: hidden;">
-													<div
-														style="background: #fff; position: absolute; top: 2px; color: #0072c6;"><spring:message code="admin.pm.label.paniinrange"/></div>
-													<div class="added-split-row"></div>
-												</div>
-												<div class="added-sub-row row"></div>
-												<br>
-												<div>
-													<span class="red-error">&nbsp;</span>
-													<br>
-												</div>
-											</div> --%>
 											</div>
 										</div>
 										<!--Panel Action Button Start -->

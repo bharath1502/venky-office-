@@ -164,7 +164,6 @@ public class FeeProgramServiceImpl implements FeeProgramService {
 
       if (StringUtil.isListNotNullNEmpty(feeProgramModel)) {
     	  
-       //CardProgram cardProgram = cardProgramDao.findByCardProgramId(feeProgramModel.get(0).getPanId());
     	PanRanges panRange = panRangeRepository.findById(feeProgramModel.get(0).getPanId());
         feeProgram.setFeeProgramId(feeProgramModel.get(0).getFeeProgramId());
         feeProgram.setFeeProgramName(feeProgramModel.get(0).getFeeProgramName());

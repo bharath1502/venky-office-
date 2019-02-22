@@ -992,7 +992,7 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 				panRangeRequest.setPanLow(panRanges.getPanLow());
 				String str = panRangeRequest.getPanLow().toString() + "::" + panRangeRequest.getPanHigh().toString();
 				panRangeRequest.setPanRange(str);
-				panRangeRequest.setIsoId(Long.valueOf(panRanges.getIsoId()));
+				panRangeRequest.setIsoId(Long.valueOf(panRanges.getId()));
 				panRangeRequests.add(panRangeRequest);
 			}
 		}

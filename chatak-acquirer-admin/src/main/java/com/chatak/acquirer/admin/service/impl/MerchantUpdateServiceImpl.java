@@ -600,7 +600,6 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
     	for(PGMerchantEntityMap entityMap : merchantEntityMaps){
 			merchant.setEntityId(entityMap.getEntityId());
 			isoRequest = new IsoRequest();
-			//merchant.setAssociatedTo(entityMap.getEntitytype());
 			List<Iso> list = isoServiceDao.findByIsoId(merchant.getEntityId());
 				if (StringUtil.isListNotNullNEmpty(list)) {
 					merchant.setAssociatedTo(list.get(0).getIsoName());

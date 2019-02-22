@@ -317,64 +317,6 @@
 														<span id="isoLogoErrorDiv" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-													<%-- <fieldset class="col-sm-12">
-													<fieldset class="col-sm-5 multi-select-box">
-													<label><spring:message code="admin.program.manager.list" /></label>
-														<select class="pm-list form-control features left-select-box" multiple="multiple" id="programManagers">
-														</select>
-													</fieldset>
-													<fieldset class="col-sm-1 multi-select-btn marginT60">
-														<span class="left-right-btn  form-control"
-															id="undo_redo_rightSelected"
-															onClick="SelectMoveRows(document.getElementsByClassName('features')[0],document.getElementsByClassName('features-codes')[0],'ADD')">
-															&gt; </span> <span class="right-left-btn form-control"
-															id="undo_redo_leftSelected"
-															onClick="SelectMoveRows(document.getElementsByClassName('features-codes')[0],document.getElementsByClassName('features')[0],'REMOVE')">
-															&lt; </span>
-												<div class="col-sm-12" id="customFieldsDiv">
-														<div
-															style="border: 1px solid #afafaf; padding: 5px; padding-top: 15px; margin-top: 10px; overflow: hidden;">
-															<div
-																style="background: #fff; position: absolute; top: 2px; color: #0072c6;">
-																<spring:message code="admin.pm.label.paniinrange" />
-															</div>
-															<fieldset class="col-md-3 col-sm-6">
-																<label><spring:message
-																		code="admin.pm.label.panlow" /></label> <input type="text"
-																	value="" name="panRangeList[0].panLow"
-																	id="panRangeList[0].panLow" class="form-control"
-																	onkeypress="return numbersonly(this, event);"
-																	maxlength="10"
-																	onblur="return validateTextFieldData(this.value,'panRangeList[0].panLow', 'panRangeList[0].panLowEr','${6}')"
-																	style="width: 200px;" />
-
-																<div class="discriptionErrorMsg">
-																	<span id="panRangeList[0].panLowEr" class="red-error">&nbsp;</span>
-																</div>
-															</fieldset>
-															<fieldset class="col-md-3 col-sm-6">
-																<label><spring:message
-																		code="admin.pm.label.panhigh" /></label> <input type="text"
-																	value="" name="panRangeList[0].panHigh"
-																	id="panRangeList[0].panHigh" class="form-control"
-																	onkeypress="return numbersonly(this, event);"
-																	onblur="return validateTextFieldData(this.value,'panRangeList[0].panHigh', 'panRangeList[0].panHighEr','${6}')"
-																	maxlength="10" style="width: 200px;" />
-
-																<div class="discriptionErrorMsg">
-																	<span id="panRangeList[0].panHighEr" class="red-error">&nbsp;</span>
-																</div>
-															</fieldset>
-															<button type="button" class="addSubRow add-btn-style"
-																id="mainFeeValueBtn_0" onclick='addSubrow(this)'
-																style="display: inline; float: left; margin: 23px 22px;">
-																<span class="glyphicon glyphicon-plus"></span>
-															</button>
-															<div class="added-sub-row1 row"></div>
-															<br>
-														</div>
-													</fieldset>
-												</fieldset> --%>
 												<div class="col-sm-12" id="customFieldsDiv">
 														<div
 															style="border: 1px solid #afafaf; padding: 5px; padding-top: 15px; margin-top: 10px; overflow: hidden;">

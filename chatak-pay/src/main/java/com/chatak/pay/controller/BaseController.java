@@ -395,7 +395,6 @@ public abstract class BaseController {
         case QR_SALE:
         // CradProgram check
         	//Commented because of card-program check
-         /* binService.validateCardProgram(cardData.getCardNumber(), transactionRequest, pgMerchant);*/ 	
           isValidCard(cardData);
           isValidExpDate(cardData);
           validateCardType(transactionRequest, cardData);

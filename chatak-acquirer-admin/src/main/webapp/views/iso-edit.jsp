@@ -345,45 +345,6 @@
 													</div>
 													<div><a href="#" onclick="openPopup()" ><spring:message code="view.iso.logo"/></a></div>
 												</fieldset>
-													<%-- <fieldset class="col-sm-12">
-													<fieldset class="col-sm-5 multi-select-box">
-													<label><spring:message code="admin.program.manager.list" /></label>
-														<select class="features form-control left-select-box" id="programManagers"  name="from"  size="8" multiple="multiple">
-																<c:forEach items="${programManagers}"
-																	var="programManager">
-															        <option value="${programManager.id}">${programManager.programManagerName}</option>
-																</c:forEach>
-														</select>
-													</fieldset>
-													<fieldset class="col-sm-1 multi-select-btn marginT60">
-															<span class="left-right-btn form-control" id="undo_redo_rightSelected"
-																onClick="SelectMoveRows(document.getElementsByClassName('features')[0],document.getElementsByClassName('features-codes')[0],'ADD')">
-																&gt; </span>
-																
-																 <span class="right-left-btn form-control" id="undo_redo_leftSelected"
-																onClick="SelectMoveRows(document.getElementsByClassName('features-codes')[0],document.getElementsByClassName('features')[0],'REMOVE')">
-																&lt; </span>
-																
-														</fieldset>
-													<label><spring:message code="admin.associated.pm" /><span
-														class="required-field">*</span></label>
-													<fieldset class="col-sm-5 multi-select-box">
-														<select  id="selectedProgramManager"
-															class="features-codes form-control right-select-box"  name="to" id="undo_redo_to"  size="8" multiple="multiple">
-															<c:forEach items="${selectedPmList}"
-																	var="programManager">
-																	<script>
-																	setProgramManagerId('${programManager.id}');
-																	</script>
-															        <option value="${programManager.id}">${programManager.programManagerName}</option>
-															</c:forEach>
-														</select>
-														<div class="discriptionErrorMsg">
-															<span class="red-error"
-																id="selectedProgramManager_ErrorDiv">&nbsp;</span>
-														</div>
-													</fieldset>
-												</fieldset> --%>
 											</div>
 											 
 											<!-- Content Block End -->

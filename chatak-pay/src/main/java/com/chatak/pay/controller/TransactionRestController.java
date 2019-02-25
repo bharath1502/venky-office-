@@ -580,8 +580,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
           } else if (!Pattern.compile(PGConstants.PSWD_REGEX).matcher(loginRequest.getPassword())
               .matches()) {
             throw new InvalidRequestException(PGConstants.TXN_0132);
-          } else if (!Pattern.compile(PGConstants.IMEI_REGEX).matcher(loginRequest.getDeviceSerial())
-              .matches() || loginRequest.getDeviceSerial().startsWith("0")) {
+          } else if (!Pattern.compile(PGConstants.GUID_REGEX).matcher(loginRequest.getDeviceSerial()).matches()) {
             throw new InvalidRequestException(PGConstants.TXN_0133);
           } else if (!Pattern.compile(PGConstants.APP_VERSION_REGEX)
               .matcher(loginRequest.getCurrentAppVersion()).matches()
@@ -589,6 +588,24 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
               || loginRequest.getCurrentAppVersion().endsWith(".")
               || loginRequest.getCurrentAppVersion().startsWith(".")) {
             throw new InvalidRequestException(PGConstants.TXN_0134);
+          } else if (loginRequest.getTimeZoneOffset() == null) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0180);
+          } else if (loginRequest.getTimeZoneRegion() == null) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0181);
+          } else if (loginRequest.getTimeZoneOffset().length() < 5 || loginRequest.getTimeZoneOffset().length() > 20) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0182);
+          } else if (loginRequest.getTimeZoneRegion().length() < 5 || loginRequest.getTimeZoneRegion().length() > 20) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0183);
+          } else if (loginRequest.getOsName() == null) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0184);
+          } else if (loginRequest.getModel() == null) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0185);
+          } else if (loginRequest.getOs() == null) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0186);
+          } else if (loginRequest.getOsVersion() == null) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0187);
+          } else if (loginRequest.getManufacturer() == null) {
+        	  throw new InvalidRequestException(PGConstants.TXN_0188);
           }
         }
 
@@ -759,8 +776,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 			throw new InvalidRequestException(PGConstants.TXN_0140);
 		} else if (!Pattern.compile(PGConstants.TID_REGEX).matcher(transactionRequest.getTerminalId()).matches()) {
 			throw new InvalidRequestException(PGConstants.TXN_0141);
-		} else if (!Pattern.compile(PGConstants.IMEI_REGEX).matcher(transactionRequest.getDeviceSerial()).matches()
-				|| transactionRequest.getDeviceSerial().startsWith("0")) {
+		} else if (!Pattern.compile(PGConstants.GUID_REGEX).matcher(transactionRequest.getDeviceSerial()).matches()) {
 			throw new InvalidRequestException(PGConstants.TXN_0133);
 		} else {
 			validateTimeZoneDetails(transactionRequest);

@@ -321,6 +321,8 @@ public interface PGConstants {
    
    String REGEX_DATE =  "\\d{2}-\\d{2}-\\d{4}";
    
+   String GUID_REGEX = "^\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b$";
+   
    public static final Integer INDEX_ONE = 1;
    
    public static final Integer INDEX_TWO = 2;
@@ -456,4 +458,14 @@ public interface PGConstants {
    String TXN_0177 = "TXN_0177";
    String TXN_0178 = "TXN_0178";
    String TXN_0179 = "TXN_0179";
+   
+   String TXN_0180 = "TXN_0180";
+   String TXN_0181 = "TXN_0181";
+   String TXN_0182 = "TXN_0182";
+   String TXN_0183 = "TXN_0183";
+   String TXN_0184 = "TXN_0184";
+   String TXN_0185 = "TXN_0185";
+   String TXN_0186 = "TXN_0186";
+   String TXN_0187 = "TXN_0187";
+   String TXN_0188 = "TXN_0188";
 }

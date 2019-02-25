@@ -410,6 +410,14 @@ public class PGMerchantServiceImpl implements PGMerchantService {
 	    request.setMerchantCode(pgMerchant.getMerchantCode());
 	    request.setDeviceSerial(loginRequest.getDeviceSerial());
 	    request.setCurrentAppVersion(loginRequest.getCurrentAppVersion());
+	    request.setUsername(loginRequest.getUsername());
+	    request.setMerchantName(pgMerchant.getBusinessName());
+	    request.setOs(loginRequest.getOs());
+	    request.setOsName(loginRequest.getOsName());
+	    request.setOsVersion(loginRequest.getOsVersion());
+	    request.setTimeZoneOffset(loginRequest.getTimeZoneOffset());
+	    request.setTimeZoneRegion(loginRequest.getTimeZoneRegion());
+	    request.setManufacturer(loginRequest.getManufacturer());
 
 	    log.info("Before hitting tms");
 	    String output = JsonUtil.sendToTSM(String.class, request,

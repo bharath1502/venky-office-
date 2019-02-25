@@ -260,38 +260,6 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title="">Application Mode<span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="appMode"
-															id="appMode" onblur="validateAppMode()">
-															<form:option value="">..:Select:..</form:option>
-															<form:option value="DEMO">Demo</form:option>
-															<form:option value="PRELIVE">Pre-Live</form:option>
-															<form:option value="LIVE">Live</form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="appModeEr" class="red-error">&nbsp;</span>
-														</div>
-														<form:hidden path="parentMerchantId" id="parentMerchantId"/>
-														<form:hidden path="merchantType" id="merchantTypeId"/>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title="">Business URL<span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="businessURL"
-															maxlength="50" id="businessURL" onblur="validateURL()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="businessURLEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title="">Looking For?</label>
-														<form:textarea cssClass="form-control" path="lookingFor"
-															id="lookingFor" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="lookingForEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title="">Business Type</label>
 														<form:select cssClass="form-control" path="businessType"
 															id="businessType">

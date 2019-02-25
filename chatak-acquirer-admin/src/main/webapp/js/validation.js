@@ -39,6 +39,22 @@ var ValidationRules = {
 
 	},
 	
+	switch_port_validation : {
+		type : "numeric",
+		min : "4",
+		max : "6",
+		mandatory : false
+
+	},
+	
+	priority_validation : {
+		type : "numeric",
+		min : "1",
+		max : "6",
+		mandatory : false
+
+	},
+	
 	extension_not_mandatory : {
 		type : "numeric",
 		min : "0",
@@ -327,6 +343,13 @@ var ValidationRules = {
 		min : "2",
 		max : "30",
 		mandatory : true
+
+	},
+	bank_city_name : {
+		type : "alpha",
+		min : "2",
+		max : "30",
+		mandatory : false
 
 	},
 
@@ -1286,7 +1309,7 @@ function alphanumericDotAndSpace(data,div_id) {
 	}
 	
 	function mobile(data,div_id) {
-		var regex =/^[0-9()+-]*$/;
+		var regex =/^[0-9-]*$/;
 		if(regex.test(data)){
 		setDiv(div_id,"");
 		return true;

@@ -24,6 +24,6 @@ import com.chatak.pg.util.Constants;
 public interface AcquirerFeeValueRepository extends JpaRepository<PGAcquirerFeeValue,Long>,QueryDslPredicateExecutor<PGAcquirerFeeValue>{
   public List<PGAcquirerFeeValue> findByFeeProgramId(Long feeProgramId);
   
-  @Query("select fpv.feePercentageOnly, fpv.flatFee from PGFeeProgram fp, PGAcquirerFeeValue fpv where fp.cardProgramId = :cardProgramId and fp.feeProgramId = fpv.feeProgramId and fp.status = '"+ Constants.ACTIVE +"' ")
-  public List<Object> findByFeeProgramIdOnQuery(@Param("cardProgramId") Long cardProgramId);
+  @Query("select fpv.feePercentageOnly, fpv.flatFee from PGFeeProgram fp, PGAcquirerFeeValue fpv where fp.panId = :panId and fp.feeProgramId = fpv.feeProgramId and fp.status = '"+ Constants.ACTIVE +"' ")
+  public List<Object> findByFeeProgramIdOnQuery(@Param("panId") Long panId);
 }

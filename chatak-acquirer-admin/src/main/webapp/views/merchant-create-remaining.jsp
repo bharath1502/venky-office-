@@ -14,8 +14,6 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" />
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 </head>
@@ -51,7 +49,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.mobilephone"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="phone"
+														<form:input cssClass="form-control" path="phone" onkeypress="return numbersonly(this,event)"
 															id="phone" maxlength="10" onblur="this.value=this.value.trim();validatePhone()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="phoneEr" class="red-error">&nbsp;</span>
@@ -132,38 +130,6 @@
 															maxlength="7" onblur="this.value=this.value.trim();return zipCodeNotEmpty(id)" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="pinEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.applicationmode"/><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="appMode"
-															id="appMode" onblur="validateAppMode()">
-															<form:option value=""><spring:message code="reports.option.select"/></form:option>
-															<form:option value="DEMO"><spring:message code="merchant.label.demo"/></form:option>
-															<form:option value="PRELIVE"><spring:message code="merchant.label.prelive"/></form:option>
-															<form:option value="LIVE"><spring:message code="merchant.label.live"/></form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="appModeEr" class="red-error">&nbsp;</span>
-														</div>
-														<form:hidden path="parentMerchantId" />
-														<%-- <form:hidden path="merchantType" /> --%>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.businessURL"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="businessURL"
-															maxlength="100" id="businessURL" onblur="this.value=this.value.trim();validateURL()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="businessURLEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.lookingfor"/></label>
-														<form:textarea cssClass="form-control" path="lookingFor"
-															id="lookingFor" onblur="this.value=this.value.trim();"/>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="lookingForEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">

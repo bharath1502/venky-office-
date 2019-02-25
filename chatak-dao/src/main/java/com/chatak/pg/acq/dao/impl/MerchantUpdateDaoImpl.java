@@ -166,23 +166,11 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       if(addMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT){
       //Merchant to Entity Mapping
       Set<PGMerchantEntityMap> pgMerchantEntityMaps = new HashSet<>();
-		for(Long id : addMerchantRequest.getEntitiesId()){
 			PGMerchantEntityMap merchantEntityMap = new PGMerchantEntityMap();
-			merchantEntityMap.setEntityId(id);
-			merchantEntityMap.setEntitytype(addMerchantRequest.getAssociatedTo());
+			merchantEntityMap.setEntityId(Long.valueOf(addMerchantRequest.getAssociatedTo()));
+			merchantEntityMap.setEntitytype(Constants.ISO_USER_TYPE);
 			pgMerchantEntityMaps.add(merchantEntityMap);
-		}
 		merchant.setPgMerchantEntityMaps(pgMerchantEntityMaps);
-		//Merchant to CardProgram Mapping
-		Set<PGMerchantCardProgramMap> pgMerchantCardProgramMaps = new HashSet<>();
-		for(Map.Entry<Long, Long> id : addMerchantRequest.getCardProgramAndEntityId().entrySet()){
-			PGMerchantCardProgramMap merchantCardProgramMap = new PGMerchantCardProgramMap();
-			merchantCardProgramMap.setCardProgramId(id.getKey());
-			merchantCardProgramMap.setEntityId(id.getValue());
-			merchantCardProgramMap.setEntitytype(addMerchantRequest.getAssociatedTo());
-			pgMerchantCardProgramMaps.add(merchantCardProgramMap);
-		}
-		merchant.setPgMerchantCardProgramMaps(pgMerchantCardProgramMaps);
       }
       merchant = merchantRepository.save(merchant);
 
@@ -530,7 +518,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       
 		if (updateMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT
 				&& updateMerchantRequest.getProcess().equals(PGConstants.UPDATE)) {
-			processUpdateMerchant(updateMerchantRequest, merchantDb);
 		}
 		merchantRepository.save(merchantDb);
 		accountRepository.save(pgAccount);
@@ -864,24 +851,18 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 		//return merchantRepository.getMerchantAutoSettlementByCode(merchantCode);
 		// PERF >> Return only 2 columns instead of the complete object
 		PGMerchant merchant = new PGMerchant();
-		
 		Query qry = entityManager
 				.createNativeQuery("select pgm.ID, pgmc.AUTO_SETTLEMENT from PG_MERCHANT pgm join PG_MERCHANT_CONFIG pgmc on pgm.MER_CONFIG_ID = pgmc.MER_CONFIG_ID "
 						+ "and pgm.MERCHANT_CODE = :merchantCode");
 		qry.setParameter("merchantCode", merchantCode);
-
+		logger.info("Merchant Code : " + merchantCode);
 		List<Object> list = qry.getResultList();
 		if (StringUtil.isListNotNullNEmpty(list)) {
 			Iterator it = list.iterator();
 			while (it.hasNext()) {
 				Object[] objs = (Object[]) it.next();
-
 				Long id = StringUtil.isNull(objs[0]) ? null : ((BigInteger) objs[0]).longValue();
-				Integer autoSettlement = StringUtil.isNull(objs[1]) ? null : ((BigInteger) objs[1]).intValue();
-				
 				PGMerchantConfig config = new PGMerchantConfig();
-				config.setAutoSettlement(autoSettlement);
-				
 				merchant.setId(id);
 				merchant.setMerchantConfig(config);
 			}
@@ -901,48 +882,40 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 								.and(QPGMerchant.pGMerchant.status.in(1, Integer.parseInt("4"))))
 				.list(QPGMerchant.pGMerchant);
 	}
-	  @Override
-	  public PGMerchant getMerchantOnCodeAndEntityDetails(String merchantCode, String entityType,
-	      Long entityId) {
-	    PGMerchant merchant = new PGMerchant();
-	    Query qry = null;
-	    StringBuilder query = null;
-	    if (entityType.equals(Constants.PM_USER_TYPE)) {
-			query = new StringBuilder(" select a.MERCHANT_CODE,a.ID from ( select PGM.MERCHANT_CODE,PGM.ID ")
-					.append(" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING PMEM ON PGM.ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID=:entityId AND PGM.MERCHANT_CODE=:merchantCode ")
-					.append(" union ").append(" select PGM.MERCHANT_CODE,PGM.ID ")
-					.append(" from PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID")
-					.append(" INNER JOIN PG_PM_ISO_MAPPING AS PMIM ON PMEM.ENTITY_ID = PMIM.ISO_ID AND PMIM.PM_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode ")
-					.append(" )a ");
-	    } else if (entityType.equals(Constants.ISO_USER_TYPE)) {
-			PGMerchant merchantType = merchantRepository.findByMerchantCode(merchantCode);
-			if (merchantType.getMerchantType().equalsIgnoreCase(Constants.MERCHANT)) {
-				query = new StringBuilder("select PGM.MERCHANT_CODE,PGM.ID ")
-						.append(" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING ")
-						.append(" AS PMEM ON PGM.ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID =:entityId ")
-						.append(" AND PGM.MERCHANT_CODE =:merchantCode");
-			} else {
-				query = new StringBuilder("select PGM.MERCHANT_CODE, PGM.PARENT_MERCHANT_ID  ")
-						.append(" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING ")
-						.append(" AS PMEM ON PGM.PARENT_MERCHANT_ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID =:entityId ")
-						.append(" AND PGM.MERCHANT_CODE =:merchantCode");
+
+	@Override
+	public PGMerchant getMerchantOnCodeAndEntityDetails(String merchantCode, String entityType, Long entityId) {
+		PGMerchant merchant = new PGMerchant();
+		Query qry = null;
+		StringBuilder query = null;
+		if (entityType.equals(Constants.PM_USER_TYPE)) {
+			query = new StringBuilder("SELECT a.MERCHANT_CODE,a.ID,a.PARENT_MERCHANT_ID FROM")
+					.append(" (SELECT PGM.MERCHANT_CODE,PGM.ID,PGM.PARENT_MERCHANT_ID FROM PG_MERCHANT PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING PMEM")
+					.append(" ON (PGM.ID = PMEM.MERCHANT_ID OR PGM.PARENT_MERCHANT_ID = PMEM.MERCHANT_ID)")
+					.append(" AND PMEM.ENTITY_ID=:entityId AND PGM.MERCHANT_CODE =:merchantCode")
+					.append(" union").append(" SELECT PGM.MERCHANT_CODE, PGM.ID, PGM.PARENT_MERCHANT_ID") 
+					.append(" FROM PG_MERCHANT PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING PMEM ON PGM.ID = PMEM.MERCHANT_ID")
+					.append(" INNER JOIN PG_PM_ISO_MAPPING PMIM ON PMEM.ENTITY_ID = PMIM.ISO_ID AND PMIM.PM_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode) a");
+		} else if (entityType.equals(Constants.ISO_USER_TYPE)) {
+			query = new StringBuilder("select PGM.MERCHANT_CODE,PGM.ID ").append(
+					" FROM PG_MERCHANT as PGM INNER JOIN PG_MERCHANT_ENTITY_MAPPING AS PMEM ON PGM.ID = PMEM.MERCHANT_ID AND PMEM.ENTITY_ID =:entityId AND PGM.MERCHANT_CODE =:merchantCode");
+
+		} else {
+			return merchantRepository.findByMerchantCode(merchantCode);
+		}
+		qry = entityManager.createNativeQuery(query.toString());
+		qry.setParameter("entityId", entityId);
+		qry.setParameter("merchantCode", merchantCode);
+		List<Object> list = qry.getResultList();
+		if (StringUtil.isListNotNullNEmpty(list)) {
+			Iterator it = list.iterator();
+			while (it.hasNext()) {
+				Object[] objs = (Object[]) it.next();
+				merchant.setMerchantCode(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
+				merchant.setId(StringUtil.isNull(objs[1]) ? null : ((BigInteger) objs[1]).longValue());
+				return merchant;
 			}
-	    } else {
-	      return merchantRepository.findByMerchantCode(merchantCode);
-	    }
-	    qry = entityManager.createNativeQuery(query.toString());
-	    qry.setParameter("entityId", entityId);
-	    qry.setParameter("merchantCode", merchantCode);
-	    List<Object> list = qry.getResultList();
-	    if (StringUtil.isListNotNullNEmpty(list)) {
-	      Iterator it = list.iterator();
-	      while (it.hasNext()) {
-	        Object[] objs = (Object[]) it.next();
-	        merchant.setMerchantCode(StringUtil.isNull(objs[0]) ? null : ((String) objs[0]));
-	        merchant.setId(StringUtil.isNull(objs[1]) ? null : ((BigInteger) objs[1]).longValue());
-	        return merchant;
-	      }
-	    }
-	    return null;
-	  }
+		}
+		return null;
+	}
 }

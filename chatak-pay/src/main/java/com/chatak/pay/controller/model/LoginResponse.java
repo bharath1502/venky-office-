@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.chatak.pay.model.TSMResponse;
 import com.chatak.pg.model.CurrencyDTO;
+import com.chatak.pg.model.MposFeatures;
 
 /**
  * REST API model class to hold response login result
@@ -65,8 +66,18 @@ public class LoginResponse extends Response {
 	private String pin;
 
 	private String refreshToken;
+	
+	private List<String> mpsoFeatures;
+	
+	public List<String> getMpsoFeatures() {
+	  return mpsoFeatures;
+	}
 
-	/**
+	public void setMpsoFeatures(List<String> mpsoFeatures) {
+	  this.mpsoFeatures = mpsoFeatures;
+	}
+
+  /**
 	 * @return the subServiceProviderId
 	 */
 	public Long getSubServiceProviderId() {

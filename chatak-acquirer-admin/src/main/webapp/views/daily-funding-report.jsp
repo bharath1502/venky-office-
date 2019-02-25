@@ -100,7 +100,7 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.fromdate" /><span class="required-field">*</span></label>
 													<div class="input-group focus-field jquery-datepicker">
-														<form:input path="fromDate" id="fromDate" onblur="return clientValidation('fromDate', 'startDate','transFromDateErrorDiv')"
+														<form:input path="fromDate" id="transFromDate" onblur="return clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')"
 															cssClass="form-control effectiveDate jquery-datepicker__input" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
@@ -112,8 +112,8 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.transactions.todate" /><span class="required-field">*</span></label>
 													<div class="input-group focus-field jquery-datepicker">
-														<form:input path="toDate" onblur="return clientValidation('toDate', 'endDate','transToDateErrorDiv');"
-															cssClass="form-control effectiveDate jquery-datepicker__input" id="toDate" />
+														<form:input path="toDate" onblur="return clientValidation('transToDate', 'endDate','transToDateErrorDiv');"
+															cssClass="form-control effectiveDate jquery-datepicker__input" id="transToDate" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
@@ -315,7 +315,7 @@
 		<!--Container block End -->
 	</div>
 	<!--Body Wrapper block End -->
-
+	<script src="../js/jquery.maskedinput.js"></script>
 	<script src="../js/transactions.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -337,14 +337,16 @@
 			$(".focus-field").click(function() {
 				 $(this).children('.effectiveDate').focus();
 			});
-			 rome(fromDate, { time: false });
-			rome(toDate, { time: false }); 
+			rome(transFromDate, { time: false,"inputFormat": "DD/MM/YYYY" });
+			rome(transToDate, { time: false,"inputFormat": "DD/MM/YYYY" });
 			/* $('.effectiveDate').datetimepicker({
 				timepicker : false,
 				format : 'd/m/Y',
 				formatDate : 'd/m/Y',
 				maxDate:new Date()
 			}); */
+			$("#transFromDate").mask("<%=Constants.MASK_DATE_FORMAT%>"); 
+			$("#transToDate").mask("<%=Constants.MASK_DATE_FORMAT%>");
 			
 			$('#my_popup').popup({
 				blur : false

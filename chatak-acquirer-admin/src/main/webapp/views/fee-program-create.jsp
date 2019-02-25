@@ -170,27 +170,58 @@
 												class='required-field'>*</span></label>
 													<input type="text" name="feeProgramName" id="feeProgramName"
 												class="form-control"
-												onblur="this.value=this.value.trim();clientValidation('feeProgramName', 'company_name','feeProgramNameErr');doAjaxFeeprogramNameDuplicate()">
+												onblur="this.value=this.value.trim(); validateFeePrgmName()">
 													<div class="discriptionErrorMsg">
 														<span id="feeProgramNameErr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-										<fieldset class="col-md-3 col-sm-6">
-													<label data-toggle='tooltip' data-placement='top'><spring:message code="admin.cardprogramname"/><span
-												class='required-field'>*</span></label>
-													<select id="cardProgramId" name="cardProgramId" class="form-control" onblur="clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')">
-														<option value=""><spring:message
-														code="fee-program-create.label.select" /></option>
+										<fieldset class="col-sm-3">
+													<label><spring:message code="fee-report.label.pm.name"/><span
+														class="required-field">*</span></label>
+													<form:select id="programManagerId" path="programManagerId" onclick="validatePM()" onchange="getIso(this.value)"
+														cssClass="form-control" >
+														<form:option value=""><spring:message code="fee-report.label.select"/></form:option>
 														<c:if test="${not empty cardProgramList}">
-												<c:forEach items="${cardProgramList}" var="cardProgramList">
-												<option value="${cardProgramList.cardProgramId}">${cardProgramList.cardProgramName}</option>
-												</c:forEach>
-												</c:if>
-													</select>
-													<div class="discriptionErrorMsg" data-toggle="tooltip"
-												data-placement="top" title="">
-												<span id="cardProgramIdErrDiv" class="red-error">&nbsp;</span>
-											</div>
+															<c:forEach items="${cardProgramList}" var="programManager">
+																			<form:option value="${programManager.id}" >${programManager.programManagerName}</form:option>
+															</c:forEach>
+														</c:if>
+													</form:select>
+													<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span class="red-error" id="pmError">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label><spring:message code="admin.iso.label.message"/><span
+														class="required-field">*</span></label>
+													<form:select id="isoId" path="isoId" onclick="validateISO()" onchange="getPan(this.value)"
+														cssClass="form-control" >
+														<form:option value=""><spring:message code="fee-report.label.select"/></form:option>
+														<c:if test="${not empty isoRequestsList}">
+															<c:forEach items="${isoRequestsList}" var="iso">
+																			<form:option value="${iso.id}" >${iso.isoName}</form:option>
+															</c:forEach>
+														</c:if>
+													</form:select>
+													<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span class="red-error" id="isoError">&nbsp;</span>
+													</div>
+												</fieldset>
+												<fieldset class="col-sm-3">
+													<label><spring:message code="admin.panLow-panHigh.label.message"/><span
+														class="required-field">*</span></label>
+													<form:select id="panLow" path="panId"
+														cssClass="form-control" >
+														<form:option value=""><spring:message code="fee-report.label.select"/></form:option>
+														<c:if test="${not empty panRequestsList}">
+															<c:forEach items="${panRequestsList}" var="pan">
+																			<form:option value="${pan.isoId}" >${pan.panHigh}</form:option>
+															</c:forEach>
+														</c:if>
+													</form:select>
+													<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span class="red-error" id="isoError">&nbsp;</span>
+													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label data-toggle='tooltip' data-placement='top' title=''><spring:message
@@ -289,6 +320,130 @@
 		$(document).ready(function() {
 			$( "#navListId3" ).addClass( "active-background" );
 		});
+		
+		function validatePM(){ 
+			var pm = $('#programManagerId').val();
+			if(pm == '' || pm == null){
+				setDiv('pmError',webMessages.SELECT_PROGRAM_MANAGER);
+				return false;
+			}
+			setDiv('pmError','');
+			return true;
+		}
+		
+		function getIso(programManagerId) {
+			 
+			// Remove previous options from the dropdown
+			document.getElementById("isoId").options.length = 0;
+
+			// Create 'Select' option
+			var selectOption = document.createElement("option");
+			selectOption.innerHTML = webMessages.Select;
+			selectOption.value = "";
+			$("#isoId").append(selectOption);
+			doAjaxToGetIso(programManagerId);
+		}
+
+		function doAjaxToGetIso(programManagerId) {
+			$
+					.ajax({
+						type : "GET",
+						url : "getPartnersEntites?programManagerId=" + programManagerId,
+						success : function(response) {
+							// we have the response
+
+							var obj = JSON.parse(response);
+
+							// Remove previous options from the dropdown
+							document.getElementById("isoId").options.length = 0;
+
+							// Create 'Select' option
+							var selectOption = document.createElement("option");
+							selectOption.innerHTML = webMessages.Select;
+							selectOption.value = "";
+							$("#isoId").append(selectOption);
+
+							if (obj.errorMessage == "sucess") {
+
+								var data = obj.isoRequest;
+								for (var i = 0; i < data.length; i++) {
+									var newOption = document
+											.createElement("option");
+									newOption.value = data[i].id;
+									newOption.innerHTML = data[i].isoName;
+
+									$("#isoId").append(newOption);
+								}
+							}
+						},
+						failure : function(e) {
+						}
+					});
+		}
+		
+		function validateISO(){ 
+			var iso = $('#isoId').val();
+			if(iso == '' || iso == null){
+				setDiv('isoError',webMessages.SELECT_ISO);
+				return false;
+			}
+			setDiv('isoError','');
+			return true;
+		}
+		
+		function getPan(isoId) {
+			 
+			// Remove previous options from the dropdown
+			document.getElementById("panLow").options.length = 0;
+			//document.getElementById("panHigh").options.length = 0;
+
+			// Create 'Select' option
+			var selectOption = document.createElement("option");
+			selectOption.innerHTML = webMessages.Select;
+			selectOption.value = "";
+			//$("#panHigh").append(selectOption);
+			$("#panLow").append(selectOption);
+			doAjaxToGetPan(isoId);
+		}
+		
+		function doAjaxToGetPan(isoId) {
+			$
+					.ajax({
+						type : "GET",
+						url : "getPanEntites?isoId=" + isoId,
+						success : function(response) {
+							// we have the response
+
+							var obj = JSON.parse(response);
+
+							// Remove previous options from the dropdown
+							document.getElementById("panLow").options.length = 0;
+
+							// Create 'Select' option
+							var selectOption = document.createElement("option");
+							var panLowOption = document.createElement("option");
+							selectOption.innerHTML = webMessages.Select;
+							panLowOption.innerHTML = webMessages.Select;
+							selectOption.value = "";
+							$("#panLow").append(selectOption);
+
+							if (obj.errorMessage == "sucess") {
+
+								var data = obj.panRangeRequests;
+								for (var i = 0; i < data.length; i++) {
+									var newOption = document
+											.createElement("option");
+									newOption.value = data[i].isoId;
+									newOption.innerHTML = data[i].panRange;
+
+								 $("#panLow").append(newOption);
+								}
+							}
+						},
+						failure : function(e) {
+						}
+					});
+		}
 		
 	</script>
 </body>

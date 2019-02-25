@@ -9,6 +9,7 @@ import com.chatak.pg.bean.Response;
 import com.chatak.pg.user.bean.BankResponse;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.PartnerGroupPartnerMapRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountResponse;
@@ -92,6 +93,8 @@ public interface ProgramManagerService {
   public List<CardProgramRequest> getUnselectedCpByPm(Long programManagerId);
   
   public List<CardProgramRequest> getUnselectedCpForIndependentPm(Long programManagerId, String currency);
+  
+  public List<PanRangeRequest> getPanRangesByIsoId(Long isoId);
   
   public Response findProgramManagerNameAndIdByEntityId(Long entityId, Long merchantId);
   

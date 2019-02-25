@@ -31,9 +31,7 @@ function ProgramManagerValidation() {
 	        | !clientValidation('timezone','state','timezone_ErrorDiv')
 	        | !clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')
 	        | !clientValidation('schedulerRunTime','txn_date','pgmmgrschedulerRunTimeerrormsg')
-			| !clientValidation('programMangerName', 'program_manager_name','pgmmgrNameErrormsg')
-			| !validateProgramManagerId('programManagerType','programManagerTypeError')
-			| !validateByPmType()) {
+			| !clientValidation('programMangerName', 'program_manager_name','pgmmgrNameErrormsg')) {
 		clearValidationType();
 		flag = false;
 		return flag;
@@ -211,8 +209,7 @@ function editPMValidation() {
 			| !clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')
 			| !clientValidation('timezone','state','timezone_ErrorDiv')
 			| !clientValidation('state','state','stateNameErrormsg')
-			| !clientValidation('country','country','countryNameErrormsg')
-			| !validateCardProgram('cardprogramId','pgmmgrCardProgramerrormsg')) {
+			| !clientValidation('country','country','countryNameErrormsg')) {
 		clearValidationType();
 		flag = false;
 		return flag;
@@ -685,58 +682,12 @@ function doAjaxForState(countryId) {
 	});
 }
 
-function fetchPmDetailsByPmType(programManagerType) {
-	resetAllFields();
-	if (programManagerType == 'onboarded') {
-		$(".issuanceProgramManager").show();
-		$(".issuancePMlogo").show();
-		$(".acquirerCurrencyNames").hide();
-		$(".acquirerCardProgram").hide();
-		$(".issuanceCardProgram").show();
-		$(".acquirerBankNames").hide();
-		$(".currencyNames").show();
-		$(".bankNames").show();
-		/*document.getElementById('country').options.length = 0;
-		var selectOption = document.createElement("option");
-		selectOption.innerHTML = "..:Select:..";
-		selectOption.value = "";
-		$("#country").append(selectOption);*/
-		document.getElementById('state').options.length = 0;
-		var selectOption = document.createElement("option");
-		selectOption.innerHTML = "..:Select:..";
-		selectOption.value = "";
-		$("#state").append(selectOption);
-		document.getElementById('timezone').options.length = 0;
-		var selectOption = document.createElement("option");
-		selectOption.innerHTML = "..:Select:..";
-		selectOption.value = "";
-		$("#timezone").append(selectOption);
-		doAjaxFetchAllIssunacePMDetails(programManagerType);
-	} else if(programManagerType == 'CreateIndependent') {
-		$(".acquirerCurrencyNames").show();
-		$(".acquirerBankNames").show();
-		$(".acquirerCardProgram").show();
-		$(".issuanceCardProgram").hide();
-		$(".issuanceProgramManager").hide();
-		$(".issuancePMlogo").hide();
-		$(".currencyNames").hide();
-		$(".bankNames").hide();
+function fetchPmDetailsByPmType() {
+	var programManagerType = "CreateIndependent"
 		getIndependentPMDetails(programManagerType);
-		document.getElementById('programManagerId').options.length = 0;
 		var selectOption = document.createElement("option");
 		selectOption.innerHTML = "..:Select:..";
 		selectOption.value = "";
-		$("#programManagerId").append(selectOption);
-	}else{
-		document.getElementById('programManagerId').options.length = 0;
-		$(".issuanceProgramManager").hide();
-		$(".issuancePMlogo").hide();
-		var selectOption = document.createElement("option");
-		selectOption.innerHTML = "..:Select:..";
-		selectOption.value = "";
-		$("#programManagerId").append(selectOption);
-		return;
-	}
 }
 
 function getIndependentPMDetails(programManagerType) {
@@ -749,7 +700,7 @@ function getIndependentPMDetails(programManagerType) {
 			if (response != "") {
 				var obj = JSON.parse(response);
 				
-				$("#programMangerName").val('');
+				/*$("#programMangerName").val('');
 				$("#companyName").val('');
 				$("#businessEntityName").val('');
 				$("#contactPerson").val('');
@@ -760,7 +711,7 @@ function getIndependentPMDetails(programManagerType) {
 				$("#state").val('');
 				$("#timezone").val('');
 				$("#batchPrefix").val('');
-				$("#LogoDiv").val('');
+				$("#LogoDiv").val('');*/
 				// Remove previous options from the dropdown
 				document.getElementById('acquirerCurrencyName').options.length = 0;
 
@@ -959,6 +910,10 @@ function resetAllFields() {
 	setValue('contactPhone', '');
 	setValue('extension', '');
 	setValue('programManagerEmailId', '');
+	setValue('country', '');
+	setValue('state', '');
+	setValue('timezone', '');
+	setValue('batchPrefix', '');
 	setValue('load', '');
 	document.getElementById('bankName').options.length = 0;
 	document.getElementById('cardprogramId').options.length = 0;
@@ -1292,3 +1247,18 @@ function validateSpecialCharactersPMSearch() {
 	}
 	return true;
 }
+function validateContactPhone(){
+	var contactPhone = get('contactPhone').value.trim();
+	var contactPhonespaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})?[-. ]?([0-9]{4})$/;
+	 if (!contactPhonespaceRegx.test(contactPhone) ||!(contactPhone != 0)) {
+		setDiv('pgmmgrcontactphoneerrormsg', webMessages.invalidContactPhoneNumber);
+		loadMsgTitleText();
+		return false;
+	}
+	 else {
+			setDiv('pgmmgrcontactphoneerrormsg', '');
+			return true;
+		}
+}
+
+

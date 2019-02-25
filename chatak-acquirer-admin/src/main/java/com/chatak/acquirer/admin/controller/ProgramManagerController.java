@@ -176,7 +176,7 @@ public class ProgramManagerController implements URLMappingConstants {
    * @return
    * @throws CloneNotSupportedException
    */
-  @RequestMapping(value = PREPAID_ADMIN_CREATE_PROGRAM_MANAGER, method = RequestMethod.POST)
+  @RequestMapping(value = SHOW_PREPAID_ADMIN_SEARCH_PROGRAM_MANAGER, method = RequestMethod.POST)
   public ModelAndView processCreateProgramManager(HttpServletRequest request,
       HttpServletResponse response, Map<String, Object> model, HttpSession session,
       @RequestParam("programManagerLogo") MultipartFile file,
@@ -449,6 +449,9 @@ public class ProgramManagerController implements URLMappingConstants {
           programManagerResponse.getProgramManagersList();
       defaultPMValue = programManagerList.get(0).getDefaultProgramManager();
       model.put("selectedBankList", programManagerResponse.getProgramManagersList().get(0).getBankRequest());
+      Response currency = currencyConfigService.getCurrencyCodeNumeric(programManagerResponse.getProgramManagersList().get(0).getAccountCurrency());
+      Response result = bankService.getBankName(currency.getCurrencyId());
+      model.put("allBankList", result.getResponseList());
       modelAndView.addObject("selectedCardProgramList", programManagerResponse.getProgramManagersList().get(0).getCardProgamMapping());
       if(programManagerList.get(0).getIssuancepmid()!=null){
         unselectedCardPrograms = programManagerService.getUnselectedCpByPm(programManagerId);        

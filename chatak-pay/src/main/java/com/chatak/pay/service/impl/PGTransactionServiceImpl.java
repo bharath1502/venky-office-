@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.chatak.pay.constants.ChatakPayErrorCode;
 import com.chatak.pay.controller.model.CardData;
 import com.chatak.pay.controller.model.Response;
+import com.chatak.pay.controller.model.TransactionHistoryResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
 import com.chatak.pay.exception.InvalidRequestException;
@@ -44,10 +45,12 @@ import com.chatak.pg.acq.dao.IsoServiceDao;
 import com.chatak.pg.acq.dao.MerchantCardProgramMapDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
+import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.OnlineTxnLogDao;
 import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.RefundTransactionDao;
 import com.chatak.pg.acq.dao.SplitTransactionDao;
+import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.CardProgram;
 import com.chatak.pg.acq.dao.model.PGAccount;
@@ -57,6 +60,7 @@ import com.chatak.pg.acq.dao.model.PGBatch;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGMerchantCardProgramMap;
+import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGSplitTransaction;
 import com.chatak.pg.acq.dao.model.PGTransaction;
@@ -86,7 +90,10 @@ import com.chatak.pg.enums.NationalPOSEntryModeEnum;
 import com.chatak.pg.enums.TransactionStatus;
 import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.model.ProcessingFee;
+import com.chatak.pg.model.TransactionHistoryRequest;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
+import com.chatak.pg.user.bean.TransactionHistory;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.EncryptionUtil;
@@ -95,6 +102,7 @@ import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.StringUtils;
 import com.chatak.switches.sb.SwitchServiceBroker;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
 import com.chatak.switches.sb.exception.ServiceException;
 import com.chatak.switches.sb.util.ProcessorConfig;
 import com.chatak.switches.sb.util.SpringDAOBeanFactory;
@@ -189,11 +197,18 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	@Autowired
 	private AsyncService asyncService;
 	
+	@Autowired
+	private TransactionDao transactionDao;
+
+	@Autowired
+	private MerchantUserDao merchantUserDao;
+	
 	@Transactional
-	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) {
+	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) throws ChatakInvalidTransactionException {
 		MDCLoggerUtil.setMDCLoggerParamsAdmin(transactionRequest.getInvoiceNumber());
 		log.info("Entering :: processTransaction :: TxnType :  " + transactionRequest.getTransactionType());
 		try {
+		  
 			SpringDAOBeanFactory.setAppContext(appContext);
 			if(null != transactionRequest.getTransactionType()) {
 				switch(transactionRequest.getTransactionType()) {
@@ -222,12 +237,15 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 					break;
 				}
 			} else {
-				log.error("invalid transactiontype:: processCardPayment method");
+				log.error("invalid transactiontype:: processCardPaymevirtual-terminal-salent method");
 				return getErrorResponse(ChatakPayErrorCode.TXN_0001.name());
 			}
 			MDCLoggerUtil.clearMDCLoggerParams();
 			return null;
-		} catch(Exception e) {
+		} /*catch(ChatakInvalidTransactionException e) {
+          log.error("ERROR:: processCardPayment method", e);
+          throw new ChatakInvalidTransactionException(ChatakPayErrorCode.TXN_0027.name());
+         } */catch(Exception e) {
 			log.error("ERROR:: processCardPayment method", e);
 			return getErrorResponse(ChatakPayErrorCode.TXN_0999.name());
 		}
@@ -259,33 +277,47 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		log.info("RestService | PGTransactionServiceImpl | processAuthCapture | Entering");
 		TransactionResponse transactionResponse = new TransactionResponse();
 		PGOnlineTxnLog pgOnlineTxnLog = null;
+		CardProgram cardprogram=null;
 		try {
+			PurchaseRequest request = new PurchaseRequest();
+			Long feeAmount = 0l;
 			// Logging into Online txn log
 			pgOnlineTxnLog = logEntry(TransactionStatus.INITATE, transactionRequest);
 			// PERF >> Replaced with card program id
-			CardProgram cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
-					CommonUtil.getIIN(transactionRequest.getCardData().getCardNumber()), 
-					CommonUtil.getPartnerIINExt(transactionRequest.getCardData().getCardNumber()), 
-					CommonUtil.getIINExt(transactionRequest.getCardData().getCardNumber()));
-			
-			List<PGAcquirerFeeValue> feeValues = feeProgramDao.getAcquirerFeeValueByCardProgramId(cardprogram.getCardProgramId());
-			if(StringUtil.isListNullNEmpty(feeValues)) {
-			  transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0116.name());
-			  transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0116.value());
-			  return transactionResponse;
+			if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+				
+				List<PanRangeRequest> panRangesList = transactionDao.getPgPanRanges(transactionRequest.getMerchantCode());
+				Long panId = cardRangeValidation( panRangesList, transactionRequest, request);
+				if(panId == null) {
+					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0115.name());
+					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0115.value());
+					return transactionResponse;
+				}
+				List<PGAcquirerFeeValue> feeValues = feeProgramDao
+						.getAcquirerFeeValueByCardProgramId(panId);
+				if (StringUtil.isListNullNEmpty(feeValues)) {
+					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0116.name());
+					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0116.value());
+					return transactionResponse;
+				}
+
+				Double totalTxnAmount = StringUtil.getLong(transactionRequest.getTotalTxnAmount()) / 100d;
+				Double percentage = StringUtil.getDouble(feeValues.get(0).getFeePercentageOnly());
+				feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
+				feeAmount = feeAmount + feeValues.get(0).getFlatFee();
+
+				if (feeAmount.compareTo(transactionRequest.getTotalTxnAmount()) > 0) {
+					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0117.name());
+					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0117.value());
+					return transactionResponse;
+				}
+				request.setTxnFee(feeAmount);
+				request.setTxnAmount(transactionRequest.getTotalTxnAmount() - feeAmount);
+			} else {
+				request.setTxnAmount(transactionRequest.getTotalTxnAmount());
+				request.setAccountNumber(transactionRequest.getAccountNumber());
 			}
-			
-			Double totalTxnAmount = StringUtil.getLong(transactionRequest.getTotalTxnAmount()) / 100d;
-            Double percentage = StringUtil.getDouble(feeValues.get(0).getFeePercentageOnly());
-            Long feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
-            feeAmount = feeAmount + feeValues.get(0).getFlatFee();
-			
-            if(feeAmount.compareTo(transactionRequest.getTotalTxnAmount()) > 0){
-              transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0117.name());
-              transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0117.value());
-              return transactionResponse;
-            }
-			PurchaseRequest request = new PurchaseRequest();
+			request.setEntryMode(transactionRequest.getEntryMode());
 			request.setCardNum(transactionRequest.getCardData().getCardNumber());
 			request.setExpDate(transactionRequest.getCardData().getExpDate());
 			request.setCvv(transactionRequest.getCardData().getCvv());
@@ -295,8 +327,6 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			request.setInvoiceNumber(transactionRequest.getInvoiceNumber());
 			request.setTrack2(transactionRequest.getCardData().getTrack2());
 			request.setTotalTxnAmount(transactionRequest.getTotalTxnAmount());
-			request.setTxnFee(feeAmount);
-			request.setTxnAmount(transactionRequest.getTotalTxnAmount() - feeAmount);
 			request.setCardHolderName(transactionRequest.getCardData().getCardHolderName());
 			request.setPosEntryMode(transactionRequest.getPosEntryMode()+"0");
 			request.setDescription(transactionRequest.getDescription());
@@ -318,7 +348,9 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			request.setTimeZoneRegion(transactionRequest.getTimeZoneRegion());
             getMerchantDetails(pgMerchant, request);
 			request.setUid(transactionRequest.getCardData().getUid());
-			getMerchantBatchId(request, cardprogram, pgMerchant);
+			if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+				getMerchantBatchId(request, cardprogram, pgMerchant);
+			}
 
 			PurchaseResponse purchaseResponse = new SwitchServiceBroker().purchaseTransaction(request, pgMerchant);
 
@@ -544,11 +576,13 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			} else {
 				reverseSplitSaleIfExists(transactionRequest.getTxnRefNumber(), transactionRequest.getMerchantCode());
 				setCardDataAndTransactionRequestData(transactionRequest, pgTransaction);
-
-				CardProgram cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
-						CommonUtil.getIIN(transactionRequest.getCardData().getCardNumber()), 
-						CommonUtil.getPartnerIINExt(transactionRequest.getCardData().getCardNumber()), 
-						CommonUtil.getIINExt(transactionRequest.getCardData().getCardNumber()));				
+				CardProgram cardprogram = null;
+				if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+					cardprogram = cardProgramDao.findCardProgramIdByIinAndPartnerIINCodeAndIinExt(
+							CommonUtil.getIIN(transactionRequest.getCardData().getCardNumber()),
+							CommonUtil.getPartnerIINExt(transactionRequest.getCardData().getCardNumber()),
+							CommonUtil.getIINExt(transactionRequest.getCardData().getCardNumber()));
+				}
 				// Logging into Online txn log
 				pgOnlineTxnLog = logEntry(TransactionStatus.INITATE, transactionRequest);
 				VoidRequest request = new VoidRequest();
@@ -559,11 +593,17 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				request.setAcq_mode(EntryModeEnum.getValue(transactionRequest.getPosEntryMode()));// need to set proper value
 				request.setNationalPOSEntryMode(NationalPOSEntryModeEnum.UNSPECIFIED_DE58);
 				request.setPulseData(Properties.getProperty("chatak-pay.pulse.data"));
-				request.setCardType(transactionRequest.getCardData().getCardType().value());
+				if (transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+					request.setAccountNumber(pgTransaction.getPanMasked());
+					request.setEntryMode(transactionRequest.getEntryMode());
+				} else {
+					request.setEntryMode(transactionRequest.getEntryMode());
+					request.setCardType(transactionRequest.getCardData().getCardType().value());
+					request.setEmv(transactionRequest.getCardData().getEmv());
+				}
 				request.setMode(transactionRequest.getMode());
 				request.setAcq_channel(transactionRequest.getOriginChannel());
 				request.setProcessorMid(transactionRequest.getProcessorMid());
-				request.setEmv(transactionRequest.getCardData().getEmv());
 				request.setCardHolderEmail(pgTransaction.getCardHolderEmail());
 				request.setUserName(transactionRequest.getUserName());
 				request.setCurrencyCode(transactionRequest.getCurrencyCode());
@@ -572,7 +612,9 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				PGMerchant pgMerchant = merchantUpdateDao.getMerchantByCode(transactionRequest.getMerchantCode());
 				request.setMerchantId(pgMerchant.getId());
 				getMerchantDetails(pgMerchant, request);
-				getMerchantBatchId(request, cardprogram, pgMerchant);
+				if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+					getMerchantBatchId(request, cardprogram, pgMerchant);
+				}
 				
 				VoidResponse voidResponse = new SwitchServiceBroker().voidTransaction(request, pgTransaction);
 
@@ -609,10 +651,12 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	private void setCardDataAndTransactionRequestData(TransactionRequest transactionRequest,
 			PGTransaction pgTransaction) {
 		CardData card = new CardData();
-		card.setCardNumber(EncryptionUtil.decrypt(pgTransaction.getPan()));
-		card.setExpDate(pgTransaction.getExpDate().toString());
-		card.setCardType(MethodOfPaymentTypeEnum.valueOf(PGUtils.getCCType()));
-		card.setCardHolderName(pgTransaction.getCardHolderName());
+		if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			card.setCardNumber(EncryptionUtil.decrypt(pgTransaction.getPan()));
+			card.setExpDate(pgTransaction.getExpDate().toString());
+			card.setCardType(MethodOfPaymentTypeEnum.valueOf(PGUtils.getCCType()));
+			card.setCardHolderName(pgTransaction.getCardHolderName());
+		}
 		transactionRequest.setCardData(card);// setting sale txn card details
 		// into void request
 		transactionRequest.setTxnAmount(pgTransaction.getTxnTotalAmount());
@@ -623,19 +667,21 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	}
 
 	private void setVoidRequestData(TransactionRequest transactionRequest, VoidRequest request) {
-		request.setCardNum(transactionRequest.getCardData().getCardNumber());
-		request.setExpDate(transactionRequest.getCardData().getExpDate());
-		request.setCvv(transactionRequest.getCardData().getCvv());
+		if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			request.setCardNum(transactionRequest.getCardData().getCardNumber());
+			request.setExpDate(transactionRequest.getCardData().getExpDate());
+			request.setCvv(transactionRequest.getCardData().getCvv());
+			request.setTrack2(transactionRequest.getCardData().getTrack2());
+			request.setCardHolderName(transactionRequest.getCardData().getCardHolderName());
+		}
 		request.setMerchantCode(transactionRequest.getMerchantCode());
 		request.setTerminalId(transactionRequest.getTerminalId());
 		request.setInvoiceNumber(transactionRequest.getInvoiceNumber());
-		request.setTrack2(transactionRequest.getCardData().getTrack2());
 		request.setTxnAmount(transactionRequest.getMerchantAmount());
 		request.setTotalTxnAmount(transactionRequest.getTotalTxnAmount());
 		request.setTxnFee(StringUtils.getValidLongValue(transactionRequest.getFeeAmount()));
 		request.setTxnRefNum(transactionRequest.getTxnRefNumber());
 		request.setIssuerTxnRefNum(transactionRequest.getCgRefNumber());
-		request.setCardHolderName(transactionRequest.getCardData().getCardHolderName());
 		request.setDescription(transactionRequest.getDescription());
 	}
 
@@ -903,10 +949,18 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		}
 		pgOnlineTxnLog.setMerchantAmount(transactionRequest.getMerchantAmount());
 		pgOnlineTxnLog.setMerchantId(transactionRequest.getMerchantCode());
-
-		pgOnlineTxnLog.setPanData(EncryptionUtil.encrypt(transactionRequest.getCardData().getCardNumber()));
-		pgOnlineTxnLog.setPanMasked(StringUtils.getMaskedString(transactionRequest.getCardData().getCardNumber(), Integer.parseInt("5"), Integer.parseInt("4")));
-		pgOnlineTxnLog.setCardHolderName(transactionRequest.getCardData().getCardHolderName());
+		
+		if (transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			pgOnlineTxnLog.setPanMasked(transactionRequest.getAccountNumber());
+		} else {
+			pgOnlineTxnLog.setPanData(EncryptionUtil.encrypt(transactionRequest.getCardData().getCardNumber()));
+			pgOnlineTxnLog.setPanMasked(StringUtils.getMaskedString(transactionRequest.getCardData().getCardNumber(),
+					Integer.parseInt("5"), Integer.parseInt("4")));
+			pgOnlineTxnLog.setCardHolderName(transactionRequest.getCardData().getCardHolderName());
+			// description
+			pgOnlineTxnLog.setCardAssciation(transactionRequest.getCardData().getCardType().value());// Adding
+		}
+		
 		pgOnlineTxnLog.setPosTxnDate(null);// TODO-need to add
 		pgOnlineTxnLog.setTxnState(txnState.name());
 		pgOnlineTxnLog.setTxnTotalAmount(transactionRequest.getTotalTxnAmount());
@@ -920,8 +974,6 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				: transactionRequest.getInvoiceNumber().toString());
 		pgOnlineTxnLog.setRequestIPPort(transactionRequest.getIp_port());
 		pgOnlineTxnLog.setTxnDescription(transactionRequest.getDescription());// Adding
-		// description
-		pgOnlineTxnLog.setCardAssciation(transactionRequest.getCardData().getCardType().value());// Adding
 		// card
 		// type
 		pgOnlineTxnLog.setMerchantName(transactionRequest.getMerchantName());
@@ -957,7 +1009,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		// PERF >> Moving to async service
 		asyncService.logExit(pgOnlineTxnLog, txnState, reason, pgTxnId, processorResponse, processTxnId);
 		
-//		pgOnlineTxnLog.setPgTxnId(pgTxnId);
+pgOnlineTxnLog.setPgTxnId(pgTxnId);
 //		pgOnlineTxnLog.setProcessorResponse(processorResponse);
 //		pgOnlineTxnLog.setProcessorTxnId(processTxnId);
 //		pgOnlineTxnLog.setResponseDateTime(new Timestamp(System.currentTimeMillis()));
@@ -1372,9 +1424,16 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 
     try {
       Request balanceRequest = new Request();
-      balanceRequest.setCardNum(transactionRequest.getCardData().getCardNumber());
-      balanceRequest.setCvv(transactionRequest.getCardData().getCvv());
-      balanceRequest.setExpDate(transactionRequest.getCardData().getExpDate());
+		if (transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			balanceRequest.setAccountNumber(transactionRequest.getAccountNumber());
+			balanceRequest.setEntryMode(transactionRequest.getEntryMode());
+		} else {
+			balanceRequest.setCardNum(transactionRequest.getCardData().getCardNumber());
+			balanceRequest.setCvv(transactionRequest.getCardData().getCvv());
+			balanceRequest.setExpDate(transactionRequest.getCardData().getExpDate());
+			balanceRequest.setUid(transactionRequest.getCardData().getUid());
+			balanceRequest.setCardHolderEmail(transactionRequest.getCardData().getCardHolderName());
+		}
       balanceRequest.setMerchantCode(transactionRequest.getMerchantCode());
       balanceRequest.setTerminalId(transactionRequest.getTerminalId());
       PGMerchant merchantData = merchantUpdateDao.getMerchant(transactionRequest.getMerchantCode());
@@ -1382,9 +1441,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
       balanceRequest.setCurrencyCode(currencyDetails.getCurrencyCodeNumeric());
       getMerchantDetails(merchantData, balanceRequest);
       
-      balanceRequest.setUid(transactionRequest.getCardData().getUid());
       balanceRequest.setPosEntryMode(transactionRequest.getPosEntryMode() + "0");
-      balanceRequest.setCardHolderEmail(transactionRequest.getCardData().getCardHolderName());
       balanceRequest.setInvoiceNumber(transactionRequest.getInvoiceNumber());
       balanceRequest.setUserName(transactionRequest.getUserName());
       balanceRequest.setTimeZoneOffset(transactionRequest.getTimeZoneOffset());
@@ -1440,22 +1497,12 @@ public class PGTransactionServiceImpl implements PGTransactionService {
   }
 
   private void getMerchantBatchId(Request request, CardProgram cardProgram, PGMerchant pgMerchant)throws ServiceException {
-	    log.info("Entering :: PGTransactionServiceImpl :: getMerchantBatchId ::  Card program ID " + cardProgram.getCardProgramId());
+	    //log.info("Entering :: PGTransactionServiceImpl :: getMerchantBatchId ::  Card program ID " + cardProgram.getCardProgramId());
 		Long pmId;
 			
-			//find by merchnat id and cp id
-		PGMerchantCardProgramMap pGMerchantCardProgramMap = null;
-		 if(pgMerchant.getMerchantType().equals(PGConstants.MERCHANT)){
-			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(request.getMerchantId(), cardProgram.getCardProgramId());
-		 } else {
-			 pGMerchantCardProgramMap = merchantCardProgramMapDao.findByMerchantIdAndCardProgramId(pgMerchant.getParentMerchantId(), cardProgram.getCardProgramId());
-		}
 			
-			if(pGMerchantCardProgramMap.getEntitytype().equals(Constants.PM_USER_TYPE)) {
-			  pmId = pGMerchantCardProgramMap.getEntityId();
-			} else {
-			  pmId = isoServiceDao.findByIsoIdAndCardProgramId(pGMerchantCardProgramMap.getEntityId(), cardProgram.getCardProgramId());
-			}
+			  List<ProgramManagerRequest> programManagerRequestsList = isoServiceDao.findPmByIsoId(request.getIsoId());
+			  pmId = programManagerRequestsList.get(0).getProgramManagerId();
 			
 			if (null != pmId) {
 			    log.info(" Program Manager ID "+pmId);
@@ -1507,5 +1554,47 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		batch.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 		batchDao.save(batch);
 		request.setBatchId(batch.getBatchId());
+	}
+	
+	@Override
+	public TransactionHistoryResponse getMerchantTransactionList(TransactionHistoryRequest transactionHistoryRequest) {
+		log.info("Entering :: PGTransactionServiceImpl :: getMerchantTransactionList");
+		List<TransactionHistory> transactions = refundTransactionDao
+				.getMerchantTransactionList(transactionHistoryRequest);
+		TransactionHistoryResponse transactionHistoryResponse = new TransactionHistoryResponse();
+		try {
+			if (StringUtil.isListNotNullNEmpty(transactions)) {
+				transactionHistoryResponse.setTransactionList(transactions);
+				transactionHistoryResponse.setErrorCode(Constants.SUCCESS_CODE);
+				transactionHistoryResponse.setErrorMessage(Constants.SUCCESS);
+			} else {
+				transactionHistoryResponse.setTransactionList(transactions);
+				transactionHistoryResponse.setErrorCode(Constants.ERROR_CODE);
+				transactionHistoryResponse.setErrorMessage(Constants.ERROR);
+			}
+		} catch (Exception exp) {
+			log.error("Error :: PGTransactionServiceImpl :: getMerchantTransactionList method", exp);
+			transactionHistoryResponse.setErrorCode(ChatakPayErrorCode.TXN_0999.name());
+			transactionHistoryResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0999.name(),
+					null, LocaleContextHolder.getLocale()));
+		}
+		log.info("Exiting :: PGTransactionServiceImpl :: getMerchantTransactionList");
+		return transactionHistoryResponse;
+	}
+	
+	private Long cardRangeValidation(List<PanRangeRequest> panRangesList, TransactionRequest transactionRequest,
+			PurchaseRequest request) {
+		Long panId = 0l;
+		for (PanRangeRequest panRangeRequest : panRangesList) {
+			int panLength = (panRangeRequest.getPanLow().toString()).length();
+			String cardNumber = transactionRequest.getCardData().getCardNumber().substring(0, panLength);
+			if (panRangeRequest.getPanLow() <= Long.valueOf(cardNumber)
+					&& Long.valueOf(cardNumber) <= panRangeRequest.getPanHigh()) {
+				request.setIsoId(panRangeRequest.getIsoId());
+				request.setPanId(panRangeRequest.getId());
+				return panRangeRequest.getId();
+			}
+		}
+		return panId;
 	}
 }

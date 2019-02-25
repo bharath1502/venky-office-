@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.model.BankProgramManagerMap;
 import com.chatak.pg.acq.dao.model.PGBank;
+import com.chatak.pg.acq.dao.model.PanRanges;
 import com.chatak.pg.acq.dao.model.PmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.ProgramManager;
 import com.chatak.pg.acq.dao.model.ProgramManagerAccount;
@@ -29,10 +30,12 @@ import com.chatak.pg.acq.dao.model.QCardProgram;
 import com.chatak.pg.acq.dao.model.QPGBank;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.model.QPGMerchantEntityMap;
+import com.chatak.pg.acq.dao.model.QPanRanges;
 import com.chatak.pg.acq.dao.model.QPmCardProgamMapping;
 import com.chatak.pg.acq.dao.model.QProgramManager;
 import com.chatak.pg.acq.dao.model.QProgramManagerAccount;
 import com.chatak.pg.acq.dao.repository.BankProgramManagerRepository;
+import com.chatak.pg.acq.dao.repository.PanRangeRepository;
 import com.chatak.pg.acq.dao.repository.PmCardProgramMappingRepository;
 import com.chatak.pg.acq.dao.repository.ProgramManagerAccountRepository;
 import com.chatak.pg.acq.dao.repository.ProgramManagerRepository;
@@ -45,6 +48,7 @@ import com.chatak.pg.user.bean.CardProgramMappingRequest;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
 import com.chatak.pg.user.bean.MerchantResponse;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.ProgramManagerAccountRequest;
 import com.chatak.pg.user.bean.ProgramManagerRequest;
 import com.chatak.pg.util.CommonUtil;
@@ -76,6 +80,9 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
   
   @Autowired
   private PmCardProgramMappingRepository pmCardProgramMappingRepository;
+  
+  @Autowired
+  private PanRangeRepository panRangeRepository;
 
   public Long getProgramManagerAccountNumber() {
     List<BigInteger> list =
@@ -253,7 +260,6 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
         }
         programManagerRequest2.setProgramManagerAccountRequests(programManagerAccountRequests);
       }
-
       
       JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> pmBanks = query.from(QPGBank.pGBank,QBankProgramManagerMap.bankProgramManagerMap)
@@ -972,5 +978,24 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 			}
 		}
 		return response;
+	}
+
+	@Override
+	public List<PanRangeRequest> getPanListForIso(Long isoId) {
+		List<PanRangeRequest> panRangeRequests = new ArrayList<>();
+		List<PanRanges> panRangesList = panRangeRepository.findByIsoId(isoId);
+		if (StringUtil.isListNotNullNEmpty(panRangesList)) {
+			for (PanRanges panRanges : panRangesList) {
+				
+				PanRangeRequest panRangeRequest = new PanRangeRequest();
+				panRangeRequest.setPanHigh(panRanges.getPanHigh());
+				panRangeRequest.setPanLow(panRanges.getPanLow());
+				String str = panRangeRequest.getPanLow().toString() + "::" + panRangeRequest.getPanHigh().toString();
+				panRangeRequest.setPanRange(str);
+				panRangeRequest.setIsoId(Long.valueOf(panRanges.getId()));
+				panRangeRequests.add(panRangeRequest);
+			}
+		}
+		return panRangeRequests;
 	}
 }

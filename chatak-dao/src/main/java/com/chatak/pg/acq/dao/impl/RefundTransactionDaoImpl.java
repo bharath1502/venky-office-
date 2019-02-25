@@ -37,8 +37,10 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.EntryModePortalDisplayEnum;
 import com.chatak.pg.model.EFTRefTxnData;
+import com.chatak.pg.model.TransactionHistoryRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
 import com.chatak.pg.user.bean.Transaction;
+import com.chatak.pg.user.bean.TransactionHistory;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
@@ -252,7 +254,9 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
               : currencyCodeAlpha + ":" + "0.00");
       txnDto.setProcessor(((tuple.get(QPGTransaction.pGTransaction.processor) != null)
           ? tuple.get(QPGTransaction.pGTransaction.processor) : ""));
-      txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	  txnDto.setDeviceLocalTxnTime(DateUtil
+					.toDateStringFormat(DateUtil.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+							Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
       txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
       txnDto.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
       transactionStatusMessage(txnDto, tuple);
@@ -286,7 +290,9 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
         ? DateUtil.toDateStringFormat(tuple.get(QPGTransaction.pGTransaction.createdDate),
             PGConstants.DATE_FORMAT)
         : ""));
-    txnDto.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+    txnDto.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(
+		  DateUtil.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+					Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
     txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
   }
 
@@ -514,7 +520,9 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
     txnDto.setMerchantBusinessName(tuple.get(QPGMerchant.pGMerchant.businessName) != null
         ? tuple.get(QPGMerchant.pGMerchant.businessName) : "");
     transactionResp.setTxnJsonString(convertObjectToJSON(txnDto));
-    transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+	transactionResp.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+			.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+					Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
     transactionResp.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
     transactions.add(transactionResp);
   }
@@ -620,4 +628,128 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
   protected BooleanExpression isMerchantIdorParentMerchantId(List<String> merchantCodeList) {
     return QPGTransaction.pGTransaction.merchantId.in(merchantCodeList);
   }
+  
+	@Override
+	public List<TransactionHistory> getMerchantTransactionList(TransactionHistoryRequest transactionHistoryRequest) {
+		log.info("TransactionDaoImpl | getMerchantTransactionList | Entering");
+		List<TransactionHistory> transactions = null;
+		try {
+			Timestamp startDate = null;
+			Timestamp endDate = null;
+			if (!CommonUtil.isNullAndEmpty(transactionHistoryRequest.getTransactionDate())) {
+				startDate = DateUtil.getStartDayTimestamp(transactionHistoryRequest.getTransactionDate(),
+						PGConstants.DD_MM_YYYY);
+			}
+			if (!CommonUtil.isNullAndEmpty(transactionHistoryRequest.getTransactionDate())) {
+				endDate = DateUtil.getEndDayTimestamp(transactionHistoryRequest.getTransactionDate(),
+						PGConstants.DD_MM_YYYY);
+			}
+			JPAQuery query = new JPAQuery(entityManager);
+			List<Tuple> tupleList = query
+					.from(QPGTransaction.pGTransaction, QPGMerchant.pGMerchant, QPGAccount.pGAccount,
+							QPGBankCurrencyMapping.pGBankCurrencyMapping, QPGCurrencyConfig.pGCurrencyConfig)
+					.where(isTxnId(transactionHistoryRequest.getTransactionId()),
+							isMerchantId(transactionHistoryRequest.getMerchantCode()),
+							QPGTransaction.pGTransaction.merchantId.eq(QPGMerchant.pGMerchant.merchantCode),
+							QPGAccount.pGAccount.entityId.eq(QPGTransaction.pGTransaction.merchantId),
+							QPGMerchant.pGMerchant.bankId.eq(QPGBankCurrencyMapping.pGBankCurrencyMapping.bankId),
+							QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha
+									.eq(QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha),
+							isValidDate(startDate, endDate))
+					.distinct().orderBy(orderByCreatedDateDesc()).list(QPGTransaction.pGTransaction.merchantId,
+							QPGTransaction.pGTransaction.id, QPGTransaction.pGTransaction.issuerTxnRefNum,
+							QPGTransaction.pGTransaction.procCode, QPGTransaction.pGTransaction.panMasked,
+							QPGTransaction.pGTransaction.createdDate, QPGTransaction.pGTransaction.transactionType,
+							QPGTransaction.pGTransaction.txnAmount, QPGTransaction.pGTransaction.feeAmount,
+							QPGTransaction.pGTransaction.merchantFeeAmount, QPGTransaction.pGTransaction.txnDescription,
+							QPGTransaction.pGTransaction.status, QPGTransaction.pGTransaction.merchantSettlementStatus,
+							QPGTransaction.pGTransaction.terminalId, QPGTransaction.pGTransaction.feeAmount,
+							QPGTransaction.pGTransaction.posEntryMode, QPGTransaction.pGTransaction.acqChannel,
+							QPGTransaction.pGTransaction.cardHolderName, QPGTransaction.pGTransaction.updatedDate,
+							QPGTransaction.pGTransaction.authId, QPGTransaction.pGTransaction.invoiceNumber,
+							QPGTransaction.pGTransaction.acqTxnMode, QPGTransaction.pGTransaction.txnTotalAmount,
+							QPGTransaction.pGTransaction.processor, QPGTransaction.pGTransaction.txnMode,
+							QPGTransaction.pGTransaction.refTransactionId, QPGAccount.pGAccount.entityId,
+							QPGAccount.pGAccount.entityType, QPGAccount.pGAccount.accountNum,
+							QPGMerchant.pGMerchant.firstName, QPGMerchant.pGMerchant.businessName,
+							QPGMerchant.pGMerchant.merchantType, QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
+							QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
+							QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.userName,
+							QPGTransaction.pGTransaction.deviceLocalTxnTime,
+							QPGTransaction.pGTransaction.timeZoneOffset, QPGMerchant.pGMerchant.address1,
+							QPGMerchant.pGMerchant.city, QPGMerchant.pGMerchant.state, QPGMerchant.pGMerchant.city,
+							QPGMerchant.pGMerchant.pin, QPGMerchant.pGMerchant.country,
+							QPGTransaction.pGTransaction.expDate);
+			if (!CollectionUtils.isEmpty(tupleList)) {
+				transactions = new ArrayList<>(tupleList.size());
+				for (Tuple tuple : tupleList) {
+					TransactionHistory transactionResp = null;
+					transactionResp = new TransactionHistory();
+					merchantTxnHistoryTupleList(tuple, transactionResp, transactions);
+				}
+			}
+		} catch (Exception exception) {
+			log.error("TransactionDaoImpl | getMerchantTransactionList | Exception ", exception);
+		}
+		log.info("TransactionDaoImpl | getMerchantTransactionList | Exiting");
+		return transactions;
+	}
+
+	private void merchantTxnHistoryTupleList(Tuple tuple, TransactionHistory transactionResp,
+			List<TransactionHistory> transactions) {
+		if (tuple.get(QPGTransaction.pGTransaction.status) == 0) {
+			transactionResp.setErrorMessage("Approved");
+		} else if (tuple.get(QPGTransaction.pGTransaction.status) == 1) {
+			transactionResp.setErrorMessage("Declined");
+		} else {
+			transactionResp.setErrorMessage("Failed");
+		}
+		transactionResp.setStatus(transactionResp.getStatus());
+		transactionResp.setCardHolderName(tuple.get(QPGTransaction.pGTransaction.cardHolderName) != null
+				? tuple.get(QPGTransaction.pGTransaction.cardHolderName)
+				: "");
+		transactionResp.setMerchantName(
+				tuple.get(QPGMerchant.pGMerchant.businessName) != null ? tuple.get(QPGMerchant.pGMerchant.businessName)
+						: "");
+		transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+		transactionResp.setMerchantCode(tuple.get(QPGTransaction.pGTransaction.merchantId) != null
+				? tuple.get(QPGTransaction.pGTransaction.merchantId)
+				: "");
+
+		transactionResp.setTotalAmount((StringUtils.amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))));
+		transactionResp.setTransactionamount(
+				tuple.get(QPGTransaction.pGTransaction.txnTotalAmount).doubleValue() / Integer.parseInt("100"));
+		transactionResp.setTxnDateTime(DateUtil.toDateStringFormat(tuple.get(QPGTransaction.pGTransaction.createdDate),
+				PGConstants.DATE_FORMAT));
+		transactionResp.setTransactionType(tuple.get(QPGTransaction.pGTransaction.transactionType));
+		transactionResp.setTerminalId(tuple.get(QPGTransaction.pGTransaction.terminalId));
+		transactionResp
+				.setMaskedCardNumber(StringUtils.lastFourDigits(tuple.get(QPGTransaction.pGTransaction.panMasked)));
+		transactionResp.setProcessorTxnId(tuple.get(QPGTransaction.pGTransaction.issuerTxnRefNum));
+		transactionResp
+				.setTransactionfee((StringUtils.amountToString(tuple.get(QPGTransaction.pGTransaction.feeAmount))));
+		transactionResp.setTransactionId(tuple.get(QPGTransaction.pGTransaction.id).toString());
+		if (null != tuple.get(QPGTransaction.pGTransaction.posEntryMode)) {
+			transactionResp.setEntrymode(EntryModePortalDisplayEnum
+					.valueOf(getEntryModeEnumFromPosEntryMode(tuple.get(QPGTransaction.pGTransaction.posEntryMode)))
+					.value());
+		} else {
+			transactionResp
+					.setEntrymode(EntryModePortalDisplayEnum.valueOf(getEntryModeEnumFromPosEntryMode("000")).value());
+		}
+		transactionResp.setTxnRefNumber(tuple.get(QPGTransaction.pGTransaction.id).toString());
+		transactionResp.setAddress(tuple.get(QPGMerchant.pGMerchant.address1));
+		transactionResp.setCity(tuple.get(QPGMerchant.pGMerchant.city));
+		transactionResp.setCountry(tuple.get(QPGMerchant.pGMerchant.country));
+		transactionResp.setPin(tuple.get(QPGMerchant.pGMerchant.pin));
+		transactionResp.setState(tuple.get(QPGMerchant.pGMerchant.state));
+		transactionResp.setAuthId(tuple.get(QPGTransaction.pGTransaction.authId));
+		transactionResp.setInvoiceno(tuple.get(QPGTransaction.pGTransaction.invoiceNumber));
+		transactionResp.setStatus(tuple.get(QPGTransaction.pGTransaction.merchantSettlementStatus));
+		if (!Constants.ACCOUNT_PAY_VALUE.equals(tuple.get(QPGTransaction.pGTransaction.posEntryMode))) {
+			transactionResp.setExpDate(tuple.get(QPGTransaction.pGTransaction.expDate).toString());
+		}
+		transactionResp.setCgRefNumber(tuple.get(QPGTransaction.pGTransaction.issuerTxnRefNum));
+		transactions.add(transactionResp);
+	}
 }

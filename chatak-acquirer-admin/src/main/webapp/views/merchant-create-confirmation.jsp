@@ -437,24 +437,16 @@
 						<td><div id="confirmMcity"></div></td>
 					</tr>
 					<tr>
-						<td><spring:message code="common.label.state" />:</td>
-						<td><div id="confirmMstate"></div></td>
-					</tr>
-					<tr>
 						<td><spring:message code="common.label.country" />:</td>
 						<td><div id="confirmMcountry"></div></td>
 					</tr>
 					<tr>
+						<td><spring:message code="common.label.state" />:</td>
+						<td><div id="confirmMstate"></div></td>
+					</tr>
+					<tr>
 						<td><spring:message code="common.label.zipcode" />:</td>
 						<td><div id="confirmMpin"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.applicationmode" />:</td>
-						<td><div id="confirmMappMode"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message code="merchant.label.businessURL" />:</td>
-						<td><div id="confirmMbusinessURL"></div></td>
 					</tr>
 					<tr>
 						<td><spring:message code="merchant.label.lookingfor" />:</td>

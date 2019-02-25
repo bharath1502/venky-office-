@@ -212,10 +212,10 @@ $('#secondarySwitchURL').keypress(function(e) {
 function searchValidation(){
 	if(!clientValidation('switchName','middle_name','switchNameEr')
 			| !clientValidation('primarySwitchURL','url','primarySwitchURLEr')
-			| !clientValidation('primarySwitchPort','fax','primarySwitchPortEr')
+			| !clientValidation('primarySwitchPort','switch_port_validation','primarySwitchPortEr')
 			| !clientValidation('secondarySwitchURL','url','secondarySwitchURLEr')
-			| !clientValidation('secondarySwitchPort','fax','secondarySwitchPortEr')
-			| !clientValidation('priority','fax','priorityEr')){
+			| !clientValidation('secondarySwitchPort','switch_port_validation','secondarySwitchPortEr')
+			| !clientValidation('priority','priority_validation','priorityEr')){
 		return false;
 	}
 	return true;

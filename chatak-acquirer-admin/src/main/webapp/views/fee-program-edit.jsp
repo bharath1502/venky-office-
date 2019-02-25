@@ -167,22 +167,20 @@
 													<label><spring:message
 												code="fee-program-create.label.feeprogramname" /><span
 												class='required-field'>*</span></label>
-												<form:input path="feeProgramName" id="feeProgramName"
+												<form:input path="feeProgramName" id="feeProgramName" readonly="true"
 												cssClass="form-control"
-												onblur="this.value=this.value.trim();clientValidation('feeProgramName', 'fee_Program_Name','feeProgramNameErr');doAjaxFeeprogramNameDuplicate()"/>
+												onblur="this.value=this.value.trim();clientValidation('feeProgramName', 'company_name','feeProgramNameErr')"/>
 													<div class="discriptionErrorMsg">
 														<span id="feeProgramNameErr" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-										<fieldset class="col-md-3 col-sm-6">
-													<label data-toggle='tooltip' data-placement='top'><spring:message code="admin.cardprogramname"/><span
-												class='required-field'>*</span></label>
-												<form:input path="cardProgramName" id="cardProgramId" readonly="true"
-												cssClass="form-control" onblur="clientValidation('cardProgramId', 'fee_Program','cardProgramIdErrDiv')"/>
-													<div class="discriptionErrorMsg" data-toggle="tooltip"
-												data-placement="top" title="">
-												<span id="cardProgramIdErrDiv" class="red-error">&nbsp;</span>
-											</div>
+										<fieldset class="col-sm-3">
+													<label><spring:message code="admin.panLow-panHigh.label.message"/><span
+														class="required-field">*</span></label>
+														<form:input path="panRange" id="panLow" readonly="true" cssClass="form-control"/>
+													<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
+														<span class="red-error" id="isoError">&nbsp;</span>
+													</div>
 												</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label data-toggle='tooltip' data-placement='top' title=''><spring:message
@@ -236,7 +234,7 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
-													value="<spring:message code="fee-program-edit.label.updatebutton" />" onclick="return validateFeeProgram()">
+													value="<spring:message code="fee-program-edit.label.updatebutton" />" onclick="return validateEditFeeProgram()">
 												<input type="button" class="form-control button pull-right marginL10" value="<spring:message code="fee-program-edit.label.cancelbutton" />" onclick="openCancelConfirmationPopup()"/>
 											</div>
 										</div>

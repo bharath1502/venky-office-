@@ -997,7 +997,11 @@ function validateCategory(){
 function validateAutoPaymentMethod() {
 	var autoPaymentMethod = get('autoPaymentMethod').value.trim();
 //	var autoPaymentMethodConfirm = get('autoPaymentMethod').value.trim();
-	if (isEmpty(autoPaymentMethod) && $('#allowAutoSettlement').is(':checked')) {
+	if(isEmpty(autoPaymentMethod)) {
+		setError(get('autoPaymentMethod'), webMessages.thisfieldismandatory);
+		loadMsgTitleText();
+		return false;
+	} else if (isEmpty(autoPaymentMethod) && $('#allowAutoSettlement').is(':checked')) {
 		setError(get('autoPaymentMethod'), webMessages.pleaseselectautopaymentmethod);
 		loadMsgTitleText();
 		return false;
@@ -1708,7 +1712,7 @@ function doAjaxFetchMailIdEdit() {
 }
 
 function vlalidateUserNameEdit() {
-	var reg = /^[A-Za-z0-9 ]{8,16}$/;
+	var reg = /^[A-Za-z0-9 ]{6,16}$/;
 	var userName = get('userName').value.trim();
 
 	if (isEmpty(userName)) {
@@ -1735,7 +1739,7 @@ function vlalidateUserNameEdit() {
 
 function doAjaxFetchUsernameAvailableEdit() {
 	var userName = get('userName').value.trim();
-	var merchantCode = get('merchantCode').value.trim();
+	var merchantCode = get('parentMerchantcode').value.trim();
 
 	$
 			.ajax({
@@ -2504,7 +2508,8 @@ function searchValidationForMerchant(){
 
 function createValidationForMerchant(){
 	if(!clientValidation('fax','fax','faxEr')
-			| !clientValidation('address2','address2','address2Er')){
+			| !clientValidation('address2','address2','address2Er')
+			| !clientValidation('parentMerchantcode','cardType','parentMerchantIdEr')){
 		return false;
 	}
 	return true;

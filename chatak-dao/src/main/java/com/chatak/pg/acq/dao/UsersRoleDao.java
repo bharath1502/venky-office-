@@ -3,6 +3,7 @@ package com.chatak.pg.acq.dao;
 import java.util.List;
 
 import com.chatak.pg.acq.dao.model.PGUserRoles;
+import com.chatak.pg.acq.dao.model.PgMposFeatures;
 import com.chatak.pg.model.UserRolesDTO;
 
 
@@ -20,5 +21,7 @@ public interface UsersRoleDao
    public PGUserRoles findByRoleId(Long roleId);
    
    public boolean isActiveRole(Long roleId);
+   
+   public List<PgMposFeatures> getPgFeatures();
 
 }

@@ -76,6 +76,7 @@
 							<form:form action="authenticate" modelAttribute="loginDetails"
 								name="loginDetails">
 								<input type="hidden" name="CSRFToken" value="${tokenval}">
+								<input type="hidden" id="privateIp" name="privateIp">
 								<form:hidden id="timeZoneRegion" path="timeZoneRegion" />
 								<div class="col-sm-12 login-elements-holder">
 
@@ -144,7 +145,7 @@
 		<!--Container block End -->
 	</div>
 	<div style="margin-top: -30px; margin-right: 10px; float: right;">
-		<p>${currentBuildRelease}</p>
+		<p><spring:message code="current.release.version"/></p>
 	</div>
 	<!--Body Wrapper block End -->
 
@@ -197,6 +198,42 @@
 			    if(e.which === 32) 
 			        return false;
 			});
+		 
+		  //code to get Private IP STARTS here     
+	      getLocalIPs(function(ips) { // <!-- ips is an array of local IP addresses.
+	    	  $('#privateIp').val(ips.join('\n '));
+	    	});
+
+	    	function getLocalIPs(callback) {
+	    	    var ips = [];
+
+	    	    var RTCPeerConnection = window.RTCPeerConnection ||
+	    	        window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+
+	    	    var pc = new RTCPeerConnection({
+	    	        // Don't specify any stun/turn servers, otherwise you will
+	    	        // also find your public IP addresses.
+	    	        iceServers: []
+	    	    });
+	    	    // Add a media line, this is needed to activate candidate gathering.
+	    	    pc.createDataChannel('');
+	    	    
+	    	    // onicecandidate is triggered whenever a candidate has been found.
+	    	    pc.onicecandidate = function(e) {
+	    	        if (!e.candidate) { // Candidate gathering completed.
+	    	            pc.close();
+	    	            callback(ips);
+	    	            return;
+	    	        }
+	    	        var ip = /^candidate:.+ (\S+) \d+ typ/.exec(e.candidate.candidate)[1];
+	    	        if (ips.indexOf(ip) == -1) // avoid duplicate entries (tcp/udp)
+	    	            ips.push(ip);
+	    	    };
+	    	    pc.createOffer(function(sdp) {
+	    	        pc.setLocalDescription(sdp);
+	    	    }, function onerror() {});
+	    	}
+	    	//code to get Private IP ENDS here	
 	</script>
 </body>
 </html>

@@ -21,8 +21,6 @@ function goToSubMerchantSearch() {
 function openCancelConfirmationPopup() {
 
 	if ((isEmpty(get('businessName').value))
-			&& (isEmpty(get('businessURL').value.trim()))
-			&& (isEmpty(get('appMode').value.trim()))
 			&& (isEmpty(get('firstName').value.trim()))
 			&& (isEmpty(get('lastName').value.trim()))
 			&& (isEmpty(get('phone').value.trim()))
@@ -42,7 +40,6 @@ function openCancelConfirmationPopup() {
 function openCancelConfirmationPopup1() {
 
 	if ((isEmpty(get('businessName').value))
-			&& (isEmpty(get('businessURL').value.trim()))
 			&& (isEmpty(get('firstName').value.trim()))
 			&& (isEmpty(get('lastName').value.trim()))
 			&& (isEmpty(get('phone').value.trim()))
@@ -69,35 +66,22 @@ function validateCreateMerchantStep1() {
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
 			| !validatePhone() 	| !validateAddress1() | !validateCity() | !validateEmailId()
 			| !validateState() | !validateCountry() | !validatePin()
-			| !validateAppMode() | !validateURL() | !validateParentMerchantId() | !vlalidateUserName() | !createValidationForBasicInfo()) {
+		    | !vlalidateUserName() | !createValidationForBasicInfo()) {
 		return false;
 	} else {
 		var faxValue = getVal('fax').trim();
-		var lookingForValue = getVal('lookingFor').trim();
 		var businessTypeValue = getVal('businessType').trim();
 		if (faxValue != "") {
 			setLable('confirmMfax', faxValue);
 		} else {
 			setLable('confirmMfax', "");
 		}
-
-		if (!isCharacter(lookingForValue)) {
-			setError(get('lookingFor'), webMessages.shouldContainNumericAndAlphabets);
-			loadMsgTitleText();
-			return false;
-		} else if (lookingForValue != "") {
-			setLable('confirmLookingFor', lookingForValue);
-		} else {
-			setLable('confirmLookingFor', "");
-		}
-
 		if (businessTypeValue != "") {
 			setLable('confirmBusinessType', businessTypeValue);
 		} else {
 			setLable('confirmBusinessType', "");
 		}
 	}
-	setError(get('lookingFor'), "");
 	return flag;
 }
 
@@ -114,8 +98,8 @@ function validateCreateMerchantStep2() {
 			|!clientValidation('bankCountry', 'country','bankCountryErrorDiv')
 			|!clientValidation('currencyId', 'currencyValue','currencyEr')
 			|!clientValidation('bankState', 'state','bankStateErrorDiv')
-		    |!(zipCodeNotEmpty('bankPin'))
-		    |!clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv')){
+		    |!clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv')
+			|!validateRoutingNumber()){
 		flag = false;
 		return flag;
 	} else {
@@ -237,32 +221,21 @@ function validateCreateMerchantStep1edit() {
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
 			| !validatePhone() | !validateAddress1() | !validateEmailId()
 			| !validateCity() | !validateState() | !validateCountry()
-			| !validatePin() | !validateAppMode() | !validateURL() | !createValidationForBasicInfo()) {
+			| !validatePin() | !createValidationForBasicInfo()) {
 		return false;
 	} else {
 		var faxValue = getVal('fax').trim();
-		var lookingForValue = getVal('lookingFor').trim();
 		var businessTypeValue = getVal('businessType').trim();
 		if (faxValue != "") {
 			setLable('confirmMfax', getVal('fax').trim());
 		} else {
 			setLable('confirmMfax', "");
-		}if (!isCharacter(lookingForValue)) {
-			setError(get('lookingFor'), webMessages.shouldContainonlyNumeric);
-			loadMsgTitleText();
-			return false;
-		} else if (lookingForValue != "") {
-			setLable('confirmLookingFor', lookingForValue);
-		} else {
-			setLable('confirmLookingFor', "");
-		}
-		if (businessTypeValue != "") {
+		} if (businessTypeValue != "") {
 			setLable('confirmBusinessType', businessTypeValue);
 		} else {
 			setLable('confirmBusinessType', "");
 		}
 	}
-	setError(get('lookingFor'), "");
 	setLable('confirmMemailId', get('emailId').value.trim());
 	setLable('confirmMmerchantCode', get('merchantCode').value.trim());
 	setLable('confirmMuserName', get('userName').value.trim());
@@ -348,7 +321,7 @@ function validateCreateMerchantStep4edit() {
 
 function validateCreateMerchantStep5() {
 	var flag = true;
-	if (!validateProcessor() | !validateVirtualTerminal()
+	if (!validateVirtualTerminal()
 			| !validateOnlineOptions()
 			| !validateCategory()
 			| !validateAutoPaymentMethod() | !validateAutoTransferLimit()
@@ -359,7 +332,6 @@ function validateCreateMerchantStep5() {
 		return false;
 	}
 	var fieldsValue = get('autoTransferDay').value;
-	var processor = get('processor').value.trim();
 	
 	 if ($('#dcc_enable').is(':checked')) {
 		if(get('confirmDccEnable')) {
@@ -451,11 +423,6 @@ function validateCreateMerchantStep5() {
 			setLable('confirmAutoTransferMonthlyDay',
 					get('autoTransferMonthlyDay').value.trim());
 		}
-	}
-	if (processor == "LITLE") {
-		return validatelitleMID();
-	} else {
-		setLable('confirmLitleMID', '');
 	}
 	return flag;
 }
@@ -621,6 +588,10 @@ function validateBusinessName() {
 		setError(get('businessName'), webMessages.invalidCompanyName);
 		loadMsgTitleText();
 		return false;
+	} else if (businessName.length < 2){
+		setError(get('businessName'), webMessages.invalidLength);
+		loadMsgTitleText();
+		return false;
 	} else {
 		setError(get('businessName'), '');
 		setLable('confirmMbusinessName', businessName);
@@ -634,8 +605,12 @@ function validateFirstName() {
 		setError(get('firstName'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
-	} else if (!firstNameRegx.test(firstName)) {
+	} else if (!firstNameRegx.test(firstName) ) {
 		setError(get('firstName'), webMessages.invalidFirstName);
+		loadMsgTitleText();
+		return false;
+	}else if(firstName.length<2){
+		setError(get('firstName'), webMessages.invalidLength);
 		loadMsgTitleText();
 		return false;
 	}/*
@@ -657,6 +632,10 @@ function validateLastName() {
 		return false;
 	} else if (!lastNameRegx.test(lastName)) {
 		setError(get('lastName'), webMessages.invalidLastName);
+		loadMsgTitleText();
+		return false;
+	} else if(lastName.length<2){
+		setError(get('lastName'), webMessages.invalidLength);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -747,23 +726,6 @@ function validateTimeZone() {
 	} else {
 		setError(get('timeZone'), '');
 		setLable('confirmMtimeZone', timeZone);
-		return true;
-	}
-}
-
-function validateAppMode() {
-	var appMode = get('appMode').value.trim();
-	if (isEmpty(appMode)) {
-		setError(get('appMode'), webMessages.validationthisfieldismandatory);
-		loadMsgTitleText();
-		return false;
-	} else if (!isChar(appMode)) {
-		setError(get('appMode'), webMessages.invalidAppMode);
-		loadMsgTitleText();
-		return false;
-	} else {
-		setError(get('appMode'), '');
-		setLable('confirmMappMode', appMode);
 		return true;
 	}
 }
@@ -968,27 +930,6 @@ function validateProcessor() {
 	}
 }
 
-function validateURL() {
-	// var reg =
-	// /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
-	/*var reg = /(\w)+\.(\w)+\.(\w)/;*/
-	var reg = /(http|https:\/\/[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
-	var businessURL = get('businessURL').value.trim();
-	if (isEmpty(businessURL)) {
-		setError(get('businessURL'), webMessages.validationthisfieldismandatory);
-		loadMsgTitleText();
-		return false;
-	} else if (reg.test(businessURL) == false) {
-		setError(get('businessURL'), webMessages.invalidBusinessURL);
-		loadMsgTitleText();
-		return false;
-	} else {
-		setError(get('businessURL'), '');
-		setLable('confirmMbusinessURL', businessURL);
-		return true;
-	}
-}
-
 function validateParentMerchantId() {
 	var merchantCode = $('#parentMerchantId').val().trim();
 	if ($('#parentMerchantId').is(':visible') && merchantCode.length <= 0) {
@@ -1007,7 +948,7 @@ function validateParentMerchantId() {
 
 function validateParentMerchantIdEdit() {
 	if (get('confirmMerchantCode')) {
-		setLable('confirmMerchantCode', $('#dummyParentMerchantId :selected')
+		setLable('confirmMerchantCode', $('#parentMerchantId :selected')
 				.text());
 	}
 	return true;
@@ -1090,26 +1031,6 @@ function validatelitleMID() {
 		setError(get('litleMID'), '');
 		setLable('confirmLitleMID', litleMID);
 		return true;
-	}
-}
-
-function validateRadio() {
-	var autoSettlement = document.getElementsByName('autoSettlement');
-	if ((autoSettlement[0].checked == false)
-			&& (autoSettlement[1].checked == false)) {
-		setError(get('noAutoSettlement'), webMessages.pleaseSelectOne);
-	loadMsgTitleText();
-		return false;
-	} else {
-		if (autoSettlement[0].checked == true) {
-			setError(get('noAutoSettlement'), '');
-			setLable('confirmMautoSettlement', 'yes');
-			return true;
-		} else {
-			setError(get('noAutoSettlement'), '');
-			setLable('confirmMautoSettlement', 'no');
-			return true;
-		}
 	}
 }
 
@@ -1613,7 +1534,6 @@ function resetConfigurationsInfo() {
 }
 
 function resetConfigurationsInfoErrorMsg() {
-	setError(get('processor'), '');
 	setError(get('refunds'), '');
 	setError(get('autoPaymentMethod'), '');
 	setError(get('autoTransferMonthlyDay'), '');
@@ -2570,7 +2490,6 @@ $('#emailId').keypress(function( e ) {
 });
 
 function fetchCurrency(currencyId,elementId) {
-	validateAssocated();
 	if (currencyId == '') {
 		//clearLocalCurrency(localCurrency);
 		return null;
@@ -2804,30 +2723,18 @@ function validateCreateSubMerchantStep1() {
 		return false;
 	} else {
 		var faxValue = getVal('fax').trim();
-		var lookingForValue = getVal('lookingFor').trim();
 		var businessTypeValue = getVal('businessType').trim();
 		if (faxValue != "") {
 			setLable('confirmMfax', faxValue);
 		} else {
 			setLable('confirmMfax', "");
 		}
-		if (!isCharacter(lookingForValue)) {
-			setError(get('lookingFor'), webMessages.shouldContainonlyNumeric);
-			loadMsgTitleText();
-			return false;
-		} else if (lookingForValue != "") {
-			setLable('confirmLookingFor', lookingForValue);
-		} else {
-			setLable('confirmLookingFor', "");
-		}
-
 		if (businessTypeValue != "") {
 			setLable('confirmBusinessType', businessTypeValue);
 		} else {
 			setLable('confirmBusinessType', "");
 		}
 	}
-	setError(get('lookingFor'), "");
 	return flag;
 }
 
@@ -2865,20 +2772,7 @@ function resetpmIsoCardprogarmErrorMsg() {
 }
 
 function fetchEntityNameByPmIso(entityType,elementId) {
-	setError(get('associatedTo'), '');
-	document.getElementById("programManagerName").innerHTML = "";
-	document.getElementById('programManagerName').options.length = 0;
-	if(null != entityType && entityType == "Program Manager"){
-		document.getElementById("entityType").innerHTML = "PM Name";
-		document.getElementById("associatedID").innerHTML = "Associated with PM Name";
-		document.getElementById("userType").innerHTML = "PM Name";
 		getAllEntityName(entityType,elementId);
-	}else if(null != entityType && entityType == "ISO"){
-		document.getElementById("entityType").innerHTML = "ISO Name";
-		document.getElementById("associatedID").innerHTML = "Associated with ISO Name";
-		document.getElementById("userType").innerHTML = "ISO Name";
-		getAllEntityName(entityType,elementId);
-	}
 }
 
 
@@ -2949,12 +2843,11 @@ function doAjaxToGetCardProgramByPmId(pmId,entityType){
 				if (obj.errorMessage == "SUCCESS") {
 					var count=0;
 					for (var i = 0; i < obj.cardProgramList.length; i++) {
+						var programManagerName = obj.cardProgramList[i].programManagerName;
+						var panLow = obj.cardProgramList[i].panLow;
+						var panHigh = obj.cardProgramList[i].panHigh;
+						var currency = obj.cardProgramList[i].currency;
 						var cardProgramId = obj.cardProgramList[i].cardProgramId;
-						var cardProgramName = obj.cardProgramList[i].cardProgramName;
-						var partnerName = obj.cardProgramList[i].partnerName;
-						var partnerCode = obj.cardProgramList[i].partnerCode;
-						var iin = obj.cardProgramList[i].iin;
-						var iinExt = obj.cardProgramList[i].iinExt;
 						if(obj.cardProgramList[i].programManagerName != null){
 							entityName = obj.cardProgramList[i].programManagerName;
 						}else{
@@ -2967,14 +2860,12 @@ function doAjaxToGetCardProgramByPmId(pmId,entityType){
 							entityId = obj.cardProgramList[i].isoId;
 						}
 						var recRow = '<tr id="rowId'+cardProgramId+entityId+'">'
-							+'<td>'+partnerName+'</td>'
-							+'<td>'+cardProgramName+'</td>'
-							+'<td>'+iin+'</td>'
-							+'<td>'+partnerCode+'</td>'
-							+'<td>'+iinExt+'</td>'
-							+'<td>'+entityName+'</td>'
+							+'<td>'+panLow+'</td>'
+							+'<td>'+panHigh+'</td>'
+							+'<td>'+programManagerName+'</td>'
 							+'<td>'+currency+'</td>'
-							+'<td data-title="Action"><input id="cpId'+cardProgramId+''+entityId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+',\''+cardProgramName+'\',\''+entityName+'\',\''+entityId+'\')"></td>'
+							+'<td>'+entityName+'</td>'
+							+'<td data-title="Action"><input id="cpId'+cardProgramId+''+entityId+'" type="checkbox" onclick="addCardProgram('+cardProgramId+',\''+entityName+'\',\''+entityId+'\')"></td>'
 					       +'</tr>';	
 							jQuery('#serviceResults').append(recRow);
 							count++;
@@ -3146,5 +3037,15 @@ function validateMerchantcreates(){
 		return false;
 	}
 	
+	return true;
+}
+
+function validateRoutingNumber() {
+	var bankRoutingNumber = getVal('bankRoutingNumber');
+	if (!(bankRoutingNumber != 0)) {
+		setDiv('bankRoutingNumberEr', webMessages.InvalidBankRoutingNumber);
+		loadMsgTitleText();
+		return false;
+	}
 	return true;
 }

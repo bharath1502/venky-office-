@@ -17,6 +17,7 @@
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
 <link href="../css/jquery-datepicker.css" rel="stylesheet">
+<link href="../css/rome.css" rel="stylesheet">
 </head>
 <body>
 <!--Body Wrapper block Start -->
@@ -311,29 +312,32 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/utils.js"></script>
-	 <script src="../js/jquery-datepicker.js"></script>
+	 <script src="../js/rome.js"></script>
 	<script src="../js/reports.js"></script>
+	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js"></script>
 	<script src="../js/iso.js"></script>
+	<script src="../js/jquery.maskedinput.js"></script>
 	<script>
 
 	$(document).ready(function() {
 		$("#navListId4").addClass("active-background");
 		$(".focus-field").click(function() {
 			 $(this).children('.effectiveDate').focus();
-			 $('.jquery-datepicker').datepicker();
 		});
-		/* rome(transFromDate, { time: false });
-		rome(transToDate, { time: false }); */
+		rome(transFromDate, { time: false,"inputFormat": "DD/MM/YYYY" });
+		rome(transToDate, { time: false,"inputFormat": "DD/MM/YYYY" });
 		/* $('.effectiveDate').datetimepicker({
 			timepicker : false,
 			format : 'd/m/Y',
 			formatDate : 'd/m/Y',
 			maxDate:new Date()
 		}); */
+		$("#transFromDate").mask("<%=Constants.MASK_DATE_FORMAT%>"); 
+		$("#transToDate").mask("<%=Constants.MASK_DATE_FORMAT%>");
 		
 		 if ("${transactionDiv}" == "true"){
 			 $('#checkb').show();
@@ -380,9 +384,12 @@
 	
 	function validate(){
 		setDiv('errorDiv','');
-		if(!clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
+		if(!validatePM()
+				| !clientValidation('transFromDate', 'startDate','transFromDateErrorDiv')
 				| !clientValidation('transToDate', 'endDate','transToDateErrorDiv') 
-				| !validateISO()){
+				| !validateISO()
+				| !validatePM()
+				| !validateBatchFundingReportsDates()){
 			return false;
 		}
 		return true;

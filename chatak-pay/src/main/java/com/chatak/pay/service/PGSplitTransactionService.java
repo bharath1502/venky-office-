@@ -9,6 +9,8 @@ import com.chatak.pay.controller.model.SplitStatusResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
 import com.chatak.pay.exception.SplitTransactionException;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
+import com.chatak.switches.sb.exception.ServiceException;
 
 /**
  * << Add Comments Here >>
@@ -22,7 +24,7 @@ public interface PGSplitTransactionService {
   public Response processLogSplitTransaction(TransactionRequest transactionRequest,
                                              TransactionResponse transactionResponse) throws SplitTransactionException;
 
-  public SplitStatusResponse getSplitTxnStatus(SplitStatusRequest splitStatusRequest);
+  public SplitStatusResponse getSplitTxnStatus(SplitStatusRequest splitStatusRequest) throws ChatakInvalidTransactionException;
 
   public String validateSplitTransaction(TransactionRequest transactionRequest) throws SplitTransactionException;
 

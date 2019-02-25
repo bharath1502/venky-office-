@@ -175,6 +175,11 @@ function validateReportsDates() {
 			flag = false;
 			setDiv('transFromDateErrorDiv', webMessages.reportsFromdatecannotbethefuturedate);
 			loadMsgTitleText();
+		} else if (newToDate > currentDate) {
+			flag = false;
+			setDiv('transToDateErrorDiv',
+					webMessages.reportsTodatecannotbethefuturedate);
+			loadMsgTitleText();
 		} else  if (newFromDate == "Invalid Date") {	//If we won't select date then Value will become as "Invalid Date" String
 			flag = false;
 			setDiv('transFromDateErrorDiv', webMessages.validationthisfieldismandatory);
@@ -288,8 +293,8 @@ function submitVirtualFeeLogDateRange(){
 
 function submitBatchFundingDateRange() {
 	var flag = false;
-	if (!clientValidation('fromDate', 'startDate', 'transFromDateErrorDiv')
-			| !clientValidation('toDate', 'endDate', 'transToDateErrorDiv')
+	if (!clientValidation('transFromDate', 'startDate', 'transFromDateErrorDiv')
+			| !clientValidation('transToDate', 'endDate', 'transToDateErrorDiv')
 			| !validateBatchFundingReportsDates()) {
 		return flag;
 	} else {
@@ -299,17 +304,17 @@ function submitBatchFundingDateRange() {
 
 function validateBatchFundingReportsDates() {
 	var flag = true;
-	var toDate = document.getElementById('toDate').value;
-	var fromDate = document.getElementById('fromDate').value;
+	var toDate = document.getElementById('transToDate').value;
+	var fromDate = document.getElementById('transFromDate').value;
 
-	var toYear = parseInt(toDate.split("-")[0]);
-	var toMonth = parseInt(toDate.split("-")[1]);
-	var toDay = parseInt(toDate.split("-")[2]);
+	var toDay = parseInt(toDate.split("/")[0]);
+	var toMonth = parseInt(toDate.split("/")[1]);
+	var toYear = parseInt(toDate.split("/")[2]);
 	var newToDate = new Date(toYear, toMonth-1, toDay);
 
-	var fromYear = parseInt(fromDate.split("-")[0]);
-	var fromMonth = parseInt(fromDate.split("-")[1]);
-	var fromDay = parseInt(fromDate.split("-")[2]);
+	var fromDay = parseInt(fromDate.split("/")[0]);
+	var fromMonth = parseInt(fromDate.split("/")[1]);
+	var fromYear = parseInt(fromDate.split("/")[2]);
 	var newFromDate = new Date(fromYear, fromMonth-1, fromDay);
 
 	var today = new Date();
@@ -319,15 +324,21 @@ function validateBatchFundingReportsDates() {
 	var currentDate = new Date(todayYear, todayMonth-1, todayDate);
 
 	if (toDate != "") {
-		if (newFromDate > newToDate) {
+		if (newFromDate > currentDate) {
+			flag = false;
+			setDiv('transFromDateErrorDiv',
+					webMessages.reportsFromdatecannotbethefuturedate);
+			loadMsgTitleText();
+		}
+		else if (newFromDate > newToDate) {
 			flag = false;
 			setDiv('transFromDateErrorDiv',
 					webMessages.reportsFromDateshouldnotbegreaterthanToDate);
 			loadMsgTitleText();
-		} else if (newFromDate > currentDate) {
+		} else if (newToDate > currentDate) {
 			flag = false;
-			setDiv('transFromDateErrorDiv',
-					webMessages.reportsFromdatecannotbethefuturedate);
+			setDiv('transToDateErrorDiv',
+					webMessages.reportsTodatecannotbethefuturedate);
 			loadMsgTitleText();
 		} else if (newFromDate == "Invalid Date") { // If we won't select date
 													// then Value will become as

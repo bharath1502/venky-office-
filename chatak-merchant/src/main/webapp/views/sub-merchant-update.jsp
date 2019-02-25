@@ -128,8 +128,8 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-update.label.merchantcode"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="merchantCode"
-															id="merchantCode" maxlength="50"
-															onblur="validateMerchantCode()" readonly="true" />
+															id="parentMerchantcode" maxlength="50"
+															onblur=" return clientValidation('parentMerchantcode','cardType','parentMerchantIdEr');" readonly="true" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="merchantCodeEr" class="red-error">&nbsp;</span>
 														</div>
@@ -249,36 +249,6 @@
 															<span id="statusEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset> --%>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.applicationmode"/><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="appMode"
-															id="appMode" onblur="validateAppMode()">
-															<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
-															<form:option value="DEMO"><spring:message code="sub-merchant-create.label.demo"/></form:option>
-															<form:option value="PRELIVE"><spring:message code="sub-merchant-create.label.pre-live"/></form:option>
-															<form:option value="LIVE"><spring:message code="sub-merchant-create.label.live"/></form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="appModeEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.businessURL"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="businessURL"
-															maxlength="100" id="businessURL" onclick="validateURL()" onblur="this.value=this.value.trim();"/>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="businessURLEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-														<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.lookingfor"></spring:message>?</label>
-														<form:textarea cssClass="form-control" path="lookingFor"
-															id="lookingFor" onblur="this.value=this.value.trim();"/>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="lookingForEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
 												<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.businesstype"/></label>
 														<form:select cssClass="form-control" path="businessType"

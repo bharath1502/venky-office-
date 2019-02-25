@@ -4,6 +4,7 @@
 package com.chatak.pay.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -37,6 +38,7 @@ import com.chatak.pay.controller.model.Request;
 import com.chatak.pay.controller.model.Response;
 import com.chatak.pay.controller.model.SplitStatusRequest;
 import com.chatak.pay.controller.model.SplitStatusResponse;
+import com.chatak.pay.controller.model.TransactionHistoryResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
 import com.chatak.pay.controller.model.topup.GetOperatorsResponse;
@@ -48,22 +50,28 @@ import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pay.exception.InvalidRequestException;
 import com.chatak.pay.model.TSMRequest;
 import com.chatak.pay.model.TSMResponse;
+import com.chatak.pay.service.impl.ReceiptServiceImpl;
 import com.chatak.pay.util.JsonUtil;
 import com.chatak.pay.util.StringUtil;
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.bean.ChangePasswordRequest;
 import com.chatak.pg.bean.ForgotPasswordRequest;
+import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.model.OAuthToken;
+import com.chatak.pg.model.TransactionHistoryRequest;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.Properties;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
+import com.chatak.switches.sb.exception.ServiceException;
 import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 import com.sleepycat.je.utilint.Timestamp;
 /**
@@ -78,9 +86,16 @@ import com.sleepycat.je.utilint.Timestamp;
 public class TransactionRestController extends BaseController implements URLMappingConstants, Constant {
 
   private static Logger logger = LogManager.getLogger(TransactionRestController.class.getName());
+  
+  private static String vmFileName = "/email_receipt_template.vm";
+
+  private static String mailSubjectKey = "chatak.pay.email.reciept";
 
   @Autowired
   private MessageSource messageSource;	
+  
+  @Autowired
+  private ReceiptServiceImpl receiptServiceImpl;
 
   @RequestMapping(value = "/process", method = RequestMethod.POST)
   public Response process(HttpServletRequest request,
@@ -138,6 +153,10 @@ public class TransactionRestController extends BaseController implements URLMapp
 
       getTransactionResponse(transactionResponse);
 
+    } catch(ChatakInvalidTransactionException ce) {
+      logger.error("Error :: TransactionRestController :: process: ChatakPayException", ce);
+      transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0027.name());
+      transactionResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0027.name(), null, LocaleContextHolder.getLocale()));
     } catch(ChatakPayException ce) {
       logger.error("Error :: TransactionRestController :: process: ChatakPayException", ce);
       transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0099.name());
@@ -153,7 +172,6 @@ public class TransactionRestController extends BaseController implements URLMapp
       transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0099.name());
       transactionResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.TXN_0999.name(), null, LocaleContextHolder.getLocale()));
     }
-
     logger.info("Exiting:: SaleTransactionController:: process method");
     validateTxnResponse(transactionRequest, transactionResponse);
     return transactionResponse;
@@ -175,7 +193,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 	return null != transactionRequest.getEntryMode() && EntryModeEnum.QR_SALE.name().equalsIgnoreCase(transactionRequest.getEntryMode().name());
 }
 
-  private Response validateTransactionType(TransactionRequest transactionRequest) throws InvalidRequestException,IOException, HttpClientException {
+  private Response validateTransactionType(TransactionRequest transactionRequest) throws InvalidRequestException,IOException, HttpClientException, ChatakInvalidTransactionException {
 	TSMRequest tmsRequest = new TSMRequest();
 	  tmsRequest.setMerchantCode(transactionRequest.getMerchantCode());
 	  tmsRequest.setTid(transactionRequest.getTerminalId());
@@ -216,7 +234,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
   }
 
   private Response processRequest(TransactionRequest transactionRequest, PGMerchant pgMerchant)
-      throws InvalidRequestException {
+      throws InvalidRequestException, ChatakInvalidTransactionException {
     if(null != pgMerchant) {
     	logger.info("validateProcessRequest :: LOAD_FUND :: Proceeding");  
     	return pgTransactionService.processTransaction(transactionRequest, pgMerchant);
@@ -384,7 +402,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
           return processInvalidRequest(PGConstants.TXN_0124, messageSource);
         } else if (!Pattern.compile(PGConstants.USER_NAME_REGEX).matcher(changePassword.getUserName())
             .matches()) {
-          return processInvalidRequest(PGConstants.TXN_0125, messageSource);
+          return processInvalidRequest(PGConstants.TXN_0131, messageSource);
         } else if (!Pattern.compile(PGConstants.PSWD_REGEX).matcher(changePassword.getCurrentPassword())
             .matches()) {
           return processInvalidRequest(PGConstants.TXN_0126, messageSource);
@@ -485,6 +503,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
             	return clientLoginResponse;
             }
             clientLoginResponse = CommonUtil.copyBeanProperties(loginResponse, ClientSsoLoginResponse.class);
+            clientLoginResponse.setMpsoFeatures(clientLoginResponse.getMpsoFeatures());
             if (loginResponse.getCurrencyDTO() != null) {
               ClientCurrencyDTO currencyDTO = CommonUtil.copyBeanProperties(loginResponse.getCurrencyDTO(), ClientCurrencyDTO.class);
               clientLoginResponse.setCurrencyDTO(currencyDTO);
@@ -732,7 +751,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		} else if (transactionRequest.getDeviceSerial() == null) {
 			throw new InvalidRequestException(PGConstants.TXN_0129);
 		} else if (!Pattern.compile(PGConstants.USER_NAME_REGEX).matcher(transactionRequest.getUserName()).matches()) {
-			throw new InvalidRequestException(PGConstants.TXN_0125);
+			throw new InvalidRequestException(PGConstants.TXN_0131);
 		} else if (!isValidTransactionType(transactionRequest)) {
 			throw new InvalidRequestException(PGConstants.TXN_0139);
 		} else if (!Pattern.compile(PGConstants.IMEI_REGEX).matcher(transactionRequest.getMerchantCode()).matches()
@@ -783,7 +802,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		} else if (!Pattern.compile(PGConstants.REF_NUMBER_REGEX).matcher(transactionRequest.getCgRefNumber()).matches()
 				|| transactionRequest.getCgRefNumber().startsWith("0")) {
 			throw new InvalidRequestException(PGConstants.TXN_0146);
-		} else if (!Pattern.compile(PGConstants.REF_NUMBER_REGEX).matcher(transactionRequest.getTxnRefNumber())
+		} else if (!Pattern.compile(PGConstants.TXN_REF_NUMBER_REGEX).matcher(transactionRequest.getTxnRefNumber())
 				.matches() || transactionRequest.getTxnRefNumber().startsWith("0")) {
 			throw new InvalidRequestException(PGConstants.TXN_0147);
 		}
@@ -989,5 +1008,70 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 			}
 		}
 		return false;
+	}
+	
+	@RequestMapping(value = "/clientTxnHistory", method = RequestMethod.POST)
+	public TransactionHistoryResponse clientTxnHistory(HttpServletRequest request, HttpServletResponse response,
+			HttpSession session, @RequestBody TransactionHistoryRequest transactionHistoryRequest) {
+		logger.info("Entering:: TransactionRestController:: clientTxnHistory method");
+		TransactionHistoryResponse transactionHistoryResponse = new TransactionHistoryResponse();
+		try {
+			validateCustomerUserName(transactionHistoryRequest.getUserName());
+			transactionHistoryResponse = pgTransactionService.getMerchantTransactionList(transactionHistoryRequest);
+			if (null != transactionHistoryResponse
+					&& transactionHistoryResponse.getErrorCode().equals(Constants.ERROR_CODE)) {
+				transactionHistoryResponse = new TransactionHistoryResponse();
+				transactionHistoryResponse.setErrorCode(Constants.ERROR_CODE);
+				transactionHistoryResponse.setErrorMessage(
+						messageSource.getMessage("chatak.transaction.error", null, LocaleContextHolder.getLocale()));
+			}
+		} catch (Exception e) {
+			logger.error("Error :: TransactionRestController :: clientTxnHistory", e);
+			transactionHistoryResponse.setErrorCode(PGConstants.TXN_0131);
+			transactionHistoryResponse.setErrorMessage(
+					messageSource.getMessage(PGConstants.TXN_0131, null, LocaleContextHolder.getLocale()));
+			return transactionHistoryResponse;
+		}
+		logger.info("Exiting:: TransactionRestController:: clientTxnHistory method");
+		return transactionHistoryResponse;
+	}
+
+	@RequestMapping(value = "/sendMail", method = RequestMethod.POST)
+	public Response sendMail(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody TransactionRequest transactionRequest) {
+		Response resp = new Response();
+		logger.info("Entering:: TransactionRestController:: sendMail method");
+		PGTransaction details = null;
+		try {
+			if (!transactionRequest.getEmail().equals("") && !transactionRequest.getTxnId().equals("")) {
+				details = receiptServiceImpl.findTransactionDetails(transactionRequest.getTxnId());
+				Map<String, String> map = new HashMap<>();
+				map.put("Name", details.getCardHolderName());
+				map.put("PAN", details.getPanMasked());
+				map.put("Exp", details.getExpDate().toString());
+				map.put("TxnAmount", details.getTxnTotalAmount().toString());
+				map.put("TxnId", details.getTransactionId());
+				map.put("Date", details.getUpdatedDate().toString());
+				map.put("MerchantName", details.getUserName());
+				map.put("InvoiceNumber", details.getInvoiceNumber());
+				String toEmailAddress = transactionRequest.getEmail();
+				resp = receiptServiceImpl.sendEmail(map, vmFileName, mailSubjectKey, toEmailAddress);
+			}
+			if (resp.getErrorCode().equals(ChatakPayErrorCode.GEN_001.name())) {
+				resp.setErrorCode(ChatakPayErrorCode.GEN_001.name());
+				resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(), null,
+						LocaleContextHolder.getLocale()));
+			} else if (resp.getErrorCode().equals(ChatakPayErrorCode.GEN_002.name())) {
+				resp.setErrorCode(ChatakPayErrorCode.GEN_002.name());
+				resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_002.name(), null,
+						LocaleContextHolder.getLocale()));
+			}
+		} catch (Exception e) {
+			resp.setErrorCode(ChatakPayErrorCode.GEN_002.name());
+			resp.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_002.name(), null,LocaleContextHolder.getLocale()));
+			logger.error("Error :: TransactionRestController :: clientTxnHistory", e);
+		}
+		logger.info("Exiting:: TransactionRestController:: sendMail method");
+		return resp;
 	}
 }

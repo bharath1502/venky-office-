@@ -70,6 +70,7 @@ public class BankController implements URLMappingConstants {
 
       List<Option> countryList = bankService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
+      modelAndView.addObject(Constants.STATE_LIST, "");
 
       List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
       modelAndView.addObject("currencyList", currencyList);
@@ -125,9 +126,16 @@ public class BankController implements URLMappingConstants {
         modelAndView.addObject(Constants.SUCESS, messageSource
             .getMessage(ActionErrorCode.ERROR_CODE_B0, null, LocaleContextHolder.getLocale()));
         model.put("bank", new Bank());
-      } else {
+      } else if(null != bankResponse
+              && bankResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_B1)) {
         modelAndView.addObject(Constants.ERROR, messageSource
             .getMessage(ActionErrorCode.ERROR_CODE_B1, null, LocaleContextHolder.getLocale()));
+        model.put("bank", bank);
+      }  else{
+	    modelAndView.addObject(Constants.ERROR, messageSource
+          .getMessage(ActionErrorCode.DUPLICATE_BANK_CODE, null, LocaleContextHolder.getLocale()));
+	    List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
+	    modelAndView.addObject("currencyList", currencyList);
         model.put("bank", bank);
       }
     } catch (Exception e) {
@@ -274,6 +282,19 @@ public class BankController implements URLMappingConstants {
     return modelAndView;
 
   }
+  
+  @RequestMapping(value = BANK_VIEW, method = RequestMethod.GET)
+  public ModelAndView getBankView(HttpServletRequest request, HttpServletResponse response,
+		   HttpSession session, Map model) {
+    logger.info("Entering:: BankController:: getBankView method");
+    ModelAndView modelAndView = null;
+    if (!StringUtil.isNull(session.getAttribute(Constants.BANK_VIEW_NAME))) {
+    	String bankName = (String)session.getAttribute(Constants.BANK_VIEW_NAME);
+    	modelAndView = showViewBank(request, response, bankName, session, model);
+    }
+    logger.info("Exiting:: BankController:: getBankView method");
+    return modelAndView;
+  }
 
   @RequestMapping(value = BANK_VIEW, method = RequestMethod.POST)
   public ModelAndView showViewBank(HttpServletRequest request, HttpServletResponse response,
@@ -291,6 +312,7 @@ public class BankController implements URLMappingConstants {
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
     session.setAttribute(Constants.BANK_MODEL, bank);
+    session.setAttribute(Constants.BANK_VIEW_NAME, bankViewName);
     try {
       bank.setBankName(bankViewName);
       bank = bankService.findByBankName(bank);

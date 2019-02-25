@@ -47,6 +47,8 @@ public interface PGConstants {
   
   String S_STATUS_CANCELLED = "Cancelled";
   
+  String S_STATUS_DECLINED = "Declined";
+  
   // Error Messages of Merchant application
   String DB_FIELD_USER_NAME = "USER_NAME";
 
@@ -364,6 +366,8 @@ public interface PGConstants {
    String IMEI_REGEX = "^[0-9]{15}$";
    
    String REF_NUMBER_REGEX = "^[0-9]{10}$";
+   
+   String TXN_REF_NUMBER_REGEX = "^[0-9]{12}$";
    
    String CARD_NUMBER_REGEX = "^[F0-9]{19,20}$";
 

@@ -17,7 +17,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
- <link href="../css/jquery-datepicker.css" rel="stylesheet">
+ <link href="../css/rome.css" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -183,13 +183,13 @@
 															code="transactions-search.label.fromdate" /></label>
 													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="from_date" id="fromDate"
-															cssClass="form-control effectiveDate jquery-datepicker__input" />
+															cssClass="form-control effectiveDate jquery-datepicker__input" onblur="return validateBothDates('fromDate','fromDateErrormsg')"/>
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error" id="tranFromDateErrorDiv">&nbsp;</span>
+														<span class="red-error" id="fromDateErrormsg">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -197,13 +197,13 @@
 															code="transactions-search.label.todate" /></label>
 													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="to_date"
-															cssClass="form-control effectiveDate jquery-datepicker__input " id="toDate" />
+															cssClass="form-control effectiveDate jquery-datepicker__input " id="toDate" onblur="return validateBothDates('toDate','toDateErrormsg')" />
 														<span class="input-group-addon"><span
 															class="glyphicon glyphicon-calendar"></span></span>
 													</div>
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
+														<span class="red-error" id="toDateErrormsg">&nbsp;</span>
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
@@ -279,8 +279,8 @@
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
 												<input type="submit" class="form-control button pull-right"
-													onclick="return searchValidationForTransaction();validateCardNum();"
-													onclick="return trimUserData();validateFromAndToDates()"
+													onclick="return submitData()"
+													onclick="return trimUserData()"
 													value="<spring:message code="transactions-search.label.searchbutton"/>">
 												<input type="button" class="form-control button pull-right"
 													value="<spring:message code="transactions-search.label.resetbutton"/>"
@@ -682,6 +682,7 @@
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="../js/jquery.min.js"></script>
+	<script src="../js/reports.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/virtual-terminal.js"></script>
@@ -689,8 +690,9 @@
 	<script src="../js/sortable.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
-	  <script src="../js/jquery-datepicker.js"></script>
+	<script src="../js/rome.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
+	<script src="../js/transactions.js"></script>
 	<script>
 	
 	$(document).ready(function() {
@@ -734,11 +736,10 @@
 
 							$(".focus-field").click(function() {
 								 $(this).children('.effectiveDate').focus();
-								 $('.jquery-datepicker').datepicker();
 							});
 							 
-							/* rome(fromDate, { time: false });
-							rome(toDate, { time: false }); */
+							rome(fromDate, { time: false,"inputFormat": "DD/MM/YYYY" });
+							rome(toDate, { time: false,"inputFormat": "DD/MM/YYYY" });
 							/* $('.effectiveDate').datetimepicker({
 								timepicker : false,
 								format : 'd/m/Y',

@@ -182,6 +182,16 @@
 					});
 			});
 			});
+		
+		$(document).ready(function(){
+			if ('${adminLog}' !=null && '${adminLog}' != '') {	
+				$('#adminLog').prop('checked',true);
+			} else if ('${merchantLog}' !=null && '${merchantLog}' != '') {
+				$('#merchantLog').prop('checked',true);
+			} else if ('${catalinaLog}' !=null && '${catalinaLog}' != '') {
+				$('#catalinaLog').prop('checked',true);
+			}
+		});
 	</script>
 </body>
 </html>

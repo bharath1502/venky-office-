@@ -29,7 +29,8 @@ public enum EntryModeEnum {
 	PAN_SCAN_BLE("64"),
 	CASH("99"),
   QR_SALE("33"),
-  CARD_TAP("34");
+  CARD_TAP("34"),
+  ACCOUNT_PAY("35");
 
 	private final String value;
 

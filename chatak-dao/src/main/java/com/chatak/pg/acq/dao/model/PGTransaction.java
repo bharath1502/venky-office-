@@ -21,7 +21,7 @@ public class PGTransaction implements Serializable {
   private static final long serialVersionUID = 5593907271831728272L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID")
   private BigInteger id;
 

@@ -134,6 +134,18 @@ public class Request implements Serializable {
 
   private String address;
 
+  private String accountNumber;
+  
+  private Long panId;
+  
+  public String getAccountNumber() {
+    return accountNumber;
+  }
+
+  public void setAccountNumber(String accountNumber) {
+    this.accountNumber = accountNumber;
+  }
+  
   public String getCurrencyCode() {
     return currencyCode;
   }
@@ -634,8 +646,17 @@ public class Request implements Serializable {
     return address;
   }
 
+  public Long getPanId() {
+    return panId;
+  }
+
+  public void setPanId(Long panId) {
+    this.panId = panId;
+  }
+
   public void setAddress(String address) {
     this.address = address;
   }
 
+  
 }

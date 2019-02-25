@@ -22,7 +22,7 @@ public class PGActivityLog implements java.io.Serializable {
 	@Id
 	/*@SequenceGenerator(name = "SEQ_PG_ACTIVITY_LOG_ID", sequenceName = "SEQ_PG_ACTIVITY_LOG")
 	@GeneratedValue(generator = "SEQ_PG_ACTIVITY_LOG_ID")*/
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
 	private Long id;
 

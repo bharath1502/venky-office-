@@ -67,8 +67,8 @@ public class PGFeeProgram implements Serializable {
   @JoinColumn(name = "FEE_PROGRAM_ID")
   private List<PGAcquirerFeeValue> acquirerFeeValueList;
   
-  @Column(name = "CARD_PROGRAM_ID")
-  private Long cardProgramId;
+  @Column(name = "PAN_ID")
+  private Long panId;
   
   @Column(name = "PM_SHARE")
   private Double pmShare;
@@ -257,15 +257,15 @@ public class PGFeeProgram implements Serializable {
   /**
    * @return the cardProgramId
    */
-  public Long getCardProgramId() {
-    return cardProgramId;
+  public Long getPanId() {
+    return panId;
   }
 
   /**
    * @param cardProgramId the cardProgramId to set
    */
-  public void setCardProgramId(Long cardProgramId) {
-    this.cardProgramId = cardProgramId;
+  public void setPanId(Long panId) {
+    this.panId = panId;
   }
 
   /**

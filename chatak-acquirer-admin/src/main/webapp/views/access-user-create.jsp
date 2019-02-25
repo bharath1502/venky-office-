@@ -136,7 +136,7 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""> <spring:message code="users.label.address"/></label>
 													<form:input path="address" id="address"
-														cssClass="form-control"  maxlength="30" />
+														cssClass="form-control" onblur="this.value=this.value.trim(); validAddress();" maxlength="30" />
 
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error" id="addressDiv">&nbsp;</span>
@@ -203,6 +203,27 @@
 														<span class="red-error" id="merchantNameDiv">&nbsp;</span>
 													</div>
 												</fieldset> 
+												<fieldset class="col-sm-12" id="mPos">
+														<fieldset class="col-sm-12 padding0 border-style-section">
+															<fieldset class="col-sm-12">
+																<div class="container-heading-separator">
+																	<span><spring:message code="merchant.label.mPosFeatures"/></span>
+																	<div class="row">
+																	<div class="field-element-row">
+																	<fieldset class="col-sm-5">
+																	<c:forEach items="${mposFeature}" var="feature" varStatus="featureIndex">
+																    <input type="hidden" name="mpsoFeatures[${featureIndex.index}].featureId" value='${feature.id}' id="featureIndex${feature.id}"/>
+																	<li class="featurelist"><label>
+																	
+																	<form:checkbox path="mpsoFeatures[${featureIndex.index}].enabled" id="featureId${feature.id}" />${feature.featureName}</label></li> 
+																	</c:forEach>
+																	</fieldset>
+																	</div>
+																	</div>
+																</div>
+															</fieldset>
+														</fieldset>
+													</fieldset>
 											</div>
 										</div>
 										<!--Panel Action Button Start -->
@@ -258,6 +279,7 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
+	<script src="../js/validation.js"></script>
 	<script src="../js/messages.js" type="text/javascript"></script>
 	<script src="../js/admin-user.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
@@ -278,27 +300,34 @@
 				$('#merchantDivId').hide();
 				$('#merchantNameId').hide();
 				$('#entityNameDiv').hide();
+				$('#mPos').hide();
 			} else if($('#roleType').val() == 'Program Manager' || $('#roleType').val() == 'ISO') {
 				$('#merchantDivId').hide();
 				$('#merchantNameId').hide();
 				$('#entityNameDiv').show();
+				$('#mPos').hide();
 				if($('#roleType').val() == 'Program Manager') {
 					document.getElementById("entityLabel").innerHTML=webMessages.entityProgramManager;
 					$("#red-color").addClass("required-field");
+					$('#mPos').hide();
 				} else if($('#roleType').val() == 'ISO') {
 					document.getElementById("entityLabel").innerHTML=webMessages.entityIso;
 					$("#red-color").addClass("required-field");
+					$('#mPos').hide();
 				}
 			} else if($('#roleType').val() == 'Merchant') {
 				$('#entityNameDiv').hide();
+				$('#mPos').show();
 			}
 			if($('#roleType').val() == 'Tms'){
 				$('#merchantDivId').hide();
 				$('#entityNameDiv').hide();
+				$('#mPos').hide();
 			}
 			if($('#roleType').val() == 'Reseller'){
 				$('#merchantDivId').hide();
 				$('#entityNameDiv').hide();
+				$('#mPos').hide();
 			}
 			
 			/* if($('#requestType').val() == 'ADMIN') {

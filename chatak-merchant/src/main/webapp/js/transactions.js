@@ -91,15 +91,21 @@ function validateTransactionsDates() {
 }
 
 function validateCardNum() {
+	var flag = true;
 	var cardNumber = document.getElementById('cardNumber').value;
 	if (!isDigit(cardNumber)) {
 		setDiv("cardNumberErrorDiv", webMessages.pleaseEnterValidCardNumber);
-		return false;
+		var flag = false;
+	} else if ((cardNumber.length < 4) && (cardNumber.length > 0)) {
+		setDiv("cardNumberErrorDiv", webMessages.EnterFourDigit);
+		flag = false;
 	} else {
 		setDiv("cardNumberErrorDiv", "");
-		return true;
+		var flag = true;
 	}
+	return flag;
 }
+
 function submitBatchFundingDateRange() {
 	var flag = false;
 	if (!clientValidation('fromDate', 'startDate', 'transFromDateErrorDiv')
@@ -115,14 +121,14 @@ function validateBatchFundingReportsDates() {
 	var toDate = document.getElementById('toDate').value;
 	var fromDate = document.getElementById('fromDate').value;
 
-	var toDay = parseInt(toDate.split("/")[0]);
-	var toMonth = parseInt(toDate.split("/")[1]);
-	var toYear = parseInt(toDate.split("/")[2]);
+	var toYear = parseInt(toDate.split("-")[0]);
+	var toMonth = parseInt(toDate.split("-")[1]);
+	var toDay = parseInt(toDate.split("-")[2]);
 	var newToDate = new Date(toYear, toMonth-1, toDay);
 
-	var fromDay = parseInt(fromDate.split("/")[0]);
-	var fromMonth = parseInt(fromDate.split("/")[1]);
-	var fromYear = parseInt(fromDate.split("/")[2]);
+	var fromYear = parseInt(fromDate.split("-")[0]);
+	var fromMonth = parseInt(fromDate.split("-")[1]);
+	var fromDay = parseInt(fromDate.split("-")[2]);
 	var newFromDate = new Date(fromYear, fromMonth-1, fromDay);
 
 	var today = new Date();
@@ -152,6 +158,16 @@ function validateBatchFundingReportsDates() {
 		} else {
 			setDiv('transFromDateErrorDiv', "");
 		}
+	}
+	return flag;
+}
+
+function submitData(){
+	var flag = true;
+	if(!searchSubmit()
+			|!searchValidationForTransaction()
+			|!validateCardNum()){
+		flag=false;
 	}
 	return flag;
 }

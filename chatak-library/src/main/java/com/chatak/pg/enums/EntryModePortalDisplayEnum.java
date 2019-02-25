@@ -21,7 +21,8 @@ public enum EntryModePortalDisplayEnum {
   PAN_SCAN_QR("QR"),
   QR_SALE("QR_SALE"),
   PAN_SCAN_BLE("BLE"),
-  CARD_TAP("CARD_TAP");
+  CARD_TAP("CARD_TAP"),
+  ACCOUNT_PAY("ACCOUNT_PAY");
 
   private final String value;
 

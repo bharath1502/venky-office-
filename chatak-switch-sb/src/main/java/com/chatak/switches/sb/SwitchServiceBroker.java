@@ -55,6 +55,7 @@ import com.chatak.pg.bean.VoidResponse;
 import com.chatak.pg.constants.AccountTransactionCode;
 import com.chatak.pg.constants.ActionCode;
 import com.chatak.pg.constants.PGConstants;
+import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.ProcessorType;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.util.CommonUtil;
@@ -415,7 +416,9 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     PGTransaction pgTransaction = null;
     try {
       // validation of Request
-      validateRequest(purchaseRequest);
+     if (!purchaseRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+		 validateRequest(purchaseRequest);
+	 }
       // Create Transaction record
       pgTransaction = populatePGTransaction(purchaseRequest, PGConstants.TXN_TYPE_SALE);
       pgTransaction.setPaymentMethod(PGConstants.PAYMENT_METHOD_DEBIT);
@@ -466,7 +469,7 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       // Update account
       //statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
 
-      String autoSettlement = getAutoSettlement(pgMerchant);
+      String autoSettlement = Constants.AUTO_SETTLEMENT_STATUS_NO;
 
       if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
         pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);
@@ -772,7 +775,9 @@ private boolean checkPgTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
     try {
 
       // validation of Request
-      validateRequest(voidRequest);
+		if (!voidRequest.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE)) {
+			validateRequest(voidRequest);
+		}
 
       // Create Transaction record
       pgTransaction = populatePGTransaction(voidRequest, PGConstants.TXN_TYPE_VOID);
@@ -1533,7 +1538,9 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
 
     try {
       // validation of Request
-      validateRequest(balanceEnquiryRequest);
+    	if(!balanceEnquiryRequest.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE)) {
+			validateRequest(balanceEnquiryRequest);
+		}
 
       // Create Transaction record
       pgTransaction =
@@ -1605,12 +1612,16 @@ private void updateMerchantAccountDetails(PGTransaction pgTransaction, PGTransac
     	  pgTransaction.setMerchantSettlementStatus(PGConstants.PG_SETTLEMENT_REJECTED);  
       }
       
+      Double currentBalance = Double.parseDouble(StringUtils.getAmount(balanceEnquiryResponse.getBalance())) * 100;
+      pgTransaction.setTxnAmount(currentBalance.longValue());
+      pgTransaction.setTxnTotalAmount(currentBalance.longValue());
+      
       switchTransactionDao.createTransaction(pgSwitchTransaction);
       voidTransactionDao.createTransaction(pgTransaction);
       
       balanceEnquiryResponse.setMerchantId(pgTransaction.getMerchantId());
       balanceEnquiryResponse.setTerminalId(pgTransaction.getTerminalId());
-      balanceEnquiryResponse.setTxnId(pgTransaction.getTransactionId());
+      balanceEnquiryResponse.setTxnId(pgTransaction.getId().toString());
       balanceEnquiryResponse.setProcTxnId(balanceEnquiryResponse.getUpStreamTxnRefNum());
 
       // Set Response fields

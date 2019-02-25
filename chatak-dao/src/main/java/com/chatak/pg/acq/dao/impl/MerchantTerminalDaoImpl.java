@@ -103,6 +103,7 @@ public class MerchantTerminalDaoImpl implements MerchantTerminalDao {
 	 * @param merchantId
 	 * @return
 	 */
+	
 	@Override
 	public PGMerchant validateMerchantId(String merchantId, Long entityId, String userType) {
 		PGMerchant merchant = new PGMerchant();
@@ -137,6 +138,7 @@ public class MerchantTerminalDaoImpl implements MerchantTerminalDao {
 		}
 		return merchant;
 	}
+
 
   private String getBusinessName(Object[] objs) {
     return StringUtil.isNull(objs[1]) ? null : ((String) objs[1]);

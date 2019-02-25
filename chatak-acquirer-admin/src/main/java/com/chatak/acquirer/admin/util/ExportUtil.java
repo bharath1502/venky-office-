@@ -59,8 +59,8 @@ public class ExportUtil {
 
     String name = (exportDetails.getReportName() == null) ? "" : exportDetails.getReportName();
 
-    String dateTernary = (Constants.EXPORT_FILE_NAME_DATE_FORMAT) == null ? "MMddyyyyHHmmss"
-        : Constants.EXPORT_FILE_NAME_DATE_FORMAT;
+    String dateTernary = (Constants.EXPORT_FILE_DATE_FORMAT_MMDDYY) == null ? "MMddyyyyHHmmss"
+        : Constants.EXPORT_FILE_DATE_FORMAT_MMDDYY;
     String dateFormat =
         (exportDetails.getDateFormatter() == null) ? dateTernary : exportDetails.getDateFormatter();
 

@@ -256,10 +256,10 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
       Timestamp endDate = null;
       if (!CommonUtil.isNullAndEmpty(reportRequest.getFromDate())) {
         startDate =
-            DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.DD_MM_YYYY);
+            DateUtil.getStartDayTimestamp(reportRequest.getFromDate(), PGConstants.YYYY_MM_DD);
       }
       if (!CommonUtil.isNullAndEmpty(reportRequest.getToDate())) {
-        endDate = DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.DD_MM_YYYY);
+        endDate = DateUtil.getEndDayTimestamp(reportRequest.getToDate(), PGConstants.YYYY_MM_DD);
       }
       List<String> merchantList = merchantRepository.findMerchantsList(reportRequest.getId());
       Integer totalRecords = reportRequest.getNoOfRecords();
@@ -484,7 +484,9 @@ public class BatchSchedularDaoImpl extends TransactionDaoImpl implements BatchSc
     transactionResp.setMerchantName(tuple.get(QPGMerchant.pGMerchant.firstName));
     transactionResp.setAcqChannel(tuple.get(QPGTransaction.pGTransaction.acqChannel));
     transactionResp.setTxn_ref_num(getSettlementReportTransactionsRefTransactionId(tuple));
-    transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+    transactionResp.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(DateUtil
+		.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime), 
+			Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
     transactionResp.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
     String posEntryMode = tuple.get(QPGTransaction.pGTransaction.posEntryMode);
     logger.info("TransactionDaoImpl :: getTransactions :: posEntryMode: " + posEntryMode);

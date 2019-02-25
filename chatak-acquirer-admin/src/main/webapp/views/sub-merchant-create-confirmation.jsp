@@ -449,12 +449,12 @@
 						<td><div id="confirmMcity"></div></td>
 					</tr>
 					<tr>
-						<td><spring:message code="manage.label.sub-merchant.state" />:</td>
-						<td><div id="confirmMstate"></div></td>
-					</tr>
-					<tr>
 						<td><spring:message code="manage.label.sub-merchant.country" />:</td>
 						<td><div id="confirmMcountry"></div></td>
+					</tr>
+					<tr>
+						<td><spring:message code="manage.label.sub-merchant.state" />:</td>
+						<td><div id="confirmMstate"></div></td>
 					</tr>
 					<tr>
 						<td><spring:message code="manage.label.sub-merchant.zipcode" />:</td>
@@ -463,21 +463,6 @@
 					<tr>
 						<td><spring:message code="manage.label.sub-merchant.status" />:</td>
 						<td><div id="confirmMstatus"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.applicationmode" />:</td>
-						<td><div id="confirmMappMode"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.businessurl" />:</td>
-						<td><div id="confirmMbusinessURL"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.lookingfor" /></td>
-						<td><div id="confirmLookingFor"></div></td>
 					</tr>
 					<tr>
 						<td><spring:message

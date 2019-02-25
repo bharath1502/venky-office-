@@ -47,6 +47,7 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.ApplicationClientDTO;
 import com.chatak.pg.model.CurrencyDTO;
+import com.chatak.pg.model.MposFeatures;
 import com.chatak.pg.user.bean.AddMerchantBankRequest;
 import com.chatak.pg.user.bean.AddMerchantBankResponse;
 import com.chatak.pg.user.bean.AddMerchantRequest;
@@ -318,6 +319,8 @@ public class PGMerchantServiceImpl implements PGMerchantService {
             .equals(merchantUsers.getMerPassword())) {
           PGMerchant pgMerchant =
               merchantProfileDao.getMerchantById(merchantUsers.getPgMerchantId());
+          List<String> PGMerchantUserFeatureMapping = merchantUserDao.findByFeatureStatus(merchantUsers.getId());
+          loginResponse.setMpsoFeatures(PGMerchantUserFeatureMapping);
           loginResponse.setMerchantCode(pgMerchant.getMerchantCode());
           loginResponse.setBussinessName(pgMerchant.getBusinessName());
           loginResponse.setAddress(pgMerchant.getAddress1());
@@ -333,15 +336,16 @@ public class PGMerchantServiceImpl implements PGMerchantService {
               currencyConfigDao.getCurrencyCodeNumeric(pgMerchant.getLocalCurrency());
           validatePGCurrencyConfig(loginRequest, loginResponse, merchantUsers, pgMerchant, pgCurrencyConfig);
           
-          if(loginResponse.getTerminalData().getErrorCode().equals(Constant.SIXTEEN.toString())){
-        	  loginResponse.setErrorCode(Constant.SIXTEEN.toString());
-      	       return loginResponse;
+          if(loginResponse.getTerminalData() != null) {
+			if (loginResponse.getTerminalData().getErrorCode().equals(Constant.SIXTEEN.toString())) {
+				loginResponse.setErrorCode(Constant.SIXTEEN.toString());
+				return loginResponse;
+			}
+			if (loginResponse.getTerminalData().getErrorCode().equals(Constant.ELEVEN.toString())) {
+				loginResponse.setErrorCode(Constant.ELEVEN.toString());
+				return loginResponse;
+			}
           }
-          if(loginResponse.getTerminalData().getErrorCode().equals(Constant.ELEVEN.toString())){
-            loginResponse.setErrorCode(Constant.ELEVEN.toString());
-            return loginResponse;
-          } 
-
           loginResponse.setErrorCode(ChatakPayErrorCode.GEN_001.name());
           loginResponse.setErrorMessage(messageSource.getMessage(ChatakPayErrorCode.GEN_001.name(),
               null, LocaleContextHolder.getLocale()));
@@ -609,4 +613,9 @@ public class PGMerchantServiceImpl implements PGMerchantService {
   public void saveOrUpdateApplicationClient(PGApplicationClient applicationClient) {
     merchantUserDao.saveOrUpdateApplicationClient(applicationClient);
   }
+  
+  public PGMerchantUsers fetchMerchantUserByUserName(String userName) {
+	  return merchantUserDao.findByUserName(userName);
+  }
+  
 }

@@ -282,49 +282,6 @@ Include all compiled plugins (below), or include individual files as needed
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.applicationmode" /><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="appMode"
-															id="appMode" onblur="validateAppMode()">
-															<form:option value="">..:<spring:message
-																	code="manage.option.sub-merchant.select" />:..</form:option>
-															<form:option value="DEMO">
-																<spring:message code="manage.option.sub-merchant.demo" />
-															</form:option>
-															<form:option value="PRELIVE">
-																<spring:message
-																	code="manage.option.sub-merchant.pre-live" />
-															</form:option>
-															<form:option value="LIVE">
-																<spring:message code="manage.option.sub-merchant.live" />
-															</form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="appModeEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.businessurl" /><span
-															class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="businessURL"
-															maxlength="100" id="businessURL"
-															onblur="this.value=this.value.trim();validateURL()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="businessURLEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.lookingfor" /></label>
-														<form:textarea cssClass="form-control" path="lookingFor"
-															id="lookingFor" onblur="this.value=this.value.trim();" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="lookingForEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.businesstype" /></label>
 														<form:select cssClass="form-control" path="businessType"
 															id="businessType">
@@ -500,11 +457,11 @@ Include all compiled plugins (below), or include individual files as needed
 														<form:input cssClass="form-control"
 															path="bankRoutingNumber"
 															onkeypress="return amountValidate(this,event)"
-															id="bankRoutingNumber" maxlength="9"
-															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
+															id="settlRoutingNumber" maxlength="9"
+															onblur="this.value=this.value.trim();validSettlRoutingNumber()" />
 														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
+															<span id="settlRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
@@ -512,11 +469,11 @@ Include all compiled plugins (below), or include individual files as needed
 																code="manage.label.sub-merchant.bankaccountnumber" /><span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control"
-															path="bankAccountNumber" id="bankAccountNumber"
+															path="bankAccountNumber" id="settleAccountNo"
 															maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv');" />
+															onblur="this.value=this.value.trim();validSettlAccountNumber()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="bankAccountNumberErrorDiv" class="red-error">&nbsp;</span>
+															<span id="settleAccountNoEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
@@ -568,9 +525,9 @@ Include all compiled plugins (below), or include individual files as needed
 															<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');" />
+															onblur="this.value=this.value.trim();validateBankCity()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="bankCityErrorDiv" class="red-error">&nbsp;</span>
+															<span id="bankCityEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
@@ -722,6 +679,7 @@ Include all compiled plugins (below), or include individual files as needed
 	<script type="text/javascript" src="../js/merchant.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/validation.js"></script>
+	<script src="../js/bank.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 
@@ -794,11 +752,7 @@ Include all compiled plugins (below), or include individual files as needed
 		$(".focus-field").click(function() {
 			$(this).children('.effectiveDate').focus();
 		});
-		$('.effectiveDate').datetimepicker({
-			timepicker : false,
-			format : 'm/d/Y',
-			formatDate : 'Y/m/d',
-		});
+		
 		/* DatePicker Javascript End*/
 		$(
 				".bank-info-details-content, .legal-details-content, .legal-details-rep-content, .free-transactions-content, .atm-transaction-content, .pos-transaction-content")
@@ -899,6 +853,14 @@ Include all compiled plugins (below), or include individual files as needed
 				$("#allowAutoSettlement").prop("checked", true);
 			}
 		}
+		
+		// avoid pressing of enter key
+		$(document).keypress(
+		  function(event){
+		    if (event.which == '13') {
+		      event.preventDefault();
+		    }
+		});
 
 		$('#legalSSN').keyup(function() {
 			var val = this.value.replace(/\D/g, '');

@@ -459,21 +459,6 @@
 					</tr>
 					<tr>
 						<td><spring:message
-								code="manage.label.sub-merchant.applicationmode" />:</td>
-						<td><div id="confirmMappMode"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.businessurl" />:</td>
-						<td><div id="confirmMbusinessURL"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
-								code="manage.label.sub-merchant.lookingfor" /></td>
-						<td><div id="confirmLookingFor"></div></td>
-					</tr>
-					<tr>
-						<td><spring:message
 								code="manage.label.sub-merchant.businesstype" />:</td>
 						<td><div id="confirmBusinessType"></div></td>
 					</tr>
@@ -627,13 +612,13 @@
 	<div class="col-sm-12 button-content merchantDiv1">
 		<fieldset class="col-sm-7 pull-right">
 			<input type="submit" class="form-control button pull-right pos-next"
-				value="<spring:message code="manage.buttton.sub-merchant.confirm" />">
+				value="<spring:message code="commission-program-update.label.updatebutton" />">
 			<input type="button"
 				class="form-control button pull-right marginL10 pos-prev"
 				value="<spring:message code="manage.buttton.sub-merchant.previous" />">
 			<input type="button" class="form-control button pull-right marginL10"
 				value="<spring:message code="manage.buttton.sub-merchant.cancel" />"
-				onclick="goToMerchantSearch()">
+				onclick="openCancelConfirmationPopup()">
 		</fieldset>
 	</div>
 	<div class="col-sm-12 button-content subMerchantDiv1"

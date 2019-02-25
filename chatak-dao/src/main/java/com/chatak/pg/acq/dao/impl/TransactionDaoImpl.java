@@ -26,8 +26,10 @@ import com.chatak.pg.acq.dao.model.QPGBankCurrencyMapping;
 import com.chatak.pg.acq.dao.model.QPGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.QPGMerchant;
 import com.chatak.pg.acq.dao.model.QPGMerchantCardProgramMap;
+import com.chatak.pg.acq.dao.model.QPGMerchantEntityMap;
 import com.chatak.pg.acq.dao.model.QPGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.QPGTransaction;
+import com.chatak.pg.acq.dao.model.QPanRanges;
 import com.chatak.pg.acq.dao.repository.AccountTransactionsRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
 import com.chatak.pg.bean.settlement.SettlementEntity;
@@ -39,6 +41,7 @@ import com.chatak.pg.enums.OriginalChannelEnum;
 import com.chatak.pg.model.TransactionRequest;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.GetTransactionsListRequest;
+import com.chatak.pg.user.bean.PanRangeRequest;
 import com.chatak.pg.user.bean.Transaction;
 import com.chatak.pg.util.CommonUtil;
 import com.chatak.pg.util.Constants;
@@ -463,11 +466,9 @@ public class TransactionDaoImpl implements TransactionDao {
   }
   
   protected BooleanExpression isMerchantBusinessNameLike(String merchantBusinessName) {
-		return (merchantBusinessName != null && !"".equals(merchantBusinessName)) ? QPGMerchant.pGMerchant.businessName
-				.eq(merchantBusinessName).or(
-						QPGMerchant.pGMerchant.businessName.eq(merchantBusinessName))
-				: null;
-	}
+	    return (merchantBusinessName != null && !"".equals(merchantBusinessName)) ? QPGMerchant.pGMerchant.businessName
+	        .toUpperCase().like("%" + merchantBusinessName.toUpperCase().replace("*", "") + "%") : null;
+	  }
 
   protected BooleanExpression isRevenueType(String revenueType) {
     if (revenueType != null && !"".equals(revenueType)) {
@@ -671,7 +672,9 @@ public class TransactionDaoImpl implements TransactionDao {
     transactionResp.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
     transactionResp.setTransactionAmount((StringUtils.amountToString(tuple.get(QPGTransaction.pGTransaction.txnAmount))));
     transactionResp.setMerchantFeeAmount(tuple.get(QPGTransaction.pGTransaction.merchantFeeAmount));
-    transactionResp.setFee_amount(tuple.get(QPGTransaction.pGTransaction.feeAmount).doubleValue()/Integer.parseInt("100"));
+	if (tuple.get(QPGTransaction.pGTransaction.feeAmount) != null) {
+		transactionResp.setFee_amount(tuple.get(QPGTransaction.pGTransaction.feeAmount).doubleValue() / Integer.parseInt("100"));
+	}
     transactionResp.setTerminal_id(Long.valueOf((tuple.get(QPGTransaction.pGTransaction.terminalId))));
     transactionResp.setUserName(tuple.get(QPGTransaction.pGTransaction.userName));
     transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
@@ -850,7 +853,9 @@ public class TransactionDaoImpl implements TransactionDao {
 				settlementEntity.setUpdatedDate(tuple.get(QPGTransaction.pGTransaction.updatedDate));
 				settlementEntity.setMerchantId(tuple.get(QPGTransaction.pGTransaction.merchantId));
 				settlementEntity.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
-				settlementEntity.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
+				settlementEntity.setDeviceLocalTxnTime(DateUtil.toDateStringFormat(
+						DateUtil.toTimestamp(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime),
+								Constants.HYPHEN_DATE_FORMAT),PGConstants.DATE_FORMAT));
 				settlementEntity.setAcqPmId(tuple.get(QPGTransaction.pGTransaction.pmId).toString());
 				settlementEntity.setBatchDate(tuple.get(QPGTransaction.pGTransaction.batchDate));
 				settlementEntity.setSettlementBatchStatus(tuple.get(QPGTransaction.pGTransaction.settlementBatchStatus));
@@ -1085,5 +1090,47 @@ public class TransactionDaoImpl implements TransactionDao {
 	protected BooleanExpression isEntityIdLike(Long entityId) {
 		return (entityId != null)
 				? QPGTransaction.pGTransaction.pmId.eq(entityId) : null;
+	}
+	
+	/**
+	 * @param transaction
+	 * @return
+	 */
+	@Override
+	public List<PanRangeRequest> getPgPanRanges(String merchantId) {
+ 	  log.info("TransactionDaoImpl | getPgTransactions :: Entry");
+	  
+	    List<PanRangeRequest> panRangeRequests = new ArrayList<>();
+		JPAQuery query = new JPAQuery(entityManager);
+		List<Tuple> tuples = query.from(QPGMerchant.pGMerchant, QPGMerchantEntityMap.pGMerchantEntityMap, QPanRanges.panRanges)
+				.where(isMerchantCodeEq(merchantId)
+						.and(QPGMerchant.pGMerchant.id.eq(QPGMerchantEntityMap.pGMerchantEntityMap.merchantId))
+						.and(QPGMerchantEntityMap.pGMerchantEntityMap.entityId.eq(QPanRanges.panRanges.isoId)))
+				.list(QPanRanges.panRanges.id, QPanRanges.panRanges.panHigh, QPanRanges.panRanges.panLow, QPGMerchantEntityMap.pGMerchantEntityMap.entityId);
+
+		log.info("TransactionDaoImpl | getPgTransactions :: List: " + tuples.size());
+		
+		if (!CollectionUtils.isEmpty(tuples)) {
+			for (Tuple tuple : tuples) {
+			 PanRangeRequest  panRangeRequest = new PanRangeRequest();
+			  panRangeRequest.setId(tuple.get((QPanRanges.panRanges.id)));
+			  panRangeRequest.setPanLow(tuple.get((QPanRanges.panRanges.panLow)));
+			  panRangeRequest.setPanHigh(tuple.get((QPanRanges.panRanges.panHigh)));
+			  panRangeRequest.setIsoId(tuple.get((QPGMerchantEntityMap.pGMerchantEntityMap.entityId)));
+			  panRangeRequests.add(panRangeRequest);
+			}
+		}
+		log.info("TransactionDaoImpl | getPgTransactions :: Exit");
+		return panRangeRequests;
+	}
+	
+
+	/**
+	 * @param txnId
+	 * @return
+	 */
+	@Override
+	public PGTransaction getTransactionDetails(String txnId) {
+		return transactionRepository.findByTransactionId(txnId);
 	}
 }

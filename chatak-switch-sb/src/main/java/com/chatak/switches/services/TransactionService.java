@@ -208,12 +208,13 @@ public abstract class TransactionService extends AccountTransactionService {
   protected PGTransaction populatePGTransaction(Request request, String txnType)
       throws Exception, ServiceException {
     logger.info("Entering :: TransactionService :: populatePGTransaction");
-
-    if (txnType.equalsIgnoreCase(TransactionType.SALE.toString())
-        && (request.getTotalTxnAmount() < (request.getTxnAmount() + request.getTxnFee()))) {
-      throw new ServiceException(ActionCode.ERROR_CODE_12);
+    if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+		if (txnType.equalsIgnoreCase(TransactionType.SALE.toString())
+				&& (request.getTotalTxnAmount() < (request.getTxnAmount() + request.getTxnFee()))) {
+			throw new ServiceException(ActionCode.ERROR_CODE_12);
+		}
     }
-
+    
     PGTransaction pgTransaction = new PGTransaction();
     pgTransaction.setSysTraceNum(request.getSysTraceNum());
     pgTransaction.setTransactionType(txnType);
@@ -238,8 +239,8 @@ public abstract class TransactionService extends AccountTransactionService {
     
     // PERF >> Replaced by fetching only auto-settlement status and ID based on merchant code
     PGMerchant pgMerchant = merchantUpdateDao.getMerchantAutoSettlementByCode(request.getMerchantCode());
-    String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() != null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "1";
-    autoSettlement = (autoSettlement!=null && autoSettlement.equals("1")) ? Constants.AUTO_SETTLEMENT_STATUS_NO : Constants.BATCH_STATUS_NA;
+    logger.info(pgMerchant != null ? pgMerchant.getId() : pgMerchant);
+    String autoSettlement = Constants.AUTO_SETTLEMENT_STATUS_NO;
     
     if (ProcessorType.LITLE.value().equals(pgTransaction.getProcessor())) {
       pgTransaction.setEftStatus(PGConstants.LITLE_EXECUTED);
@@ -257,12 +258,15 @@ public abstract class TransactionService extends AccountTransactionService {
     // In case the card number is from a HCE NFC transaction, it might be appended with an 'F'
     // to make it a whole 20 digit card number, 19 card digits + 'F'
     // In such cases, truncate the 'F'
-    String cardNumber = request.getCardNum().replace("F", "");
+    String cardNumber = null;
+    if(request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE)) {
+    	pgTransaction.setPanMasked(request.getAccountNumber());
+        pgTransaction.setPan(EncryptionUtil.encrypt(request.getAccountNumber()));
+    } else {
+    cardNumber = request.getCardNum().replace("F", "");
     pgTransaction.setPanMasked(StringUtils.getMaskedString(cardNumber, Integer.parseInt("5"), Integer.parseInt("4")));
     pgTransaction.setPan(EncryptionUtil.encrypt(cardNumber));
-    pgTransaction
-        .setExpDate(setExpDate(request));
-    
+    }
     // PERF >> Will use the primary auto increment key as the transaction id
     //pgTransaction.setTransactionId(transactionDao.generateTransactionRefNumber());
     
@@ -280,12 +284,14 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setCardHolderEmail(request.getCardHolderEmail());
     pgTransaction.setReason(request.getDescription());
     pgTransaction.setTxnCurrencyCode(request.getCurrencyCode());
-    pgTransaction.setTimeZoneOffset(request.getTimeZoneOffset());
-    pgTransaction.setTimeZoneRegion(request.getTimeZoneRegion());
-    pgTransaction.setDeviceLocalTxnTime(DateUtil.convertTimeZone(request.getTimeZoneOffset(), timestamp.toString()));
-
-    getCardProgramDetailsByCardNumber(CommonUtil.getIIN(cardNumber), CommonUtil.getPartnerIINExt(cardNumber), 
-    		CommonUtil.getIINExt(cardNumber), pgTransaction, pgMerchant.getId(),request); 
+    pgTransaction.setTimeZoneOffset("GMT+0530");
+    pgTransaction.setTimeZoneRegion("Asia/Calcutta");
+    pgTransaction.setDeviceLocalTxnTime(DateUtil.convertTimeZone("GMT+0530", timestamp.toString()));
+    pgTransaction.setCpId(request.getPanId());	  
+    if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+    	pgTransaction
+        .setExpDate(setExpDate(request));
+    }
     logger.info("Exiting :: TransactionService :: populatePGTransaction");
     return pgTransaction;
   }
@@ -310,9 +316,14 @@ public abstract class TransactionService extends AccountTransactionService {
 
     PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
     pgSwitchTransaction.setTxnAmount(request.getTxnAmount());
-    pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), 5, 4));
     pgSwitchTransaction.setPosEntryMode(request.getPosEntryMode());
-    pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getCardNum()));
+		if (request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
+			pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getAccountNumber()));
+			pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getAccountNumber(), 5, 4));
+		} else {
+			pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getCardNum()));
+			pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), 5, 4));
+		}
     // PERF >> Commenting since PgTransactionId is auto increment
     //pgSwitchTransaction.setPgTransactionId(transactionDao.generateTransactionRefNumber())
     pgSwitchTransaction.setCreatedDate(timestamp);
@@ -428,8 +439,16 @@ public abstract class TransactionService extends AccountTransactionService {
     	logger.info("Setting PAN in ISO field");
       isoMsg.set(ISOConstants.PAN, request.getCardNum());
     }
+    if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
     logger.info("PAN Number in Sale Txn Request : " + StringUtils.lastFourDigits(request.getCardNum()));
     logger.info("PAN Number in ISO Packet : " + StringUtils.lastFourDigits((String)isoMsg.getValue(ISOConstants.PAN)));
+    isoMsg.set(ISOConstants.DATE_EXPIRATION, request.getExpDate());
+				isoMsg.set(ISOConstants.SYSTEM_TRACE_AUDIT_NUMBER,
+						null != txnRef ? txnRef.length() > 6 ? txnRef.substring(0, Integer.parseInt("6")) : txnRef : txnRefNum.substring(0, Integer.parseInt("6")));
+    } else {
+				isoMsg.set(ISOConstants.SYSTEM_TRACE_AUDIT_NUMBER,
+						null != txnRef ? txnRef.length() > 2 ? txnRef.substring(0, Integer.parseInt("2")) : txnRef : txnRefNum.substring(0, Integer.parseInt("6")));
+    }
     isoMsg.set(ISOConstants.PROCESSING_CODE, procCode);
     isoMsg.set(ISOConstants.TXN_AMOUNT,
         request.getTotalTxnAmount() != null
@@ -437,7 +456,6 @@ public abstract class TransactionService extends AccountTransactionService {
             : ISOUtil.padleft("0", Integer.parseInt("12"), '0'));
 
     isoMsg.set(ISOConstants.TRANSMISSION_DATE_TIME, (new SimpleDateFormat("MMddhhmmss").format(new Date())));
-    isoMsg.set(ISOConstants.SYSTEM_TRACE_AUDIT_NUMBER, null != txnRef ? txnRef.substring(0, Integer.parseInt("6")) : txnRefNum.substring(0, Integer.parseInt("6")));
     isoMsg.set(ISOConstants.LOCAL_TRANSACTION_TIME, DateUtils.getLocalTransactionTime());// TODO: local time
     // of
     // transaction
@@ -447,7 +465,6 @@ public abstract class TransactionService extends AccountTransactionService {
     // of
     // transaction
     // origination MMDD
-    isoMsg.set(ISOConstants.DATE_EXPIRATION, request.getExpDate());
     isoMsg.set(ISOConstants.DATE_SETTLEMENT, DateUtils.getLocalTransactionDate());
     isoMsg.set(ISOConstants.MERCHANT_TYPE, "1111");
     isoMsg.set(ISOConstants.POINT_OF_SERVICE_ENTRY_MODE,
@@ -482,9 +499,9 @@ public abstract class TransactionService extends AccountTransactionService {
     // by
     // pulse
     isoMsg.set(ISOConstants.CARD_ACCEPTOR_IDENTIFICATION_CODE, ISOUtil.padleft(request.getMerchantCode(), Integer.parseInt("15"), '0'));
-    isoMsg.set(ISOConstants.CARD_ACCEPTOR_NAME_OR_LOCATION, ISOUtil.padleft(request.getBusinessName(), Integer.parseInt("23"), ' ')
-        + ISOUtil.padleft(request.getCity(), Integer.parseInt("13"), ' '));
-    isoMsg.set(ISOConstants.PRIVATE_ADDITIONAL_DATA, request.getAddress());// TODO: Merchant/Bank Name
+    isoMsg.set(ISOConstants.CARD_ACCEPTOR_NAME_OR_LOCATION, ISOUtil.padleft("Business Name", Integer.parseInt("23"), ' ')
+        + ISOUtil.padleft("City", Integer.parseInt("13"), ' '));
+    isoMsg.set(ISOConstants.PRIVATE_ADDITIONAL_DATA, "Additional Data");// TODO: Merchant/Bank Name
 
     isoMsg.set(ISOConstants.TXN_CURRENCY_CODE, request.getCurrencyCode());
 
@@ -516,6 +533,7 @@ public abstract class TransactionService extends AccountTransactionService {
     isoMsg.set(ISOConstants.RESERVED_FOR_PRIVATE_USE, request.getUid() != null ? request.getUid() : ""); //setting UID value if available.
     isoMsg.set(ISOConstants.TIMEZONE_OFFSET, request.getTimeZoneOffset());//setting  TimeZone Offset value.
     isoMsg.set(ISOConstants.TIMEZONE_REGION, request.getTimeZoneRegion());//setting  TimeZone Region value.
+    isoMsg.set(ISOConstants.ACCOUNT_NUMBER, request.getAccountNumber());//setting Account Number value
     } catch(NullPointerException | ISOException e) {
       logger.error("Error in IsoMessage", e);
       throw new ISOException("Invalid IsoMessage");
@@ -911,6 +929,7 @@ public abstract class TransactionService extends AccountTransactionService {
       isoMsg.set(ISOConstants.RESERVED_FOR_PRIVATE_USE, request.getUid() != null ? request.getUid() : ""); //setting UID value if available.
       isoMsg.set(ISOConstants.TIMEZONE_OFFSET, request.getTimeZoneOffset());//setting  TimeZone Offset value.
       isoMsg.set(ISOConstants.TIMEZONE_REGION, request.getTimeZoneRegion());//setting  TimeZone Region value.
+      isoMsg.set(ISOConstants.ACCOUNT_NUMBER, request.getAccountNumber());//setting Account Number value
     } catch (NullPointerException | ISOException e) {
       logger.error("Error in IsoMessage", e);
       throw new ISOException("Invalid IsoMessage");

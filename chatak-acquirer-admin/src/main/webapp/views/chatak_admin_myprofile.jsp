@@ -35,6 +35,7 @@
 	 <script src="../js/messages.js"></script>
 	<script src="../js/admin-user.js"></script>
 	<script src="../js/common-lib.min.js"></script>
+	<script src="../js/validation.js"></script>
 
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">

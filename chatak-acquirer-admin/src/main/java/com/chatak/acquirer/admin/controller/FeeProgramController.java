@@ -32,6 +32,7 @@ import com.chatak.acquirer.admin.model.FeeProgramResponseDetails;
 import com.chatak.acquirer.admin.service.CardProgramServices;
 import com.chatak.acquirer.admin.service.FeeCodeService;
 import com.chatak.acquirer.admin.service.FeeProgramService;
+import com.chatak.acquirer.admin.service.ProgramManagerService;
 import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
@@ -42,7 +43,13 @@ import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.FeeCodeDTO;
 import com.chatak.pg.model.FeeProgramDTO;
+import com.chatak.pg.model.FeeReportRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
+import com.chatak.pg.user.bean.IsoRequest;
+import com.chatak.pg.user.bean.IsoResponse;
+import com.chatak.pg.user.bean.PanRangeRequest;
+import com.chatak.pg.user.bean.ProgramManagerRequest;
+import com.chatak.pg.user.bean.ProgramManagerResponse;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 
@@ -63,6 +70,9 @@ public class FeeProgramController implements URLMappingConstants {
   
   @Autowired
   CardProgramServices cardProgramServices;
+  
+  @Autowired
+  ProgramManagerService programManagerServices;
 
   @RequestMapping(value = SHOW_FEE_PROGRAM_SEARCH, method = RequestMethod.GET)
   public ModelAndView showFeeProgramSearch(HttpServletRequest request, HttpServletResponse response,
@@ -112,19 +122,21 @@ public class FeeProgramController implements URLMappingConstants {
       return modelAndView;
     }
     try {
+      ProgramManagerRequest managerRequest = new ProgramManagerRequest();
       LoginResponse loginResponse =
           (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       FeeProgramDTO feeProgramDTO = new FeeProgramDTO();
       model.put("feeProgramDTO", feeProgramDTO);
       FeeCodeResponseDetails codeResponse = feeCodeService.getAllFeeCodeList();
-      CardProgramResponse cardProgramResponse = cardProgramServices.getCardProgramListForFeeProgram();
+      managerRequest.setLoginuserType(loginResponse.getUserType());
+      ProgramManagerResponse managerResponse=programManagerServices.getAllProgramManagers(managerRequest);
       session.setAttribute(Constants.LOGIN_RESPONSE_DATA, loginResponse);
       model.put("feeCodeList", codeResponse.getFeeCodeList());
       List<FeeCodeDTO> codeResponseName = codeResponse.getFeeCodeList();
       if (StringUtil.isListNotNullNEmpty(codeResponseName)) {
         modelAndView.addObject("feeCodeList", codeResponseName);
       }
-      modelAndView.addObject("cardProgramList", cardProgramResponse.getCardProgramList());
+      modelAndView.addObject("cardProgramList", managerResponse.getProgramManagersList());
     } catch (Exception e) {
       logger.error("ERROR:: FeeProgramController:: showFeeProgramCreate method", e);
       modelAndView.addObject(Constants.ERROR,
@@ -180,6 +192,29 @@ public class FeeProgramController implements URLMappingConstants {
     return modelAndView;
 
   }
+  
+  @RequestMapping(value = PREPAID_ADMIN_FETCH_PAN_FOR_ENTITY, method = RequestMethod.GET)
+	public @ResponseBody String getPartnerByPMId(HttpServletRequest request, HttpServletResponse response,
+			Map<String, Object> model, @FormParam("IsoId") final Long isoId,
+			HttpSession session) {
+		logger.info("Entering :: FeeReportController :: getPartnerByPMId");
+		try {
+			
+			IsoResponse isoResponse = new IsoResponse();
+			FeeProgramDTO feeProgramDto=new FeeProgramDTO();
+			feeProgramDto.setPageIndex(Constants.ONE);
+			feeProgramDto.setPageSize(Constants.DEFAULT_PAGE_SIZE);
+			feeProgramDto.setIsoId(isoId);
+			List<PanRangeRequest> panRangeRequests = programManagerServices.getPanRangesByIsoId(feeProgramDto.getIsoId());
+			isoResponse.setPanRangeRequests(panRangeRequests);
+			isoResponse.setErrorMessage(Constants.SUCESS);
+			return JsonUtil.convertObjectToJSON(isoResponse);
+		} catch (Exception e) {
+			logger.error("Error :: FeeReportController :: getPartnerByPMId : " + e.getMessage(), e);
+		}
+		logger.info("Exiting :: FeeReportController :: getPartnerByPMId");
+		return null;
+	}
 
   @RequestMapping(value = UPDATE_FEE_PROGRAM, method = RequestMethod.POST)
   public ModelAndView updateFeeProgram(HttpServletRequest request, HttpServletResponse response,
@@ -335,7 +370,7 @@ public class FeeProgramController implements URLMappingConstants {
       feeProgramDTO.setOtherFee(feeProgramResponse.getFeeCodeList().get(0).getOtherFee());
       feeProgramDTO.setPmShare(feeProgramResponse.getFeeCodeList().get(0).getPmShare());
       feeProgramDTO.setIsoShare(feeProgramResponse.getFeeCodeList().get(0).getIsoShare());
-      feeProgramDTO.setCardProgramName(feeProgramResponse.getFeeCodeList().get(0).getCardProgramName());
+      feeProgramDTO.setPanRange(feeProgramResponse.getFeeCodeList().get(0).getPanRange());
       model.put("feeValuesList", feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());
       session.setAttribute("feeValuesList",
           feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());
@@ -559,13 +594,14 @@ public class FeeProgramController implements URLMappingConstants {
           StringUtil.isNull((Integer) session.getAttribute(Constants.PAGE_NUMBER)) ? 1
               : (Integer) session.getAttribute(Constants.PAGE_NUMBER),
           (Integer) session.getAttribute("totalRecords"), model);
-      if (ActionErrorCode.ERROR_CODE_00.equals(responseDetails.getErrorCode())) {
-        model.put(Constants.SUCESS, messageSource.getMessage("fee.program.status.change.sucess",
-            null, LocaleContextHolder.getLocale()));
-      } else {
-        model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
-            LocaleContextHolder.getLocale()));
-      }
+			if (ActionErrorCode.ERROR_CODE_00.equals(responseDetails.getErrorCode())) {
+				modelAndView = showFeeProgramSearch(request, response, model, session);
+				model.put(Constants.SUCESS, messageSource.getMessage("fee.program.status.change.sucess", null,
+						LocaleContextHolder.getLocale()));
+			} else {
+				model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
+						LocaleContextHolder.getLocale()));
+			}
     } catch (Exception e) {
       logger.error("ERROR:: FeeProgramController:: changeFeeProgramStatus method", e);
       model.put(Constants.ERROR,

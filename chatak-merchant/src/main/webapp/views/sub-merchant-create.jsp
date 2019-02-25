@@ -146,7 +146,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.phone"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="phone"
+														<form:input cssClass="form-control" onkeypress="return numbersonly(this,event)" path="phone"
 															id="phone" maxlength="10" onblur="this.value=this.value.trim();validatePhone()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="phoneEr" class="red-error">&nbsp;</span>
@@ -242,38 +242,6 @@
 														</div>
 													</fieldset> --%>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.applicationmode"/><span
-															class="required-field">*</span></label>
-														<form:select cssClass="form-control" path="appMode"
-															id="appMode" onblur="validateAppMode()">
-															<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
-															<form:option value="DEMO"><spring:message code="sub-merchant-create.label.demo"/></form:option>
-															<form:option value="PRELIVE"><spring:message code="sub-merchant-create.label.pre-live"/></form:option>
-															<form:option value="LIVE"><spring:message code="sub-merchant-create.label.live"/></form:option>
-														</form:select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="appModeEr" class="red-error">&nbsp;</span>
-														</div>
-														<form:hidden path="parentMerchantId" />
-														<%-- <form:hidden path="merchantType" /> --%>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.businessURL"/><span class="required-field">*</span></label>
-														<form:input cssClass="form-control" path="businessURL"
-															maxlength="100" id="businessURL" onblur="this.value=this.value.trim();validateURL()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="businessURLEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.lookingfor"></spring:message></label>
-														<form:textarea cssClass="form-control" path="lookingFor"
-															id="lookingFor" onblur="this.value=this.value.trim();"/>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="lookingForEr" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
-													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.businesstype"/></label>
 														<form:select cssClass="form-control" path="businessType"
 															id="businessType">
@@ -307,15 +275,14 @@
 															<span id="businessTypeEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
+												</fieldset>												
+												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.merchantcode" /><span
 															class="required-field">*</span></label>
 														<form:hidden path="parentMerchantId" id="parentMerchantId" />
-														<select class="form-control" id="dummyParentMerchantId"
-															onblur="validateParentMerchantId();" onchange="fetchPartnerName(this.value)">
-															<option value="">..:<spring:message code="sub-merchant-create.label.select" />:..
-															</option>
+														<select class="form-control" id="parentMerchantcode">
 															<c:forEach items="${mainMerchantList}" var="mainMerchant">
 																<option value="${mainMerchant.value}">${mainMerchant.label}</option>
 															</c:forEach>
@@ -673,6 +640,11 @@
 			}
 		}
 		document.getElementById('lookingFor').setAttribute('maxlength', '100');
+		
+		$(document).ready(function() {
+			 $("#parentMerchantcode").prop("disabled", true);
+			});
+
 	</script>
 </body>
 </html>

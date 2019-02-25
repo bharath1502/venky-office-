@@ -306,6 +306,15 @@ public class MerchantController implements URLMappingConstants {
 	modelAndView.setViewName(INVALID_REQUEST_PAGE);
 	return modelAndView;
   }
+  
+  @RequestMapping(value = CHATAK_ADMIN_CREATE_MERCHANT, method = RequestMethod.GET)
+  public ModelAndView createMerchantGetMethod(HttpServletRequest request, HttpServletResponse response,
+	    Merchant merchant, BindingResult bindingResult, Map model, HttpSession session) {
+    logger.info("Entering:: MerchantController:: createMerchantGetMethod method");
+    ModelAndView modelAndView = searchMerchantGetMethod(request, response, merchant, bindingResult, model, session);
+    logger.info("Exiting:: MerchantController:: createMerchantGetMethod method");
+    return modelAndView;
+  }
 
   /**
    * Method to show search merchant
@@ -335,6 +344,8 @@ public class MerchantController implements URLMappingConstants {
     merchant.setPageIndex(Constants.ONE);
     session.setAttribute(Constants.PAGE_NUMBER, Constants.ONE);
     try {
+    	List<Option> countryList = merchantUpdateService.getCountries();
+        modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
     	MerchantSearchResponse searchResponse = null;
     	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
     	getMerchantIdsMappedToEntity(merchant, loginResponse);
@@ -569,6 +580,8 @@ public class MerchantController implements URLMappingConstants {
       model.put(Constants.MERCHANT, merchant);
       merchant.setPageIndex(pageNumber);
       merchant.setNoOfRecords(totalRecords);
+      List<Option> countryList = merchantUpdateService.getCountries();
+      modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
       modelAndView =
           validateMerchantSearchResponse(session, pageNumber, totalRecords, modelAndView, merchant);
     } catch (Exception e) {

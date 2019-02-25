@@ -24,9 +24,6 @@ public class TimeZone implements Serializable  {
 
 	@Column(name = "STANDARD_TIME_OFFSET")
 	private String standardTimeOffset;
-	
-	@Column(name = "DAYLIGHT_TIME_OFFSET")
-	private String dayLightTimeOffset;
 
 	public Long getId() {
 		return id;
@@ -52,11 +49,4 @@ public class TimeZone implements Serializable  {
 		this.standardTimeOffset = standardTimeOffset;
 	}
 
-	public String getDayLightTimeOffset() {
-		return dayLightTimeOffset;
-	}
-
-	public void setDayLightTimeOffset(String dayLightTimeOffset) {
-		this.dayLightTimeOffset = dayLightTimeOffset;
-	}
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.model.UserData;
 import com.chatak.acquirer.admin.service.UserService;
+import com.chatak.acquirer.admin.util.CommonUtil;
 import com.chatak.acquirer.admin.util.PasswordHandler;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.mailsender.exception.PrepaidNotificationException;
@@ -29,6 +30,7 @@ import com.chatak.pg.acq.dao.UserActivityLogDao;
 import com.chatak.pg.acq.dao.model.PGAdminUser;
 import com.chatak.pg.acq.dao.model.PGApplicationClient;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.acq.dao.model.PGMerchantUserFeatureMapping;
 import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
@@ -36,6 +38,7 @@ import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.AccessLogsDTO;
 import com.chatak.pg.model.AdminUserDTO;
 import com.chatak.pg.model.GenericUserDTO;
+import com.chatak.pg.model.MposFeatures;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.EncryptionUtil;
@@ -133,7 +136,7 @@ public class UserServiceImpl implements UserService, PGConstants {
   }
 
   private void updateMerchantUser(UserData userData, String emailId, PGMerchant merchant)
-      throws ChatakAdminException, NoSuchAlgorithmException {
+      throws ChatakAdminException, NoSuchAlgorithmException, ReflectiveOperationException {
     if (null != merchant) {
       PGMerchantUsers merchantUser = new PGMerchantUsers();
       merchantUser.setUserRoleId(userData.getRoleId());
@@ -162,11 +165,12 @@ public class UserServiceImpl implements UserService, PGConstants {
       merchantUser.setPhone(userData.getPhone());
       merchantUser.setAddress(userData.getAddress());
       PGMerchantUsers pgMerchantUsers = merchantUserDao.createOrUpdateUser(merchantUser);
+      saveMposConfigFeature(userData,pgMerchantUsers);
 
       //Inserting into PgApplicationClient table for OAuth Token Related changes
       PGApplicationClient applicationClient =
           com.chatak.pg.dao.util.StringUtil.getApplicationClientDTO();
-      applicationClient.setAppClientId(Properties.getProperty("prepaid.mpos.oauth.clientId"));
+      applicationClient.setAppClientId(merchantUser.getUserName());
       applicationClient.setAppAuthUser(merchantUser.getUserName());
       merchantUserDao.saveOrUpdateApplicationClient(applicationClient);
 
@@ -208,6 +212,28 @@ public class UserServiceImpl implements UserService, PGConstants {
       logger.error("Error :: UserServiceImpl :: saveUser Method Exception", e);
       throw new ChatakAdminException(e.getMessage());
     }
+  }
+   
+  private void saveMposConfigFeature(UserData userData, PGMerchantUsers pgMerchantUsers)
+      throws ReflectiveOperationException {
+    if (userData.getMpsoFeatures() != null) {
+      List<MposFeatures> features = userData.getMpsoFeatures();
+      if (StringUtil.isListNotNullNEmpty(features)) {
+        for (MposFeatures pgMposFeatures : features) {
+          PGMerchantUserFeatureMapping pgMerchantUserFeature = null;
+          PGMerchantUserFeatureMapping pgMerchantUserFeatureMapping =
+              new PGMerchantUserFeatureMapping();
+          pgMerchantUserFeatureMapping.setMerchantUserID(pgMerchantUsers.getId().intValue());
+          pgMerchantUserFeatureMapping.setId(pgMposFeatures.getId());
+          pgMerchantUserFeatureMapping.setFeatureId(pgMposFeatures.getFeatureId());
+          pgMerchantUserFeatureMapping.setStatus(pgMposFeatures.getEnabled());
+          pgMerchantUserFeature = CommonUtil.copyBeanProperties(pgMerchantUserFeatureMapping,
+              PGMerchantUserFeatureMapping.class);
+          merchantUserDao.saveOrUpdateUserRoleFeatureMap(pgMerchantUserFeature);
+        }
+      }
+    }
+
   }
 
   @Override
@@ -253,6 +279,7 @@ public class UserServiceImpl implements UserService, PGConstants {
           PGMerchant pgMerchant = merchantUserDao.findById(pgMerchantUsers.getPgMerchantId());
           
           updateMerchantUser(userData, pgMerchantUsers, pgMerchant);
+          saveMposConfigFeature(userData,pgMerchantUsers);
         
         } else {
           List<PGAdminUser> adminUser = adminUserDao.findByUserName(userData.getUserName());
@@ -510,8 +537,10 @@ public class UserServiceImpl implements UserService, PGConstants {
 
         PGMerchantUsers merchantUser = merchantUserDao.findByMerchantUserId(userId);
         if (merchantUser != null) {
-          PGMerchant merchant =
+          PGMerchant merchant = 
               merchantProfileDao.getMerchantById(merchantUser.getPgMerchantId());
+          List<MposFeatures> PGMerchantUserFeatureMapping = merchantUserDao.findByRoleId(userId);
+          userData.setMpsoFeatures(PGMerchantUserFeatureMapping);
           userData.setMerchantName(merchant.getBusinessName());
           userData.setEmailId(merchantUser.getEmail());
           userData.setFirstName(merchantUser.getFirstName());

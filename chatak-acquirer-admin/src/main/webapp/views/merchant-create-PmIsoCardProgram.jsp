@@ -65,12 +65,8 @@
 								class="table table-striped table-bordered table-responsive table-condensed tablesorter marginBM1 common-table">
 								<thead>
 									<tr>
-										<th><spring:message code="admin.PartnerName.message"/></th>
-										<th><spring:message code="admin.cardprogramname"/></th>
-										<th><spring:message code="admin.iin"/></th>
-										<th><spring:message code="merchant.label.partnerCode"/></th>
-										<th><spring:message code="admin.iinext"/></th>
-										<th style="width: 15%;" id="userType"><spring:message code="merchant.label.entityname"/></th>
+									    <th><spring:message code="admin.PanLow.message"/></th>
+										<th><spring:message code="admin.PanHigh.message"/></th>
 										<th><spring:message code="reports.label.overviewandbalancesheet.currency"/></th>
 										<th><spring:message code="commission-program-search.label.actiontable"/></th>
 									</tr>

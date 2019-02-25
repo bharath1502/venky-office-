@@ -2,6 +2,7 @@ package com.chatak.pg.acq.dao.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -105,7 +106,6 @@ public class ProgramManager implements Serializable {
 	
 	@Column(name = "SCHEDULER_RUN_STATUS")
 	private String schedulerRunStatus;
-  
 
 	/**
 	 * @return the extension

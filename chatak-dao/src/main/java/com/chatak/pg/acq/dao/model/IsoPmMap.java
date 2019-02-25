@@ -80,5 +80,5 @@ public class IsoPmMap implements Serializable{
 	public void setPmId(Long pmId) {
 		this.pmId = pmId;
 	}
-	  
+
 }

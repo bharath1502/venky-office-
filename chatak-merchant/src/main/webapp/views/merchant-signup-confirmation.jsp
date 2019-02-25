@@ -69,18 +69,6 @@
 						<td><div id="confirmMstatus"></div></td>
 					</tr>
 					<tr>
-						<td>Application Mode:</td>
-						<td><div id="confirmMappMode"></div></td>
-					</tr>
-					<tr>
-						<td>Business URL:</td>
-						<td><div id="confirmMbusinessURL"></div></td>
-					</tr>
-					<tr>
-						<td>Looking for?</td>
-						<td><div id="confirmLookingFor"></div></td>
-					</tr>
-					<tr>
 						<td>Business Type:</td>
 						<td><div id="confirmBusinessType"></div></td>
 					</tr>

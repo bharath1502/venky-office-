@@ -308,15 +308,6 @@
 																	id="userNamegreenEr" class="green-error">&nbsp;</span>
 															</div>
 														</fieldset>
-														<fieldset class="col-sm-3">
-															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.businessURL"/><span class="required-field">*</span></label>
-															<form:input cssClass="form-control" path="businessURL"
-																maxlength="100" id="businessURL" onclick="validateURL()"
-																disabled="true" onblur="this.value=this.value.trim();"/>
-															<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-																<span id="businessURLEr" class="red-error">&nbsp;</span>
-															</div>
-														</fieldset>
 													<%-- 	<fieldset class="col-sm-3">
 															<label data-toggle="tooltip" data-placement="top" title="">Federal Tax ID<span class="required-field">*</span></label>
 															<form:input cssClass="form-control" path="federalTaxId"

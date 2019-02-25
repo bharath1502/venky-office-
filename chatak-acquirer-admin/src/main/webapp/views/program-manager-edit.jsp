@@ -78,17 +78,6 @@
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
-											<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="admin.PM.OnBoarding.message" /><span class="required-field">*</span></label>
-														<form:input id="programManagerType"
-														path="programManagerType" maxlength="100" readonly="true"
-														cssClass="form-control" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip"
-															data-placement="top" title="">
-															<span id="programManagerTypeError" class="red-error">&nbsp;</span>
-														</div>
-													</fieldset>
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message code="admin.pm.Name.message" /><span
 														class="required-field">*</span></label>
@@ -264,53 +253,34 @@
 														<span id="pgmmgrschedulerRunTimeerrormsg" class="red-error">&nbsp;</span>
 													</div>
 												</fieldset>
-											<fieldset class="col-md-3 col-sm-6 acquirerBankNames">
-													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
-													 <select id="acquirerBankName" name="acquirerBankName"
-														class="form-control" 
-														onblur="clientValidation('acquirerBankName','bank_name_dropdown','acquirerBankNameerrormsg')"
-														onclick="clearErrorMsg('pgmmgrbankiderrormsg');banksForEFTORCheck();" multiple="multiple">
-													 </select>
-													<div class="discriptionErrorMsg">
-														<span id="acquirerBankNameerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6 bankNames">
+											
+												 <fieldset class="col-md-3 col-sm-6 bankNames">
 													<label><spring:message code="admin.bank.label.bankname"/><span class="required-field">*</span></label>
 													 <select class="form-control" id="bankName" name="bankNames"  
 													 	onblur="validateBank('bankName','pgmmgrbankiderrormsg')"
 														onclick="clearErrorMsg('pgmmgrbankiderrormsg');" MULTIPLE>
-														<c:if test="${not empty selectedBankList}">
-														<c:forEach items="${selectedBankList}" var="bankRequest">
-															<option value="${bankRequest.id}" selected>${bankRequest.bankName}</option>
-														</c:forEach>
-														</c:if>
+														<c:forEach var="current" items="${allBankList}">
+																<c:set var="contains" value="false" />
+																<c:forEach var="currentselect" items="${selectedBankList}">
+																	<c:if test="${currentselect.bankName eq current.label}">
+																		<c:set var="contains" value="true" />
+																	</c:if>
+																</c:forEach>
+																<c:choose>
+																<c:when test="${contains eq true}" >
+																	<option value="${current.value}" selected="selected"> ${current.label} </option>
+																</c:when>
+																<c:otherwise>
+																	<option value="${current.value}"> ${current.label} </option>
+																</c:otherwise>
+																</c:choose>
+															
+														</c:forEach> 
 													 </select>
 													<div class="discriptionErrorMsg">
 														<span id="pgmmgrbankiderrormsg" class="red-error">&nbsp;</span>
 													</div>
-												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
-													<label><spring:message code="admin.bank.label.card.program"/><span class="required-field">*</span></label>
-													 <select id="cardprogramId" name="cardProgramIds"
-														class="form-control"
-														onblur="validateCardProgram('cardprogramId','pgmmgrCardProgramerrormsg')"
-														multiple="multiple" onclick="clearErrorMsg('pgmmgrCardProgramerrormsg');">
-														 <c:if test="${not empty selectedCardProgramList}">
-														<c:forEach items="${selectedCardProgramList}" var="cardProgramList">
-															<option value="${cardProgramList.cardProgramId}" selected>${cardProgramList.cardProgramName}</option>
-														</c:forEach>
-														</c:if>
-														<c:if test="${not empty unselectedCardProgramList}">
-														<c:forEach items="${unselectedCardProgramList}" var="unselectCpList">
-															<option value="${unselectCpList.cardProgramId}" >${unselectCpList.cardProgramName}</option>
-														</c:forEach>
-														</c:if>
-													 </select>
-													<div class="discriptionErrorMsg">
-														<span id="pgmmgrCardProgramerrormsg" class="red-error">&nbsp;</span>
-													</div>
-												</fieldset>
+												</fieldset> 
 												<fieldset class="col-md-3 col-sm-6">
 													<label><spring:message
 															code="reports.label.balancereports.currency" /></label>
@@ -437,10 +407,6 @@
 		
 		
 		$(document).ready(function() {
-			$(".issuanceProgramManager").hide();
-			$(".issuancePMlogo").hide();
-			$(".acquirerCurrencyNames").hide();
-			$(".acquirerBankNames").hide();
 			var issuancePmId = $('#issuancePmId').val();
 			if(issuancePmId == null || issuancePmId == ''){
 				$('#refresh').hide();
@@ -487,22 +453,6 @@
 				document.getElementById(msgDiv).innerHTML = theSplit[theSplit.length - 1];
 			}
 		};
-		
-		$(document).ready(function() {
-			/* Table Sorter includes Start*/
-			$(function() {
-				
-					  // call the tablesorter plugin
-					  $('#serviceResults').sortable({
-						
-						 divBeforeTable: '#divbeforeid',
-						divAfterTable: '#divafterid',
-						initialSort: false,
-						locale: 'th',
-						//negativeSort: [1, 2]
-					});
-			});
-			});
 	</script>
 </body>
 </html>

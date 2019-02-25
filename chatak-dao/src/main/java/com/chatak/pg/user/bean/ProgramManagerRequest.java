@@ -131,7 +131,7 @@ public class ProgramManagerRequest extends SearchRequest {
 	
 	private String loginuserType;
 
-	 /**
+	/**
     * @return the entityId
     */
    public Long getEntityId() {
@@ -781,6 +781,5 @@ public class ProgramManagerRequest extends SearchRequest {
 	public void setPmSystemConvertedTime(String pmSystemConvertedTime) {
 		this.pmSystemConvertedTime = pmSystemConvertedTime;
 	}
-	
-	
+
 }

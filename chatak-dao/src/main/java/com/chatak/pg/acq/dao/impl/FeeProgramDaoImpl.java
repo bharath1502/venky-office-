@@ -155,7 +155,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
     JPAQuery query = new JPAQuery(entityManager);
     List<Tuple> tupleCardList = query.from(QPGFeeProgram.pGFeeProgram,QPmCardProgamMapping.pmCardProgamMapping)
         .where(QPmCardProgamMapping.pmCardProgamMapping.programManagerId.eq(feeProgramDTO.getEntityId()),
-            QPmCardProgamMapping.pmCardProgamMapping.cardProgramId.eq(QPGFeeProgram.pGFeeProgram.cardProgramId),
+            QPmCardProgamMapping.pmCardProgamMapping.cardProgramId.eq(QPGFeeProgram.pGFeeProgram.panId),
            isFeeProgramName(feeProgramDTO.getFeeProgramName()),
             isStatusEq(feeProgramDTO.getStatus()), 
             isFeeProgramId(feeProgramDTO.getFeeProgramId()))
@@ -214,7 +214,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
     JPAQuery query = new JPAQuery(entityManager);
     List<Long> tupleCardList =
         query.from(QPGFeeProgram.pGFeeProgram,QPmCardProgamMapping.pmCardProgamMapping).where(QPmCardProgamMapping.pmCardProgamMapping.programManagerId.eq(feeProgramDTO.getEntityId()),
-            QPmCardProgamMapping.pmCardProgamMapping.cardProgramId.eq(QPGFeeProgram.pGFeeProgram.cardProgramId),
+            QPmCardProgamMapping.pmCardProgamMapping.cardProgramId.eq(QPGFeeProgram.pGFeeProgram.panId),
            isFeeProgramName(feeProgramDTO.getFeeProgramName()),
             isStatusEq(feeProgramDTO.getStatus()), 
             isFeeProgramId(feeProgramDTO.getFeeProgramId())).list(QPGFeeProgram.pGFeeProgram.feeProgramId);
@@ -356,7 +356,7 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
   
   @Override
   public List<PGFeeProgram> findByCardProgramId(Long cardProgramId) throws DataAccessException {
-    return feeProgramRepository.findByCardProgramId(cardProgramId);
+    return feeProgramRepository.findByPanId(cardProgramId);
   }
   
   @Override

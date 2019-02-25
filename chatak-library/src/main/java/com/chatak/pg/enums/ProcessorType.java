@@ -16,6 +16,10 @@ public enum ProcessorType {
   public String value() {
     return value;
   }
+  
+  public String getValue(){
+    return value;
+  }
 
   public static ProcessorType fromValue(String v) {
     for (ProcessorType c : ProcessorType.values()) {

@@ -50,6 +50,16 @@ public class FeeProgramDTO extends SearchRequest {
   private Long entityId;
   
   private String userType;
+  
+  private String programManagerId;
+  
+  private Long panLow;
+  
+  private Long panHigh;
+  
+  private Long panId;
+  
+  private String panRange;
 
   public String getUserType() {
     return userType;
@@ -331,5 +341,46 @@ public class FeeProgramDTO extends SearchRequest {
   public void setCardProgramName(String cardProgramName) {
     this.cardProgramName = cardProgramName;
   }
+
+  public String getProgramManagerId() {
+    return programManagerId;
+  }
+
+  public void setProgramManagerId(String programManagerId) {
+    this.programManagerId = programManagerId;
+  }
+
+  public Long getPanLow() {
+    return panLow;
+  }
+
+  public void setPanLow(Long panLow) {
+    this.panLow = panLow;
+  }
+
+  public Long getPanHigh() {
+    return panHigh;
+  }
+
+  public void setPanHigh(Long panHigh) {
+    this.panHigh = panHigh;
+  }
+
+  public Long getPanId() {
+    return panId;
+  }
+
+  public void setPanId(Long panId) {
+    this.panId = panId;
+  }
+
+  public String getPanRange() {
+    return panRange;
+  }
+
+  public void setPanRange(String panRange) {
+    this.panRange = panRange;
+  }
+  
 
 }

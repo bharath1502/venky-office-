@@ -79,6 +79,10 @@ public class Response implements Serializable {
   private String isoName;
   
   private Long isoId;
+  
+  private Long panLow;
+  
+  private Long panHigh;
 
   public Long getId() {
     return id;
@@ -438,4 +442,21 @@ public class Response implements Serializable {
   public void setTxnType(String txnType) {
     this.txnType = txnType;
   }
+
+  public Long getPanLow() {
+    return panLow;
+  }
+
+  public void setPanLow(Long panLow) {
+    this.panLow = panLow;
+  }
+
+  public Long getPanHigh() {
+    return panHigh;
+  }
+
+  public void setPanHigh(Long panHigh) {
+    this.panHigh = panHigh;
+  }
+
 }

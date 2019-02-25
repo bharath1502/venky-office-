@@ -4,6 +4,7 @@
 package com.chatak.pay.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,9 +34,11 @@ import com.chatak.pay.util.CardTrackParser;
 import com.chatak.pay.util.CreditCardValidation;
 import com.chatak.pay.util.JsonUtil;
 import com.chatak.pay.util.StringUtil;
+import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.PGMerchant;
+import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.bean.BillingData;
 import com.chatak.pg.constants.PGConstants;
@@ -49,6 +52,7 @@ import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.Properties;
 import com.chatak.pg.util.crypto.ChatakEncryptionHandler;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
 import com.chatak.switches.sb.util.ProcessorConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -91,6 +95,9 @@ public abstract class BaseController {
 
   @Autowired
   VoidTransactionDao voidTransactionDao;
+  
+  @Autowired
+  private MerchantUserDao merchantUserDao;
 
   private static String dateRegex1 = "^[0-9][0-9](0[1-9]|1[0-2])$";
 
@@ -106,9 +113,10 @@ public abstract class BaseController {
  * @throws InstantiationException 
  * @throws IOException 
  * @throws HttpClientException 
+ * @throws ChatakInvalidTransactionException 
    */
   protected PGMerchant validateProcessRequest(TransactionRequest transactionRequest)
-      throws ChatakPayException, InvalidRequestException, InstantiationException, IllegalAccessException,IOException, HttpClientException {
+      throws ChatakPayException, InvalidRequestException, InstantiationException, IllegalAccessException,IOException, HttpClientException, ChatakInvalidTransactionException {
     logger.info("Validating the request");
     if (CommonUtil.isNullAndEmpty(transactionRequest.getMerchantCode())
         || CommonUtil.isNullAndEmpty(transactionRequest.getTerminalId())) {
@@ -127,6 +135,26 @@ public abstract class BaseController {
       logger.info("validateProcessRequest :: origin channel: VT");
 
       pgMerchant = cardPaymentProcessor.validateMerchantId(transactionRequest.getMerchantCode());
+      
+      if(pgMerchant != null) {
+    	  
+    	  PGMerchantUsers merchantUsers = pgMerchantService.fetchMerchantUserByUserName(transactionRequest.getUserName());
+    	  
+    	  if(merchantUsers != null) {
+    		  List<String> PGMerchantUserFeatureMapping = merchantUserDao.findByFeatureStatus(merchantUsers.getId());
+    		  boolean flag = false;
+    		  for (String FeatureName : PGMerchantUserFeatureMapping) {
+    		    if (FeatureName.equalsIgnoreCase(transactionRequest.getTransactionType().name())) {
+    		      flag = true;
+    		    }
+    		  } if (!flag) {
+    		    throw new ChatakInvalidTransactionException(ChatakPayErrorCode.TXN_0027.name());
+    		  }
+    	  }
+    	  
+    	  // Ignore for an admin user who logged in from the admin portal
+      }
+      
     } else {
       logger.info("validateProcessRequest :: origin channel: mPOS");
 
@@ -394,7 +422,7 @@ public abstract class BaseController {
         case CARD_TAP:
         case QR_SALE:
         // CradProgram check
-          binService.validateCardProgram(cardData.getCardNumber(), transactionRequest, pgMerchant); 	
+        	//Commented because of card-program check
           isValidCard(cardData);
           isValidExpDate(cardData);
           validateCardType(transactionRequest, cardData);

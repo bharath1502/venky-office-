@@ -166,23 +166,11 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       if(addMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT){
       //Merchant to Entity Mapping
       Set<PGMerchantEntityMap> pgMerchantEntityMaps = new HashSet<>();
-		for(Long id : addMerchantRequest.getEntitiesId()){
 			PGMerchantEntityMap merchantEntityMap = new PGMerchantEntityMap();
-			merchantEntityMap.setEntityId(id);
-			merchantEntityMap.setEntitytype(addMerchantRequest.getAssociatedTo());
+			merchantEntityMap.setEntityId(Long.valueOf(addMerchantRequest.getAssociatedTo()));
+			merchantEntityMap.setEntitytype(Constants.ISO_USER_TYPE);
 			pgMerchantEntityMaps.add(merchantEntityMap);
-		}
 		merchant.setPgMerchantEntityMaps(pgMerchantEntityMaps);
-		//Merchant to CardProgram Mapping
-		Set<PGMerchantCardProgramMap> pgMerchantCardProgramMaps = new HashSet<>();
-		for(Map.Entry<Long, Long> id : addMerchantRequest.getCardProgramAndEntityId().entrySet()){
-			PGMerchantCardProgramMap merchantCardProgramMap = new PGMerchantCardProgramMap();
-			merchantCardProgramMap.setCardProgramId(id.getKey());
-			merchantCardProgramMap.setEntityId(id.getValue());
-			merchantCardProgramMap.setEntitytype(addMerchantRequest.getAssociatedTo());
-			pgMerchantCardProgramMaps.add(merchantCardProgramMap);
-		}
-		merchant.setPgMerchantCardProgramMaps(pgMerchantCardProgramMaps);
       }
       merchant = merchantRepository.save(merchant);
 
@@ -530,7 +518,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       
 		if (updateMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT
 				&& updateMerchantRequest.getProcess().equals(PGConstants.UPDATE)) {
-			processUpdateMerchant(updateMerchantRequest, merchantDb);
 		}
 		merchantRepository.save(merchantDb);
 		accountRepository.save(pgAccount);

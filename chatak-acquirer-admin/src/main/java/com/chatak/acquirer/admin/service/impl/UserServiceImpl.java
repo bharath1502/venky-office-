@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService, PGConstants {
       //Inserting into PgApplicationClient table for OAuth Token Related changes
       PGApplicationClient applicationClient =
           com.chatak.pg.dao.util.StringUtil.getApplicationClientDTO();
-      applicationClient.setAppClientId(Properties.getProperty("prepaid.mpos.oauth.clientId"));
+      applicationClient.setAppClientId(merchantUser.getUserName());
       applicationClient.setAppAuthUser(merchantUser.getUserName());
       merchantUserDao.saveOrUpdateApplicationClient(applicationClient);
 

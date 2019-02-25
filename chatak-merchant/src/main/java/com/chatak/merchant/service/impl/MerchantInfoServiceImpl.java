@@ -266,15 +266,15 @@ public class MerchantInfoServiceImpl implements MerchantInfoService, PGConstants
         merchantRespObj.setCity(pgMerchant.getCity());
         merchantRespObj.setCountry(pgMerchant.getCountry());
 
-        if (pgMerchant.getStatus() == STATUS_SUCCESS) {
+        if (pgMerchant.getStatus().equals(STATUS_SUCCESS)) {
           merchantRespObj.setStatus(S_STATUS_ACTIVE);
-        } else if (pgMerchant.getStatus() == STATUS_PENDING) {
+        } else if (pgMerchant.getStatus().equals(STATUS_PENDING)) {
           merchantRespObj.setStatus(S_STATUS_PENDING);
-        } else if (pgMerchant.getStatus() == STATUS_DELETED) {
+        } else if (pgMerchant.getStatus().equals(STATUS_DELETED)) {
           merchantRespObj.setStatus(S_STATUS_DELETED);
-        } else if (pgMerchant.getStatus() == STATUS_SUSPENDED) {
+        } else if (pgMerchant.getStatus().equals(STATUS_SUSPENDED)) {
           merchantRespObj.setStatus(S_STATUS_SUSPENDED);
-        } else if (pgMerchant.getStatus() == STATUS_SELF_REGISTERATION_PENDING) {
+        } else if (pgMerchant.getStatus().equals(STATUS_SELF_REGISTERATION_PENDING)) {
           merchantRespObj.setStatus(S_STATUS_SELFREGISTERED);
         }
 

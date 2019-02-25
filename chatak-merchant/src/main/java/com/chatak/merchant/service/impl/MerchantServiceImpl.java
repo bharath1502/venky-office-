@@ -262,16 +262,16 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     searchMerchant.setPageSize(merchant.getPageSize());
     searchMerchant.setPageIndex(merchant.getPageIndex());
     searchMerchant.setNoOfRecords(merchant.getNoOfRecords());
-    searchMerchant.setMerchantCode(merchant.getMerchantCode());
+    searchMerchant.setMerchantCode(merchant.getMerchantCode());	
     searchMerchant.setSubMerchantCode(merchant.getSubMerchantCode());
-    if ("" != searchMerchant.getSubMerchantCode() && null != searchMerchant.getSubMerchantCode()) {
+    if ("".equals(searchMerchant.getSubMerchantCode()) && null != searchMerchant.getSubMerchantCode()) {
       getMerchantListResponse = subMerchantDao.getMerchantlistOnSubMerchantCode(searchMerchant);
     } else {
       getMerchantListResponse = merchantProfileDao.getMerchantlist(searchMerchant);
     }
     List<PGMerchant> pgMerchants = getMerchantListResponse.getMerchants();
     List<PGMerchant> subMerchants = getMerchantListResponse.getSubMerchants();
-    MerchantSearchResponse response = new MerchantSearchResponse();
+    MerchantSearchResponse response = new MerchantSearchResponse();	
     if (!CollectionUtils.isEmpty(pgMerchants)) {
       pgMerchantStatus(pgMerchants, response);
     }
@@ -307,15 +307,15 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
   }
 
   private void validateStatus(MerchantData merchantRespObj, PGMerchant pgMerchant) {
-	if (pgMerchant.getStatus() == STATUS_SUCCESS) {
+	if (pgMerchant.getStatus().equals(STATUS_SUCCESS)) {
 	  merchantRespObj.setStatus(S_STATUS_ACTIVE);
-	} else if (pgMerchant.getStatus() == STATUS_DELETED) {
+	} else if (pgMerchant.getStatus().equals(STATUS_DELETED)) {
 	  merchantRespObj.setStatus(S_STATUS_DELETED);
-	} else if (pgMerchant.getStatus() == STATUS_SUSPENDED) {
+	} else if (pgMerchant.getStatus().equals(STATUS_SUSPENDED)) {
 	  merchantRespObj.setStatus(S_STATUS_SUSPENDED);
-	} else if (pgMerchant.getStatus() == STATUS_PENDING) {
+	} else if (pgMerchant.getStatus().equals(STATUS_PENDING)) {
 		  merchantRespObj.setStatus(S_STATUS_PENDING);
-	} else if (pgMerchant.getStatus() == STATUS_SELF_REGISTERATION_PENDING) {
+	} else if (pgMerchant.getStatus().equals(STATUS_SELF_REGISTERATION_PENDING)) {
 	  merchantRespObj.setStatus(S_STATUS_SELFREGISTERED);
 	}
   }

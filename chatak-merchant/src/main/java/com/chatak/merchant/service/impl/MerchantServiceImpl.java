@@ -264,7 +264,7 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
     searchMerchant.setNoOfRecords(merchant.getNoOfRecords());
     searchMerchant.setMerchantCode(merchant.getMerchantCode());	
     searchMerchant.setSubMerchantCode(merchant.getSubMerchantCode());
-    if ("".equals(searchMerchant.getSubMerchantCode()) && null != searchMerchant.getSubMerchantCode()) {
+    if (!(searchMerchant.getSubMerchantCode()).equals("") && null != searchMerchant.getSubMerchantCode()) {
       getMerchantListResponse = subMerchantDao.getMerchantlistOnSubMerchantCode(searchMerchant);
     } else {
       getMerchantListResponse = merchantProfileDao.getMerchantlist(searchMerchant);

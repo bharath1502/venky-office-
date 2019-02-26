@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <%@page import="com.chatak.merchant.constants.JSPConstants"%>
 <%@page import="com.chatak.pg.util.Constants"%>
 <%@page import="com.chatak.pg.util.Constants"%>

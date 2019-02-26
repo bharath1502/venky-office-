@@ -1,7 +1,9 @@
+<!DOCTYPE html>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html>
 <head>
+<title>invalid-access</title>
 <link href="../../css/pg.css" rel="stylesheet">
  <link href="../css/pg.css" rel="stylesheet">
 </head>

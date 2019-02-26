@@ -1,7 +1,9 @@
+<!DOCTYPE html>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page import="com.chatak.merchant.constants.StatusConstants"%>
 <html>
 <head>
+<title>error</title>
 <link href="../css/pg.css" rel="stylesheet">
 <script type="text/javascript">
 

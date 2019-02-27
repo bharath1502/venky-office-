@@ -818,7 +818,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		} else if (!Pattern.compile(PGConstants.REF_NUMBER_REGEX).matcher(transactionRequest.getCgRefNumber()).matches()
 				|| transactionRequest.getCgRefNumber().startsWith("0")) {
 			throw new InvalidRequestException(PGConstants.TXN_0146);
-		} else if (!Pattern.compile(PGConstants.TXN_REF_NUMBER_REGEX).matcher(transactionRequest.getTxnRefNumber())
+		} else if (!Pattern.compile(PGConstants.REF_NUMBER_REGEX).matcher(transactionRequest.getTxnRefNumber())
 				.matches() || transactionRequest.getTxnRefNumber().startsWith("0")) {
 			throw new InvalidRequestException(PGConstants.TXN_0147);
 		}

@@ -369,8 +369,6 @@ public interface PGConstants {
    
    String REF_NUMBER_REGEX = "^[0-9]{10}$";
    
-   String TXN_REF_NUMBER_REGEX = "^[0-9]{12}$";
-   
    String CARD_NUMBER_REGEX = "^[F0-9]{19,20}$";
 
    String APP_VERSION_REGEX = "^[0-9.]{3,15}$";

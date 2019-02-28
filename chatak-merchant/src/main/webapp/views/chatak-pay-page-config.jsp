@@ -70,6 +70,8 @@
 										<div class="row">
 											<div class="field-element-row">
 												<fieldset class="col-sm-3">
+												<legend></legend>
+												<label></label>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="paypage.label.paypageheader"/><span class="required-field">*</span></label>
 													<form:input id="header" cssClass="form-control"
 														path="header" onblur="validateHeader()" />
@@ -78,6 +80,8 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
+												<label></label>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="paypage.label.paypagefooter"/><span class="required-field">*</span></label>
 													<form:input id="footer" cssClass="form-control"
 														path="footer" onblur="validateFooter()" />
@@ -88,6 +92,7 @@
 											</div>
 											<div class="row">
 												<fieldset class="col-sm-12">
+												<legend></legend>
 													<div class="col-lg-12">
 														<div class="field-element-row">
 															<label id="lblImage"><spring:message code="paypage.label.uploadimage"/><span

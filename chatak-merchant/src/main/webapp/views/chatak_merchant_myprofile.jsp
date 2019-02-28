@@ -83,6 +83,7 @@
 												</div>
 
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.companyname"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="businessName"
 														id="businessName" maxlength="50"
@@ -92,6 +93,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.merchantcode"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="merchantCode"
 														id="merchantCode" maxlength="50"
@@ -101,6 +103,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.firstname"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="firstName"
 														id="firstName" maxlength="50" onblur="this.value=this.value.trim();validateFirstName()"
@@ -110,6 +113,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.lastname"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="lastName"
 														id="lastName" maxlength="50" onblur="this.value=this.value.trim();validateLastName()"
@@ -119,6 +123,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.phone"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="phone" id="phone"
 														maxlength="13" onblur="this.value=this.value.trim();validatePhone()" disabled="true" />
@@ -135,6 +140,7 @@
 													</div>
 												</fieldset> --%>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.emailID"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="emailId"
 														id="emailId" readonly="true" disabled="true" onblur="this.value=this.value.trim();"/>
@@ -152,6 +158,7 @@
 													<span class="breadcrumb-text"><spring:message code="myprofile.label.physicaladdress"/></span>
 												</div>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.address1"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="address1"
 														id="address1" maxlength="50" onblur="this.value=this.value.trim();validateAddress1()"
@@ -161,6 +168,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.address2"/></label>
 													<form:input cssClass="form-control" path="address2"
 														id="address2" maxlength="50" onblur="this.value=this.value.trim();validateAddress2()"
@@ -170,6 +178,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.city"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="city" id="city"
 														maxlength="50" onblur="this.value=this.value.trim();validateCity()" disabled="true" />
@@ -178,6 +187,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.country"/><span class="required-field">*</span></label>
 													<form:select cssClass="form-control" path="country"
 														id="country" onblur="validateCountry()"
@@ -192,6 +202,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.state"/><span class="required-field">*</span></label>
 													<form:select cssClass="form-control" path="state"
 														id="state" onblur="validateState()" disabled="true">
@@ -206,6 +217,7 @@
 												</fieldset>
 
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.zipcode"/><span class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="pin" id="pin"
 														maxlength="7" onblur="this.value=this.value.trim();validatePin()" disabled="true" />
@@ -223,6 +235,7 @@
 															<span class="breadcrumb-text"><spring:message code="myprofile.label.mailingaddress"/></span>
 														</div>
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.address1"/><!-- <span class="required-field">*</span> --></label>
 															<form:input cssClass="form-control"
 																path="mailingAddress1" id="mailingAddress1"
@@ -233,6 +246,7 @@
 															</div>
 														</fieldset>
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.address2"/></label>
 															<form:input cssClass="form-control"
 																path="mailingAddress2" id="mailingAddress2"
@@ -243,6 +257,7 @@
 															</div>
 														</fieldset>
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.city"/><!-- <span class="required-field">*</span> --></label>
 															<form:input cssClass="form-control" path="mailingCity"
 																id="mailingCity" maxlength="50"
@@ -252,6 +267,7 @@
 															</div>
 														</fieldset>
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.country"/><!-- <span class="required-field">*</span> --></label>
 															<form:select cssClass="form-control"
 																path="mailingCountry" id="mailingCountry"
@@ -268,6 +284,7 @@
 															</div>
 														</fieldset>
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.state"/><!--< span class="required-field">*</span> --></label>
 															<form:select cssClass="form-control" path="mailingState"
 																id="mailingState" onblur="<%-- validateMailingState() --%>"
@@ -283,6 +300,7 @@
 														</fieldset>
 
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.zipcode"/><!-- <span class="required-field">*</span> --></label>
 															<form:input cssClass="form-control" path="mailingPin"
 																id="mailingPin" maxlength="10"
@@ -299,6 +317,7 @@
 															<span class="breadcrumb-text"><spring:message code="myprofile.label.userdetails"/></span>
 														</div>
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.username"/><span class="required-field">*</span></label>
 															<form:input cssClass="form-control" path="userName"
 																id="userName" maxlength="50" readonly="true"
@@ -377,22 +396,28 @@
 												<div class="field-element-row">
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<form:hidden path="feeProgram" />
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<form:hidden path="processor" />
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<form:hidden path="merchantCallBackURL" />
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<form:hidden path="category" />
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<form:hidden path="autoTransferLimit" />
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<form:hidden path="autoPaymentMethod" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="autoPaymentMethodEr" class="red-error">&nbsp;</span>
@@ -400,10 +425,12 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<form:hidden path="autoTransferDay" />
 													</fieldset>
 
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<form:hidden path="refunds" />
 														<form:hidden path="tipAmount" />
 														<form:hidden path="taxAmount" />
@@ -425,6 +452,7 @@
 									</div>
 									<div class="col-sm-12 button-content" id="submitUpdate">
 										<fieldset class="col-sm-7 pull-right">
+										<legend></legend>
 											<input type="submit"
 												class="form-control button pull-right pos-next"
 												value='<spring:message code="common.label.confirm"/>' onclick="return validateProfileSubmit();">
@@ -437,12 +465,14 @@
 									<!--Panel Action Button End -->
 									<div class="col-sm-12 button-content" id="myEdit">
 										<fieldset class="col-sm-7 pull-right">
+										<legend></legend>
 											<input type="button" value='<spring:message code="common.label.edit"/>' onclick="clearMsg()" 
 												class="form-control button pull-right pos-next">
 											<input type="button" class="form-control button pull-right"
 												value='<spring:message code="common.label.back"/>' onclick="return backTodashBoard();">
 										</fieldset>
 										<fieldset>
+										<legend></legend>
 											<div class="col-sm-7 pull-right"></div>
 										</fieldset>
 									</div>

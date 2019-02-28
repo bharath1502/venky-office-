@@ -8,6 +8,7 @@
 	style="display: none;">
 	<fieldset class="col-sm-12">
 		<fieldset class="col-sm-3">
+		<legend></legend>
 			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 					code="additional-information.label.username" /><span
 				class="required-field">*</span></label>
@@ -21,6 +22,7 @@
 	</fieldset>
 	<div class="col-sm-12 button-content">
 		<fieldset class="col-sm-7 pull-right">
+		<legend></legend>
 			<input type="button" class="form-control button pull-right free-next"
 				value="<spring:message code="sub-merchant-create.label.continue"></spring:message>">
 			<input type="button"

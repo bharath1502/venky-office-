@@ -109,7 +109,8 @@
 										<!-- Payment Information Content Start -->
 											<section class="field-element-row payment-info-contnent">
 												<fieldset class="col-sm-12 padding0">
-													<fieldset class="col-sm-3"> 
+													<fieldset class="col-sm-3">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.creditCardType"/><span class="required-field">*</span></label>
 														<form:select id="cardType" path="creditCardType" cssClass="form-control" onblur="return clientValidation('cardType', 'cardType','cardType_ErrorDiv');">
 															<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
@@ -119,7 +120,8 @@
 															<span id="cardType_ErrorDiv" class="red-error">&nbsp;</span>
 														</div> 
 														</fieldset>
-													<fieldset class="col-sm-3"> 
+													<fieldset class="col-sm-3">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.cardnumber"/><span class="required-field">*</span></label>
 														<input type="text" id="cardNumber" name="cardNumber" class="form-control" onkeypress="return numbersonly(this,event)" onblur="this.value=this.value.trim();return clientValidation('cardNumber', 'card_Number','cardNumber_ErrorDiv');;"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -127,6 +129,7 @@
 														</div> 
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.expiredate"/><span class="required-field">*</span></label><br>
 														<form:select path="month" cssClass="form-control widthP30 displaiIB" id="month" onblur="return validateExpDate()" >
 															<form:option value="">MM</form:option>
@@ -156,28 +159,32 @@
 															<span id="cardExp_ErrorDiv"class="red-error">&nbsp;</span>
 														</div> 
 													</fieldset>
-													<fieldset class="col-sm-3"> 
+													<fieldset class="col-sm-3">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.nameoncard"/><span class="required-field">*</span></label>
 														<form:input id="nameOnCard" path="nameOnCard" cssClass="form-control" onblur="this.value=this.value.trim();return clientValidation('nameOnCard', 'card_Prog_Desc','nameOnCard_ErrorDiv');" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="nameOnCard_ErrorDiv" class="red-error">&nbsp;</span>
 														</div> 
 													</fieldset>
-													<fieldset class="col-sm-3"> 
+													<fieldset class="col-sm-3">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.streetaddress"/></label>
 														<form:input path="streetAddress" maxlength="250" cssClass="form-control" onblur="this.value=this.value.trim();"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span class="red-error">&nbsp;</span>
 														</div> 
 													</fieldset>
-													<fieldset class="col-sm-3"> 
+													<fieldset class="col-sm-3">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.zipcode"/><span class="required-field">*</span></label>
 														<input type="text" id="zipCode" name="zipCode" onkeypress ="generalZipCode()" maxlength="7" class="form-control" onblur="this.value=this.value.trim();return zipCodeNotEmpty(id)"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="zipCodeEr" class="red-error">&nbsp;</span>
 														</div> 
 													</fieldset>
-													<fieldset class="col-sm-12"> 
+													<fieldset class="col-sm-12">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.streetaddress.Wouldyouliketochargetheaccountrightawayorstoreitforlateruse"/><span class="required-field">*</span></label><br>
 														<form:radiobutton path="immidiateCharge" id="No"  cssClass="acc-charge-radio" value="No" onblur="validateRadio('radio_err')"/><spring:message code="recurring-search.label.lateruseonly"/>
 														<form:radiobutton path="immidiateCharge" id="Yes"  cssClass="acc-charge-radio" value="Yes" onblur="validateRadio('radio_err')"/><spring:message code="recurring-search.label.chargenow"/>														
@@ -185,7 +192,8 @@
 															<span id="radio_err" class="red-error">&nbsp;</span>
 														</div> 
 													</fieldset>
-													<fieldset class="col-sm-3 acc-charge-content" id="acc-charge-content"> 
+													<fieldset class="col-sm-3 acc-charge-content" id="acc-charge-content">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.amount"/><span class="required-field">*</span></label>
 														<form:input path="immidateChargeAmount" cssClass="form-control" maxlength="<%= JSPConstants.AMOUNT.toString() %>" onkeypress="return amountValidate(this,event)" id="amount" onblur="this.value=this.value.trim();return clientValidation('amount','amount','amount_Error_Div')"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -196,6 +204,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<!-- <input type="button" class="form-control button pull-right atm-next" value="Continue"> -->
 														<input type="submit" class="form-control button pull-right marginL10" value="<spring:message code="recurring-search.label.savecontinue"/>" onclick="return validateRecurringPayment()">
 														<input type="button" class="form-control button pull-right marginL10" value="<spring:message code="sub-merchant-create.label.previous"/>" onclick="recurringCreatePreviousPage('${recurringPaymentInfoDTO.recurringCustomerInfoId}')">							

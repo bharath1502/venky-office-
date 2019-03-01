@@ -72,6 +72,7 @@
 								<div class="col-sm-12 login-elements-holder">
 
 									<fieldset class="col-sm-12">
+									<legend></legend>
 									<form:hidden path="currentLoginTime" id = "currentDateId"/>
 										<div class="input-group">
 											<span class="input-group-addon"><img
@@ -90,6 +91,7 @@
 								</div>
 								<div class="col-sm-12 login-elements-holder">
 									<fieldset class="col-sm-12">
+									<legend></legend>
 										<div class="input-group">
 											<span class="input-group-addon"><img
 												src="../images/pass_icon.png"></span>

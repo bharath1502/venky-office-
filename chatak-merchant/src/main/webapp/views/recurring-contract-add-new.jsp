@@ -115,6 +115,7 @@
 											<section class="field-element-row pos-transaction-content">
 												<fieldset class="col-sm-12 padding0">
 													<fieldset>
+													<legend></legend>
 														<input type="button" class="form-control button"
 															value="<spring:message code="recurring-contract-info-edit.label.addnew"/>" onclick="openPopup2()">
 													</fieldset>
@@ -175,6 +176,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button"
 															class="form-control button pull-right pos-next"
 															value="<spring:message code="sub-merchant-creation-confirm.label.confirm" />"
@@ -209,6 +211,7 @@
 							
 							<input type="hidden" name="recurringCustInfoId" value="${recurringContractInfoDTO.recurringCustInfoId }" />
 								<fieldset class="col-sm-3">
+								<legend></legend>
 									<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.contractname"/><span class="required-field">*</span></label>
 									<form:input id="contractName" path="contractName" maxlength="50"
 										cssClass="form-control"
@@ -217,7 +220,8 @@
 										<span id="contractName_ErrorDiv" class="red-error">&nbsp;</span>
 									</div>
 								</fieldset>
-								<fieldset class="col-sm-3"> 
+								<fieldset class="col-sm-3">
+								<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.startdate"/><span class="required-field">*</span></label>
 														<div class="input-group focus-field">
 															<form:input id="startDate" path="startDate" cssClass="form-control effectiveDate" onblur="clientValidation('startDate', 'startDate','startDate_ErrorDiv');validateFromDate('startDate','startDate_ErrorDiv');"/>
@@ -227,7 +231,8 @@
 															<span id="startDate_ErrorDiv" class="red-error">&nbsp;</span>
 														</div> 
 													</fieldset>
-													<fieldset class="col-sm-3"> 
+													<fieldset class="col-sm-3">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.enddate"/><span class="required-field">*</span></label>
 														<div class="input-group focus-field">
 															<form:input id="endDate" path="endDate" cssClass="form-control effectiveDate"  onblur="clientValidation('endDate', 'endDate','endDate_ErrorDiv');validateToDate('endDate','endDate_ErrorDiv')"/>
@@ -238,6 +243,7 @@
 														</div> 
 													</fieldset>
 							       	<fieldset class="col-sm-3">
+							       	<legend></legend>
 									<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.contractamount"/><span class="required-field">*</span></label>
 									<form:input path="contractAmount" cssClass="form-control" onkeypress="return amountValidate(this,event)"  maxlength="<%= JSPConstants.AMOUNT.toString() %>" id="amount" onblur="return clientValidation('amount', 'amount','contractAmount_ErrorDiv');"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -245,6 +251,7 @@
 														</div> 
 								</fieldset>
 								<fieldset class="col-sm-3">
+								<legend></legend>
 									<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.tax"/><span class="required-field">*</span></label>
 										<form:input path="tax" id="tax" cssClass="form-control" onkeypress="return amountValidate(this,event)"  maxlength="<%= JSPConstants.AMOUNT.toString() %>" onblur="setTotal();return clientValidation('tax', 'tax','tax_ErrorDiv');"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -252,12 +259,14 @@
 														</div>
 								</fieldset>
 								<fieldset class="col-sm-3">
+								<legend></legend>
 									<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.subtotal"/></label> <input type="text" name="total" class="form-control" id="total" readonly="readonly" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span class="red-error">&nbsp;</span>
 														</div> 
 								</fieldset>
 								<fieldset class="col-sm-3">
+								<legend></legend>
 									<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.status"/><span class="required-field">*</span></label>
 									<form:select id="status" path="status" cssClass="form-control" onblur="return clientValidation('status', 'status','status_ErrorDiv');" >
 															<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
@@ -269,6 +278,7 @@
 														</div>
 								</fieldset>
 								<fieldset class="col-sm-3">
+								<legend></legend>
 									<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.executethiscontract"/><span
 										class="required-field">*</span></label>
 								<form:select path="contractExecution" cssClass="form-control" id="contractExecution" onblur="return validateContractExecution();" >
@@ -284,7 +294,8 @@
 															<span id="contractExecutionEr" class="red-error">&nbsp;</span>
 														</div> 
 								                      </fieldset>
-								                         <fieldset class="col-sm-3"> 
+								                         <fieldset class="col-sm-3">
+								                         <legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.reprocessthiscontract"/><span class="required-field">*</span></label>
 														<form:input path="contractExecutionReprocess"  id="contractExecutionReprocess"  cssClass="form-control" onblur="return validateContractExecutionReprocess()" maxlength="4" onkeypress="return numbersonly(this,event)" />
 															<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -292,6 +303,7 @@
 														</div> 
 													</fieldset>
 								<fieldset class="col-sm-6">
+								<legend></legend>
 									<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.Whichaccountshouldbebilledforthiscontract"/>?<span class="required-field">*</span>
 									</label><form:select path="recurringpaymentInfoId" cssClass="form-control" id="recurringPaymentId" onblur="return clientValidation('recurringPaymentId', 'status','recurringPaymentId_ErrorDiv');" >
 																<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>..:</form:option>
@@ -308,6 +320,7 @@
 														</div> 
 								</fieldset>
 								<fieldset class="col-sm-12"> 
+								<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.emailconformationtractionapproved"/>?</label><br>
 														<input type="radio"  name="transactionApprovedEmail" value="Yes" checked="checked" /><spring:message code="configurations.label.yes"/>
 														<input type="radio" name="transactionApprovedEmail" value="No"/>No
@@ -315,7 +328,8 @@
 															<span class="red-error">&nbsp;</span>
 														</div> 
 													</fieldset>
-													<fieldset class="col-sm-12"> 
+													<fieldset class="col-sm-12">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.emailconformationtractiondeclined"/>?</label><br>
 														<input type="radio" name="transactionDeclinedEmail" value="Yes" checked="checked"/> <spring:message code="configurations.label.yes"/>
 														<input type="radio" name="transactionDeclinedEmail" value="No" > No

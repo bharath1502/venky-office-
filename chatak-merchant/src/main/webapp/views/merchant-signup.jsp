@@ -313,6 +313,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button" class="form-control button pull-right acc-next" value="Continue">
 														<input type="button" class="form-control button pull-right marginL10" value="Reset" onclick="resetBasicInfoSignUp()">
 														<input type="button" class="form-control button pull-right marginL10" value="Cancel" onclick="cancelRegisterMerchant()">

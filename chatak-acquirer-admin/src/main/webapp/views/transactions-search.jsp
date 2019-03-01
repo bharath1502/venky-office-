@@ -323,7 +323,7 @@
 															<td style="width: 10px;">${transaction.batchId}</td>
 															<td class="alignright" style="width: 10px;">${transaction.maskCardNumber}</td>
 															<td class="alignright" style="width: 10px;">${transaction.localCurrency}</td>
-							                      			<td class="alignright" style="width: 10px;"><fmt:formatNumber value="${transaction.transactionAmount}"/></td>
+							                      			<td class="alignright" style="width: 10px;"><fmt:formatNumber value="${transaction.txn_total_amount}"/></td>
 							                      			<td class="alignleft" style="width: 10px;">${fn:toUpperCase(transaction.transaction_type) }</td>
 												             <td>${transaction.merchantSettlementStatus }</td>
 							                      			<c:choose>

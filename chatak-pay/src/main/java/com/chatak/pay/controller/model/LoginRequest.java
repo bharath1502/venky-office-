@@ -13,6 +13,70 @@ public class LoginRequest extends Request implements Serializable {
 	private String password;
 	private String deviceSerial;
 	private String currentAppVersion;
+	private String osName;
+	private String model;
+	private String timeZoneOffset;
+	private String timeZoneRegion;
+	private String manufacturer;
+	private String osVersion;
+	private String os;
+	
+
+	public String getOsName() {
+		return osName;
+	}
+
+	public void setOsName(String osName) {
+		this.osName = osName;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public String getTimeZoneOffset() {
+		return timeZoneOffset;
+	}
+
+	public void setTimeZoneOffset(String timeZoneOffset) {
+		this.timeZoneOffset = timeZoneOffset;
+	}
+
+	public String getTimeZoneRegion() {
+		return timeZoneRegion;
+	}
+
+	public void setTimeZoneRegion(String timeZoneRegion) {
+		this.timeZoneRegion = timeZoneRegion;
+	}
+
+	public String getManufacturer() {
+		return manufacturer;
+	}
+
+	public void setManufacturer(String manufacturer) {
+		this.manufacturer = manufacturer;
+	}
+
+	public String getOsVersion() {
+		return osVersion;
+	}
+
+	public void setOsVersion(String osVersion) {
+		this.osVersion = osVersion;
+	}
+
+	public String getOs() {
+		return os;
+	}
+
+	public void setOs(String os) {
+		this.os = os;
+	}
 
 	public String getUsername() {
 		return username;

@@ -73,11 +73,13 @@
 												<!-- IP Filter Content Start -->
 												<fieldset class="col-sm-6 padding0 left-side-filter">
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<div class="">
 															<span><spring:message code="fraud-basic.label.ipfilter"/>:</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><input type="checkbox"
 															class="ip-checkbox marginL0" id="ipCheckbox" /><spring:message code="fraud-basic.label.ipfilter"/>
 															<span class="required-field" >*</span></label>
@@ -86,6 +88,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-8">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.addip"/><span class="required-field">*</span></label>
 														<input type="text" class="form-control add-ip" value=""
 															id="addIP" maxlength=15 onblur="this.value=this.value.trim();validateIP()" />
@@ -94,6 +97,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-4">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label> <input type="button"
 															class="form-control button add-ip-button" value='<spring:message code="fraud-basic.label.addip"/>'>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -101,6 +105,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-8">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.deniediplist"/><span class="required-field">*</span></label>
 														<form:select path="iPMultiple"
 															cssClass="form-control height100 ip-selectbox"
@@ -115,6 +120,7 @@
 														<form:hidden path="deniedIp" id="deniedIp" />
 													</fieldset>
 													<fieldset class="col-sm-4">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label> <input type="button"
 															class="form-control button remove-select-ip"
 															value='<spring:message code="fraud-basic.label.removeselectedbutton"/>'> <input type="button"
@@ -129,11 +135,13 @@
 												<!-- Country Filter Content Start -->
 												<fieldset class="col-sm-6 padding0">
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<div class="">
 															<span><spring:message code="fraud-basic.label.countryfilter"/>:</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><input type="checkbox"
 															class="country-checkbox marginL0" id="countryCheckbox" /><spring:message code="fraud-basic.label.countryfilter"/> <span class="required-field">*</span></label>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -141,6 +149,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-8">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.addcountry"/><span class="required-field">*</span></label>
 														<!--input type="text" class="form-control add-country" value="" /-->
 														<form:select cssClass="form-control add-country"
@@ -157,6 +166,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-4">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label> <input type="button"
 															class="form-control button add-country-button"
 															value='<spring:message code="fraud-basic.label.addcountrybutton"/>'>
@@ -165,6 +175,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-8">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.deniedcountryllist"/> <span
 															class="required-field">*</span></label>
 														<form:select path="countryMultiple"
@@ -185,6 +196,7 @@
 														<form:hidden path="deniedCountry" id="deniedCountry" />
 													</fieldset>
 													<fieldset class="col-sm-4">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label> <input type="button"
 															class="form-control button remove-select-country"
 															value='<spring:message code="fraud-basic.label.removeselectedbutton"/>'> <input type="button"
@@ -202,11 +214,13 @@
 												</div>
 												<fieldset class="col-sm-6 padding0 left-side-filter">
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<div class="">
 															<span><spring:message code="fraud-basic.label.emailfilter"/>:</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><input type="checkbox"
 															class="email-checkbox marginL0" id="emailCheckbox" /><spring:message code="fraud-basic.label.emailfilter"/> <span class="required-field">*</span></label>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -214,6 +228,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-8">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.addemail"/><span class="required-field">*</span></label>
 														<input type="text" class="form-control add-email" value=""
 															id="emailId" onblur="this.value=this.value.trim();validateEmailId()" />
@@ -222,6 +237,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-4">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label> <input type="button"
 															class="form-control button add-email-button"
 															value='<spring:message code="fraud-basic.label.addemailbutton"/>'>
@@ -230,6 +246,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-8">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.deniedemaillist"/><span
 															class="required-field">*</span></label>
 														<form:select path="eMailMultiple"
@@ -245,6 +262,7 @@
 														<form:hidden path="deniedEMail" id="deniedEMail" />
 													</fieldset>
 													<fieldset class="col-sm-4">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label> <input type="button"
 															class="form-control button remove-select-email"
 															value='<spring:message code="fraud-basic.label.removeselectedbutton"/>'> <input type="button"
@@ -259,11 +277,13 @@
 												<!-- BIN Filter Content Start -->
 												<fieldset class="col-sm-6 padding0">
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<div class="">
 															<span><spring:message code="fraud-basic.label.binfilter"/>:</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><input type="checkbox"
 															class="bin-checkbox marginL0" id="binCheckbox" /><spring:message code="fraud-basic.label.binfilter"/> <span class="required-field">*</span></label>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -271,6 +291,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-8">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.addbin"/><span class="required-field">*</span></label>
 														<input type="text" class="form-control add-bin" value=""
 															id="bin" maxlength=6 onblur="this.value=this.value.trim();validateBin()" />
@@ -279,6 +300,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-4">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label> <input type="button"
 															class="form-control button add-bin-button"
 															value='<spring:message code="fraud-basic.label.addbinbutton"/>'>
@@ -287,6 +309,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-8">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.deniedbinlist"/><span
 															class="required-field">*</span></label>
 														<form:select path="binMultiple"
@@ -302,6 +325,7 @@
 														<form:hidden path="deniedBin" id="deniedBin" />
 													</fieldset>
 													<fieldset class="col-sm-4">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">&nbsp;</label> <input type="button"
 															class="form-control button remove-select-bin"
 															value='<spring:message code="fraud-basic.label.removeselectedbutton"/>'> <input type="button"

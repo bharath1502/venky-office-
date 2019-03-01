@@ -89,6 +89,7 @@
 													<span class="breadcrumb-text"><spring:message code="fund-transfer-eft.label.debitfromaccount"/></span>
 												</div>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.account"/>:</label>
 													<form:input path="debitAccount.accountNumber"
 														readonly="true" />
@@ -97,6 +98,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.availablebalance"/>:</label>
 													<%-- <form:input path="debitAccount.avaliableBalance" /> --%>
 													<form:input cssClass="tbl-text-align-right" path="debitAccount.avaliableBalance"
@@ -107,6 +109,7 @@
 												</fieldset>
 												<form:hidden path="debitAccount.accountType"/>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.accounttype"/>:</label>
 													<form:input path="debitAccount.accountTypeValue" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -123,6 +126,7 @@
 													<span class="breadcrumb-text"><spring:message code="fund-transfer-eft.label.credittobankaccount"/></span>
 												</div>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.account"/>:</label>
 													<form:input path="creditAccount.accountNumber"
 														readonly="true" />
@@ -131,6 +135,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.bankname"/>:</label>
 													<form:input path="creditAccount.bankName" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -138,6 +143,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.address"/>:</label>
 													<form:input path="creditAccount.address" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -145,6 +151,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.city"/>:</label>
 													<form:input path="creditAccount.city" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -152,6 +159,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.state"/>:</label>
 													<form:input path="creditAccount.state" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -160,6 +168,7 @@
 												</fieldset>
 												<form:hidden path="creditAccount.accountType"/>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.accounttype"/>:</label>
 													<form:input path="creditAccount.accountTypeValue"
 														readonly="true" />
@@ -169,6 +178,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.bankroutingnumber"/>:</label>
 													<form:input path="creditAccount.bankRoutingNumber"
 														readonly="true" />
@@ -177,6 +187,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.bankroutingnumber"/>:</label>
 													<%-- <form:input path="creditAccount.accountNumber" readonly="true"/> --%>
 													<input type="text"
@@ -187,6 +198,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.nameonaccount"/>:</label>
 													<form:input path="creditAccount.nameOnAcccount"
 														readonly="true" />
@@ -203,6 +215,7 @@
 															<span class="breadcrumb-text"><spring:message code="fund-transfer-eft.label.transactiondetails"/></span>
 														</div>
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.enteramttransfer"/>:<span class="required-field">*</span></label>
 															<form:input  path="amountToTransfer" cssClass="tbl-text-align-right"
 																onkeypress='return amountValidate(this,event)'
@@ -224,6 +237,7 @@
 									<!-- Page Form End -->
 									<div class="col-sm-12 button-content" id="submitUpdate">
 										<fieldset class="col-sm-7 pull-right">
+										<legend></legend>
 											<input type="submit"
 												onclick="return clientValidation('amountToTransfer', 'amount_new','amountToTransferEr');"
 												class="form-control button pull-right pos-next"
@@ -242,12 +256,14 @@
 								<!--Panel Action Button End -->
 								<div class="col-sm-12 button-content" id="myEdit">
 									<fieldset class="col-sm-7 pull-right">
+									<legend></legend>
 										<!-- <input type="button"
 											class="form-control button pull-right pos-next" value="Edit"> -->
 										<!-- <input type="button" class="form-control button pull-right"
 											value="Back" onclick="return backTodashBoard();"> -->
 									</fieldset>
 									<fieldset>
+									<legend></legend>
 										<div class="col-sm-7 pull-right"></div>
 									</fieldset>
 								</div>

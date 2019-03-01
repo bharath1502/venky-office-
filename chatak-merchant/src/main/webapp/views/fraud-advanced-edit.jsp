@@ -65,7 +65,7 @@
 										<!-- Fraud Information Content Start -->
 											<section class="field-element-row payment-info-contnent">
 													<fieldset class="col-sm-12 padding0">
-													
+					
 														<fieldset class="col-sm-3">
 														<legend></legend> 
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.filterype"/><span class="required-field">*</span></label>

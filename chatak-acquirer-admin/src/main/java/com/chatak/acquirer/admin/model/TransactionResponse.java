@@ -29,7 +29,7 @@ public class TransactionResponse extends Response {
 	// Total amount to be debit'ed from PM's current balance, will give the remaining PM earned amount
 	private BigInteger pmDebitAmount = new BigInteger("0");
 	
-	private List<SettlementEntity> settlementEntity;
+	private transient List<SettlementEntity> settlementEntity;
 
 	public List<Transaction> getTransactionList() {
 		return transactionList;

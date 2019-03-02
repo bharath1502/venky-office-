@@ -23,7 +23,7 @@ public class ChatakAuthenticationProvider implements AuthenticationProvider, Ser
    * 
    */
   private static final long serialVersionUID = -4074746028982442760L;
-  private SessionRegistryImpl sessionRegistry;
+  private transient SessionRegistryImpl sessionRegistry;
 
   /**
    * Method to authenticate the user

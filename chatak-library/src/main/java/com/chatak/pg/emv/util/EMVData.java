@@ -3,6 +3,8 @@
  */
 package com.chatak.pg.emv.util;
 
+import java.io.Serializable;
+
 import com.chatak.pg.exception.InvalidEMVDataFormatException;
 import com.chatak.pg.util.StringUtils;
 
@@ -13,7 +15,7 @@ import com.chatak.pg.util.StringUtils;
  * @date 05-Dec-2014 10:22:00 AM
  * @version 1.0
  */
-public class EMVData {
+public class EMVData implements Serializable{
 
   private String ist_1;
 

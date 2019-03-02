@@ -30,7 +30,7 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
   private static Logger logger = Logger.getLogger(ChatakAcqInterceptor.class);
 
   @Autowired
-  private SessionRegistryImpl sessionRegistry;
+  private transient SessionRegistryImpl sessionRegistry;
 
   public boolean preHandle(javax.servlet.http.HttpServletRequest request,
       javax.servlet.http.HttpServletResponse response, java.lang.Object object)

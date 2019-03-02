@@ -1,5 +1,6 @@
 package com.chatak.pg.acq.dao.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -11,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "PG_MERCHANT_CONFIG")
-public class PGMerchantConfig {
+public class PGMerchantConfig implements Serializable {
 	
 	  @Id
 	  /*@SequenceGenerator(name = "SEQ_PG_MERCHANT_CONFIG_ID", sequenceName = "SEQ_PG_MERCHANT_CONFIG")

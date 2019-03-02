@@ -8,7 +8,7 @@ public class MerchantCategoryCodeSearchResponse extends Response {
 
 	private static final long serialVersionUID = 6610292360286404276L;
 
-	List<MerchantCategoryCode> mccs;
+	 private List<MerchantCategoryCode> mccs;
 
 	public List<MerchantCategoryCode> getMccs() {
 		return mccs;

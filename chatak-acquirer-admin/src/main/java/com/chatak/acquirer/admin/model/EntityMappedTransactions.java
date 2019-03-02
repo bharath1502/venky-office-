@@ -1,10 +1,11 @@
 package com.chatak.acquirer.admin.model;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityMappedTransactions {
+public class EntityMappedTransactions implements Serializable{
 
 	private List<String> pGTransactionIds = new ArrayList<String>();
 	private BigInteger totalEntityAmount = new BigInteger("0");

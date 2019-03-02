@@ -75,10 +75,10 @@ function doAjaxToRemoveCardProgramByPmId(pmId){
 
 function validateIsoMultiSelect() {
 	if (ValidationRules.fee_Short_Code.mandatory == true) {
-		var multiEle = get('selectedProgramManager');
+		var multiEle = get('programManagerId');
 		if(multiEle == null || multiEle.options.length <= 0) {
 			setDiv('selectedProgramManager_ErrorDiv', webMessages.validationthisfieldismandatory);
-			errorFieldFocus('selectedProgramManager');
+			/*errorFieldFocus('selectedProgramManager');*/
 			return false;
 		}
 		else
@@ -105,12 +105,11 @@ function validateCreateIso(){
 			| !clientValidation('extension','extension_not_mandatory','extensionerr')
 			| !clientValidation('isoName', 'program_manager_name',
 					'isonameerrormsg')
-			| !validateIsoMultiSelect()
+		    | !clientValidation('programManagerId','partner_name_dropdown','isoPmerrormsg')
 			| !clientValidation('currency','contact_person','isoCurrencyerrormsg')
 			| !clientValidation('bankName','companyname_not_mandatory','banknameerr')
 			| !clientValidation('bankAccNum','bank_Code','bankaccerr')
 			| !clientValidation('routingNumber','bank_Code','routingNumbererr')
-			| !checkAmbiguity()
 			| !validateAddress()
 			| !validateCity()
 			| !validateCountry()
@@ -145,12 +144,11 @@ function validateUpdateIso(){
 			| !clientValidation('extension','extension_not_mandatory','extensionerr')
 			| !clientValidation('isoName', 'program_manager_name',
 					'isonameerrormsg')
-			| !validateIsoMultiSelect()
+			| !clientValidation('programManagerId','partner_name_dropdown','isoPmerrormsg')
 			| !clientValidation('currency','contact_person','isoCurrencyerrormsg')
 			| !clientValidation('bankName','companyname_not_mandatory','banknameerr')
 			| !clientValidation('bankAccNum','bank_Code','bankaccerr')
 			| !clientValidation('routingNumber','bank_Code','routingNumbererr')
-			| !checkAmbiguity()
 			| !validateAddress()
 			| !validateCity()
 			| !validateCountry()

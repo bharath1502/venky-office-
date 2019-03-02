@@ -215,7 +215,7 @@ $thtd.click( function ( event, initdesc ) {
 		}
 	} );
 	// sort 'tbody' in-place by each 'array[ 0 ]'
-	$tbodytmp = $tbody.detach();
+	var $tbodytmp = $tbody.detach();
 	$thead2a.add( $thtd ).add( $tbtd )
 		.removeClass( 'asc desc sorted' );
 	$.each( sorted, function () {

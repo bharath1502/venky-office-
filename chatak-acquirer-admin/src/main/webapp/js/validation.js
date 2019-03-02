@@ -1520,7 +1520,7 @@ function specialchar(data,div_id)  {
 	
 	/*Create bin page validation*/
 	function createBinValidation() {
-		flag = true;
+		var flag = true;
 		if (!clientValidation('bin','bin','binerrormsg')
 				| !clientValidation('bankId','bin_bank_dropdown','bankerrormsg')
 				| !clientValidation('schema','bin_payment_schema_dropdown','schemaerrormsg')

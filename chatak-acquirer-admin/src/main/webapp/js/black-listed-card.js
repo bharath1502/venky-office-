@@ -95,7 +95,7 @@ function doAjaxCardNumberDuplicate() {
 				setError(get('cardNumber'), '');
 				setDiv("descriptionMsg",
 						webMessages.BinNotMatchedEnterValidCardNumber);
-				cardNumber = true;
+				var cardNumber = true;
 			} else {
 				setDiv("cardNumberEr", webMessages.cardNumberAlreadyinUse);
 				cardNumber = true;

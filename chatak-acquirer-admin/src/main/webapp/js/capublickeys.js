@@ -270,7 +270,7 @@ function doAjaxPublicKeyNameDuplicate() {
 
 			} else {
 				setDiv("publicKeyNameEr", webMessages.publicKeyNameAlreadyinUse);
-				publicKeyName = true;
+				var publicKeyName = true;
 			}
 		},
 		error : function(e) {

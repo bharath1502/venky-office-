@@ -1,4 +1,4 @@
-C_MERCHANT_MSG = {
+var C_MERCHANT_MSG = {
 		
 };
    var slideDownFlag = 0;

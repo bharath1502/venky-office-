@@ -2347,8 +2347,8 @@ function selectedCurrency()
 function SelectSort(SelList) {
 	var ID = '';
 	var Text = '';
-	for (x = 0; x < SelList.length - 1; x++) {
-		for (y = x + 1; y < SelList.length; y++) {
+	for (var x = 0; x < SelList.length - 1; x++) {
+		for (var y = x + 1; y < SelList.length; y++) {
 			if (SelList[x].text > SelList[y].text) {
 				// Swap rows
 				ID = SelList[x].value;

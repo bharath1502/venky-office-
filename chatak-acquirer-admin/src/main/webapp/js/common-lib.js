@@ -456,12 +456,12 @@ function cbWrapper(data, funct) {
 /**
  * Ajax related functions
  */
-HTTP_METHOD = {
+var HTTP_METHOD = {
 	POST : "POST",
 	GET : "GET"
 };
 
-CONTENT_TYPE = {
+var CONTENT_TYPE = {
 	APP_JSON : "application/json",
 	JSON : "json"
 };
@@ -899,7 +899,7 @@ $(document).ready(function() {
 					if(undefined != response) {
 						
 						var popupData = "<div><span class='glyphicon glyphicon-remove' onclick='closeTxnPopup()'></span><span style='text-align:center;'><h2>"+webMessages.transactionDetails+"</h2></span><hr/></div><div class='row'>";
-						txnObj = response;
+						var txnObj = response;
 						if(response.dtoType == "TXN_CC") {
 							var txnAmtLabel = "Merchant Amount :";
 							if(txnObj.merchantType == 'SubMerchant') {

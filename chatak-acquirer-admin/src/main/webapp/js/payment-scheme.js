@@ -281,7 +281,7 @@ function doAjaxPaymentSchemeNameDuplicate() {
 
 			} else {
 				setDiv("paymentSchemeNameEr", webMessages.paymentSchemeNameAlreadyinUse);
-				paymentSchemeName = true;
+				var paymentSchemeName = true;
 			}
 		},
 		error : function(e) {

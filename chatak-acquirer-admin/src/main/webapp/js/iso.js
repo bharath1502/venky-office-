@@ -75,10 +75,10 @@ function doAjaxToRemoveCardProgramByPmId(pmId){
 
 function validateIsoMultiSelect() {
 	if (ValidationRules.fee_Short_Code.mandatory == true) {
-		var multiEle = get('programManagerId');
+		var multiEle = get('selectedProgramManager');
 		if(multiEle == null || multiEle.options.length <= 0) {
 			setDiv('selectedProgramManager_ErrorDiv', webMessages.validationthisfieldismandatory);
-			/*errorFieldFocus('selectedProgramManager');*/
+			errorFieldFocus('selectedProgramManager');
 			return false;
 		}
 		else

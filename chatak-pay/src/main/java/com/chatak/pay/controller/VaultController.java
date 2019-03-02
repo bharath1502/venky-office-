@@ -26,8 +26,8 @@ import com.chatak.pg.constants.VaultErrorCodes;
 @RequestMapping(value = "/vault", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
 public class VaultController extends BaseController implements URLMappingConstants, Constant {
 
-  @Autowired
-  private VaultService vaultService;
+  /*@Autowired
+  private VaultService vaultService;*/
 
   private static Logger logger = LogManager.getLogger(VaultController.class);
 

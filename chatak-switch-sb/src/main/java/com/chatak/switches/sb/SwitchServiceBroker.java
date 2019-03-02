@@ -96,20 +96,20 @@ public class SwitchServiceBroker extends TransactionService {
     acbFactory.autowireBean(this);
   }
 
-  @Autowired
-  MerchantDao merchantDao;
+  /*@Autowired
+  MerchantDao merchantDao;*/
 
-  @Autowired
-  AccountFeeLogDao accountFeeLogDao;
+ /* @Autowired
+  AccountFeeLogDao accountFeeLogDao;*/
 
-  @Autowired
-  CurrencyConfigDao currencyConfigDao;
+  /*@Autowired
+  CurrencyConfigDao currencyConfigDao;*/
 
   @Autowired
   TransactionRepository transactionRepository;
   
-  @Autowired
-  MerchantUpdateDao merchantUpdateDao;
+ /* @Autowired
+  MerchantUpdateDao merchantUpdateDao;*/
 
   /**
    * Method to Authorise a payment transaction Steps involved 1. Validate

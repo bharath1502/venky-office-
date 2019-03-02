@@ -270,9 +270,12 @@ public class FeeReportDaoImpl implements FeeReportDao {
 			return QPGSettlementEntityHistory.pGSettlementEntityHistory.batchFileProcessedDate.gt(fromDate);
 		} else if ((fromDate == null && toDate != null)) {
 			return QPGSettlementEntityHistory.pGSettlementEntityHistory.batchFileProcessedDate.lt(toDate);
-		} else if ((fromDate == null))
+		} else if ((fromDate == null)) {
 			return null;
+		}
+		else {
 		return QPGSettlementEntityHistory.pGSettlementEntityHistory.batchFileProcessedDate.between(fromDate, toDate);
+		}
 	}
 	
 	protected OrderSpecifier<Timestamp> orderByCreatedDateDesc() {

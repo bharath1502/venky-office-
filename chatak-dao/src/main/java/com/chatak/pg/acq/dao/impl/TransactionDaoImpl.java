@@ -364,9 +364,12 @@ public class TransactionDaoImpl implements TransactionDao {
       return QPGTransaction.pGTransaction.createdDate.gt(fromDate);
     } else if ((fromDate == null && toDate != null)) {
       return QPGTransaction.pGTransaction.createdDate.lt(toDate);
-    } else if ((fromDate == null))
+    } else if ((fromDate == null)) {
       return null;
+    }
+    else {
     return QPGTransaction.pGTransaction.createdDate.between(fromDate, toDate);
+    }
   }
 
   protected BooleanExpression isValidTxn(String fromAmount, String toAmount) {

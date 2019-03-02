@@ -348,8 +348,9 @@ public final class StringUtil {
       String[] codeTypeData = codeType.split("\\|");
       for (String data : codeTypeData)
         codeTypeList.add(data);
-    } else
+    } else {
       codeTypeList.add(codeType);
+    }
 
     return codeTypeList;
   }

@@ -35,8 +35,9 @@ public class FeatureMappingDaoImpl implements FeatureMappingDao
 	@Override
 	public void deleteFeatureMapping(Long roleId) {
 	List<PGRolesFeatureMapping> pGRolesFeatureMappingList = featureMappingRepository.findByRoleId(roleId);
-	if(CommonUtil.isListNotNullAndEmpty(pGRolesFeatureMappingList))
+	if(CommonUtil.isListNotNullAndEmpty(pGRolesFeatureMappingList)) {
 	featureMappingRepository.deleteInBatch(pGRolesFeatureMappingList);
+	}
 	}
 
 	@Override

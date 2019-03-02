@@ -485,8 +485,9 @@ public class PartnerServiceImpl implements PartnerService {
       PartnerResponse response = new PartnerResponse();
       if (partnerRequest.getPartnerId() == null) {
         partnerList = partnerDao.searchPartnerAccountByPm(partnerRequest);
-      } else
+      } else {
         partnerList = partnerDao.searchAccountPartner(partnerRequest);
+      }
       setResponseDetails(partnerRequest, partnerList, response);
       logger.info("PartnerServiceImpl :: searchAccountPartner Exiting");
       return response;

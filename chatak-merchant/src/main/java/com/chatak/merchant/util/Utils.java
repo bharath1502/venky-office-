@@ -51,8 +51,9 @@ public class Utils {
       }
       return writer.toString();
 
-    } else
+    } else {
       return "";
+    }
 
   }
 

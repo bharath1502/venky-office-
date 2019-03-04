@@ -564,7 +564,7 @@
 															value='<spring:message code="common.label.continue"/>'
 															> <input type="button"
 															value='<spring:message code="common.label.previous"/>'
-															class="form-control button pull-right marginL10 atm-prev">
+															class="form-control button pull-right marginL10 pic-prev">
 														<input type="button"
 															class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.cancel"/>'

@@ -457,7 +457,7 @@ Include all compiled plugins (below), or include individual files as needed
 														<form:input cssClass="form-control"
 															path="bankRoutingNumber"
 															onkeypress="return amountValidate(this,event)"
-															id="settlRoutingNumber" maxlength="9"
+															id="bankRoutingNumber" maxlength="9"
 															onblur="this.value=this.value.trim();validSettlRoutingNumber()" />
 														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -469,7 +469,7 @@ Include all compiled plugins (below), or include individual files as needed
 																code="manage.label.sub-merchant.bankaccountnumber" /><span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control"
-															path="bankAccountNumber" id="settleAccountNo"
+															path="bankAccountNumber" id="bankAccountNumber"
 															maxlength="50"
 															onblur="this.value=this.value.trim();validSettlAccountNumber()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">

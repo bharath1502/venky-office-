@@ -47,7 +47,7 @@ public class UserData extends SearchRequest {
   
   private Long entityId;
   
-  private List<MposFeatures> mpsoFeatures;
+  private transient List<MposFeatures> mpsoFeatures;
   
  	/**
  	 * @return the mpsoFeatures

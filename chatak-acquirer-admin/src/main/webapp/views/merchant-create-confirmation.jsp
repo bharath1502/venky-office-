@@ -372,7 +372,7 @@
 														<input type="button"
 															value='<spring:message code="common.label.continue"/>' class="form-control button pull-right atm-next"
 															> <input type="button"
-															value='<spring:message code="common.label.previous"/>' class="form-control button pull-right marginL10 atm-prev"
+															value='<spring:message code="common.label.previous"/>' class="form-control button pull-right marginL10 pic-prev"
 															> <input type="button"
 															class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.cancel"/>' onclick="openCancelConfirmationPopup()">

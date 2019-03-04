@@ -50,8 +50,9 @@
 							<form:form action="new-user-password-change" modelAttribute="changePasswordRequest" method="post">
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 								<div class="col-sm-9 login-elements-holder"  style="width: 72%;">
-								<fieldset class="col-sm-5"></fieldset>
+								<fieldset class="col-sm-5"><legend></legend></fieldset>
 									<fieldset class="col-sm-7">
+									<legend></legend>
 									<span class="green-error">
 										<span style="font-weight: bold;"><spring:message code="change-password.label.note"/> </span>
 										<spring:message code="change-password.label.pwdmsg1"/><spring:message code="change-password.label.pwdmsg2"/><br>
@@ -65,8 +66,9 @@
 											<span class="red-error" id="currentPasswordDiv">&nbsp;</span>
 										</div> 
 									</fieldset>
-									<fieldset class="col-sm-5"></fieldset>
+									<fieldset class="col-sm-5"><legend></legend></fieldset>
 									<fieldset class="col-sm-7">
+									<legend></legend>
 										<div class="input-group">
 											<span class="input-group-addon"><img src="../images/pass_icon.png"></span>
 											<input type="password" name="newPassword" id="newPassword" class="form-control" placeholder="New Password" onblur="validateNewPassword()" />
@@ -75,8 +77,9 @@
 											<span class="red-error" id="newPasswordDiv">&nbsp;</span>
 										</div> 
 									</fieldset>
-									<fieldset class="col-sm-5"></fieldset>
+									<fieldset class="col-sm-5"><legend></legend></fieldset>
 									<fieldset class="col-sm-7">
+									<legend></legend>
 										<div class="input-group">
 											<span class="input-group-addon"><img src="../images/pass_icon.png"></span>
 											<input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="Confirm Password" onblur="validateConfirmPassword()"/>

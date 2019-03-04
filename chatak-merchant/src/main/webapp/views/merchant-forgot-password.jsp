@@ -69,6 +69,7 @@
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									<div class="col-sm-12 login-elements-holder">
 										<fieldset class="col-sm-12">
+										<legend></legend>
 											<div class="input-group">
 												<span class="input-group-addon"><img
 													src="../images/user_icon.png"></span> <input type="text"

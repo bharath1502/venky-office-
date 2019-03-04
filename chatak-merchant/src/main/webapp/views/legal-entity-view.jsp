@@ -9,6 +9,7 @@
     <section class="field-element-row legal-details-rep-content" style="display:none;">
 												<fieldset class="col-sm-12">													
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.entitylegalname"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalName"
 															id="legalName" maxlength="101"
@@ -19,6 +20,7 @@
 													</fieldset>
 													
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.ein/taxid"/>:<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalTaxId"
 															id="legalTaxId" maxlength="50"
@@ -28,6 +30,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="dash-board.label.type"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="legalType"
 															id="legalType" onblur="return clientValidation('legalType', 'state','legalTypeErrorDiv');">
@@ -47,6 +50,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.expectedannualcardsales"/><span class="required-field">*</span></label>
 														<fmt:formatNumber type="currency" value="${merchant.legalAnnualCard}" pattern="<%=Constants.AMOUNT_FORMAT%>" var="legalAnnualCard" />
 														<input name="legalAnnualCard" id="legalAnnualCard" value="${ legalAnnualCard}" cssClass="form-control" onblur="this.value=this.value.trim();appendDollarSymbol();return clientValidation('legalAnnualCard', 'dollar_amount','legalAnnualCardErrorDiv');" disabled="disabled"/>
@@ -56,6 +60,7 @@
 													</fieldset>
 													
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address1"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalAddress1"
 															id="legalAddress1" onblur="return clientValidation('legalAddress1', 'bank_address1','legalAddress1ErrorDiv');"/>
@@ -64,6 +69,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address2"/></label>
 														<form:input cssClass="form-control" path="legalAddress2"
 															id="legalAddress2" onblur="return clientValidation('legalAddress2', 'bank_address2','legalAddress2ErrorDiv');"/>
@@ -72,6 +78,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.city"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalCity" id="legalCity"
 															onblur="return clientValidation('legalCity', 'bank_city','legalCityErrorDiv');"/>
@@ -80,6 +87,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.country"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="legalCountry"
 															id="legalCountry" onblur="return clientValidation('legalCountry', 'country','legalCountryErrorDiv');"
@@ -94,6 +102,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.state"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="legalState"
 															id="legalState" onblur="return clientValidation('legalState', 'state','legalStateErrorDiv');">
@@ -108,6 +117,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.zipcode"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalPin" id="legalPin"
 															onblur="return clientValidation('legalPin', 'zip_code','legalPinErrorDiv');"/>
@@ -119,6 +129,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button"
 															class="form-control button pull-right legal-rep-next"
 															value="<spring:message code="sub-merchant-create.label.continue"></spring:message>"> <input type="button"

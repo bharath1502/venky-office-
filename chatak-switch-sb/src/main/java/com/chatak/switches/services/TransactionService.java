@@ -577,8 +577,9 @@ public abstract class TransactionService extends AccountTransactionService {
       return PGConstants.STATUS_FAILED;
     } else if ("110".equals(responseCode)) {
       return PGConstants.STATUS_DECLINED;
-    } else
+    } else {
       return PGConstants.STATUS_FAILED;
+    }
 
   }
 

@@ -405,9 +405,10 @@ private void verifyPassword(PGAdminUser pgAdminUser, String newPassword) throws 
       }
       logger.info("Url is " + url);
       return true;
-    } else
+    } else {
       throw new ChatakAdminException(messageSource.getMessage(
           "chatak.admin.user.inactive.error.message", null, LocaleContextHolder.getLocale()));
+    }
   }
 
   @Override

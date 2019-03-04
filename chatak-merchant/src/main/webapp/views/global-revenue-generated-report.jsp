@@ -87,9 +87,11 @@
 						<!-- Search Table Block Start -->
 						<div id="showDates" style="padding-bottom: 10px;">
 												<fieldset class="col-sm-12">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.selectdaterange"/> :</label>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.fromdate"/><span class="required-field">*</span></label>
 													<div class="input-group focus-field">
 														<input name="" id="transFromDate"
@@ -103,6 +105,7 @@
 												</fieldset>
 												
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.todate"/><span class="required-field">*</span></label>
 													<div class="input-group focus-field">
 														<input name="" class="form-control effectiveDate" id="transToDate" onblur="return validateDate();"
@@ -116,6 +119,7 @@
 												</fieldset>
 												
 												<fieldset class="col-sm-3">
+												<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reportsglobal.label.revenuesource"/>:<span class="required-field">*</span></label>
 														<select class="form-control" name="" id="revenue" >
 															<option value=""><spring:message code="reportsglobal.label.all"/></option>
@@ -137,6 +141,7 @@
 														</div>
 													</fieldset> --%>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.merchantcode"/></label>
 													<select name="" id="merchantCode"  onkeypress="return numbersonly(this,event)"
 														class="form-control">

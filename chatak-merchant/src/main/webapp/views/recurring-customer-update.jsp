@@ -116,6 +116,7 @@
 											<section class="field-element-row account-details-content">
 												<fieldset class="col-sm-12">
 												<fieldset class="col-sm-3">
+												<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.customerid"/><span class="required-field">*</span></label>
 														<form:input path="customerId" cssClass="form-control"
 															id="customerId" maxlength="250" disabled="true"
@@ -125,6 +126,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.firstname"/><span class="required-field">*</span></label>
 														<form:input path="firstName" cssClass="form-control"
 															id="firstName" maxlength="250"
@@ -134,6 +136,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.lastname"/><span class="required-field">*</span></label>
 														<form:input id="lastName" path="lastName"
 															cssClass="form-control" maxlength="250"
@@ -143,6 +146,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.company"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="businessName"
 															id="businessName" maxlength="50"
@@ -152,6 +156,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.title"/></label>
 														<form:input id="title" path="title" maxlength="50"
 															cssClass="form-control" onblur="this.value=this.value.trim();"/>
@@ -160,6 +165,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.department"/></label>
 														<form:input id="department" path="department" maxlength="50"
 															cssClass="form-control"
@@ -169,6 +175,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.emailid"/><span class="required-field">*</span></label>
 														<form:input id="emailId" path="emailId" maxlength="100"
 															cssClass="form-control"
@@ -178,6 +185,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.mobilephone"/><span class="required-field">*</span></label>
 														<form:input id="mobileNumber" path="mobileNumber" maxlength="10"
 															cssClass="form-control"
@@ -187,6 +195,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.daytimephone"/></label>
 														<form:input id="daytimePhone" path="daytimePhone"
 															maxlength="10" cssClass="form-control"
@@ -196,6 +205,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.eveningphone"/></label>
 														<form:input id="eveningPhone" path="eveningPhone"
 															maxlength="10" cssClass="form-control"
@@ -205,6 +215,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.fax"/></label>
 														<form:input cssClass="form-control" path="fax" id="fax"
 															onkeypress="return amountValidate(this,event)"
@@ -213,7 +224,8 @@
 															<span id="faxEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
-													<fieldset class="col-sm-3"> 
+													<fieldset class="col-sm-3">
+													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="dash-board.label.status"/><span class="required-field">*</span></label>
 														<form:select id="status" path="status" cssClass="form-control" onblur="return clientValidation('status', 'status','status_ErrorDiv');">
 															<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
@@ -226,9 +238,11 @@
 													</fieldset>
 													<br/>
 													<fieldset class="col-sm-12">
+													<legend></legend>
                                                         <span><strong><spring:message code="recurring-search.label.mailingaddress"/></strong></span>
                                                       </fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address1"/><span class="required-field">*</span></label>
 														<form:input id="address1" path="address1" maxlength="250"
 															cssClass="form-control"
@@ -238,6 +252,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address2"/><span class="required-field">*</span></label>
 														<form:input id="address2" path="address2" cssClass="form-control" maxlength="250"
 														onblur="this.value=this.value.trim();return clientValidation('address2', 'address','address2_ErrorDiv');" />
@@ -246,6 +261,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.address3"/></label>
 														<form:input path="address3" cssClass="form-control" maxlength="250" onblur="this.value=this.value.trim();"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -253,6 +269,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.area"/><span class="required-field">*</span></label>
 														<form:input id="area" path="area" cssClass="form-control" maxlength="50"
 															onblur="this.value=this.value.trim();return clientValidation('area', 'area','area_ErrorDiv');" />
@@ -261,6 +278,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.city"/><span class="required-field">*</span></label>
 														<form:input id="city" path="city" cssClass="form-control" maxlength="20"
 															onblur="this.value=this.value.trim();return clientValidation('city', 'pcity','city_ErrorDiv');" />
@@ -269,6 +287,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.country"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="country"
 															id="country"
@@ -283,6 +302,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.state"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="state"
 															id="state"
@@ -297,6 +317,7 @@
 														</div>																															
 												</fieldset>		
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.zipcode"/><span class="required-field">*</span></label>
 														<form:input id="zipCode" path="zipCode" cssClass="form-control"
 								                        	maxlength="7" onkeypress ="generalZipCode()"
@@ -307,11 +328,12 @@
 													</fieldset>
 												<form:hidden path="recurringCustInfoId" />
 												<form:hidden path="customerId" />
-												<fieldset class="col-sm-12"></fieldset>
+												<fieldset class="col-sm-12"><legend></legend></fieldset>
 												
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="submit"
 															class="form-control button pull-right"
 															value="<spring:message code="recurring-search.label.updatecontinue"/>"

@@ -73,6 +73,7 @@
 											
 										<fieldset class="col-sm-12 padding0">
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.filterype"/><span class="required-field">*</span></label>
 												<form:select id="filterType" path="filterType"
 													cssClass="form-control"
@@ -88,6 +89,7 @@
 											</fieldset>
 											
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.filterOn"/><span class="required-field">*</span></label>
 												<form:select id="filterOn" path="filterOn"
 													cssClass="form-control"
@@ -103,6 +105,7 @@
 											</fieldset>
 											
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.Duration"/><span class="required-field">*</span></label>
 												<form:select id="duration" path="duration"
 													cssClass="form-control"
@@ -120,6 +123,7 @@
 											</fieldset>
 											
 											<fieldset class="col-sm-3" id="transactionLimit1">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.transactionlimit"/><span class="required-field">*</span></label>
 												<input type="text" id="transactionLimit" name="transactionLimit" class="form-control" onkeypress="return cardnumbersonly(this,event)" onblur="return clientValidation('transactionLimit', 'credit_amount','transactionLimit_ErrorDiv');"/>
 												<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -128,6 +132,7 @@
 											</fieldset>
 											
 											<fieldset class="col-sm-3" id="maxLimit1">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.maxlimit"/><span class="required-field">*</span></label>
 												<input type="text" id="maxLimit" name="maxLimit" class="form-control" onkeypress="return cardnumbersonly(this,event)" onblur="return clientValidation('maxLimit', 'credit_amount','maxLimit_ErrorDiv');"/>
 												<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -136,6 +141,7 @@
 											</fieldset>
 											
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.action"/><span class="required-field">*</span></label>
 												<form:select id="action" path="action"
 													cssClass="form-control"
@@ -187,6 +193,7 @@
 											<section class="field-element-row atm-transaction-content">
 												<fieldset class="col-sm-12 padding0">
 													<fieldset>
+													<legend></legend>
 														<input type="button" class="form-control button"
 															value='<spring:message code="fraud-basic.label.addnewadvancedfraudbutton"/>' onclick="openPopup()">
 													</fieldset>

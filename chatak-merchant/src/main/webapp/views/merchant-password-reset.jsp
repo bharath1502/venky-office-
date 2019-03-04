@@ -67,6 +67,7 @@
 								<div class="col-sm-12 login-elements-holder">
 
 									<fieldset class="col-sm-12">
+									<legend></legend>
 										<span class="green-error"><span style="font-weight: bold;"><spring:message code="change-password.label.note"/></span><spring:message code="change-password.label.pwdmsg1"/>
 										<br><spring:message code="change-password.label.pwdmsg2"/> 
 											<br><spring:message code="change-password.label.pwdmsg3"/><br><spring:message code="change-password.label.pwdmsg4"/></span>
@@ -81,6 +82,7 @@
 										</div>
 									</fieldset>
 									<fieldset class="col-sm-12">
+									<legend></legend>
 										<div class="input-group">
 											<span class="input-group-addon"><img
 												src="../images/pass_icon.png"></span> <input type="password"

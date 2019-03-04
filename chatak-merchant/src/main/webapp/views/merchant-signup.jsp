@@ -120,6 +120,7 @@
 												style="display: none;">
 												<fieldset class="col-sm-12">
 												<fieldset class="col-sm-12">
+												<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Merchant Type
 														<span class="required-field">*</span></label><br> 
 														<input type="radio" id="merchant" name="merchant" value="1" onclick="validateRadioMerchantButton()">Merchant
@@ -129,6 +130,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3" id="parentMerchantCodeField" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Primary Merchant Code<span class="required-field">*</span></label>
 														<input type="text" class="form-control" id="parentMerchantCode" name="" maxlength="50"
 															onblur="validParentMerchantCode('parentMerchantCode','parentMerchantCodeEr');" />
@@ -137,6 +139,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Company Name<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="businessName"
 															id="businessName" maxlength="50"
@@ -146,6 +149,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">First Name<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="firstName"
 															id="firstName" maxlength="50"
@@ -155,6 +159,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Last Name<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="lastName"
 															id="lastName" maxlength="50" onblur="validateLastName()" />
@@ -163,6 +168,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Phone<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="phone"
 															id="phone" maxlength="10" onblur="validatePhone()" />
@@ -171,6 +177,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Fax<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="fax" id="fax"
 															onkeypress="return amountValidate(this,event)"
@@ -181,6 +188,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Email ID<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="emailId"
 															id="emailId" maxlength="50" onblur="validateEmailId()" />
@@ -189,6 +197,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Address 1<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="address1"
 															id="address1" maxlength="50" onblur="validateAddress1()" />
@@ -197,6 +206,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Address 2</label>
 														<form:input cssClass="form-control" path="address2"
 															id="address2" maxlength="50" onblur="validateAddress2()" />
@@ -205,6 +215,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">City<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="city" id="city"
 															maxlength="50" onblur="validateCity()" />
@@ -213,6 +224,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Country<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="country"
 															id="country" onblur="validateCountry()"
@@ -227,6 +239,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">State<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="state"
 															id="state" onblur="validateState()">
@@ -239,6 +252,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Zip Code<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="pin" id="pin"
 															maxlength="6" onblur="validatePin()" />
@@ -247,6 +261,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3" id="hideStatusfield">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Status<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="status"
 															id="status" onblur="validateStatus()">
@@ -260,6 +275,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Business Type</label>
 														<form:select cssClass="form-control" path="businessType"
 															id="businessType">
@@ -297,6 +313,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button" class="form-control button pull-right acc-next" value="Continue">
 														<input type="button" class="form-control button pull-right marginL10" value="Reset" onclick="resetBasicInfoSignUp()">
 														<input type="button" class="form-control button pull-right marginL10" value="Cancel" onclick="cancelRegisterMerchant()">
@@ -311,6 +328,7 @@
 												style="display: none;">
 												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Name<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="bankAccountName"
 															id="bankAccountName" maxlength="50"
@@ -321,6 +339,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Bank Routing Number<span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control"
@@ -334,6 +353,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Bank Account Number<span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control"
@@ -345,6 +365,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Type<span class="required-field">*</span></label>
 														<form:select cssClass="form-control"
 															path="bankAccountType" id="bankAccountType"
@@ -358,6 +379,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Address 1<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="bankAddress1"
 															id="bankAddress1" maxlength="50"
@@ -367,6 +389,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Address 2</label>
 														<form:input cssClass="form-control" path="bankAddress2"
 															id="bankAddress2" maxlength="50"
@@ -376,6 +399,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">City<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
@@ -385,6 +409,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Country<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="bankCountry"
 															id="bankCountry"
@@ -400,6 +425,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">State<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="bankState"
 															id="bankState"
@@ -411,6 +437,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Zip Code<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="bankPin" onkeypress ="generalZipCode()"
 															id="bankPin" maxlength="7"
@@ -420,6 +447,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Name on Account<span class="required-field">*</span></label>
 														<form:input cssClass="form-control"
 															path="bankNameOnAccount" id="bankNameOnAccount"
@@ -432,6 +460,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button"
 															class="form-control button pull-right bank-next" onclick="return zipCodeNotEmpty('bankPin')"
 															value="Continue"> <input type="button"
@@ -453,6 +482,7 @@
 												<fieldset class="col-sm-12">
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">SSN<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="legalSSN"
 															onkeypress="return amountValidate(this,event)"
@@ -463,6 +493,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">First Name<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="legalFirstName"
 															id="legalFirstName" maxlength="50" onblur="return clientValidation('legalFirstName', 'first_name_NotMand','legalFirstNameErrorDiv');"/><!--  -->
@@ -471,6 +502,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Last Name<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="legalLastName"
 															id="legalLastName" maxlength="50" onblur="return clientValidation('legalLastName', 'first_name_NotMand','legalLastNameErrorDiv');"/><!--   -->
@@ -479,6 +511,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Mobile Phone<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control"
 															path="legalMobilePhone" maxlength="10"
@@ -488,6 +521,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""> Date of Birth<!-- <span class="required-field">*</span> --></label>
 														<div class="input-group focus-field">
 															<form:input cssClass="form-control effectiveDate"
@@ -502,6 +536,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Passport Number<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="legalPassport"
 															id="legalPassport" maxlength="20" onblur="return clientValidation('legalPassport', 'passport_number','legalPassportErrorDiv');"/>
@@ -511,6 +546,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Country of Residence<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control"
 															path="legalCountryResidence" id="legalCountryResidence"
@@ -522,6 +558,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Country of Citizenship<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="legalCitizen" maxlength="50"
 															id="legalCitizen" />
@@ -531,6 +568,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Home Phone<!-- <span class="required-field">*</span> --></label>
 														<form:input cssClass="form-control" path="legalHomePhone"
 															onkeypress="return amountValidate(this,event)"  maxlength="12"
@@ -544,6 +582,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button" class="form-control button pull-right legal-next" value="Continue">
 														<input type="button" class="form-control button pull-right marginL10 legal-prev" value="Previous">
 														<input type="button" class="form-control button pull-right marginL10" value="Reset" onclick="resetLegalEntityInfo()">
@@ -558,6 +597,7 @@
 												style="display: none;">
 												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Entity Legal Name<span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalName"
@@ -569,6 +609,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">EIN/Tax ID:<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalTaxId"
 															id="legalTaxId" maxlength="50"
@@ -578,6 +619,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Type<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="legalType"
 															id="legalType"
@@ -599,6 +641,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Expected Annual Card Sales<span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalAnnualCard"
@@ -610,6 +653,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Address 1<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalAddress1"
 															id="legalAddress1"
@@ -619,6 +663,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Address 2</label>
 														<form:input cssClass="form-control" path="legalAddress2"
 															id="legalAddress2"
@@ -628,6 +673,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">City<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalCity"
 															id="legalCity"
@@ -637,6 +683,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Country<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="legalCountry"
 															id="legalCountry"
@@ -652,6 +699,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">State<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="legalState"
 															id="legalState"
@@ -664,6 +712,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Zip Code<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="legalPin" onkeypress ="generalZipCode()"
 															id="legalPin"  maxlength="7"
@@ -676,6 +725,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button"
 															class="form-control button pull-right legal-rep-next" onclick="return zipCodeNotEmpty('legalPin')"
 															value="Continue"> <input type="button"
@@ -696,6 +746,7 @@
 												style="display: none;">
 												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">User Name<span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="userName"
 															id="userName" maxlength="50" onblur="vlalidateUserName()" onkeydown="validateSpace(this)"/>
@@ -708,6 +759,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button"
 															class="form-control button pull-right free-next"
 															value="Continue"> <input type="button"
@@ -728,6 +780,7 @@
 												style="display: none;">
 												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-12">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Auto settlement options<span class="required-field">*</span></label><br> 
 														<input type="radio" id="allowAutoSettlement" name="autoSettlement" value="1" onclick="validateRadio()">Yes
 														<input type="radio" id="noAutoSettlement" name="autoSettlement" value="0" onclick="validateRadio()">No
@@ -736,6 +789,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3 auto_settlement_opts" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Fee Program<span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="feeProgram"
 															id="feeProgram" onblur="validatefeeProgram()">
@@ -749,6 +803,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3 auto_settlement_opts" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Auto Transfer Limit</label>
 														<form:input cssClass="form-control" maxlength="10"
 															path="autoTransferLimit" id="autoTransferLimit"
@@ -758,6 +813,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3 auto_settlement_opts" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Auto Payment Method <span
 															class="required-field">*</span></label>
 														<form:select cssClass="form-control"
@@ -772,6 +828,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3 auto_settlement_opts" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Auto Transfer<span class="required-field">*</span></label>
 														<form:select cssClass="form-control"
 															onchange="showAutoTransferDayFields()"
@@ -787,6 +844,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3" id="weeklySettlement" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Select Day Of The Week<span class="required-field">*</span></label>
 														<form:select cssClass="form-control"
 															onblur="return clientValidation('autoTransferWeeklyDay', 'state','autoTransferWeeklyDayEr');"
@@ -803,6 +861,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3" id="monthlySettlement" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title="">Select Day Of Month<span class="required-field">*</span></label>
 														<form:select cssClass="form-control"
 															onblur="return clientValidation('autoTransferMonthlyDay', 'state','autoTransferMonthlyDayEr');"
@@ -848,6 +907,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button"
 															class="form-control button pull-right atm-next"
 															value="Continue"> <input

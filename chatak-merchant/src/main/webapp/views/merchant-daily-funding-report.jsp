@@ -97,6 +97,7 @@
 										<div class="row">
 											<div class="field-element-row">
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.fromdate" /><span class="required-field">*</span></label>
 													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="fromDate" id="fromDate" onblur="return clientValidation('fromDate', 'startDate','transFromDateErrorDiv')"
@@ -109,6 +110,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.todate" /><span class="required-field">*</span></label>
 													<div class="input-group focus-field jquery-datepicker">
 														<form:input path="toDate" onblur="return clientValidation('toDate', 'endDate','transToDateErrorDiv');"
@@ -280,6 +282,7 @@
 				<div id="my_popup" class="locatioin-list-popup" style="width: 880px;">
 					<span class="glyphicon glyphicon-remove" onclick="closePopup()"></span>
 					<fieldset class="col-sm-12 padding0">
+					<legend></legend>
 						<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="transactions-search.label.comments" /><span class="required-field">*</span></label>
 						<textarea id="comment" name="comment"
 							class="form-control textareaResize"

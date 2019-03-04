@@ -107,6 +107,7 @@
 											onclick="closePopup()"></span>
 										<fieldset class="col-sm-12 padding0">
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.creditCardType"/><span class="required-field">*</span></label>
 												<form:select id="cardType" path="creditCardType"
 													cssClass="form-control"
@@ -119,6 +120,7 @@
 												</div>
 											</fieldset>
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.cardnumber"/><span class="required-field">*</span></label>
 												<input type="text" id="cardNumber" name="cardNumber" maxlength="250" class="form-control" onkeypress="return cardnumbersonly(this,event)" onblur="return clientValidation('cardNumber', 'card_Number','cardNumber_ErrorDiv');"/>
 												<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -126,6 +128,7 @@
 												</div>
 											</fieldset>
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.expiredate"/><span class="required-field">*</span></label><br>
 													<form:select path="month" cssClass="form-control widthP30 displaiIB" id="month" onblur="return validateExpDate()">
 															<form:option value="">MM</form:option>
@@ -156,6 +159,7 @@
 												</div>
 											</fieldset>
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.nameoncard"/><span class="required-field">*</span></label>
 												<form:input id="nameOnCard" path="nameOnCard"
 													cssClass="form-control" maxlength="50"
@@ -165,6 +169,7 @@
 												</div>
 											</fieldset>
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.streetaddress"/></label>
 												<form:input path="streetAddress" maxlength="250" cssClass="form-control" onkeydown="validateSpace(this)"/>
 												<div class="discriptionErrorMsg" id="streedDivId">
@@ -172,6 +177,7 @@
 												</div>
 											</fieldset>
 											<fieldset class="col-sm-3">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.zipcode"/><span class="required-field">*</span></label>
 												<form:input id="zipCode" path="zipCode"
 													cssClass="form-control" onkeypress ="generalZipCode()"
@@ -180,7 +186,8 @@
 													<span id="zipCodeEr" class="red-error">&nbsp;</span>
 												</div>
 											</fieldset>
-											<fieldset class="col-sm-12"> 
+											<fieldset class="col-sm-12">
+											<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.streetaddress.Wouldyouliketochargetheaccountrightawayorstoreitforlateruse"/>?<span class="required-field">*</span></label><br>
 														<form:radiobutton path="immidiateCharge" id="No"  cssClass="acc-charge-radio" value="No" onblur="validateRadio('radio_err')"/><spring:message code="recurring-search.label.lateruseonly"/>
 														<form:radiobutton path="immidiateCharge" id="Yes"  cssClass="acc-charge-radio" value="Yes" onblur="validateRadio('radio_err')"/><spring:message code="recurring-search.label.chargenow"/>														
@@ -189,6 +196,7 @@
 														</div> 
 													</fieldset>
 											<fieldset class="col-sm-3 acc-charge-content" id="acc-charge-content">
+											<legend></legend>
 												<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.amount"/><span class="required-field">*</span></label> 
 													<form:input path="immidateChargeAmount" cssClass="form-control" maxlength="<%= JSPConstants.AMOUNT.toString() %>" onkeypress="return amountValidate(this,event)" id="amount" onblur="return clientValidation('amount','amount','amount_Error_Div')" />
 												<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -233,6 +241,7 @@
 											<section class="field-element-row atm-transaction-content">
 												<fieldset class="col-sm-12 padding0">
 													<fieldset>
+													<legend></legend>
 														<input type="button" class="form-control button"
 															value="<spring:message code="recurring-contract-info-edit.label.addnew"/>" onclick="openPopup()">
 													</fieldset>
@@ -291,6 +300,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button" class="form-control button pull-right atm-next" value="<spring:message code="sub-merchant-create.label.continue"/>" onclick="formSubmit()">
 														<input type="button" class="form-control button pull-right" value="<spring:message code="merchant-forgot-password.label.cancel"/>" onclick="return cancel()">
 													</fieldset>

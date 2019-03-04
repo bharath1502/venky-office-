@@ -1,6 +1,8 @@
 package com.chatak.acquirer.admin.model;
 
-public class MerchantCreateResponse {
+import java.io.Serializable;
+
+public class MerchantCreateResponse implements Serializable {
 	
 	private Long id;
 

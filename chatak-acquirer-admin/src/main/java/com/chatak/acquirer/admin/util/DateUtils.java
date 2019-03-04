@@ -263,8 +263,9 @@ public class DateUtils {
 				else if(timestamp!=null && !timestamp.before(currentDate)) {
 					
 					validFlag = false;
-				} else
+				} else {
 					validFlag = validateEndDate(startDate, endDate , currentDate);
+				}
 			}
 		}
 		catch(Exception exp) {

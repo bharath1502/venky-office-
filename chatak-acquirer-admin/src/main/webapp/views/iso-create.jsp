@@ -87,7 +87,7 @@
 													<label><spring:message
 															code="admin.program.manager.list" /><span
 														class="required-field">*</span></label>
-													<form:select cssClass="form-control" id="programManagerId" onblur="clientValidation('programManagerName','program_manager_name','isoPmerrormsg')"
+													<form:select cssClass="form-control" id="programManagerId" onblur="clientValidation('programManagerId','partner_name_dropdown','isoPmerrormsg')"
 														path="programManagerRequest.programManagerId">
 														<form:option value="">
 															<spring:message code="iso-create.currency.label.select" />

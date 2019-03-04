@@ -89,11 +89,11 @@ var chataPay = function() {
 
 	CHATAKPG.CardType = function(n, type, cardNumberValidate) {
 		var n = $('input#number' + type).val();
-		cardNumber = $('#number' + type).val();
-		cardName = $('#name' + type).val();
-		cvvNo = $('#code' + type);
-		cardMonth = $('#month' + type).val();
-		cardYear = $('#year' + type).val();
+		var cardNumber = $('#number' + type).val();
+		var cardName = $('#name' + type).val();
+		var cvvNo = $('#code' + type);
+		var cardMonth = $('#month' + type).val();
+		var cardYear = $('#year' + type).val();
 
 		// Function to Validation Cards Number and get Cards Type
 		var tmplen = n.split("-").join("").substring(0, 6); // tmplen stores
@@ -385,7 +385,7 @@ $(document).ready(
 		});
 
 for ( var k = 0; k < 21; k++) {
-	year += 1;
+	 year += 1;
 	var shortYr = (year + '').substring(2, year.length);
 	$("#yeardebit").append(
 			"<option value='" + shortYr + "'>" + year + "</option>");
@@ -431,3 +431,4 @@ function CheckIdleTime() {
 	if (_idleSecondsCounter >= IDLE_TIMEOUT) {
 		document.location.href = contextPath + "/pg/session-expired";
 	}
+}

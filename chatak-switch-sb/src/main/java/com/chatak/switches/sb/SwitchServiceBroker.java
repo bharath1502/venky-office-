@@ -85,6 +85,9 @@ public class SwitchServiceBroker extends TransactionService {
 
   @Autowired
   RefundTransactionDao refundTransactionDao;
+  
+  @Autowired
+  TransactionRepository transactionRepository;
 
   BINUpstreamRouter binUpstreamRouter;
 
@@ -95,21 +98,6 @@ public class SwitchServiceBroker extends TransactionService {
         SpringDAOBeanFactory.getSpringContext().getAutowireCapableBeanFactory();
     acbFactory.autowireBean(this);
   }
-
-  @Autowired
-  MerchantDao merchantDao;
-
-  @Autowired
-  AccountFeeLogDao accountFeeLogDao;
-
-  @Autowired
-  CurrencyConfigDao currencyConfigDao;
-
-  @Autowired
-  TransactionRepository transactionRepository;
-  
-  @Autowired
-  MerchantUpdateDao merchantUpdateDao;
 
   /**
    * Method to Authorise a payment transaction Steps involved 1. Validate

@@ -4,7 +4,6 @@
 package com.chatak.pg.emv.util;
 
 import java.io.Serializable;
-
 import com.chatak.pg.exception.InvalidEMVDataFormatException;
 import com.chatak.pg.util.StringUtils;
 

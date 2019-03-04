@@ -362,8 +362,7 @@ public class LoginController implements URLMappingConstants {
     modelAndView.addObject(Constants.ERROR, StringUtil.isNullEmpty(loginResponse.getMessage())
         ? loginResponse.getErrorMessage() : loginResponse.getMessage());
 
-    if (loginResponse.getErrorMessage() == Properties
-        .getProperty("chatak.merchant.login.password.expiration.error.message")) {
+    if (loginResponse.getErrorMessage().equals(Properties.getProperty("chatak.merchant.login.password.expiration.error.message"))){
       session.setAttribute(Constants.LOING_USER_ID, loginResponse.getUserId());
       modelAndView = changePassword(model, session);
       modelAndView.addObject(Constants.ERROR,

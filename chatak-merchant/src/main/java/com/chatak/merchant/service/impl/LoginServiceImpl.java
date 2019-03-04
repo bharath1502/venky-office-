@@ -135,7 +135,7 @@ public class LoginServiceImpl implements LoginService {
       merchantUserDao.createOrUpdateUser(merchantUsers);
 
       // Process existing user
-      if (merchantUsers.getStatus() == PGConstants.STATUS_SUCCESS) {
+      if (merchantUsers.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
 
         merchantEmailVerified(loginResponse, merchantUsers);
       } else {

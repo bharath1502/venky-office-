@@ -448,12 +448,12 @@ function debug(title, msgObj) {
 /**
  * Ajax related functions
  */
-HTTP_METHOD = {
+var HTTP_METHOD = {
 	POST : "POST",
 	GET : "GET"
 };
 
-CONTENT_TYPE = {
+var CONTENT_TYPE = {
 	APP_JSON : "application/json",
 	JSON : "json"
 };

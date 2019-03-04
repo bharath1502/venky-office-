@@ -1559,7 +1559,7 @@ function specialchar(data,div_id)  {
 	
 	/*Edit bin page validation*/
 	function editBinValidation() {
-		flag = true;
+		var flag = true;
 		if (!clientValidation('schema','bin_payment_schema_dropdown','schemaerrormsg')
 				| !clientValidation('partnerName','bin_partner_name','partnernameerrormsg')
 				| !clientValidation('effectiveDate','bin_date','dateerrormsg')) {

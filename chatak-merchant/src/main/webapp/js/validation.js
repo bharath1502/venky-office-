@@ -1389,7 +1389,7 @@ function isValidCharsExtendedWithSpace(val) {
 
 /* Create bin page validation */
 function createBinValidation() {
-	flag = true;
+	var flag = true;
 	if (!clientValidation('bin', 'bin', 'binerrormsg')
 			| !clientValidation('bankId', 'bin_bank_dropdown', 'bankerrormsg')
 			| !clientValidation('schema', 'bin_payment_schema_dropdown',
@@ -1429,7 +1429,7 @@ function validateEffectiveDate() {
 
 /* Edit bin page validation */
 function editBinValidation() {
-	flag = true;
+	var flag = true;
 	if (!clientValidation('schema', 'bin_payment_schema_dropdown',
 			'schemaerrormsg')
 			| !clientValidation('partnerName', 'bin_partner_name',

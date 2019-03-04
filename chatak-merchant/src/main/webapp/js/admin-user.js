@@ -226,7 +226,7 @@ function doAjaxFetchMailIdAvailable() {
 			var obj = JSON.parse(response);
 			if (obj.errorCode === '00') {
 				setError(get('emailId'), '');
-				usernameFlag = false;
+  				var usernameFlag = false;
 			} else {
 				setError(get('emailId'), 'Email id already in use');
 				usernameFlag = true;

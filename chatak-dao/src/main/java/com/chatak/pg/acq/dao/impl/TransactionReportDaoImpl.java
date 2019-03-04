@@ -592,9 +592,8 @@ private void statusMsgValidation(List<ReportsDTO> reportList, ReportsDTO transac
       return QPGAccountFeeLog.pGAccountFeeLog.feeTxnDate.lt(toDate);
     } else if ((fromDate == null)) {
       return null;
-    }
-    else {
-    return QPGAccountFeeLog.pGAccountFeeLog.feeTxnDate.between(fromDate, toDate);
+    } else {
+      return QPGAccountFeeLog.pGAccountFeeLog.feeTxnDate.between(fromDate, toDate);
     }
   }
 

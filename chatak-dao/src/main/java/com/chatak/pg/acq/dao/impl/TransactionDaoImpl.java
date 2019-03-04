@@ -366,9 +366,8 @@ public class TransactionDaoImpl implements TransactionDao {
       return QPGTransaction.pGTransaction.createdDate.lt(toDate);
     } else if ((fromDate == null)) {
       return null;
-    }
-    else {
-    return QPGTransaction.pGTransaction.createdDate.between(fromDate, toDate);
+    } else {
+      return QPGTransaction.pGTransaction.createdDate.between(fromDate, toDate);
     }
   }
 

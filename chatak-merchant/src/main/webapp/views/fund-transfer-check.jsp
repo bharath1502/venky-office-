@@ -91,6 +91,7 @@
 													<span class="breadcrumb-text"><spring:message code="fund-transfer-check.label.debitfromaccount"/></span>
 												</div>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.account"/>:</label>
 													<form:input path="debitAccount.accountNumber"
 														readonly="true" />
@@ -99,6 +100,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.availablebalance"/>:</label>
 													<%-- <form:input path="debitAccount.avaliableBalance" /> --%>
 													<form:input cssClass="tbl-text-align-right" path="debitAccount.avaliableBalance"
@@ -109,6 +111,7 @@
 												</fieldset>
 												<form:hidden path="debitAccount.accountType"/>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.accounttype"/> :</label>
 													<form:input path="debitAccount.accountTypeValue" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -125,6 +128,7 @@
 													<span class="breadcrumb-text"><spring:message code="fund-transfer-check.label.checkbeneficiary"/></span>
 												</div>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.beneficiaryname"/>:</label>
 													<form:input path="checkBeneficiary.beneficiaryName"
 														readonly="true" />
@@ -133,6 +137,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.address"/>:</label>
 													<form:input path="checkBeneficiary.address1"
 														readonly="true" />
@@ -141,6 +146,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.address2"/>:</label>
 													<form:input path="checkBeneficiary.address2"
 														readonly="true" />
@@ -149,6 +155,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.city"/>:</label>
 													<form:input path="checkBeneficiary.city" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -156,6 +163,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.state"/>:</label>
 													<form:input path="checkBeneficiary.state" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -163,6 +171,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.zipcode"/>:</label>
 													<form:input path="checkBeneficiary.zip" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -170,6 +179,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.country"/>:</label>
 													<form:input path="checkBeneficiary.country" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -184,6 +194,7 @@
 															<span class="breadcrumb-text"><spring:message code="fund-transfer-check.label.transactiondetails"/></span>
 														</div>
 														<fieldset class="col-sm-3">
+														<legend></legend>
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.enteramttotransfer"/> :<span class="required-field">*</span></label>
 															<form:input cssClass="tbl-text-align-right" path="amountToTransfer" id="amountToTransfer"
 																onkeypress="return amountValidate(this,event)"
@@ -205,6 +216,7 @@
 									<!-- Page Form End -->
 									<div class="col-sm-12 button-content" id="submitUpdate">
 										<fieldset class="col-sm-7 pull-right">
+										<legend></legend>
 											<input type="submit"
 												onclick="return clientValidation('amountToTransfer', 'amount_new','amountToTransferEr');"
 												class="form-control button pull-right pos-next"
@@ -225,12 +237,14 @@
 								<!--Panel Action Button End -->
 								<div class="col-sm-12 button-content" id="myEdit">
 									<fieldset class="col-sm-7 pull-right">
+									<legend></legend>
 										<!-- <input type="button"
 											class="form-control button pull-right pos-next" value="Edit"> -->
 										<!-- <input type="button" class="form-control button pull-right"
 											value="Back" onclick="return backTodashBoard();"> -->
 									</fieldset>
 									<fieldset>
+									<legend></legend>
 										<div class="col-sm-7 pull-right"></div>
 									</fieldset>
 								</div>

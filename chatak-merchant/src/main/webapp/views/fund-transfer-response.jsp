@@ -88,6 +88,7 @@
 													<span class="breadcrumb-text"><spring:message code="fund-transfer-eft.label.debitfromaccount"/></span>
 												</div>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.account"/>:<span class="required-field">*</span></label>
 													<form:input path="debitAccount.accountNumber"
 														readonly="true" />
@@ -96,6 +97,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.availablebalance"/>:<span
 														class="required-field">*</span></label>
 													<%-- <form:input path="debitAccount.avaliableBalance" /> --%>
@@ -107,6 +109,7 @@
 												</fieldset>
 												<form:hidden path="debitAccount.accountType"/>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.accounttype"/> :<span class="required-field">*</span></label>
 													<form:input path="debitAccount.accountTypeValue" readonly="true" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -125,6 +128,7 @@
 															account</span>
 													</div>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.account"/> :<span
 															class="required-field">*</span></label>
 														<form:input path="creditAccount.accountNumber" />
@@ -133,6 +137,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.bankname"/> :<span class="required-field">*</span></label>
 														<form:input path="creditAccount.bankName" readonly="true" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -140,6 +145,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.address"/> :<span class="required-field">*</span></label>
 														<form:input path="creditAccount.address" readonly="true" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -147,6 +153,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.city"/> :<span class="required-field">*</span></label>
 														<form:input path="creditAccount.city" readonly="true" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -154,6 +161,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.state"/> :<span class="required-field">*</span></label>
 														<form:input path="creditAccount.state" readonly="true" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -161,6 +169,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.accounttype"/> :<span class="required-field">*</span></label>
 														<form:input path="creditAccount.accountType"
 															readonly="true" />
@@ -169,6 +178,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.bankroutingnumber"/> :<span
 															class="required-field">*</span></label>
 														<form:input path="creditAccount.bankRoutingNumber"
@@ -178,6 +188,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.bankroutingnumber"/> :<span
 															class="required-field">*</span></label>
 														<%-- <form:input path="creditAccount.accountNumber" readonly="true"/> --%>
@@ -188,6 +199,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.nameonaccount"/> :<span
 															class="required-field">*</span></label>
 														<form:input path="creditAccount.nameOnAcccount"
@@ -206,6 +218,7 @@
 																<span class="breadcrumb-text"><spring:message code="fund-transfer-check.label.checkbeneficiary"/></span>
 															</div>
 															<fieldset class="col-sm-3">
+															<legend></legend>
 																<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.beneficiaryname"/>:<span
 																	class="required-field">*</span></label>
 																<form:input path="checkBeneficiary.beneficiaryName" />
@@ -214,6 +227,7 @@
 																</div>
 															</fieldset>
 															<fieldset class="col-sm-3">
+															<legend></legend>
 																<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.address"/>:<span class="required-field">*</span></label>
 																<form:input path="checkBeneficiary.address1"
 																	readonly="true" />
@@ -222,6 +236,7 @@
 																</div>
 															</fieldset>
 															<fieldset class="col-sm-3">
+															<legend></legend>
 																<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.address2"/>:<span
 																	class="required-field">*</span></label>
 																<form:input path="checkBeneficiary.address2"
@@ -231,6 +246,7 @@
 																</div>
 															</fieldset>
 															<fieldset class="col-sm-3">
+															<legend></legend>
 																<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.city"/> :<span class="required-field">*</span></label>
 																<form:input path="checkBeneficiary.city" readonly="true" />
 																<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -238,6 +254,7 @@
 																</div>
 															</fieldset>
 															<fieldset class="col-sm-3">
+															<legend></legend>
 																<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-eft.label.state"/>  :<span class="required-field">*</span></label>
 																<form:input path="checkBeneficiary.state"
 																	readonly="true" />
@@ -246,6 +263,7 @@
 																</div>
 															</fieldset>
 															<fieldset class="col-sm-3">
+															<legend></legend>
 																<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.zipcode"/>:<span
 																	class="required-field">*</span></label>
 																<form:input path="checkBeneficiary.zip" readonly="true" />
@@ -254,6 +272,7 @@
 																</div>
 															</fieldset>
 															<fieldset class="col-sm-3">
+															<legend></legend>
 																<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fund-transfer-check.label.country"/>:<span class="required-field">*</span></label>
 																<form:input path="checkBeneficiary.country"
 																	readonly="true" />
@@ -270,6 +289,7 @@
 																	<span class="breadcrumb-text"><spring:message code="fund-transfer-check.label.transactiondetails"/></span>
 																</div>
 																<fieldset class="col-sm-3">
+																<legend></legend>
 																	<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.amount"/> :<span class="required-field">*</span></label>
 																	<form:input path="amountToTransfer" readonly="true" />
 																	<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -291,8 +311,11 @@
 										</div>
 										<!--Panel Action Button End -->
 										<div class="col-sm-12 button-content" id="myEdit">
-											<fieldset class="col-sm-7 pull-right"></fieldset>
+											<fieldset class="col-sm-7 pull-right">
+											<legend></legend>
+											</fieldset>
 											<fieldset>
+											<legend></legend>	
 												<div class="col-sm-7 pull-right"></div>
 											</fieldset>
 										</div>
@@ -300,6 +323,7 @@
 						</form:form>
 						<div class="col-sm-12 button-content" id="submitUpdate">
 							<fieldset class="col-sm-7 pull-right">
+							<legend></legend>
 								<div>
 									<input type="button" class="form-control button pull-right"
 										value="<spring:message code="fund-transfer-eft.label.cancelbutton"/>" onclick="return backTodashBoard();">

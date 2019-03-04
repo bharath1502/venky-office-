@@ -7,6 +7,7 @@
 	<section class="field-element-row atm-transaction-content" style="display:none;">
 												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.processor"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="processor"
 															id="processor" onblur="validateProcessor()">
@@ -20,6 +21,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.merchantcallbackURL"/></label>
 														<form:input cssClass="form-control"
 															path="merchantCallBackURL" id="merchantCallBackURL" maxlength="50"
@@ -29,6 +31,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.category"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="category"
 															id="category" onblur="validateCategory()" disabled="true">
@@ -41,6 +44,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.autotransferlimit"/></label>
 														<form:input cssClass="form-control" maxlength="10"
 															path="autoTransferLimit" id="autoTransferLimit"
@@ -51,6 +55,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.autopaymentmethod"/> <span
 															class="required-field">*</span></label>
 														<form:select cssClass="form-control"
@@ -66,6 +71,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferperiod"/></label>
 														<form:select cssClass="form-control" onchange="showAutoTransferDayFields()"
 															path="autoTransferDay" id="autoTransferDay">
@@ -79,6 +85,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3" id="weeklySettlement" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.selectdayoftheweek"/></label>
 														<form:select cssClass="form-control" onblur="return clientValidation('autoTransferWeeklyDay', 'state','autoTransferWeeklyDayEr');"
 															path="autoTransferWeeklyDay" id="autoTransferWeeklyDay">
@@ -95,6 +102,7 @@
 													</fieldset>
 													
 													<fieldset class="col-sm-3" id="monthlySettlement" style="display: none;">
+													<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.selectdayOfmonth"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" onblur="return clientValidation('autoTransferMonthlyDay', 'state','autoTransferMonthlyDayEr');"
 															path="autoTransferMonthlyDay" id="autoTransferMonthlyDay">
@@ -137,6 +145,7 @@
 													</fieldset>
 													
 													<fieldset class="col-sm-3" id="vantivMerchantId" style="display: none;">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.vantivmerchantid"/> <span class="required-field">*</span></label>
 														<form:input cssClass="form-control" maxlength="50"
 															path="litleMID" id="litleMID"
@@ -151,6 +160,7 @@
 												<fieldset class="col-sm-12" id="issuanceAgentSettings">
 													<fieldset class="col-sm-12 padding0 border-style-section">
 														<fieldset class="col-sm-12">
+														<legend></legend>
 															<div class="container-heading-separator">
 																<span><spring:message code="merchant.label.issuer.agent.configuration"/></span>
 															</div>
@@ -158,6 +168,7 @@
 															<div class="row">
 																<div class="field-element-row">
 																	<fieldset class="col-sm-3">
+																	 <legend></legend>
 																		<label data-toggle="tooltip" data-placement="top" title="">
 																			<spring:message code="common.label.agentName"/>
 																			<!-- <span class="required-field">*</span> -->
@@ -175,6 +186,7 @@
 																		</div>
 																	</fieldset>
 																	<fieldset class="col-sm-4">
+																	 <legend></legend>
 																		<label  data-toggle="tooltip" data-placement="top" title="">
 																		<spring:message code="merchant.label.issuer.agent.accnumber"/></label>
 																		<form:input cssClass="form-control" maxlength="19"  onkeypress="return numbersonly(this,event)"
@@ -186,6 +198,7 @@
 																		
 																	</fieldset>
 																	<fieldset class="col-sm-4">
+																	 <legend></legend>
 																		<label  data-toggle="tooltip" data-placement="top" title="">
 																		<spring:message code="merchant.label.issuer.agent.clientid"/></label>
 																		<form:input cssClass="form-control" maxlength="20"  onkeypress="return numbersonly(this,event)"
@@ -197,6 +210,7 @@
 																		
 																	</fieldset>
 																	<fieldset class="col-sm-4">
+																	 <legend></legend>
 																		<label  data-toggle="tooltip" data-placement="top" title="">
 																		<spring:message code="merchant.label.issuer.agent.ani"/></label>
 																		<form:input cssClass="form-control" maxlength="20"  onkeypress="return numbersonly(this,event)"
@@ -222,18 +236,21 @@
 														<fieldset class="col-sm-12" id="">
 														<fieldset class="col-sm-12 padding0 border-style-section">
 															<fieldset class="col-sm-12">
+															 <legend></legend>
 																<div class="container-heading-separator">
 																	<span><spring:message code="configurations.label.supportterminals"/></span>
 																</div>
 																<div class="row">
 																	<div class="field-element-row">
 																		<fieldset class="col-sm-12">
+																		 <legend></legend>
 																			<form:checkbox path="virtualTerminal" id="virtualTerminal" value="0"
 																				onclick="validateVirtualTerminal()" />
 																			<spring:message code="configurations.label.virtualterminaloptions"/><br>
 
 																			<fieldset id="virtualTerminalOptions"
 																				style="display: none;">
+																				 <legend></legend>
 
 																				<form:checkbox path="refunds" id="refunds" value="0"
 																					onclick="validateCheckBox()" />
@@ -267,11 +284,13 @@
 																		</fieldset> --%>
 																		<br>
 																		<fieldset class="col-sm-12">
+																		 <legend></legend>
 																			<form:checkbox path="online" id="online" value="0" onclick="validateOnlineOptions()" />
 																			<spring:message code="configurations.label.online"/>
 																			
 																			<fieldset id="onlineOptions" style="display: none;">
 																				<fieldset class="col-sm-3">
+																				 <legend></legend>
 																					<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.websiteaddress"/><span
 																						class="required-field">*</span></label>
 																					<form:input cssClass="form-control validate"
@@ -283,6 +302,7 @@
 																				</fieldset>
 																				
 																				<fieldset class="col-sm-3">
+																				 <legend></legend>
 																					<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.returnURL"/><span
 																						class="required-field">*</span></label>
 																					<form:input cssClass="form-control validate"
@@ -295,6 +315,7 @@
 																				</fieldset>
 
 																				<fieldset class="col-sm-3">
+																				 <legend></legend>
 																					<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.cancelURL"/><span
 																						class="required-field">*</span></label>
 																					<form:input cssClass="form-control validate"
@@ -330,12 +351,14 @@
 														</div>
 													</fieldset> --%>
 													<fieldset class="col-sm-3" style="display: none;">
+													 <legend></legend>
 														<form:input cssClass="form-control" path="issuancePartnerId" id="issuancePartnerId" />
 														<form:input cssClass="form-control" path="programManagerId" id="programManagerId" />
 													</fieldset>
 												</fieldset>
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													 <legend></legend>
 														<input type="button"
 															class="form-control button pull-right atm-next"
 															value="<spring:message code="sub-merchant-create.label.continue"/>" onclick="validateRadio();"> <input

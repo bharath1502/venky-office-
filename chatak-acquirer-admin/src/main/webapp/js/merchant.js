@@ -2719,7 +2719,7 @@ function validateCreateSubMerchantStep1() {
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
 			| !validatePhone() | !validateAddress1() | !validateCity() | !validateEmailId()
 			| !validateState() | !validateCountry() | !validatePin()
-			| !validateAppMode() | !validateURL() | !validateParentMerchantId() |!vlalidateUserName() |!createValidationForBasicInfo()) {
+			| !validateParentMerchantId() |!vlalidateUserName() |!createValidationForBasicInfo()) {
 		return false;
 	} else {
 		var faxValue = getVal('fax').trim();

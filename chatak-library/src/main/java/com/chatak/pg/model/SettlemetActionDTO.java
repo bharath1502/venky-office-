@@ -1,9 +1,11 @@
 package com.chatak.pg.model;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties
-public class SettlemetActionDTO {
+public class SettlemetActionDTO implements Serializable {
 	
 	
 	private String merchantId;

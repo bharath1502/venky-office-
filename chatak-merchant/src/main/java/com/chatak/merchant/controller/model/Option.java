@@ -3,6 +3,8 @@
  */
 package com.chatak.merchant.controller.model;
 
+import java.io.Serializable;
+
 /**
  * << Add Comments Here >>
  * 
@@ -10,7 +12,7 @@ package com.chatak.merchant.controller.model;
  * @date 08-Jan-2015 12:00:44 AM
  * @version 1.0
  */
-public class Option {
+public class Option implements Serializable {
   
   private String value;
 

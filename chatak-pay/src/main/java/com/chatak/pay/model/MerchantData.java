@@ -3,6 +3,7 @@
  */
 package com.chatak.pay.model;
 
+import java.io.Serializable;
 
 /**
  *
@@ -12,7 +13,7 @@ package com.chatak.pay.model;
  * @date 03-Jan-2015 3:49:50 PM
  * @version 1.0
  */
-public class MerchantData {
+public class MerchantData implements Serializable {
 
   private Long id;
   

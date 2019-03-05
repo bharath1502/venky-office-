@@ -19,9 +19,9 @@ public class AjaxResponseCAPublicKeys extends Response{
 	
 	private String terminalId;
 	
-	List<CAPublicKeysDTO> existingCAPublicKeys;
+	private List<CAPublicKeysDTO> existingCAPublicKeys;
 	
-	List<CAPublicKeysDTO> availableCAPublicKeys;
+	private List<CAPublicKeysDTO> availableCAPublicKeys;
 
 	/**
 	 * @return the deviceManagementId

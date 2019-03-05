@@ -22,7 +22,7 @@ public class GetMerchantCategoryCodeListResponse extends Response {
 	 */
 	private static final long serialVersionUID = -9125312387667437774L;
 
-	private List<PGMerchantCategoryCode> pgMCC;
+	private transient List<PGMerchantCategoryCode> pgMCC;
 
 	private Integer noOfRecords;
 

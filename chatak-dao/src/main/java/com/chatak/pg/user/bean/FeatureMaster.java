@@ -1,7 +1,8 @@
 package com.chatak.pg.user.bean;
 
+import java.io.Serializable;
 
-public class FeatureMaster {
+public class FeatureMaster implements Serializable{
 	
 	private Integer feature_id;
 	private String feature_name;

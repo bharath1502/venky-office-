@@ -1,6 +1,8 @@
 package com.chatak.merchant.model;
 
-public class Terminals {
+import java.io.Serializable;
+
+public class Terminals implements Serializable {
 
   private Long merchantId;
   

@@ -1,7 +1,8 @@
 package com.chatak.pg.user.bean;
 
+import java.io.Serializable;
 
-public class Store {
+public class Store implements Serializable {
 
 	private Long merchant_code;
 	private String store_name;

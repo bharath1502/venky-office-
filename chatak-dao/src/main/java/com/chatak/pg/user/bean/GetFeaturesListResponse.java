@@ -4,7 +4,7 @@ import java.util.List;
 
 public class GetFeaturesListResponse extends Response{
 
-	private List<Feature> feature_list;
+	private transient List<Feature> feature_list;
 
 	/**
 	 * @return the feature_list

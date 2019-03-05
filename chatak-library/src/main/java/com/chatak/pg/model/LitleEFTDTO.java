@@ -1,10 +1,11 @@
 package com.chatak.pg.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import com.chatak.pg.bean.TransactionPopUpDataDto;
 
-public class LitleEFTDTO {
+public class LitleEFTDTO implements Serializable {
 	
 	private String merchantCode;
 	

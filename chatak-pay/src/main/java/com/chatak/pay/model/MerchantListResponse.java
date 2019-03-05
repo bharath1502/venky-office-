@@ -12,7 +12,7 @@ public class MerchantListResponse extends Response {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	List<Merchant> merchants;
+	private List<Merchant> merchants;
 
 	/**
 	 * @return the merchants

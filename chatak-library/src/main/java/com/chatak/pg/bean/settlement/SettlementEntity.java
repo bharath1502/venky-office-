@@ -1,9 +1,10 @@
 package com.chatak.pg.bean.settlement;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class SettlementEntity {
+public class SettlementEntity implements Serializable {
 
   private String merchantId;
   

@@ -13,7 +13,7 @@ public class GetRoleOnRoleLevelResponse extends Response implements Serializable
 	 */
 	private static final long serialVersionUID = -21891352926347309L;
 
-	private List<PGUserRoles> userRoleList;
+	private transient List<PGUserRoles> userRoleList;
 	/**
 	 * @return the userRoleList
 	 */

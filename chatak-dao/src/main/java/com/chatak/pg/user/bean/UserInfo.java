@@ -1,9 +1,10 @@
 package com.chatak.pg.user.bean;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 
-public class UserInfo {
+public class UserInfo implements Serializable {
 	
 	private Long profile_id;
 	private String middle_name;

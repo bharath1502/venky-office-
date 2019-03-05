@@ -48,10 +48,12 @@ public class PGTransactionCategoryCode extends SearchRequest implements
 	@Column(name = "CREATED_BY")
 	private String createdBy;
 
+	@Override
 	public Long getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -72,18 +74,22 @@ public class PGTransactionCategoryCode extends SearchRequest implements
 		this.description = description;
 	}
 
+	@Override
 	public Timestamp getCreatedDate() {
 		return createdDate;
 	}
 
+	@Override
 	public void setCreatedDate(Timestamp createdDate) {
 		this.createdDate = createdDate;
 	}
 
+	@Override
 	public String getCreatedBy() {
 		return createdBy;
 	}
 
+	@Override
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}

@@ -36,10 +36,12 @@ public class TransactionRequest extends Request implements Serializable{
   
   private String merchantCode;
 
+  @Override
   public String getMerchantCode() {
     return merchantCode;
   }
 
+  @Override
   public void setMerchantCode(String merchantCode) {
     this.merchantCode = merchantCode;
   }
@@ -187,18 +189,22 @@ public class TransactionRequest extends Request implements Serializable{
     this.accountTransactionId = accountTransactionId;
   }
 
+  @Override
   public String getTimeZoneOffset() {
     return timeZoneOffset;
   }
 
+  @Override
   public void setTimeZoneOffset(String timeZoneOffset) {
     this.timeZoneOffset = timeZoneOffset;
   }
 
+  @Override
   public String getTimeZoneRegion() {
     return timeZoneRegion;
   }
 
+  @Override
   public void setTimeZoneRegion(String timeZoneRegion) {
     this.timeZoneRegion = timeZoneRegion;
   }

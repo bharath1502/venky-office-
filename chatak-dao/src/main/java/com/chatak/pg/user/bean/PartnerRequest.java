@@ -125,6 +125,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
   /**
    * @return the partnerId
    */
+  @Override
   public Long getPartnerId() {
     return partnerId;
   }
@@ -141,6 +142,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
    * @param partnerId
    *          the partnerId to set
    */
+  @Override
   public void setPartnerId(Long partnerId) {
     this.partnerId = partnerId;
   }
@@ -148,6 +150,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
   /**
    * @return the partnerName
    */
+  @Override
   public String getPartnerName() {
     return partnerName;
   }
@@ -156,6 +159,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
    * @param partnerName
    *          the partnerName to set
    */
+  @Override
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
   }
@@ -388,6 +392,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
   /**
    * @return the createdDate
    */
+  @Override
   public Timestamp getCreatedDate() {
     return createdDate;
   }
@@ -396,6 +401,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
    * @param createdDate
    *          the createdDate to set
    */
+  @Override
   public void setCreatedDate(Timestamp createdDate) {
     this.createdDate = createdDate;
   }
@@ -403,6 +409,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
   /**
    * @return the updatedDate
    */
+  @Override
   public Timestamp getUpdatedDate() {
     return updatedDate;
   }
@@ -411,6 +418,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
    * @param updatedDate
    *          the updatedDate to set
    */
+  @Override
   public void setUpdatedDate(Timestamp updatedDate) {
     this.updatedDate = updatedDate;
   }
@@ -448,6 +456,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
   /**
    * @return the reason
    */
+  @Override
   public String getReason() {
     return reason;
   }
@@ -456,6 +465,7 @@ public class PartnerRequest extends SearchRequest implements Serializable {
    * @param reason
    *          the reason to set
    */
+  @Override
   public void setReason(String reason) {
     this.reason = reason;
   }
@@ -688,10 +698,12 @@ public class PartnerRequest extends SearchRequest implements Serializable {
     this.accountCurrency = accountCurrency;
   }
 
+  @Override
   public String getCurrencyCodeAlpha() {
     return currencyCodeAlpha;
   }
 
+  @Override
   public void setCurrencyCodeAlpha(String currencyCodeAlpha) {
     this.currencyCodeAlpha = currencyCodeAlpha;
   }

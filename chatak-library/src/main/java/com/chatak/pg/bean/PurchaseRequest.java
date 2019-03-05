@@ -20,50 +20,58 @@ public class PurchaseRequest extends Request implements Serializable {
 	/**
 	 * @return the txnAmount
 	 */
+	@Override
 	public Long getTxnAmount() {
 		return txnAmount;
 	}
 	/**
 	 * @param txnAmount the txnAmount to set
 	 */
+	@Override
 	public void setTxnAmount(Long txnAmount) {
 		this.txnAmount = txnAmount;
 	}
   /**
    * @return the emvData
    */
-  public EMVData getEmvData() {
+	@Override
+	public EMVData getEmvData() {
     return emvData;
   }
   /**
    * @param emvData the emvData to set
    */
-  public void setEmvData(EMVData emvData) {
+	@Override
+	public void setEmvData(EMVData emvData) {
     this.emvData = emvData;
   }
 /**
  * @return the totalTxnAmount
  */
-public Long getTotalTxnAmount() {
+	@Override
+ public Long getTotalTxnAmount() {
 	return totalTxnAmount;
-}
+ }
 /**
  * @param totalTxnAmount the totalTxnAmount to set
  */
-public void setTotalTxnAmount(Long totalTxnAmount) {
+	@Override
+ public void setTotalTxnAmount(Long totalTxnAmount) {
 	this.totalTxnAmount = totalTxnAmount;
-}
+ }
 /**
  * @return the txnFee
  */
-public Long getTxnFee() {
-	return txnFee;
-}
+	@Override
+	public Long getTxnFee() {
+	 return txnFee;
+  }
 /**
  * @param txnFee the txnFee to set
  */
-public void setTxnFee(Long txnFee) {
-	this.txnFee = txnFee;
-}
+	@Override 
+	public void setTxnFee(Long txnFee) {
+	 this.txnFee = txnFee;
+  }
 	
 }

@@ -3,6 +3,7 @@
  */
 package com.chatak.pay.controller.model;
 
+import java.io.Serializable;
 
 /**
  *
@@ -12,7 +13,7 @@ package com.chatak.pay.controller.model;
  * @date Jun 6, 2015 1:19:57 PM
  * @version 1.0
  */
-public class SplitTxnData {
+public class SplitTxnData implements Serializable {
   
   private Long splitAmount;
   private String refMaskedPAN;//Not using as refMobile number used for split transaction completion 

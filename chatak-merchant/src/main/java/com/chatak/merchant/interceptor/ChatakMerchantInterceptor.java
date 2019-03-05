@@ -27,7 +27,7 @@ public class ChatakMerchantInterceptor extends HandlerInterceptorAdapter impleme
   private static final long serialVersionUID = -5306853636280146748L;
   private static Logger logger = Logger.getLogger(ChatakMerchantInterceptor.class);
   @Autowired
-  private SessionRegistryImpl sessionRegistry;
+  private transient SessionRegistryImpl sessionRegistry;
 
   public boolean preHandle(javax.servlet.http.HttpServletRequest request,
       javax.servlet.http.HttpServletResponse response, java.lang.Object object)

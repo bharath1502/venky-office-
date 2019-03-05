@@ -16,7 +16,7 @@ public class PrepaidAdminException extends PrepaidException {
 
   private String httpStatusCode;
 
-  private List<Object> errorParams;
+  private transient List<Object> errorParams;
 
   public PrepaidAdminException(Exception ex, String httpStatusCode, String message, String reason, String errorCode) {
     initCause(ex);

@@ -3,6 +3,8 @@
  */
 package com.chatak.merchant.model;
 
+import java.io.Serializable;
+
 /**
  * << Add Comments Here >>
  *
@@ -10,7 +12,7 @@ package com.chatak.merchant.model;
  * @date 03-Jan-2015 3:49:50 PM
  * @version 1.0
  */
-public class MerchantData {
+public class MerchantData implements Serializable {
 
   private Long id;
 

@@ -3,6 +3,8 @@
  */
 package com.chatak.pg.user.bean;
 
+import java.io.Serializable;
+
 /**
  * @Author: Girmiti Software
  * @Date: Feb 29, 2016
@@ -11,7 +13,7 @@ package com.chatak.pg.user.bean;
  * @Comments: 
  *
  */
-public class MerchantDetailsForAccountCreate {
+public class MerchantDetailsForAccountCreate implements Serializable {
 	
 	private String merchantName;
 	  

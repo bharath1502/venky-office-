@@ -66,7 +66,7 @@ function validateCreateMerchantStep1() {
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
 			| !validatePhone() 	| !validateAddress1() | !validateCity() | !validateEmailId()
 			| !validateState() | !validateCountry() | !validatePin()
-		    | !vlalidateUserName() | !createValidationForBasicInfo()) {
+		    | !vlalidateUserName() | !createValidationForBasicInfo() |!zipCodeNotEmpty('pin')) {
 		return false;
 	} else {
 		var faxValue = getVal('fax').trim();

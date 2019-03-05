@@ -1,6 +1,8 @@
 package com.chatak.pg.user.bean;
 
-public class SubFeatureMaster {
+import java.io.Serializable;
+
+public class SubFeatureMaster implements Serializable {
 	
 	private Integer sub_feature_id;
 	private Integer feature_id;

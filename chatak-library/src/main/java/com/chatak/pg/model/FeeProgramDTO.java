@@ -185,6 +185,7 @@ public class FeeProgramDTO extends SearchRequest {
   /**
    * @return the reason
    */
+  @Override
   public String getReason() {
     return reason;
   }
@@ -193,6 +194,7 @@ public class FeeProgramDTO extends SearchRequest {
    * @param reason
    *          the reason to set
    */
+  @Override
   public void setReason(String reason) {
     this.reason = reason;
   }
@@ -230,6 +232,7 @@ public class FeeProgramDTO extends SearchRequest {
   /**
    * @return the partnerId
    */
+  @Override
   public Long getPartnerId() {
     return partnerId;
   }
@@ -238,6 +241,7 @@ public class FeeProgramDTO extends SearchRequest {
    * @param partnerId
    *          the partnerId to set
    */
+  @Override
   public void setPartnerId(Long partnerId) {
     this.partnerId = partnerId;
   }
@@ -245,6 +249,7 @@ public class FeeProgramDTO extends SearchRequest {
   /**
    * @return the partnerName
    */
+  @Override
   public String getPartnerName() {
     return partnerName;
   }
@@ -253,6 +258,7 @@ public class FeeProgramDTO extends SearchRequest {
    * @param partnerName
    *          the partnerName to set
    */
+  @Override
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
   }
@@ -350,18 +356,22 @@ public class FeeProgramDTO extends SearchRequest {
     this.programManagerId = programManagerId;
   }
 
+  @Override
   public Long getPanLow() {
     return panLow;
   }
 
+  @Override
   public void setPanLow(Long panLow) {
     this.panLow = panLow;
   }
 
+  @Override
   public Long getPanHigh() {
     return panHigh;
   }
 
+  @Override  
   public void setPanHigh(Long panHigh) {
     this.panHigh = panHigh;
   }

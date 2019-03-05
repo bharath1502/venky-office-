@@ -170,14 +170,17 @@ public class FundTransferRequestDTO extends SearchRequest implements Serializabl
 
   private Long partnerId;
 
+  @Override
   public Long getId() {
     return id;
   }
 
+  @Override
   public void setId(Long id) {
     this.id = id;
   }
 
+  @Override
   public Long getAgentAccountNumber() {
     return agentAccountNumber;
   }
@@ -194,10 +197,12 @@ public class FundTransferRequestDTO extends SearchRequest implements Serializabl
     this.accountNumber = accountNumber;
   }
 
+  @Override
   public String getEntityType() {
     return entityType;
   }
 
+  @Override
   public void setEntityType(String entityType) {
     this.entityType = entityType;
   }
@@ -634,10 +639,12 @@ public class FundTransferRequestDTO extends SearchRequest implements Serializabl
     this.addressLine1 = addressLine1;
   }
 
+  @Override
   public String getUserName() {
     return userName;
   }
 
+  @Override
   public void setUserName(String userName) {
     this.userName = userName;
   }
@@ -754,10 +761,12 @@ public class FundTransferRequestDTO extends SearchRequest implements Serializabl
     this.programManagerId = programManagerId;
   }
 
+  @Override
   public String getProgramManagerName() {
     return programManagerName;
   }
 
+  @Override
   public void setProgramManagerName(String programManagerName) {
     this.programManagerName = programManagerName;
   }
@@ -778,18 +787,22 @@ public class FundTransferRequestDTO extends SearchRequest implements Serializabl
     this.bankId = bankId;
   }
 
+  @Override
   public String getPartnerName() {
     return partnerName;
   }
 
+  @Override
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
   }
 
+  @Override
   public Long getPartnerId() {
     return partnerId;
   }
 
+  @Override
   public void setPartnerId(Long partnerId) {
     this.partnerId = partnerId;
   }

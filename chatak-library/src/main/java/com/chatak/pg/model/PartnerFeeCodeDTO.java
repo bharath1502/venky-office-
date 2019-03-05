@@ -21,9 +21,12 @@ public class PartnerFeeCodeDTO extends SearchRequest{
   private Long partnerId;
   private List<AcquirerFeeCodeDTO> acquirerFeeCodeList;
   
+  @Override
   public String getPartnerName() {
     return partnerName;
   }
+  
+  @Override
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
   }
@@ -51,21 +54,27 @@ public class PartnerFeeCodeDTO extends SearchRequest{
   public void setAccountNumber(Long accountNumber) {
     this.accountNumber = accountNumber;
   }
+  @Override
   public String getCreatedBy() {
     return createdBy;
   }
+  @Override
   public void setCreatedBy(String createdBy) {
     this.createdBy = createdBy;
   }
+  @Override
   public String getUpdatedBy() {
     return updatedBy;
   }
+  @Override
   public void setUpdatedBy(String updatedBy) {
     this.updatedBy = updatedBy;
   }
+  @Override
   public Long getPartnerId() {
     return partnerId;
   }
+  @Override
   public void setPartnerId(Long partnerId) {
     this.partnerId = partnerId;
   }

@@ -185,26 +185,32 @@ public class Merchant extends MerchantRequest {
     this.bankCurrencyCode = bankCurrencyCode;
   }
 
+  @Override
   public Long getId() {
     return id;
   }
   
+  @Override
   public String getMerchantCode() {
     return merchantCode;
   }
-
+  
+  @Override
   public void setId(Long id) {
     this.id = id;
   }
 
+  @Override
   public String getBusinessName() {
     return businessName;
   }
   
+  @Override
   public void setMerchantCode(String merchantCode) {
     this.merchantCode = merchantCode;
   }
 
+  @Override
   public void setBusinessName(String businessName) {
     this.businessName = businessName;
   }
@@ -225,6 +231,7 @@ public class Merchant extends MerchantRequest {
     this.firstName = firstName;
   }
 
+  @Override
   public Long getPhone() {
     return phone;
   }
@@ -233,10 +240,12 @@ public class Merchant extends MerchantRequest {
     return fax;
   }
 
+  @Override
   public void setPhone(Long phone) {
     this.phone = phone;
   }
 
+  @Override
   public String getEmailId() {
     return emailId;
   }
@@ -245,6 +254,7 @@ public class Merchant extends MerchantRequest {
     this.fax = fax;
   }
 
+  @Override
   public void setEmailId(String emailId) {
     this.emailId = emailId;
   }
@@ -265,26 +275,32 @@ public class Merchant extends MerchantRequest {
     this.address1 = address1;
   }
 
+  @Override
   public String getCity() {
     return city;
   }
   
+  @Override
   public String getState() {
     return state;
   }
 
+  @Override
   public void setCity(String city) {
     this.city = city;
   }
 
+  @Override
   public String getCountry() {
     return country;
   }
   
+  @Override
   public void setState(String state) {
     this.state = state;
   }
 
+  @Override
   public void setCountry(String country) {
     this.country = country;
   }
@@ -369,6 +385,7 @@ public class Merchant extends MerchantRequest {
     return businessStartDate;
   }
 
+  @Override
   public Integer getStatus() {
     return status;
   }
@@ -377,6 +394,7 @@ public class Merchant extends MerchantRequest {
     this.ownership = ownership;
   }
 
+  @Override
   public void setStatus(Integer status) {
     this.status = status;
   }
@@ -689,10 +707,12 @@ public class Merchant extends MerchantRequest {
     this.partnerName = partnerName;
   }
   
+  @Override
   public String getProgramManagerName() {
     return programManagerName;
   }
 
+  @Override
   public void setProgramManagerName(String programManagerName) {
     this.programManagerName = programManagerName;
   }
@@ -729,10 +749,12 @@ public class Merchant extends MerchantRequest {
     this.entityId = entityId;
   }
 
+  @Override
   public Long getCardProgramId() {
     return cardProgramId;
   }
 
+  @Override
   public void setCardProgramId(Long cardProgramId) {
     this.cardProgramId = cardProgramId;
   }
@@ -745,26 +767,32 @@ public class Merchant extends MerchantRequest {
     this.process = process;
   }
 
+  @Override
   public String getEntityType() {
     return entityType;
   }
 
+  @Override
   public void setEntityType(String entityType) {
     this.entityType = entityType;
   }
 
+  @Override
   public String getCardProgramName() {
     return cardProgramName;
   }
 
+  @Override
   public void setCardProgramName(String cardProgramName) {
     this.cardProgramName = cardProgramName;
   }
 
+  @Override
   public String getIsoName() {
     return isoName;
   }
 
+  @Override
   public void setIsoName(String isoName) {
     this.isoName = isoName;
   }

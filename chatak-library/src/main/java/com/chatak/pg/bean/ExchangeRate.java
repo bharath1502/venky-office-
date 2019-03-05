@@ -22,10 +22,12 @@ public class ExchangeRate extends SearchRequest{
   
   private Timestamp updatedDate;
 
+  @Override
   public Long getId() {
     return id;
   }
 
+  @Override
   public void setId(Long id) {
     this.id = id;
   }
@@ -70,18 +72,22 @@ public class ExchangeRate extends SearchRequest{
     this.destCurDecPos = destCurDecPos;
   }
 
+  @Override
   public Timestamp getCreatedDate() {
     return createdDate;
   }
 
+  @Override
   public void setCreatedDate(Timestamp createdDate) {
     this.createdDate = createdDate;
   }
 
+  @Override
   public Timestamp getUpdatedDate() {
     return updatedDate;
   }
 
+  @Override
   public void setUpdatedDate(Timestamp updatedDate) {
     this.updatedDate = updatedDate;
   }

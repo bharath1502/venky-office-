@@ -189,10 +189,12 @@ public class ProgramManagerRequest extends SearchRequest {
 		this.extension = extension;
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -221,10 +223,12 @@ public class ProgramManagerRequest extends SearchRequest {
 		this.businessName = businessName;
 	}
 
+	@Override
 	public String getProgramManagerName() {
 		return programManagerName;
 	}
 
+	@Override
 	public void setProgramManagerName(String programManagerName) {
 		this.programManagerName = programManagerName;
 	}
@@ -261,10 +265,12 @@ public class ProgramManagerRequest extends SearchRequest {
 		this.status = status;
 	}
 
+	@Override
 	public String getReason() {
 		return reason;
 	}
 
+	@Override
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
@@ -277,34 +283,42 @@ public class ProgramManagerRequest extends SearchRequest {
 		this.bankNames = bankNames;
 	}
 
+	@Override
 	public Timestamp getCreatedDate() {
 		return createdDate;
 	}
-
+    
+	@Override
 	public void setCreatedDate(Timestamp createdDate) {
 		this.createdDate = createdDate;
 	}
 
+	@Override
 	public Timestamp getUpdatedDate() {
 		return updatedDate;
 	}
 
+	@Override
 	public void setUpdatedDate(Timestamp updatedDate) {
 		this.updatedDate = updatedDate;
 	}
 
+	@Override
 	public String getUpdatedBy() {
 		return updatedBy;
 	}
 
+	@Override
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
 
+	@Override
 	public String getCreatedBy() {
 		return createdBy;
 	}
 
+	@Override
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
@@ -508,10 +522,12 @@ public class ProgramManagerRequest extends SearchRequest {
 		this.accountCurrency = accountCurrency;
 	}
 
+	@Override
 	public String getCurrencyCodeAlpha() {
 		return currencyCodeAlpha;
 	}
 
+	@Override
 	public void setCurrencyCodeAlpha(String currencyCodeAlpha) {
 		this.currencyCodeAlpha = currencyCodeAlpha;
 	}
@@ -652,10 +668,12 @@ public class ProgramManagerRequest extends SearchRequest {
 		this.acquirerCardProgramIds = acquirerCardProgramIds;
 	}
 
+	@Override
 	public String getIsoName() {
 		return isoName;
 	}
 
+	@Override
 	public void setIsoName(String isoName) {
 		this.isoName = isoName;
 	}

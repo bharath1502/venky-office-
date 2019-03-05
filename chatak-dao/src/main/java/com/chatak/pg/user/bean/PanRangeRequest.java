@@ -51,6 +51,7 @@ public class PanRangeRequest extends SearchRequest{
 	/**
 	 * @return the panLow
 	 */
+	@Override
 	public Long getPanLow() {
 		return panLow;
 	}
@@ -58,6 +59,7 @@ public class PanRangeRequest extends SearchRequest{
 	/**
 	 * @param panLow the panLow to set
 	 */
+	@Override
 	public void setPanLow(Long panLow) {
 		this.panLow = panLow;
 	}
@@ -65,6 +67,7 @@ public class PanRangeRequest extends SearchRequest{
 	/**
 	 * @return the panHigh
 	 */
+	@Override
 	public Long getPanHigh() {
 		return panHigh;
 	}
@@ -72,14 +75,17 @@ public class PanRangeRequest extends SearchRequest{
 	/**
 	 * @param panHigh the panHigh to set
 	 */
+	@Override
 	public void setPanHigh(Long panHigh) {
 		this.panHigh = panHigh;
 	}
 
+	@Override
 	public Long getIsoId() {
 		return isoId;
 	}
 
+	@Override
 	public void setIsoId(Long isoId) {
 		this.isoId = isoId;
 	}

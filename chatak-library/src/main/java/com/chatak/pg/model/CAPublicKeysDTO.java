@@ -10,7 +10,7 @@ public class CAPublicKeysDTO extends SearchRequest {
 
   private static final long serialVersionUID = -6821604525930975678L;
 
-  private List pgCapublicKeysList;
+  private transient List pgCapublicKeysList;
 
   private Long publicKeyId;
 

@@ -1,6 +1,8 @@
 package com.chatak.pay.controller.model.topup;
 
-public class OperatorDTO {
+import java.io.Serializable;
+
+public class OperatorDTO implements Serializable {
 
 	private Integer operatorID;
 

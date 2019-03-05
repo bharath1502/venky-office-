@@ -1,7 +1,8 @@
 package com.chatak.pg.model;
 
+import java.io.Serializable;
 
-public class EFTRefTxnData {
+public class EFTRefTxnData implements Serializable {
   
   private String merchantCode;
   private String dateTime;

@@ -25,7 +25,7 @@ public class ChatakAuthenticationProvider implements AuthenticationProvider, Ser
    */
   private static Logger logger = Logger.getLogger(ChatakAuthenticationProvider.class);
   private static final long serialVersionUID = -4074746028982442760L;
-  private SessionRegistryImpl sessionRegistry;
+  private transient SessionRegistryImpl sessionRegistry;
 
   /**
    * Method to authenticate the user

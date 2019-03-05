@@ -3,6 +3,8 @@
  */
 package com.chatak.pay.controller.model;
 
+import java.io.Serializable;
+
 import com.chatak.pg.enums.CardAssociationEnum;
 import com.chatak.pg.enums.FeeTypeEnum;
 
@@ -14,7 +16,7 @@ import com.chatak.pg.enums.FeeTypeEnum;
  * @date 28-Apr-2015 10:39:53 AM
  * @version 1.0
  */
-public class FeeData {
+public class FeeData implements Serializable {
 
   private String feeCode;
   private String feeDescription;

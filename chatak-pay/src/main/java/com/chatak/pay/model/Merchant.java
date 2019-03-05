@@ -1,6 +1,8 @@
 package com.chatak.pay.model;
 
-public class Merchant {
+import java.io.Serializable;
+
+public class Merchant implements Serializable{
 
 	String merchantName;
 

@@ -8,7 +8,7 @@ public class GetTopupOffersResponse extends Response {
 
 	private static final long serialVersionUID = 5945833094591890322L;
 
-	List<TopupOfferDetailDTO> topupOfferDetailDTOs;
+	 private List<TopupOfferDetailDTO> topupOfferDetailDTOs;
 
 	/**
 	 * @return the topupOfferDetailDTOs

@@ -1,6 +1,8 @@
 package com.chatak.pay.controller.model.topup;
 
-public class TopupOfferDetailDTO {
+import java.io.Serializable;
+
+public class TopupOfferDetailDTO implements Serializable {
 
 	private Long topupOfferID;
 

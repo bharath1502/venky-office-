@@ -54,6 +54,7 @@ public class IsoRequest extends SearchRequest{
 	/**
 	 * @return the isoName
 	 */
+	@Override
 	public String getIsoName() {
 		return isoName;
 	}
@@ -62,6 +63,7 @@ public class IsoRequest extends SearchRequest{
 	 * @param isoName
 	 *            the isoName to set
 	 */
+	@Override	
 	public void setIsoName(String isoName) {
 		this.isoName = isoName;
 	}
@@ -69,6 +71,7 @@ public class IsoRequest extends SearchRequest{
 	/**
 	 * @return the id
 	 */
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -77,6 +80,7 @@ public class IsoRequest extends SearchRequest{
 	 * @param id
 	 *            the id to set
 	 */
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}

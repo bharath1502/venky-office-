@@ -60,10 +60,12 @@ public class FeeReportRequest extends SearchRequest implements Serializable {
     this.transactionCodeList = transactionCodeList;
   }
 
+  @Override
   public Long getIsoId() {
     return isoId;
   }
 
+  @Override
   public void setIsoId(Long isoId) {
     this.isoId = isoId;
   }
@@ -84,10 +86,12 @@ public class FeeReportRequest extends SearchRequest implements Serializable {
     this.issuanceSettlementEntityId = issuanceSettlementEntityId;
   }
 
+  @Override
   public String getIsoName() {
     return isoName;
   }
 
+  @Override
   public void setIsoName(String isoName) {
     this.isoName = isoName;
   }

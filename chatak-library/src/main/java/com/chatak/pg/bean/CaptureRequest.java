@@ -20,13 +20,15 @@ public class CaptureRequest extends Request implements Serializable {
 	/**
 	 * @return the txnAmount
 	 */
+	@Override
 	public Long getTxnAmount() {
 		return txnAmount;
 	}
 	/**
 	 * @param txnAmount the txnAmount to set
 	 */
-	public void setTxnAmount(Long txnAmount) {
+	@Override
+ 	public void setTxnAmount(Long txnAmount) {
 		this.txnAmount = txnAmount;
 	}
 	
@@ -57,13 +59,15 @@ public class CaptureRequest extends Request implements Serializable {
   /**
    * @return the emvData
    */
-  public EMVData getEmvData() {
+	@Override
+	public EMVData getEmvData() {
     return emvData;
   }
   /**
    * @param emvData the emvData to set
    */
-  public void setEmvData(EMVData emvData) {
+	@Override
+	public void setEmvData(EMVData emvData) {
     this.emvData = emvData;
   }
 /**

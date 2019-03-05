@@ -16,12 +16,14 @@ public class FeeReportDto extends SearchRequest {
   /**
    * @return the isoName
    */
+  @Override
   public String getIsoName() {
     return isoName;
   }
   /**
    * @param isoName the isoName to set
    */
+  @Override
   public void setIsoName(String isoName) {
     this.isoName = isoName;
   }
@@ -52,12 +54,14 @@ public class FeeReportDto extends SearchRequest {
   /**
    * @return the isoId
    */
+  @Override
   public Long getIsoId() {
     return isoId;
   }
   /**
    * @param isoId the isoId to set
    */
+  @Override
   public void setIsoId(Long isoId) {
     this.isoId = isoId;
   }

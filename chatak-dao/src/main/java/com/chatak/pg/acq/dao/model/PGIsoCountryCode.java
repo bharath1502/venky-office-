@@ -38,6 +38,7 @@ public class PGIsoCountryCode extends SearchRequest implements Serializable {
 	/**
 	 * @return the id
 	 */
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -45,6 +46,7 @@ public class PGIsoCountryCode extends SearchRequest implements Serializable {
 	/**
 	 * @param id the id to set
 	 */
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -80,6 +82,7 @@ public class PGIsoCountryCode extends SearchRequest implements Serializable {
 	/**
 	 * @return the createdBy
 	 */
+	@Override
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -87,6 +90,7 @@ public class PGIsoCountryCode extends SearchRequest implements Serializable {
 	/**
 	 * @param createdBy the createdBy to set
 	 */
+	@Override
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
@@ -94,6 +98,7 @@ public class PGIsoCountryCode extends SearchRequest implements Serializable {
 	/**
 	 * @return the createdDate
 	 */
+	@Override
 	public Timestamp getCreatedDate() {
 		return createdDate;
 	}
@@ -101,6 +106,7 @@ public class PGIsoCountryCode extends SearchRequest implements Serializable {
 	/**
 	 * @param createdDate the createdDate to set
 	 */
+	@Override
 	public void setCreatedDate(Timestamp createdDate) {
 		this.createdDate = createdDate;
 	}

@@ -65,6 +65,7 @@ public class PGAid extends SearchRequest implements Serializable
 	/**
 	 * @return the createdBy
 	 */
+	@Override
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -72,6 +73,7 @@ public class PGAid extends SearchRequest implements Serializable
 	/**
 	 * @param createdBy the createdBy to set
 	 */
+	@Override
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
@@ -79,6 +81,7 @@ public class PGAid extends SearchRequest implements Serializable
 	/**
 	 * @return the createdDate
 	 */
+	@Override
 	public Timestamp getCreatedDate() {
 		return createdDate;
 	}
@@ -86,6 +89,7 @@ public class PGAid extends SearchRequest implements Serializable
 	/**
 	 * @param createdDate the createdDate to set
 	 */
+	@Override
 	public void setCreatedDate(Timestamp createdDate) {
 		this.createdDate = createdDate;
 	}

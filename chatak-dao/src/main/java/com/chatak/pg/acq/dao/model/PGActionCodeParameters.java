@@ -64,6 +64,7 @@ public class PGActionCodeParameters extends SearchRequest implements Serializabl
 	/**
 	 * @return the createdBy
 	 */
+	@Override
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -71,6 +72,7 @@ public class PGActionCodeParameters extends SearchRequest implements Serializabl
 	/**
 	 * @param createdBy the createdBy to set
 	 */
+	@Override
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
@@ -78,6 +80,7 @@ public class PGActionCodeParameters extends SearchRequest implements Serializabl
 	/**
 	 * @return the createdDate
 	 */
+	@Override
 	public Timestamp getCreatedDate() {
 		return createdDate;
 	}
@@ -85,6 +88,7 @@ public class PGActionCodeParameters extends SearchRequest implements Serializabl
 	/**
 	 * @param createdDate the createdDate to set
 	 */
+	@Override
 	public void setCreatedDate(Timestamp createdDate) {
 		this.createdDate = createdDate;
 	}

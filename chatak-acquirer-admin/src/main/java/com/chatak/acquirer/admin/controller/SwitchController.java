@@ -428,6 +428,7 @@ public class SwitchController implements URLMappingConstants {
       model.put(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
+    modelAndView.addObject("flag", false);
     logger.info("Exiting:: SwitchController:: changeSwitchStatus method");
     return modelAndView;
   }

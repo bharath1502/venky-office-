@@ -135,6 +135,7 @@
 										<div class="row">
 											<div class="field-element-row">
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.submerchantcode" /></label>
 													<form:input cssClass="form-control" path="subMerchantCode"
@@ -145,6 +146,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.merchantcompanyname" /></label>
 													<form:input cssClass="form-control" path="businessName"
@@ -155,6 +157,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.firstname" /></label>
 													<form:input cssClass="form-control" path="firstName"
@@ -165,6 +168,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.lastname" /></label>
 													<form:input cssClass="form-control" path="lastName"
@@ -175,6 +179,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.e-mailid" /> </label>
 													<form:input cssClass="form-control" path="emailId"
@@ -185,6 +190,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.phone" /></label>
 													<form:input cssClass="form-control" path="phone" id="phone"
@@ -195,6 +201,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.city" /></label>
 													<form:input cssClass="form-control" path="city" id="city" onblur="clientValidation('city','name_account','cityError')"/>
@@ -204,6 +211,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.country" /></label>
 													<form:select cssClass="form-control" path="country"
@@ -220,6 +228,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.label.status" /></label>
 													<form:select cssClass="form-control" path="status"
@@ -234,6 +243,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="search-sub-merchant.lable.recordsperpage" /></label>
 													<form:select cssClass="form-control" path="pageSize"

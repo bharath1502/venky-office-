@@ -62,6 +62,7 @@ public class Bank extends SearchRequest {
     this.loginuserType = loginuserType;
   }
 
+  @Override
   public Long getId() {
     return id;
   }
@@ -142,6 +143,7 @@ public class Bank extends SearchRequest {
     return zip;
   }
   
+  @Override
   public void setId(Long id) {
     this.id = id;
   }

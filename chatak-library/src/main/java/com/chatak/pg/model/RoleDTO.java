@@ -145,10 +145,12 @@ public class RoleDTO extends SearchRequest{
 		this.feature = feature;
 	}
 	
+	@Override
 	public String getReason() {
 		return reason;
 	}
 
+	@Override
 	public void setReason(String reason) {
 		this.reason = reason;
 	}

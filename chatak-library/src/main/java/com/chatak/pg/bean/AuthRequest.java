@@ -13,6 +13,7 @@ public class AuthRequest extends Request implements Serializable {
 	/**
 	 * @return the totalTxnAmount
 	 */
+	@Override
 	public Long getTotalTxnAmount() {
 		return totalTxnAmount;
 	}
@@ -20,6 +21,7 @@ public class AuthRequest extends Request implements Serializable {
 	/**
 	 * @param totalTxnAmount the totalTxnAmount to set
 	 */
+	@Override
 	public void setTotalTxnAmount(Long totalTxnAmount) {
 		this.totalTxnAmount = totalTxnAmount;
 	}
@@ -27,6 +29,7 @@ public class AuthRequest extends Request implements Serializable {
 	/**
 	 * @return the txnFee
 	 */
+	@Override
 	public Long getTxnFee() {
 		return txnFee;
 	}
@@ -34,6 +37,7 @@ public class AuthRequest extends Request implements Serializable {
 	/**
 	 * @param txnFee the txnFee to set
 	 */
+	@Override
 	public void setTxnFee(Long txnFee) {
 		this.txnFee = txnFee;
 	}

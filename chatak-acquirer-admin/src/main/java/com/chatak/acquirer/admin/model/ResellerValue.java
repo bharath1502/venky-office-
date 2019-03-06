@@ -51,6 +51,7 @@ public class ResellerValue extends ResellerMerchantCommon {
   /**
    * @return the noOfRecords
    */
+  @Override
   public Integer getNoOfRecords() {
     return noOfRecords;
   }
@@ -58,6 +59,7 @@ public class ResellerValue extends ResellerMerchantCommon {
   /**
    * @param noOfRecords the noOfRecords to set
    */
+  @Override
   public void setNoOfRecords(Integer noOfRecords) {
     this.noOfRecords = noOfRecords;
   }
@@ -233,6 +235,7 @@ public class ResellerValue extends ResellerMerchantCommon {
   /**
    * @return the pageSize
    */
+  @Override
   public Integer getPageSize() {
     return pageSize;
   }
@@ -240,6 +243,7 @@ public class ResellerValue extends ResellerMerchantCommon {
   /**
    * @param pageSize the pageSize to set
    */
+  @Override
   public void setPageSize(Integer pageSize) {
     this.pageSize = pageSize;
   }
@@ -247,6 +251,7 @@ public class ResellerValue extends ResellerMerchantCommon {
   /**
    * @return the pageIndex
    */
+  @Override
   public Integer getPageIndex() {
     return pageIndex;
   }
@@ -254,6 +259,7 @@ public class ResellerValue extends ResellerMerchantCommon {
   /**
    * @param pageIndex the pageIndex to set
    */
+  @Override
   public void setPageIndex(Integer pageIndex) {
     this.pageIndex = pageIndex;
   }

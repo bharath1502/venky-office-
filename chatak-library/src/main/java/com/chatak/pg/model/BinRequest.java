@@ -121,18 +121,22 @@ public class BinRequest extends SearchRequest {
     this.bankName = bankName;
   }
 
+  @Override
   public String getReason() {
     return reason;
   }
 
+  @Override
   public void setReason(String reason) {
     this.reason = reason;
   }
 
+  @Override
   public String getPartnerName() {
     return partnerName;
   }
 
+  @Override
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
   }

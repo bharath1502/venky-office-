@@ -27,12 +27,14 @@ public class VoidRequest extends Request implements Serializable {
 	/**
 	 * @return the txnAmount
 	 */
+	@Override
 	public Long getTxnAmount() {
 		return txnAmount;
 	}
 	/**
 	 * @param txnAmount the txnAmount to set
 	 */
+	@Override
 	public void setTxnAmount(Long txnAmount) {
 		this.txnAmount = txnAmount;
 	}
@@ -51,13 +53,15 @@ public class VoidRequest extends Request implements Serializable {
   /**
    * @return the emvData
    */
-  public EMVData getEmvData() {
+	@Override
+	public EMVData getEmvData() {
     return emvData;
   }
   /**
    * @param emvData the emvData to set
    */
-  public void setEmvData(EMVData emvData) {
+	@Override
+	public void setEmvData(EMVData emvData) {
     this.emvData = emvData;
   }
 /**

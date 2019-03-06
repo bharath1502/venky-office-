@@ -36,6 +36,7 @@ public class BinDTO extends SearchRequest{
    *
    * @return the id
    */
+  @Override
   public Long getId() {
     return id;
   }
@@ -45,6 +46,7 @@ public class BinDTO extends SearchRequest{
    *
    * @param id the new id
    */
+  @Override
   public void setId(Long id) {
     this.id = id;
   }
@@ -134,10 +136,12 @@ public class BinDTO extends SearchRequest{
     this.dcc = dcc;
   }
 
+  @Override
   public String getEmv() {
     return emv;
   }
 
+  @Override
   public void setEmv(String emv) {
     this.emv = emv;
   }

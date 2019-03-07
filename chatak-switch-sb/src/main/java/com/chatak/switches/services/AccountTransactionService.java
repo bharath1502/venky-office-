@@ -103,7 +103,21 @@ public abstract class AccountTransactionService {
     String accountTxnId = accountTransactionsDao.generateAccountTransactionId();
     PGAccount account = accountDao.getPgAccount(pgTransaction.getMerchantId());
     // Required for future implementation
-   
+    /*List<Object> objectResult = getProcessingFee(PGUtils.getCCType(),
+                                                 pgTransaction.getMerchantId(),
+                                                 pgTransaction.getTxnTotalAmount());
+    Long chatakFeeAmountTotal = (Long) objectResult.get(1);
+    Long merchantFeeAmount = 0l;
+
+    Long totalFeeAmount = pgTransaction.getTxnTotalAmount() - pgTransaction.getTxnAmount();
+
+    if(totalFeeAmount > chatakFeeAmountTotal) {
+      merchantFeeAmount = totalFeeAmount - chatakFeeAmountTotal;
+    }
+    else {
+      chatakFeeAmountTotal = totalFeeAmount;
+    }*/
+
     String descriptionTemplate = Properties.getProperty("chatak-pay.account.sale.description.template");
     descriptionTemplate = MessageFormat.format(descriptionTemplate,
                                                pgTransaction.getCardHolderName(),
@@ -138,22 +152,29 @@ public abstract class AccountTransactionService {
 
     // Step-2 : Debting total fee amount from Step-1
     // Commenting the below fee credit since it is being charged to PM and ISO as per the acquiring hierarchy
+//    descriptionTemplate = Properties.getProperty("chatak-pay.account.fee.description.template");
 //    descriptionTemplate = MessageFormat.format(descriptionTemplate,
 //                                               StringUtils.amountToString(chatakFeeAmountTotal),
+//                                               StringUtils.amountToString(merchantFeeAmount));
+//    
+//    logFeeAmount(pgAccountTransactions, totalFeeAmount, AccountTransactionCode.CC_FEE_DEBIT, descriptionTemplate);
     
     // Step-3 : Crediting Merchant Fee
     // Commenting the below since this will be required for different merchant fees like settlement fee, chargeback fee etc,
     // This to be taken in phase 2
+//    descriptionTemplate = "Merchant Fee: " + StringUtils.amountToString(merchantFeeAmount);
 //    logFeeAmount(pgAccountTransactions,
 //                 merchantFeeAmount,
-//                 AccountTransactionCode.CC_MERCHANT_FEE_CREDIT
+//                 AccountTransactionCode.CC_MERCHANT_FEE_CREDIT,
+//                 descriptionTemplate);
     
     // Step-4 : Crediting Chatak system Fee
     // Commenting the below fee credit since it is being charged to PM and ISO as per the acquiring hierarchy
+//    descriptionTemplate = "Processing Fee: " + StringUtils.amountToString(chatakFeeAmountTotal);
 //    logFeeAmount(pgAccountTransactions,
 //                 totalFeeAmount,
 //                 AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT,
-
+//                 descriptionTemplate);
 	if (!request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
 		List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(pgTransaction.getCpId());
 		Double pmShare = feeProgram.get(0).getPmShare();
@@ -536,7 +557,60 @@ public abstract class AccountTransactionService {
   }
 
   //Required for future implementation
- 
+  /*private List<Object> getProcessingFee(String cardType, String merchantCode, Long txnTotalAmount) {
+    logger.info("Entering:: AccountTransactionService:: getProcessingFee method ");
+    List<Object> results = new ArrayList<Object>(Integer.parseInt("2"));
+    List<ProcessingFee> calculatedProcessingFeeList = new ArrayList<ProcessingFee>(0);
+    Long chatakFeeAmountTotal = 0l;
+    List<PGAcquirerFeeValue> acquirerFeeValueList = feeProgramDao.getAcquirerFeeValueByMerchantIdAndCardType(merchantCode,cardType);
+    if(CommonUtil.isListNotNullAndEmpty(acquirerFeeValueList)) {
+
+      logger.info(" AccountTransactionService:: getProcessingFee method :: Applying this merchant fee code ");
+      fetchPGAcquirerFeeValue(txnTotalAmount, calculatedProcessingFeeList, chatakFeeAmountTotal,
+			acquirerFeeValueList);
+    }
+    else {
+      String parentMerchantCode = merchantDao.getParentMerchantCode(merchantCode);
+      if(null != parentMerchantCode) {
+        acquirerFeeValueList = feeProgramDao.getAcquirerFeeValueByMerchantIdAndCardType(parentMerchantCode,cardType);
+        if(CommonUtil.isListNotNullAndEmpty(acquirerFeeValueList)) {
+          logger.info("Exiting:: AccountTransactionService:: getProcessingFee method :: Applying parentMerchantCode fee ");
+          fetchPGAcquirerFeeValue(txnTotalAmount, calculatedProcessingFeeList,
+				chatakFeeAmountTotal, acquirerFeeValueList);
+        }
+      }
+    }
+    logger.info("Exiting:: AccountTransactionService:: getProcessingFee method ");
+    results.add(calculatedProcessingFeeList);
+    results.add(chatakFeeAmountTotal);
+    return results;
+  }
+
+private void fetchPGAcquirerFeeValue(Long txnTotalAmount, List<ProcessingFee> calculatedProcessingFeeList,
+		Long chatakFeeAmountTotal, List<PGAcquirerFeeValue> acquirerFeeValueList) {
+	Double calculatedProcessingFee;
+	for(PGAcquirerFeeValue acquirerFeeValue : acquirerFeeValueList) {
+        calculatedProcessingFee = 0.00;
+        ProcessingFee processingFee = getProcessingFeeItem(acquirerFeeValue, txnTotalAmount, calculatedProcessingFee);
+        chatakFeeAmountTotal = chatakFeeAmountTotal + CommonUtil.getLongAmount(processingFee.getChatakProcessingFee());
+        calculatedProcessingFeeList.add(processingFee);
+      }
+}
+
+  private ProcessingFee getProcessingFeeItem(PGAcquirerFeeValue acquirerFeeValue,
+                                             Long txnTotalAmount,
+                                             Double calculatedProcessingFee) {
+    logger.info("Entering:: AccountTransactionService:: getProcessingFeeItem method ");
+    Double flatFee = CommonUtil.getDoubleAmountNotNull(acquirerFeeValue.getFlatFee());
+    Double percentageFee = acquirerFeeValue.getFeePercentageOnly();
+    percentageFee = txnTotalAmount * (CommonUtil.getDoubleAmountNotNull(percentageFee));
+    calculatedProcessingFee = (CommonUtil.getDoubleAmountNotNull(calculatedProcessingFee + percentageFee)) + flatFee;
+    ProcessingFee processingFee = new ProcessingFee();
+    processingFee.setAccountNumber(acquirerFeeValue.getAccountNumber());
+    processingFee.setChatakProcessingFee(calculatedProcessingFee);
+    logger.info("Exiting:: AccountTransactionService:: getProcessingFeeItem method ");
+    return processingFee;
+  }*/
   protected void logPartialRefundToAccountTransaction(PGTransaction pgTransaction) {
 	    logger.info("Entering:: AccountTransactionService:: logPartialRefundToAccountTransaction method ");
 	    List<PGAccountTransactions> saleTxnList = accountTransactionsDao.getAccountTransactionsOnTransactionId(pgTransaction.getRefTransactionId());

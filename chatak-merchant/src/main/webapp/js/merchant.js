@@ -40,31 +40,21 @@ function validateCreateMerchantStep1() {
 			| !validatePhone()// | !validateFax()
 			| !validateAddress1()
 			| !validateCity() | !validateEmailId() | !validateState()
-			| !validateCountry() | !validatePin() /*|!validateStatus()*/ | !validateAppMode() |!validateURL() |!vlalidateUserName()) {
+			| !validateCountry() | !validatePin() /*|!validateStatus()*/ |!vlalidateUserName()) {
 		return false;
 	}else{
 		var faxValue = getVal('fax').trim();
-		var lookingForValue = getVal('lookingFor').trim();
 		var businessTypeValue = getVal('businessType').trim();
 		if(faxValue != ""){
 			setLable('confirmMfax', getVal('fax').trim());
 		}else{
 			setLable('confirmMfax', "");
-		}if (!isCharacter(lookingForValue)) {
-			setError(get('lookingFor'), webMessages.cancontainonlyalphabetsandnumerics);
-			loadMsgTitleText();
-			return false;
-		} else if(lookingForValue != ""){
-			setLable('confirmLookingFor', lookingForValue);
-		}else{
-			setLable('confirmLookingFor', "");
 		}if(businessTypeValue != ""){
 			setLable('confirmBusinessType', businessTypeValue);
 		}else{
 			setLable('confirmBusinessType', "");
 		}
 	}
-	setError(get('lookingFor'), " ");
 	return flag;
 }
 
@@ -74,24 +64,15 @@ function validateCreateMerchantStep1SignUp() {
 			| !validatePhone()// | !validateFax()
 			| !validateAddress1()
 			| !validateCity() | !validateEmailId() | !validateState()
-			| !validateCountry() | !validatePin() |!validateStatus() | !validateAppMode() |!validateURL()) {
+			| !validateCountry() | !validatePin() |!validateStatus()) {
 		return false;
 	}else{
 		var faxValue = getVal('fax').trim();
-		var lookingForValue = getVal('lookingFor').trim();
 		var businessTypeValue = getVal('businessType').trim();
 		if(faxValue != ""){
 			setLable('confirmMfax', getVal('fax').trim());
 		}else{
 			setLable('confirmMfax', "");
-		}if (!isCharacter(lookingForValue)) {
-			setError(get('lookingFor'), webMessages.cancontainonlyalphabetsandnumerics);
-			loadMsgTitleText();
-			return false;
-		} else if(lookingForValue != ""){
-			setLable('confirmLookingFor', lookingForValue);
-		}else{
-			setLable('confirmLookingFor', "");
 		}if(businessTypeValue != ""){
 			setLable('confirmBusinessType', businessTypeValue);
 		}else{
@@ -230,32 +211,22 @@ function validateCreateMerchantStep1edit() {
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
 			| !validatePhone() | !validateAddress1() | !validateEmailId()
 			| !validateCity() | !validateState() | !validateCountry()
-			| !validatePin() /*| !validateStatus()*/ | !validateAppMode() |!validateURL() |!vlalidateUserNameEdit()) {
+			| !validatePin() /*| !validateStatus()*/ |!vlalidateUserNameEdit()) {
 		
 		return false;
 	}else{
 		var faxValue = getVal('fax').trim();
-		var lookingForValue = getVal('lookingFor').trim();
 		var businessTypeValue = getVal('businessType').trim();
 		if(faxValue != ""){
 		setLable('confirmMfax', faxValue);
 		}else{
 			setLable('confirmMfax', "");
-		}if (!isCharacter(lookingForValue)) {
-			setError(get('lookingFor'), webMessages.cancontainonlyalphabetsandnumerics);
-			loadMsgTitleText();
-			return false;
-		} else if(lookingForValue != ""){
-			setLable('confirmLookingFor', lookingForValue);
-		}else{
-			setLable('confirmLookingFor', "");
 		}if(businessTypeValue != ""){
 			setLable('confirmBusinessType', businessTypeValue);
 		}else{
 			setLable('confirmBusinessType', "");
 		}
 	}
-	setError(get('lookingFor'), "");
 	return flag;
 }
 
@@ -712,22 +683,6 @@ function validateTimeZone() {
 	}
 }
 
-function validateAppMode() {
-	var appMode = get('appMode').value.trim();
-	if (isEmpty(appMode)) {
-		setError(get('appMode'),webMessages.pleaseselectappmode );
-		loadMsgTitleText();
-		return false;
-	} else if (!isChar(appMode)) {
-		setError(get('appMode'),webMessages.invalidappmode );
-		loadMsgTitleText();
-		return false;
-	} else {
-		setError(get('appMode'), '');
-		setLable('confirmMappMode', appMode);
-		return true;
-	}
-}
 
 function validateStatus() {
 	var status = get('status').value.trim();
@@ -931,28 +886,6 @@ function validateProcessor() {
 				setLable('confirmLitleMID', '');
 				$('#vantivMerchantId').hide();
 			}
-		}
-	}
-	return true;
-}
-
-function validateURL() {
-	//var reg = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
-	if(get('businessURL')) {
-		var reg = /(http|https:\/\/[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
-		var businessURL = get('businessURL').value.trim();
-
-		if (isEmpty(businessURL)) {
-			setError(get('businessURL'), webMessages.pleasenterbusinessURL);
-			loadMsgTitleText();
-			return false;
-		} else if (reg.test(businessURL) == false) {
-			setError(get('businessURL'), webMessages.invalidbusinessURL);
-			loadMsgTitleText();
-			return false;
-		} else {
-			setError(get('businessURL'), '');
-			setLable('confirmMbusinessURL', businessURL);
 		}
 	}
 	return true;

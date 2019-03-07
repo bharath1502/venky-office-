@@ -21,10 +21,12 @@ public class OtherCommissionDTO extends SearchRequest
   
   private String amount;
 
+  @Override
   public Long getId() {
     return id;
   }
 
+  @Override
   public void setId(Long id) {
     this.id = id;
   }

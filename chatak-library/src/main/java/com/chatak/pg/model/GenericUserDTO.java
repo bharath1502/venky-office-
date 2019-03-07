@@ -106,7 +106,8 @@ public class GenericUserDTO extends SearchRequest{
 	/**
    * @param userName the userName to set
    */
-  public void setUserName(String userName) {
+	@Override
+	public void setUserName(String userName) {
     this.userName = userName;
   }
 
@@ -141,7 +142,8 @@ public class GenericUserDTO extends SearchRequest{
 	/**
    * @return the userName
    */
-  public String getUserName() {
+	@Override
+	public String getUserName() {
     return userName;
   }
 

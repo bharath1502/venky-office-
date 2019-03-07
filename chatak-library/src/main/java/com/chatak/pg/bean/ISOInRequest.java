@@ -25,16 +25,22 @@ public class ISOInRequest {
 
 	private String _processingCode;
 
+	// Primary account number (PAN) Field2;
 	private String _cardNum;
 
 	// Processing Code Field3
+	// private String _processingCode;
 
+	// Amount, transaction Field4;
 	private Long _txnAmount;
 
+	// Systems trace audit number Field11;
 	private String _sysTraceNum;
 
+	// Date, Expiration Field14;
 	private String _expDate;
 
+	// Track 2 data Field35;
 	private String _track2;
 
 	// Auth Transaction Reference Number _track37
@@ -43,14 +49,19 @@ public class ISOInRequest {
 	// AuthId of Auth Transaction _track38
 	private String _authId;
 
+	// Card acceptor terminal identification Field41;
 	private String _terminalId;
 
+	// Card acceptor identification code Field42;
 	private String _merchantId;
 
+	// Additional amounts Field54;
 	private Long _adjustedTxnAmount;
 
+	// Original amount/Host Authorised amount Field60;
 	private Long _hostTxnAmount;
 
+	// Invoice Number Field62;
 	private String _invoiceNumber;
 
 	// Is Chip transaction
@@ -109,6 +120,7 @@ public class ISOInRequest {
 			_sysTraceNum = (String) isoMsg.getValue(11);
 		}
 
+		// Date, Expiration Field14;
 		if (StringUtils.isValidString((String) isoMsg.getValue(14))) {
 			_expDate = (String) isoMsg.getValue(14);
 		}
@@ -141,6 +153,7 @@ public class ISOInRequest {
 			}
 		}
 
+		// Track 2 data Field35;
 		if (StringUtils.isValidString((String) isoMsg.getValue(35))) {
 			_track2 = (String) isoMsg.getValue(35);
 
@@ -153,10 +166,12 @@ public class ISOInRequest {
 
 		}
 
+		// Retrieval reference number Field37;
 		if (StringUtils.isValidString((String) isoMsg.getValue(37))) {
 			_authTxnRefNum = (String) isoMsg.getValue(37);
 		}
 
+		// Authorization identification Field38;
 		if (StringUtils.isValidString((String) isoMsg.getValue(38))) {
 			_authId = (String) isoMsg.getValue(38);
 		}
@@ -174,20 +189,25 @@ public class ISOInRequest {
 			}
 		}
 
+		// Card acceptor terminal identification Field41;
 		if (StringUtils.isValidString((String) isoMsg.getValue(41))) {
 			_terminalId = (String) isoMsg.getValue(41);
 		}
 
+		// Card acceptor identification code Field42;
 		if (StringUtils.isValidString((String) isoMsg.getValue(42))) {
 			_merchantId = (String) isoMsg.getValue(42);
 		}
 
+		// Additional amounts Field54;
 		if (StringUtils.isValidString((String) isoMsg.getValue(54))) {
 			_adjustedTxnAmount = Long.valueOf((String) isoMsg.getValue(54));
 		}
 
+		// EMV Data Field55;
 		if (StringUtils.isValidString(isoMsg.getString(55))) {
-		
+			// _Field55 =
+			// ByteConversionUtils.hexToAsciiString(isoMsg.getString(55));
 			_Field55 = isoMsg.getString(55);
 
 			String _Field22First2 = _Field22.substring(1, 3);
@@ -208,10 +228,12 @@ public class ISOInRequest {
 			emvData = new ChatakTLVParser(_Field55).getEMVData();
 		}
 
+		// Original amount/Host Authorised amount Field60;
 		if (StringUtils.isValidString((String) isoMsg.getValue(60))) {
 			_hostTxnAmount = Long.valueOf((String) isoMsg.getValue(60));
 		}
 
+		// Invoice Number Field62;
 		if (StringUtils.isValidString((String) isoMsg.getValue(62))) {
 			_invoiceNumber = (String) isoMsg.getValue(62);
 		}

@@ -1007,12 +1007,6 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		asyncService.logExit(pgOnlineTxnLog, txnState, reason, pgTxnId, processorResponse, processTxnId);
 		
 pgOnlineTxnLog.setPgTxnId(pgTxnId);
-//		pgOnlineTxnLog.setProcessorTxnId(processTxnId);
-//		pgOnlineTxnLog.setResponseDateTime(new Timestamp(System.currentTimeMillis()));
-//		pgOnlineTxnLog.setTxnState(txnState.name());
-//		pgOnlineTxnLog.setTxnReason(reason);
-//		onlineTxnLogDao.logRequest(pgOnlineTxnLog);
-
 	}
 
 	/**
@@ -1493,6 +1487,7 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
   }
 
   private void getMerchantBatchId(Request request, CardProgram cardProgram, PGMerchant pgMerchant)throws ServiceException {
+	    //log.info("Entering :: PGTransactionServiceImpl :: getMerchantBatchId ::  Card program ID " + cardProgram.getCardProgramId());
 		Long pmId;
 			
 			

@@ -39,7 +39,9 @@ import com.chatak.switches.sb.util.ProcessorConfig;
 @Controller
 public class ChatakPGController extends Constants {
 
- 
+ /* @Autowired
+  private ChatakPGLicense chatakPGLicense;
+*/
   @Autowired
   private AdminUserDao adminUserDao;
 
@@ -75,7 +77,8 @@ public class ChatakPGController extends Constants {
     SpringDAOBeanFactory.appContext = appContext;
 
     try {
-     
+      /* ChatakLicenseValidator.getInstance().validateChatakLicenseKey();
+        CHATAK_LICENSE_VALID = true;*/
       String userName = request.getParameter("uPG");
       String pass = request.getParameter("pPG");
 

@@ -81,8 +81,7 @@ public class TransactionFormatter {
     }
 
     // LRC
-    // completeTxnByte[index] = ComputingCheck.getLRCByte(completeTxnByte,
-    // index);
+   
     return completeTxnByte;
   }
 
@@ -203,7 +202,6 @@ public class TransactionFormatter {
       // 5bytes tpdu + data
       // Skipping 2 bytes length and 5 bytes tpdu
 
-      // indexBinary = 7;
       // memcpy(lengthBytesBinary, data, 2 );
       lengthBytesBinary[0] = data[indexBinary++];
       lengthBytesBinary[1] = data[indexBinary++];
@@ -212,7 +210,6 @@ public class TransactionFormatter {
     else {
       // if first 2 bytes is 0000 then message format is length(4bytes) + data
       // Skipping 4 bytes length
-      // indexBinary = 4;
       // memcpy(lengthBytesBinary, data+2, 2 ); // first 2 bytes are
       indexBinary = 2;
       lengthBytesBinary[0] = data[indexBinary++];

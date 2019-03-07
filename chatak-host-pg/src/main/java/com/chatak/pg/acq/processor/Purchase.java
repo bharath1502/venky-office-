@@ -18,9 +18,6 @@ import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTransaction;
-/*import com.chatak.pg.acq.service.PaymentService;
- import com.chatak.pg.acq.service.PaymentServiceImpl;
- */
 import com.chatak.pg.acq.spring.util.SpringDAOBeanFactory;
 import com.chatak.pg.bean.AdjustmentRequest;
 import com.chatak.pg.bean.AdjustmentResponse;
@@ -44,7 +41,6 @@ import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.NationalPOSEntryModeEnum;
 import com.chatak.pg.exception.ValidationException;
 import com.chatak.pg.util.DateUtil;
-/*import com.chatak.pg.upstream.BINUpstreamRouter;*/
 import com.chatak.pg.util.DateUtils;
 import com.chatak.pg.util.EncryptionUtil;
 import com.chatak.pg.util.Properties;
@@ -70,8 +66,6 @@ public class Purchase extends Processor {
 
   private static Logger log = Logger.getLogger(Purchase.class);
 
-  /* private PaymentService paymentService; */
-
   @Autowired
   CurrencyConfigDao currencyConfigDao;
   
@@ -95,7 +89,7 @@ public class Purchase extends Processor {
     log.debug("Purchase | processAuthCapture | Entering");
     boolean status = false;
     try {
-      com.chatak.switches.sb.util.SpringDAOBeanFactory.appContext = appContext;
+    	com.chatak.switches.sb.util.SpringDAOBeanFactory.appContext = appContext;
       // validating duplicate invoice request
       validateDuplicateRequest(_ISOInputRequest);
       // Populate Request Object
@@ -147,10 +141,7 @@ public class Purchase extends Processor {
       purchaseRequest.setCurrencyCode(currencyConfig.getCurrencyCodeNumeric());
       purchaseRequest.setMerchantCode(purchaseRequest.getMerchantId().toString());
 
-      /*
-       * PurchaseResponse purchaseResponse =
-       * getPaymentService().purchaseTransaction(purchaseRequest);
-       */
+     
       PurchaseResponse purchaseResponse = new SwitchServiceBroker().purchaseTransaction(purchaseRequest, new PGMerchant());
 
       // set fields to response
@@ -234,10 +225,7 @@ public class Purchase extends Processor {
       authRequest.setMode(_txnAuthorizer.getMode());
 
       // Service Call to create auth transaction records
-      /*
-       * AuthResponse authResponse =
-       * getPaymentService().authTransaction(authRequest);
-       */
+     
       AuthResponse authResponse = new SwitchServiceBroker().authTransaction(authRequest);
 
       // set fields to response
@@ -324,10 +312,7 @@ public class Purchase extends Processor {
       captureRequest.setMode(_txnAuthorizer.getMode());
 
       // Service Call to create auth transaction records
-      /*
-       * CaptureResponse captureResponse =
-       * getPaymentService().captureTransaction(captureRequest);
-       */
+      
       CaptureResponse captureResponse = new SwitchServiceBroker().captureTransaction(captureRequest);
 
       // set response fields
@@ -395,10 +380,7 @@ public class Purchase extends Processor {
       adjustmentRequest.setMode(_txnAuthorizer.getMode());
 
       // Service Call to create auth transaction records
-      /*
-       * AdjustmentResponse adjustmentResponse =
-       * getPaymentService().adjustmentTransaction(adjustmentRequest);
-       */
+     
       AdjustmentResponse adjustmentResponse = new SwitchServiceBroker().adjustmentTransaction(adjustmentRequest);
 
       // set response fields
@@ -450,10 +432,7 @@ public class Purchase extends Processor {
     log.info("Purchase | settlementTransaction | Exiting");
   }
 
-  /*
-   * private PaymentService getPaymentService() { return
-   * BINUpstreamRouter.getPaymentService(_ISOInputRequest.get_cardNum()); }
-   */
+  
 
   /**
    * Method is invoked when Adjustment transaction (on successful Captured
@@ -490,10 +469,7 @@ public class Purchase extends Processor {
       balanceEnquiryRequest.setMode(_txnAuthorizer.getMode());
 
       // Service Call to create auth transaction records
-      /*
-       * BalanceEnquiryResponse balanceEnquiryResponse =
-       * getPaymentService().balanceEnquiryTransaction(balanceEnquiryRequest);
-       */
+     
       BalanceEnquiryResponse balanceEnquiryResponse = new SwitchServiceBroker().balanceEnquiry(balanceEnquiryRequest);
 
       // set response fields
@@ -562,10 +538,7 @@ public class Purchase extends Processor {
       cashWithdrawalRequest.setPulseData(Properties.getProperty("chatak-pay.pulse.data"));
       cashWithdrawalRequest.setMode(_txnAuthorizer.getMode());
 
-      /*
-       * CashWithdrawalResponse cashWithdrawalResponse =
-       * getPaymentService().cashWithdrawalTransaction(cashWithdrawalRequest);
-       */
+     
       CashWithdrawalResponse cashWithdrawalResponse = new SwitchServiceBroker().cashWithdrawalTransaction(cashWithdrawalRequest);
 
       // set fields to response
@@ -633,10 +606,7 @@ public class Purchase extends Processor {
       cashBackRequest.setPulseData(Properties.getProperty("chatak-pay.pulse.data"));
       cashBackRequest.setMode(_txnAuthorizer.getMode());
       
-      /*
-       * CashBackResponse cashBackResponse =
-       * getPaymentService().cashBackTransaction(cashBackRequest);
-       */
+     
       CashBackResponse cashBackResponse = new SwitchServiceBroker().processCashBackTransaction(cashBackRequest);
 
       // set fields to response

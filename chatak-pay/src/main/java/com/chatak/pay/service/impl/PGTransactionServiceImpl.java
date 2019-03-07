@@ -242,10 +242,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			}
 			MDCLoggerUtil.clearMDCLoggerParams();
 			return null;
-		} /*catch(ChatakInvalidTransactionException e) {
-          log.error("ERROR:: processCardPayment method", e);
-          throw new ChatakInvalidTransactionException(ChatakPayErrorCode.TXN_0027.name());
-         } */catch(Exception e) {
+		} catch(Exception e) {
 			log.error("ERROR:: processCardPayment method", e);
 			return getErrorResponse(ChatakPayErrorCode.TXN_0999.name());
 		}
@@ -1010,7 +1007,6 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		asyncService.logExit(pgOnlineTxnLog, txnState, reason, pgTxnId, processorResponse, processTxnId);
 		
 pgOnlineTxnLog.setPgTxnId(pgTxnId);
-//		pgOnlineTxnLog.setProcessorResponse(processorResponse);
 //		pgOnlineTxnLog.setProcessorTxnId(processTxnId);
 //		pgOnlineTxnLog.setResponseDateTime(new Timestamp(System.currentTimeMillis()));
 //		pgOnlineTxnLog.setTxnState(txnState.name());
@@ -1497,7 +1493,6 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
   }
 
   private void getMerchantBatchId(Request request, CardProgram cardProgram, PGMerchant pgMerchant)throws ServiceException {
-	    //log.info("Entering :: PGTransactionServiceImpl :: getMerchantBatchId ::  Card program ID " + cardProgram.getCardProgramId());
 		Long pmId;
 			
 			

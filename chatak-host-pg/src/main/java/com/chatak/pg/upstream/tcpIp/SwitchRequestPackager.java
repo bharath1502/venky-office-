@@ -52,7 +52,6 @@ public class SwitchRequestPackager {
 	 * @return byte[] - the request byte that need to be sent to the server
 	 */
 	public byte[] createFormattedRequest(SwitchRequest reqObj) throws Exception {
-		//byte[] requestBuffer = null;
 		byte[] isoBuffer = null;
 		try {
 
@@ -62,11 +61,9 @@ public class SwitchRequestPackager {
 
 			//First create the ISO Request
 			isoBuffer = createISORequest(isoMsg);
-			//isoBuffer = isoMsg.pack();
 			set_length(isoBuffer.length);
 
 			// Now pack it into PG message format
-			//requestBuffer = packPGFormat(isoBuffer);
 			//_entireRequest = ByteConversionUtils.byteArrayToHexString(requestBuffer, requestBuffer.length, true);
 			_entireRequest = ByteConversionUtils.byteArrayToHexString(isoBuffer, isoBuffer.length, true);
 			logger.info(_entireRequest);
@@ -102,7 +99,6 @@ public class SwitchRequestPackager {
 			logger.debug("PROC CODE is " + procCode);
 
 			// Field 2 for AccountNumber/CardNumber
-			//isoMsg.set(new ISOField(2, reqObj.get_cardNumber()));
 
 			// Field 3 for process code
 			isoMsg.set(new ISOField(3, reqObj.get_de3()));

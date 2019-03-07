@@ -92,7 +92,6 @@ public class Refund extends Processor {
       }
 
       // Service Call to Void transaction
-      /*VoidResponse voidResponse =  getPaymentService().voidTransaction(voidRequest);*/
       VoidResponse voidResponse = new SwitchServiceBroker().voidTransaction(voidRequest, originalSale);
 
       // Amount void transaction set to 00
@@ -171,7 +170,6 @@ public class Refund extends Processor {
       }
 
       // Service Call to Void transaction
-     /* ReversalResponse reversalResponse =  getPaymentService().reversalTransaction(reversalRequest);*/
       ReversalResponse reversalResponse =  new SwitchServiceBroker().reversalTransaction(reversalRequest);
 
       // SYSTEM DATE TIME
@@ -248,7 +246,6 @@ public class Refund extends Processor {
         refundRequest.setSaleDependentRefund(false);//flag to set sale independent refund
       }
       // Service Call to Void transaction
-      /*RefundResponse refundResponse =  getPaymentService().refundTransaction(refundRequest);*/
       RefundResponse refundResponse = new SwitchServiceBroker().refundTransaction(refundRequest);
 
       // set fields to response

@@ -64,7 +64,6 @@ public class SwitchRequestPackager {
 			set_length(isoBuffer.length);
 
 			// Now pack it into PG message format
-			//_entireRequest = ByteConversionUtils.byteArrayToHexString(requestBuffer, requestBuffer.length, true);
 			_entireRequest = ByteConversionUtils.byteArrayToHexString(isoBuffer, isoBuffer.length, true);
 			logger.info(_entireRequest);
 		}

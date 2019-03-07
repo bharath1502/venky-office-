@@ -157,7 +157,6 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				
 			// Display Results
-	 //     System.out.println("Litle Auth Transaction ID: " + litleResponse.getLitleTxnId());
 	      String switchResponseCode = "";
         String switchResponseMessage = "";
 	 
@@ -297,8 +296,6 @@ public class PaymentServiceImpl implements PaymentService {
 			//Switch interface call
        
       // Display Results
-   
-    //    System.out.println("Litle Capture Transaction ID: " + litleResponse.getLitleTxnId());
         String switchResponseCode = "";
         String switchResponseMessage = "";
       

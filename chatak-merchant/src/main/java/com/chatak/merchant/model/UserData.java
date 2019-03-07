@@ -76,6 +76,7 @@ public class UserData extends SearchRequest
 	/**
 	 * @return the userName
 	 */
+	@Override
 	public String getUserName() {
 		return userName;
 	}
@@ -83,6 +84,7 @@ public class UserData extends SearchRequest
 	/**
 	 * @param userName the userName to set
 	 */
+	@Override
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}

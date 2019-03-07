@@ -30,10 +30,12 @@ public class DynamicMDRDTO extends SearchRequest {
   private String slab;
   
 
+  @Override
   public Long getId() {
     return id;
   }
 
+  @Override
   public void setId(Long id) {
     this.id = id;
   }

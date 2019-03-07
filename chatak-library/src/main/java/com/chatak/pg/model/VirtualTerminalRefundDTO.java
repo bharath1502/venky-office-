@@ -382,10 +382,12 @@ public class VirtualTerminalRefundDTO extends SearchRequest {
     this.cardNumMasked = cardNumMasked;
   }
 
+  @Override
   public String getUserName() {
     return userName;
   }
 
+  @Override
   public void setUserName(String userName) {
     this.userName = userName;
   }

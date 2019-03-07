@@ -53,10 +53,12 @@ public class TransactionResponse extends Response {
   
   private String transactionType;
 
+  @Override
   public String getTxnRefNumber() {
     return txnRefNumber;
   }
 
+  @Override
   public void setTxnRefNumber(String txnRefNumber) {
     this.txnRefNumber = txnRefNumber;
   }

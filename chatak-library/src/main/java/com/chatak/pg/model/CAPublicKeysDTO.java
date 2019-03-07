@@ -115,10 +115,12 @@ public class CAPublicKeysDTO extends SearchRequest {
     this.pgCapublicKeysList = pgCapublicKeysList;
   }
 
+  @Override
   public String getCreatedBy() {
     return createdBy;
   }
 
+  @Override
   public void setCreatedBy(String createdBy) {
     this.createdBy = createdBy;
   }

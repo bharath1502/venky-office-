@@ -13,6 +13,7 @@ public class ISOCountryCodeRequest extends SearchRequest {
   
   private String name;
 
+  @Override
   public Long getId() {
     return id;
   }
@@ -21,6 +22,7 @@ public class ISOCountryCodeRequest extends SearchRequest {
     return code;
   }
 
+  @Override
   public void setId(Long id) {
     this.id = id;
   }

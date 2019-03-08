@@ -20,10 +20,12 @@ public class StateRequest extends SearchRequest {
 
 	private String name;
 
+	@Override
 	public Long getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}

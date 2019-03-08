@@ -32,6 +32,7 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
   @Autowired
   private transient SessionRegistryImpl sessionRegistry;
 
+  @Override
   public boolean preHandle(javax.servlet.http.HttpServletRequest request,
       javax.servlet.http.HttpServletResponse response, java.lang.Object object)
           throws java.lang.Exception {

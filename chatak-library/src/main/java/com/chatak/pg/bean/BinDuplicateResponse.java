@@ -30,6 +30,7 @@ public class BinDuplicateResponse extends Response
   
   private String dcc;
   
+  @Override
   public void setId(Long id) {
     this.id = id;
   }
@@ -38,6 +39,7 @@ public class BinDuplicateResponse extends Response
     return switchName;
   }
   
+  @Override
   public Long getId() {
     return id;
   }

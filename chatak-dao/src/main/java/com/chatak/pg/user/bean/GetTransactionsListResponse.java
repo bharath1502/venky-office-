@@ -19,12 +19,14 @@ public class GetTransactionsListResponse extends Response
 	/**
 	 * @return the totalNoOfRows
 	 */
+	@Override
 	public Integer getTotalNoOfRows() {
 		return TotalNoOfRows;
 	}
 	/**
 	 * @param totalNoOfRows the totalNoOfRows to set
 	 */
+	@Override
 	public void setTotalNoOfRows(Integer totalNoOfRows) {
 		TotalNoOfRows = totalNoOfRows;
 	}

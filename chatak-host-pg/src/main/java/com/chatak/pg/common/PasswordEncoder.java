@@ -3,6 +3,7 @@ package com.chatak.pg.common;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -85,7 +86,7 @@ public class PasswordEncoder {
   }
 
   public static void main(String arg[]) throws Exception {
-    System.out.println("MDS(DESede) Encrypt : " + PasswordEncoder.encrypt(""));
-    System.out.println("MDS(DESede) Decrypt : " + PasswordEncoder.decrypt("CF5C6A2A2E626A57"));
+    Logger.getLogger("MDS(DESede) Encrypt : " + PasswordEncoder.encrypt(""));
+    Logger.getLogger("MDS(DESede) Decrypt : " + PasswordEncoder.decrypt("CF5C6A2A2E626A57"));
   }
 }

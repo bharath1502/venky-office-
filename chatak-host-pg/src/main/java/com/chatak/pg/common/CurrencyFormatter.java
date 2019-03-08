@@ -2,7 +2,12 @@ package com.chatak.pg.common;
 
 import java.text.DecimalFormat;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.chatak.pg.acq.processor.PGMessage;
 import com.chatak.pg.exception.InvalidCurrencyFormatException;
+import com.chatak.pg.server.coreLauncher.PaymentGateway;
 
 /**
  *  This class is used to convert the currency value into various
@@ -13,8 +18,7 @@ public class CurrencyFormatter {
 
   private final static String ZEROS_27 = "000000000000000000000000000";
 
- 
-  
+  static  Logger logger = LogManager.getLogger(CurrencyFormatter.class);  
 
   
   public String convertTo8583FormattedAmount(Double amt) {
@@ -106,13 +110,13 @@ public class CurrencyFormatter {
   }
   
   public static void main(String[] args) {
-	System.out.println("test");
+	logger.info("test");
 	CurrencyFormatter currencyFormatter = new CurrencyFormatter();
 	try {
 		double amount = currencyFormatter.convertCurrencyFormat("000000001118");
-		System.out.println(amount);
-		System.out.println(currencyFormatter.getDecimalFormat(amount, "##########.##"));
-		System.out.println(currencyFormatter.convertTo8583FormattedAmount(amount));
+		logger.info(amount);
+		logger.info(currencyFormatter.getDecimalFormat(amount, "##########.##"));
+		logger.info(currencyFormatter.convertTo8583FormattedAmount(amount));
 	} catch (InvalidCurrencyFormatException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

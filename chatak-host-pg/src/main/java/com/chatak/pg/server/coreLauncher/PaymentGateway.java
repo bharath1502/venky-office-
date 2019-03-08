@@ -16,7 +16,7 @@ import com.chatak.pg.server.tcpIp.TcpServerException;
 public final class PaymentGateway {
 
   // get class logger
-  static Logger log = Logger.getLogger(PaymentGateway.class);;
+  private static Logger log = Logger.getLogger(PaymentGateway.class);;
 
   public static boolean isAcquirerStarted = false;
 
@@ -34,7 +34,7 @@ public final class PaymentGateway {
    * @throws Exception
    */
   public static void startAcquirer() throws Exception {
-    System.out.println("Staring Acquirer..................");
+    log.info("Staring Acquirer..................");
     String version = "04302013";
     // Create instance of the server and run it
     PaymentGateway server = new PaymentGateway();

@@ -1,6 +1,6 @@
 package com.chatak.pg.util;
 import java.util.Scanner;
-
+import java.util.logging.Logger;
 
 public class CreditCardValidation {
 
@@ -63,13 +63,13 @@ public class CreditCardValidation {
                 || (getPrefix(number, d) == 6)) {
 
             if (getPrefix(number, d) == 3) {
-                System.out.println("\nAmerican Express Card ! ");
+                Logger.getLogger("\nAmerican Express Card ! ");
             } else if (getPrefix(number, d) == 4) {
-                System.out.println("\nVisa Card ! ");
+                Logger.getLogger("\nVisa Card ! ");
             } else if (getPrefix(number, d) == 5) {
-                System.out.println("\nMaster Card !");
+                Logger.getLogger("\nMaster Card !");
             } else if (getPrefix(number, d) == 6) {
-                System.out.println("\nDiscover Card !");
+                Logger.getLogger("\nDiscover Card !");
             }
 
             return true;
@@ -121,14 +121,14 @@ public class CreditCardValidation {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.print("Enter your Card Number : ");
+        Logger.getLogger("Enter your Card Number : ");
 
         long input = sc.nextLong();
 
         if (isValid(input) == true) {
-            System.out.println("\n*****Your card is Valid*****");
+            Logger.getLogger("\n*****Your card is Valid*****");
         } else {
-            System.out.println("\n!!!!Your Card is not Valid !!!!! ");
+            Logger.getLogger("\n!!!!Your Card is not Valid !!!!! ");
         }
 
     }

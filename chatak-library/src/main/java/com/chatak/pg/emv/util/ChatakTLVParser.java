@@ -3,6 +3,9 @@ package com.chatak.pg.emv.util;
 import java.lang.reflect.Field;
 import java.util.Enumeration;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOUtil;
 import org.jpos.tlv.TLVList;
@@ -22,6 +25,8 @@ import com.chatak.pg.util.PGUtils;
  * @version 1.0
  */
 public final class ChatakTLVParser implements ChatakEMVTags {
+  
+  private static Logger logger = LogManager.getLogger(ChatakTLVParser.class);
 
   private TLVList tlvList;
 
@@ -93,7 +98,7 @@ public final class ChatakTLVParser implements ChatakEMVTags {
   @SuppressWarnings("unchecked")
   public EMVData getEMVData() {
     if(null == emvData) {
-      System.out.println("EMV Data Null...");
+      logger.info("EMV Data Null...");
       emvData = new EMVData();
       try {
         Enumeration<TLVMsg> enumeration = tlvList.elements();

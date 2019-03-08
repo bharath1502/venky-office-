@@ -1,5 +1,7 @@
 package com.chatak.pg.server.config;
 
+import java.util.logging.Logger;
+
 import org.w3c.dom.Node;
 
 import com.chatak.pg.exception.ConfigException;
@@ -51,7 +53,7 @@ public class TcpConfig {
    */
   public TcpConfig(String verId) throws ConfigException {
     mVersion = verId;
-    System.out.println("Vesion ID: "+verId);
+    Logger.getLogger("Vesion ID: "+verId);
     Node node = ApplicationConfig.getNodeForAttribute(GROUP, ATTR_VERSION, verId);
     if(node != null) {
       init(node);

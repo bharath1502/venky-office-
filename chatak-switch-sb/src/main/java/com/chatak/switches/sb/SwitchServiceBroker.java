@@ -426,7 +426,6 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
 
       // PERF >> Will use the primary auto increment key as the transaction id
       // Set the gateway transaction id
-      //purchaseRequest.setTransactionId(pgTransaction.getTransactionId());
       
       // Switch transaction log before Switch call
       pgSwitchTransaction = populateSwitchTransactionRequest(purchaseRequest);
@@ -455,7 +454,6 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       
       // PERF >> Moving it down to after transaction insertion
       // Update account
-      //statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
 
       String autoSettlement = Constants.AUTO_SETTLEMENT_STATUS_NO;
 
@@ -473,7 +471,6 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgTransaction.setAutoSettlementStatus(autoSettlement);
 
       // PERF >> Moving it down to after transaction insertion
-      //switchTransactionDao.createTransaction(pgSwitchTransaction);
       logger.info("transaction id is " + pgTransaction.getTransactionId());
 
       if(purchaseResponse.getErrorCode().equals(ActionCode.ERROR_CODE_UID)) {
@@ -489,13 +486,11 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
       pgSwitchTransaction.setPgTransactionId(String.valueOf(transactionID));
       
       asyncService.saveSwitchTransaction(pgSwitchTransaction);
-//      switchTransactionDao.createTransaction(pgSwitchTransaction);
       // Update account
       pgTransaction.setTransactionId(String.valueOf(transactionID));
       statusValidation(purchaseRequest, purchaseResponse, pgTransaction);
       
       // Set Response fields
-      //purchaseResponse.setTxnRefNum(pgTransaction.getTransactionId());
       // PERF >> 
       purchaseResponse.setTxnRefNum(String.valueOf(transactionID));
       
@@ -516,7 +511,6 @@ private void validatePGTransaction(PGSwitchTransaction pgSwitchTransaction, PGTr
         voidTransactionDao.createTransaction(pgTransaction);
 
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-        //switchTransactionDao.createTransaction(pgSwitchTransaction);
         asyncService.saveSwitchTransaction(pgSwitchTransaction);
       }
 

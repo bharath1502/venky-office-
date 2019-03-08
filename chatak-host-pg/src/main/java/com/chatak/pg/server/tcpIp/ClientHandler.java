@@ -104,12 +104,8 @@ public class ClientHandler implements Runnable {
       BufferedInputStream bis = new BufferedInputStream(in);
 
       // 1. send ENQ to client
-      // logger.info("<== (1) Sending ENQ to the client " + mSocket.getPort());
-      // sendControlByteLine(bos, Protocol.ENQ);
 
       // 2. receive data record from client
-      // logger.info("==> (2) Server (" + mServerTypeVersion +
-      // ") reading from the client " + mSocket.getPort());
       
       byte[] buffer = new byte[1024];
       int nBytes = -1;
@@ -130,8 +126,6 @@ public class ClientHandler implements Runnable {
       }
 
       // 7. send EOT - End of transaction
-      //  logger.info("<== sending EOT to the client, port: " + mSocket.getPort());
-      // sendControlByteLine(bos, Protocol.EOT);
 
     }
     catch(Throwable e) {
@@ -161,7 +155,6 @@ public class ClientHandler implements Runnable {
    */
   private boolean processTransaction(BufferedInputStream bis, byte[] buffer, int nBytes) throws Throwable {
     
-//    int respCounter = 2;
     boolean tpduFlag = true;
     boolean txnCompleted = false;
     byte[] txnReq = null;
@@ -207,7 +200,6 @@ public class ClientHandler implements Runnable {
 
         // 5. send response data back
         logger.info("<== Sending response to the client, port: " + mSocket.getPort());
-        // sendResponseLine(out, responseByteArrStr.getBytes());
         sendResponseLine(out, txnResponse);
 
         long endTime = System.currentTimeMillis();
@@ -217,29 +209,7 @@ public class ClientHandler implements Runnable {
         /**
          * Committed below since there is no Acknowledge from the POS
          */
-//        while(respCounter-- > 0 && !txnCompleted) {
-//          if((nBytes = readStream(bis, buffer)) <= 0) {
-//            logger.info("Received Nothing from the Client");
-//            continue;
-//          }
-//          else if(nBytes >= 5 && buffer[0] != Protocol.ACK) {
-//            // if request duplicated read one more time
-//            logger.info("==> Received duplicated request: " + buffer);
-//            nBytes = readStream(bis, buffer);
-//          }
-//          else if(nBytes > 0 && buffer[0] == Protocol.ACK) {
-//            txnCompleted = true;
-//            respCounter = 0;
-//            logger.info("==> Received ACK from " + mSocket.getPort());
-//            break;
-//          }
-//          else {
-//            // send response out one more time
-//            sendResponseLine(out,
-//                             ByteConversionUtils.HexStringToByteArray(ByteConversionUtils.byteArrayToString(txnResponse,
-//                                                                                                            txnResponse.length)));
-//          }
-//        }
+
       }
     }
     return txnCompleted;

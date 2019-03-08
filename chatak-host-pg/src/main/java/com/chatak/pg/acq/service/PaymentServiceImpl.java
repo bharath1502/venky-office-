@@ -55,15 +55,11 @@ import com.chatak.pg.util.JPOSUtil;
 import com.chatak.pg.util.PGConstants;
 import com.chatak.pg.util.PGUtils;
 import com.chatak.pg.util.StringUtils;
-//import com.chatak.switches.litle.ChatakSwitchLitleTransaction;
+
 import com.chatak.switches.sb.util.ProcessorConfig;
-//import com.litle.sdk.generate.Authorization;
-//import com.litle.sdk.generate.AuthorizationResponse;
-//import com.litle.sdk.generate.Capture;
-//import com.litle.sdk.generate.CardType;
+
+
 import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
-//import com.litle.sdk.generate.OrderSourceType;
-//import com.litle.sdk.generate.Sale;
 
 public class PaymentServiceImpl implements PaymentService {
 
@@ -158,47 +154,24 @@ public class PaymentServiceImpl implements PaymentService {
 				pgSwitchTransaction.setStatus(PGConstants.STATUS_INPROCESS);
 
 				//Switch interface call
-				/*ChatakSwitchLitleTransaction switchTransaction = new ChatakSwitchLitleTransaction(ProcessorConfig.DEMO, null);
-				Authorization authorization = new Authorization();
-		    authorization.setReportGroup("Planets");
-		    authorization.setOrderId(txnRefNum);
-		    authorization.setAmount(txnTotalAmount);
-		    authorization.setOrderSource(OrderSourceType.ECOMMERCE);
-		    CardType card = new CardType();
-		    card.setType(MethodOfPaymentTypeEnum.MC); //TODO: Change based on type of card
-		    card.setNumber(authRequest.getCardNum());
-		    card.setExpDate(authRequest.getExpDate());
-		    authorization.setCard(card);
 				
-		    AuthorizationResponse litleResponse = switchTransaction.authorize(authorization);*/
 				
 			// Display Results
-	  //    System.out.println("Response: " + litleResponse.getResponse());
-	 //     System.out.println("Message: " + litleResponse.getMessage());
-	 //     System.out.println("Litle Auth Transaction ID: " + litleResponse.getLitleTxnId());
 	      String switchResponseCode = "";
         String switchResponseMessage = "";
-	 //     if(Constants.APPROVED.equals(litleResponse.getMessage())) {
+	 
 	        
-	//        String litleTxnId = String.valueOf(litleResponse.getLitleTxnId());
+	
 	        
-	//        pgSwitchTransaction.setTransactionId(litleTxnId);
+	
           pgSwitchTransaction.setStatus(PGConstants.STATUS_SUCCESS);
           
           pgTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-	//        pgTransaction.setIssuerTxnRefNum(litleTxnId);
+	
 	        pgTransaction.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
 	        switchResponseCode = ActionCode.ERROR_CODE_00;
 	        switchResponseMessage = ActionCode.ERROR_CODE_00;
-	  //    }
-	      /*else {
-	        pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-          switchResponseCode = ActionCode.ERROR_CODE_00;
-   //       switchResponseMessage = litleResponse.getMessage();
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-	      }*/
-				
+	  		
 				//Update transaction status and switch response
 				voidtransactiondao.createTransaction(pgTransaction);
 
@@ -321,42 +294,11 @@ public class PaymentServiceImpl implements PaymentService {
 
 				
 			//Switch interface call
-       /* ChatakSwitchLitleTransaction switchTransaction = new ChatakSwitchLitleTransaction(ProcessorConfig.DEMO, null);
-        Capture capture = new Capture();
-        capture.setReportGroup("Planets");
-        capture.setAmount(txnTotalAmount);
-        capture.setLitleTxnId(Long.valueOf(authTransaction.getIssuerTxnRefNum()));
-        capture.setAmount(authTransaction.getTxnTotalAmount());
-        capture.setPayPalNotes("Notes");
-        
-        com.litle.sdk.generate.CaptureResponse litleResponse = switchTransaction.capture(capture);
-        */
+       
       // Display Results
-   //     System.out.println("Response: " + litleResponse.getResponse());
-     //   System.out.println("Message: " + litleResponse.getMessage());
-    //    System.out.println("Litle Capture Transaction ID: " + litleResponse.getLitleTxnId());
         String switchResponseCode = "";
         String switchResponseMessage = "";
-       /* if(Constants.APPROVED.equals(litleResponse.getMessage())) {
-          
-          String litleTxnId = String.valueOf(litleResponse.getLitleTxnId());
-          
-          pgSwitchTransaction.setTransactionId(litleTxnId);
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-          
-          pgTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-          pgTransaction.setIssuerTxnRefNum(litleTxnId);
-          pgTransaction.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-          switchResponseCode = ActionCode.ERROR_CODE_00;
-          switchResponseMessage = ActionCode.ERROR_CODE_00;
-        }
-        else {
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-          switchResponseCode = ActionCode.ERROR_CODE_00;
-          switchResponseMessage = litleResponse.getMessage();
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-        }*/
+      
 				
 				//Update transaction status and switch response
 				voidtransactiondao.createTransaction(pgTransaction);
@@ -467,47 +409,13 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				
 			//Switch interface call
-        /*ChatakSwitchLitleTransaction switchTransaction = new ChatakSwitchLitleTransaction(ProcessorConfig.DEMO, null);
-        Sale sale = new Sale();
-        sale.setReportGroup("Planets");
-        sale.setOrderId(txnRefNum);
-        sale.setAmount(txnTotalAmount);
-        sale.setOrderSource(OrderSourceType.ECOMMERCE);
-        CardType card = new CardType();
-        card.setType(MethodOfPaymentTypeEnum.MC); //TODO: Change based on type of card
-        card.setNumber(purchaseRequest.getCardNum());
-        card.setExpDate(purchaseRequest.getExpDate());
-        sale.setCard(card);
-        
-        com.litle.sdk.generate.SaleResponse litleResponse = switchTransaction.sale(sale);*/
+       
         
       // Display Results
-      //  System.out.println("Response: " + litleResponse.getResponse());
-     //   System.out.println("Message: " + litleResponse.getMessage());
-     //   System.out.println("Litle Auth Transaction ID: " + litleResponse.getLitleTxnId());
+      
         String switchResponseCode = "";
         String switchResponseMessage = "";
-        /*if(Constants.APPROVED.equals(litleResponse.getMessage())) {
-          
-           String litleTxnId = String.valueOf(litleResponse.getLitleTxnId());
-          
-          pgSwitchTransaction.setTransactionId(litleTxnId);
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-          
-          pgTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-          pgTransaction.setIssuerTxnRefNum(litleTxnId);
-          pgTransaction.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-          switchResponseCode = ActionCode.ERROR_CODE_00;
-          switchResponseMessage = ActionCode.ERROR_CODE_00;
-        }
-        else {
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-          switchResponseCode = ActionCode.ERROR_CODE_00;
-        //  switchResponseMessage = litleResponse.getMessage();
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-        }*/
-			
+       
 				//Update transaction status and switch response
 				voidtransactiondao.createTransaction(pgTransaction);
 				
@@ -634,38 +542,13 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 				
 			//Switch interface call
-        /* switchTransaction = new ChatakSwitchLitleTransaction(ProcessorConfig.DEMO, null);
-        com.litle.sdk.generate.Void theVoid = new com.litle.sdk.generate.Void();
-        // litleTxnId contains the Litle Transaction Id returned on the deposit
-        theVoid.setLitleTxnId(Long.valueOf(saleOrRefundransaction.getIssuerTxnRefNum()));
-        com.litle.sdk.generate.VoidResponse litleResponse = switchTransaction.dovoid(theVoid);*/
+     
         
       // Display Results
-      //  System.out.println("Response: " + litleResponse.getResponse());
-      //  System.out.println("Message: " + litleResponse.getMessage());
-      //  System.out.println("Litle Auth Transaction ID: " + litleResponse.getLitleTxnId());
+      
         String switchResponseCode = "";
         String switchResponseMessage = "";
-      /*  if(Constants.APPROVED.equals(litleResponse.getMessage())) {
-          
-          String litleTxnId = String.valueOf(litleResponse.getLitleTxnId());
-          
-          pgSwitchTransaction.setTransactionId(litleTxnId);
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-          
-          pgTransaction.setStatus(PGConstants.STATUS_SUCCESS);
-          pgTransaction.setIssuerTxnRefNum(litleTxnId);
-          pgTransaction.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-          switchResponseCode = ActionCode.ERROR_CODE_00;
-          switchResponseMessage = ActionCode.ERROR_CODE_00;
-        }
-        else {
-          pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-          switchResponseCode = ActionCode.ERROR_CODE_00;
-          switchResponseMessage = litleResponse.getMessage();
-          pgTransaction.setStatus(PGConstants.STATUS_FAILED);
-        }*/
+     
       
 			
 				//Update transaction status and switch response
@@ -762,7 +645,7 @@ public class PaymentServiceImpl implements PaymentService {
 					+ CreditCardValidator.MASTERCARD);
 
 			if(!ccValidator.isValid(cardNumber)){
-				//throw new ServiceException(ActionCode.ERROR_CODE_14);
+				
 			} else if(!PGUtils.isValidCardExpiryDate(request.getExpDate())){
 				throw new ServiceException(ActionCode.ERROR_CODE_54);
 			}
@@ -799,25 +682,19 @@ public class PaymentServiceImpl implements PaymentService {
 		pgemvTransaction.setAed(emvData.getAed());
 		pgemvTransaction.setAid(emvData.getAid());
 		pgemvTransaction.setAip(emvData.getAip());
-		//pgemvTransaction.setAppCrypto();
 		pgemvTransaction.setAtc(emvData.getAtc());
-		//pgemvTransaction.setCryptoInfo(emvData.getc);
 		pgemvTransaction.setCvrm(emvData.getCvmr());
 		pgemvTransaction.setFci(emvData.getFci());
 		pgemvTransaction.setFcip(emvData.getFcip());
 		pgemvTransaction.setIad(emvData.getIad());
 		pgemvTransaction.setIfd(emvData.getIfd());
-		//pgemvTransaction.setIid(emvData.getii);
 		pgemvTransaction.setIsr(emvData.getIsr());
 		pgemvTransaction.setIst(emvData.getIst());
 		pgemvTransaction.setIst1(emvData.getIst_1());
 		pgemvTransaction.setLanRef(emvData.getLan());
 		pgemvTransaction.setPgTransactionId(txnRefNumber);
 		pgemvTransaction.setPsn(emvData.getPsn());
-		//pgemvTransaction.setTavn(emvData.getta);
 		pgemvTransaction.setTcc(emvData.getTcc());
-		//pgemvTransaction.setTerminalCapabilities(emvData.getter);
-		//pgemvTransaction.setTerminalType(terminalType);
 		pgemvTransaction.setTsn(emvData.getTsn());
 		pgemvTransaction.setTvr(emvData.getTvr());
 		pgemvTransaction.setTxnStatusInfo(emvData.getTxnStatusInfo());
@@ -837,7 +714,6 @@ public class PaymentServiceImpl implements PaymentService {
 		PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
 		pgSwitchTransaction.setTxnAmount(request.getTxnAmount());
 		pgSwitchTransaction.setStatus(PGConstants.STATUS_INPROCESS);
-		//pgSwitchTransaction.setMti(request.getMti());
 		pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), 5, 4));
 		pgSwitchTransaction.setPosEntryMode(request.getPosEntryMode());
 		pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getCardNum()));
@@ -913,8 +789,6 @@ public class PaymentServiceImpl implements PaymentService {
 		request.getIsoMsg().set(49, "840");//TODO: Currency Code, Transaction
 		request.getIsoMsg().set(32, "1111");
 		request.getIsoMsg().set(58, "11111");//TODO: National Pointof-Service Condition Code an..11
-		
-		//request.getIsoMsg().set(23, "000");
 
 		String functionCode = (String)request.getIsoMsg().getValue(24);
 		request.getIsoMsg().set(24, functionCode.substring(1,4));

@@ -92,9 +92,6 @@ public class Refund extends Processor {
       }
 
       // Service Call to Void transaction
-     /* PaymentService paymentService = new PaymentServiceImpl();
-      VoidResponse voidResponse = paymentService.voidTransaction(voidRequest);*/
-      /*VoidResponse voidResponse =  getPaymentService().voidTransaction(voidRequest);*/
       VoidResponse voidResponse = new SwitchServiceBroker().voidTransaction(voidRequest, originalSale);
 
       // Amount void transaction set to 00
@@ -173,9 +170,6 @@ public class Refund extends Processor {
       }
 
       // Service Call to Void transaction
-      /*PaymentService paymentService = new PaymentServiceImpl();
-      ReversalResponse reversalResponse = paymentService.reversalTransaction(reversalRequest);*/
-     /* ReversalResponse reversalResponse =  getPaymentService().reversalTransaction(reversalRequest);*/
       ReversalResponse reversalResponse =  new SwitchServiceBroker().reversalTransaction(reversalRequest);
 
       // SYSTEM DATE TIME
@@ -228,7 +222,6 @@ public class Refund extends Processor {
       refundRequest.setMerchantId(Long.valueOf(_ISOInputRequest.get_merchantId()));
       refundRequest.setSysTraceNum(_ISOInputRequest.get_sysTraceNum());
       refundRequest.setInvoiceNumber(_ISOInputRequest.get_invoiceNumber());
-      // refundRequest.setTxnRefNum(saleTxnId);
       refundRequest.setCardNum(_ISOInputRequest.get_cardNum());
       refundRequest.setTxnAmount(_ISOInputRequest.get_txnAmount());
       refundRequest.setExpDate(_ISOInputRequest.get_expDate());
@@ -253,9 +246,6 @@ public class Refund extends Processor {
         refundRequest.setSaleDependentRefund(false);//flag to set sale independent refund
       }
       // Service Call to Void transaction
-      /*PaymentService paymentService = new PaymentServiceImpl();
-      RefundResponse refundResponse = paymentService.refundTransaction(refundRequest);*/
-      /*RefundResponse refundResponse =  getPaymentService().refundTransaction(refundRequest);*/
       RefundResponse refundResponse = new SwitchServiceBroker().refundTransaction(refundRequest);
 
       // set fields to response

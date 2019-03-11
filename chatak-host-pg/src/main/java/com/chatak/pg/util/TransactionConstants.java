@@ -4,6 +4,10 @@ package com.chatak.pg.util;
  * This class helps for reward and transaction based constants.
  */
 public class TransactionConstants {
+	
+	private TransactionConstants() {
+		
+	}
 
   // SMS templates for payment gateway transaction
   public static final int REGISTER_SMS_TEMPLATE_ID = 1;

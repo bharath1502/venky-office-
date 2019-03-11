@@ -1,6 +1,10 @@
 package com.chatak.pg.util;
 
 public class PGConstants {
+	
+	private PGConstants() {
+		
+	}
 
 	// Transaction Types
 	public static final String TXN_TYPE_SALE = "sale";

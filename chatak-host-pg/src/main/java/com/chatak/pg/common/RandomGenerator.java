@@ -7,6 +7,10 @@ import java.util.*;
  * characters etc
  */
 public class RandomGenerator {
+	
+	private RandomGenerator() {
+		
+	}
 
   /**
    * This method generate the default random alpha numeric value

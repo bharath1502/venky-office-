@@ -227,8 +227,6 @@ public class TxnAuthorizer implements MessageTypeCode {
     // Chip data
     copyReqByte2RespField(55);
 
-    // copyReq2RespField(62);
-
     // Update the field 39 and 44 for Message to be printed on POS
     if(StringUtils.isValidString(actionCode)) {
       responseMsg.setFieldValue(39, actionCode);

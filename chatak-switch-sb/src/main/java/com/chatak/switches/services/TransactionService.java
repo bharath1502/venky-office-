@@ -268,8 +268,6 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setPan(EncryptionUtil.encrypt(cardNumber));
     }
     // PERF >> Will use the primary auto increment key as the transaction id
-    //pgTransaction.setTransactionId(transactionDao.generateTransactionRefNumber());
-    
     pgTransaction.setAuthId(authId);
     pgTransaction.setCreatedDate(timestamp);
     pgTransaction.setUpdatedDate(timestamp);

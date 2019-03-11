@@ -14,8 +14,7 @@ import org.apache.log4j.Logger;
 import org.jpos.iso.ISOUtil;
 
 /**
- *  This class is used to convert the currency value into various
- *           format.
+ *  This is an utility class to encoded the password
  */
 
 public class PasswordEncoder {

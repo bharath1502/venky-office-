@@ -53,7 +53,6 @@ public final class ChatakTLVParser implements ChatakEMVTags {
         
         byte[] byteArray = ByteConversionUtils.HexStringToByteArray(tlvHex.substring(EMV_DATA_LEN_BYTES));
         tlvList.unpack(byteArray, 0);
-        //unpack(ByteConversionUtils.hexToAsciiString(tlvHex));
       }
       catch(NumberFormatException e) {
         throw new InvalidTLVDataFormatException("Invalid TLV Data format");

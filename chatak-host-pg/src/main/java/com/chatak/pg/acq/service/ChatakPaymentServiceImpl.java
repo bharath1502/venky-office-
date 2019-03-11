@@ -1195,7 +1195,6 @@ public class ChatakPaymentServiceImpl implements PaymentService {
           + CreditCardValidator.MASTERCARD);
 
       if(!ccValidator.isValid(cardNumber)){
-        //throw new ServiceException(ActionCode.ERROR_CODE_14);
       } else if(!PGUtils.isValidCardExpiryDate(request.getExpDate())){
         throw new ServiceException(ActionCode.ERROR_CODE_54);
       }
@@ -1238,24 +1237,19 @@ public class ChatakPaymentServiceImpl implements PaymentService {
     pgemvTransaction.setAed(emvData.getAed());
     pgemvTransaction.setAid(emvData.getAid());
     pgemvTransaction.setAip(emvData.getAip());
-    //pgemvTransaction.setAppCrypto();
     pgemvTransaction.setAtc(emvData.getAtc());
-    //pgemvTransaction.setCryptoInfo(emvData.getc);
     pgemvTransaction.setCvrm(emvData.getCvmr());
     pgemvTransaction.setFci(emvData.getFci());
     pgemvTransaction.setFcip(emvData.getFcip());
     pgemvTransaction.setIad(emvData.getIad());
     pgemvTransaction.setIfd(emvData.getIfd());
-    //pgemvTransaction.setIid(emvData.getii);
     pgemvTransaction.setIsr(emvData.getIsr());
     pgemvTransaction.setIst(emvData.getIst());
     pgemvTransaction.setIst1(emvData.getIst_1());
     pgemvTransaction.setLanRef(emvData.getLan());
     pgemvTransaction.setPgTransactionId(txnRefNumber);
     pgemvTransaction.setPsn(emvData.getPsn());
-    //pgemvTransaction.setTavn(emvData.getta);
     pgemvTransaction.setTcc(emvData.getTcc());
-    //pgemvTransaction.setTerminalCapabilities(emvData.getter);
     //pgemvTransaction.setTerminalType(terminalType);
     pgemvTransaction.setTsn(emvData.getTsn());
     pgemvTransaction.setTvr(emvData.getTvr());
@@ -1275,7 +1269,6 @@ public class ChatakPaymentServiceImpl implements PaymentService {
     PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
     pgSwitchTransaction.setTxnAmount(request.getTxnAmount());
     pgSwitchTransaction.setStatus(PGConstants.STATUS_INPROCESS);
-    //pgSwitchTransaction.setMti(request.getMti());
     pgSwitchTransaction.setPanMasked(StringUtils.getMaskedString(request.getCardNum(), 5, 4));
     pgSwitchTransaction.setPosEntryMode(request.getPosEntryMode());
     pgSwitchTransaction.setPan(EncryptionUtil.encrypt(request.getCardNum()));
@@ -1352,8 +1345,6 @@ public class ChatakPaymentServiceImpl implements PaymentService {
     request.getIsoMsg().set(49, "840");//TODO: Currency Code, Transaction
     request.getIsoMsg().set(32, "1111");
     request.getIsoMsg().set(58, "11111");//TODO: National Pointof-Service Condition Code an..11
-    
-    //request.getIsoMsg().set(23, "000");
 
     String functionCode = (String)request.getIsoMsg().getValue(24);
     request.getIsoMsg().set(24, functionCode.substring(1,4));
@@ -1410,7 +1401,6 @@ public class ChatakPaymentServiceImpl implements PaymentService {
       Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
       Long feeAmount = feeDetailDao.getPGFeeAmount(PGConstants.TXN_TYPE_BALANCE_ENQ);
-      //Long txnTotalAmount = balanceEnquiryRequest.getTxnAmount() + feeAmount;
       
       PGSwitchTransaction pgSwitchTransaction = null;
       PGTransaction pgTransaction = null;

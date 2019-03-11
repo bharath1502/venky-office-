@@ -85,9 +85,6 @@ public final class SwitchISOPackager {
 		try{
 			String track2 = (String) logISOMsg.getValue(35);
 			if(StringUtils.isValidString(track2) ) {
-//				magneticStripeCardUtil._parseTrack2(track2);
-//				last4Digits = magneticStripeCardUtil.getPan().substring(12);
-//				logISOMsg.set(35, last4Digits);
 			}else{
 				if(StringUtils.isValidString((String) logISOMsg.getValue(2))){
 					last4Digits = ((String) logISOMsg.getValue(2)).substring(12);

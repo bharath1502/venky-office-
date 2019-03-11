@@ -57,10 +57,12 @@ public class AcquirerFeeCodeDTO extends SearchRequest {
     this.acquirerName = acquirerName;
   }
 
+  @Override
   public Long getPartnerId() {
     return partnerId;
   }
 
+  @Override
   public void setPartnerId(Long partnerId) {
     this.partnerId = partnerId;
   }

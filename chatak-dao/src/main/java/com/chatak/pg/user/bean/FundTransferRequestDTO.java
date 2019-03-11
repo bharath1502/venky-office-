@@ -185,6 +185,7 @@ public class FundTransferRequestDTO extends SearchRequest implements Serializabl
     return agentAccountNumber;
   }
 
+  @Override
   public void setAgentAccountNumber(Long agentAccountNumber) {
     this.agentAccountNumber = agentAccountNumber;
   }

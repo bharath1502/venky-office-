@@ -1,8 +1,12 @@
 package com.chatak.pg.util;
 import java.util.Scanner;
-import java.util.logging.Logger;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class CreditCardValidation {
+	
+	static  Logger logger = LogManager.getLogger(CreditCardValidation.class);
 
     /**
      * @param args the command line arguments
@@ -63,13 +67,13 @@ public class CreditCardValidation {
                 || (getPrefix(number, d) == 6)) {
 
             if (getPrefix(number, d) == 3) {
-                Logger.getLogger("\nAmerican Express Card ! ");
+            	logger.info("\nAmerican Express Card ! ");
             } else if (getPrefix(number, d) == 4) {
-                Logger.getLogger("\nVisa Card ! ");
+            	logger.info("\nVisa Card ! ");
             } else if (getPrefix(number, d) == 5) {
-                Logger.getLogger("\nMaster Card !");
+            	logger.info("\nMaster Card !");
             } else if (getPrefix(number, d) == 6) {
-                Logger.getLogger("\nDiscover Card !");
+            	logger.info("\nDiscover Card !");
             }
 
             return true;
@@ -121,14 +125,14 @@ public class CreditCardValidation {
 
         Scanner sc = new Scanner(System.in);
 
-        Logger.getLogger("Enter your Card Number : ");
+        logger.info("Enter your Card Number : ");
 
         long input = sc.nextLong();
 
         if (isValid(input) == true) {
-            Logger.getLogger("\n*****Your card is Valid*****");
+        	logger.info("\n*****Your card is Valid*****");
         } else {
-            Logger.getLogger("\n!!!!Your Card is not Valid !!!!! ");
+        	logger.info("\n!!!!Your Card is not Valid !!!!! ");
         }
 
     }

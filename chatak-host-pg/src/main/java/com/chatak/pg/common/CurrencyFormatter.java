@@ -5,9 +5,7 @@ import java.text.DecimalFormat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.chatak.pg.acq.processor.PGMessage;
 import com.chatak.pg.exception.InvalidCurrencyFormatException;
-import com.chatak.pg.server.coreLauncher.PaymentGateway;
 
 /**
  *  This class is used to convert the currency value into various
@@ -15,12 +13,10 @@ import com.chatak.pg.server.coreLauncher.PaymentGateway;
  */
 public class CurrencyFormatter {
 
-
   private final static String ZEROS_27 = "000000000000000000000000000";
 
   static  Logger logger = LogManager.getLogger(CurrencyFormatter.class);  
 
-  
   public String convertTo8583FormattedAmount(Double amt) {
     String bal = String.valueOf(amt) + "00";
     int idxOfDecimal = bal.indexOf('.');
@@ -48,7 +44,6 @@ public class CurrencyFormatter {
       return str;
   }
 
-  
   /**
    * This method used for amount value convert into decimal format
    * 

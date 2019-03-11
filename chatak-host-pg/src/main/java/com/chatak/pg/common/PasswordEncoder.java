@@ -3,19 +3,24 @@ package com.chatak.pg.common;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jpos.iso.ISOUtil;
 
 /**
- *  This is an utility class to encoded the password
+ *  This class is used to convert the currency value into various
+ *           format.
  */
+
 public class PasswordEncoder {
+	
+  static  Logger logger = LogManager.getLogger(PasswordEncoder.class); 
 
   public PasswordEncoder() {
   }
@@ -86,7 +91,7 @@ public class PasswordEncoder {
   }
 
   public static void main(String arg[]) throws Exception {
-    Logger.getLogger("MDS(DESede) Encrypt : " + PasswordEncoder.encrypt(""));
-    Logger.getLogger("MDS(DESede) Decrypt : " + PasswordEncoder.decrypt("CF5C6A2A2E626A57"));
+    logger.info("MDS(DESede) Encrypt : " + PasswordEncoder.encrypt(""));
+    logger.info("MDS(DESede) Decrypt : " + PasswordEncoder.decrypt("CF5C6A2A2E626A57"));
   }
 }

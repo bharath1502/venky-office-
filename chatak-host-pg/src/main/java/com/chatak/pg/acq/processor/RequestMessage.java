@@ -81,7 +81,6 @@ public class RequestMessage extends PGMessage {
     if(status)
       mISOMessage = isoMsg;
     return status;
-    // return isoMsg ;
   }
 
   /**
@@ -120,11 +119,6 @@ public class RequestMessage extends PGMessage {
 	  logger.info("RequestMessage | generateISOMessage | Basic iso fields check success");
 	  
       //Skip validation for network transaction and void
-      /*if(!isoMessage.getMTI().substring(1,4).equals("800") && !isoMessage.getMTI().substring(1,4).equals("400")){
-    	  ISORequestValidator.validateMandatoryFields(isoMessage, isoMessage.getString(22));
-    	  logger.info("RequestMessage | generateISOMessage | Mandatory iso fields check success");
-      }*/
-      
       status = true;
 
       gatewayRequest = new PGActivityLog();

@@ -344,7 +344,6 @@ public class SettlementReportController implements URLMappingConstants {
 		entity.setPgTransactionId(columns[Integer.parseInt("3")]);
 		issuanceTransactionNotfoundAcquiringList.add(entity);
 		//Commented for Batch Inserts
-		/*settlementService.saveIssuanceSettlementTransaction(entity);*/
 		logger.info("Missing Acquiring Transactions : IssuerTxnID " +columns[2]
 		    +", PgTransactionId " + columns[3]);
 		logger.info("Exiting :: SettlementReportController :: populateMissingAcquiringTransactions");
@@ -398,8 +397,6 @@ public class SettlementReportController implements URLMappingConstants {
 		settlementTransactionsList.add(settlementTransaction);
 		// Set the data back
 		entity.setSettlementTransactionsList(settlementTransactionsList);
-		
-		//entity.setIsoAmount(entity.getIsoAmount() == null ? isoAmt : (entity.getIsoAmount() + isoAmt));
 		
 		Long merchantAmount = (Long.valueOf(transaction.getAcquirerAmount()) - (isoAmt + pmAmt));
 		if (columns[Integer.parseInt("6")].equalsIgnoreCase(Constants.POS_PURCHASE)) {

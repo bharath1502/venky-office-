@@ -107,7 +107,6 @@ public final class JPOSUtil {
     return new PrintStream(realPrintStream) {
     	@Override
     	public void print(final String string) {
-        //realPrintStream.print(string);
         logger.info(string);
       }
     };

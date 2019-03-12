@@ -16,6 +16,10 @@ import com.chatak.pg.exception.ValidationException;
  * @version 1.0
  */
 public class ISORequestValidator {
+	
+	private ISORequestValidator() {
+		//Do nothing
+	}
 
   private static Logger log = Logger.getLogger(ISORequestValidator.class);
 

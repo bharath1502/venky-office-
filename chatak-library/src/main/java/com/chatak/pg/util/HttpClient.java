@@ -183,7 +183,6 @@ public class HttpClient {
       validateResponseStatusCode(resultantObject.getStatusCode().value());
       
       // PERF >> This method is causing object wait timeout
-      //processSensitiveData(isSensitiveData, resultantObject, "Resultant Object After convertion: ");
       logger.info("Exiting :: HttpClient :: invokePost");
       return resultantObject.getBody();
     } catch (RuntimeException e) {

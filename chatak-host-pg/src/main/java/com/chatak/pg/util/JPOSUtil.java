@@ -105,8 +105,8 @@ public final class JPOSUtil {
    */
   public static PrintStream createLoggingProxy(final PrintStream realPrintStream, final Logger logger) {
     return new PrintStream(realPrintStream) {
-      public void print(final String string) {
-        //realPrintStream.print(string);
+    	@Override
+    	public void print(final String string) {
         logger.info(string);
       }
     };

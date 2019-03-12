@@ -100,56 +100,64 @@
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">												
-												<fieldset class="col-sm-3"> 
+												<fieldset class="col-sm-3">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.customerid"/></label>
 													<form:input path="customerId" cssClass="form-control" maxlength="50"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>
-												<fieldset class="col-sm-3"> 
+												<fieldset class="col-sm-3">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.firstname"/></label>
 													<form:input path="firstName" cssClass="form-control" maxlength="250"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>
-												<fieldset class="col-sm-3"> 
+												<fieldset class="col-sm-3">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.lastname"/></label>
 													<form:input path="lastName" cssClass="form-control" maxlength="250"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>
-												<fieldset class="col-sm-3"> 
+												<fieldset class="col-sm-3">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.mobilephone"/></label>
 													<form:input id="mobileNumber" path="mobileNumber" cssClass="form-control" maxlength="10" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>
-												<fieldset class="col-sm-3"> 
+												<fieldset class="col-sm-3">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.emailid"/></label>
 													<form:input path="emailId" cssClass="form-control" maxlength="50"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span> 
 													</div> 
 												</fieldset>	
-												<fieldset class="col-sm-3"> 
+												<fieldset class="col-sm-3">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.city"/></label>
 													<form:input path="city" cssClass="form-control" maxlength="20"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>	
-												<fieldset class="col-sm-3"> 
+												<fieldset class="col-sm-3">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.company"/></label>
 													<form:input path="businessName" cssClass="form-control" maxlength="10"/>
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>								
-												<fieldset class="col-sm-3"> 
+												<fieldset class="col-sm-3">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="dash-board.label.status"/></label>
 														<form:select path="status" cssClass="form-control">
 															<form:option value="">..:<spring:message code="sub-merchant-create.label.select"/>:..</form:option>
@@ -161,6 +169,7 @@
 													</div> 
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.lable.recordsperpage"/></label>
 													<form:select cssClass="form-control" path="pageSize" id="pageSize">
 														<form:option value="10">10</form:option>

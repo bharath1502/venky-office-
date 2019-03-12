@@ -149,32 +149,6 @@ public abstract class AccountTransactionService {
 
     // Step-1 : Initially logging total amount into account transactions
     pgAccountTransactions = accountTransactionsDao.createOrUpdate(pgAccountTransactions);
-
-    // Step-2 : Debting total fee amount from Step-1
-    // Commenting the below fee credit since it is being charged to PM and ISO as per the acquiring hierarchy
-//    descriptionTemplate = Properties.getProperty("chatak-pay.account.fee.description.template");
-//    descriptionTemplate = MessageFormat.format(descriptionTemplate,
-//                                               StringUtils.amountToString(chatakFeeAmountTotal),
-//                                               StringUtils.amountToString(merchantFeeAmount));
-//    
-//    logFeeAmount(pgAccountTransactions, totalFeeAmount, AccountTransactionCode.CC_FEE_DEBIT, descriptionTemplate);
-    
-    // Step-3 : Crediting Merchant Fee
-    // Commenting the below since this will be required for different merchant fees like settlement fee, chargeback fee etc,
-    // This to be taken in phase 2
-//    descriptionTemplate = "Merchant Fee: " + StringUtils.amountToString(merchantFeeAmount);
-//    logFeeAmount(pgAccountTransactions,
-//                 merchantFeeAmount,
-//                 AccountTransactionCode.CC_MERCHANT_FEE_CREDIT,
-//                 descriptionTemplate);
-    
-    // Step-4 : Crediting Chatak system Fee
-    // Commenting the below fee credit since it is being charged to PM and ISO as per the acquiring hierarchy
-//    descriptionTemplate = "Processing Fee: " + StringUtils.amountToString(chatakFeeAmountTotal);
-//    logFeeAmount(pgAccountTransactions,
-//                 totalFeeAmount,
-//                 AccountTransactionCode.CC_ACQUIRER_FEE_CREDIT,
-//                 descriptionTemplate);
 	if (!request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
 		List<PGFeeProgram> feeProgram = feeProgramDao.findByCardProgramId(pgTransaction.getCpId());
 		Double pmShare = feeProgram.get(0).getPmShare();

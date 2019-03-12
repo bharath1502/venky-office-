@@ -2,10 +2,6 @@ package com.chatak.pg.util;
 
 import java.util.Enumeration;
 import java.util.Properties;
-
-/*import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;*/
-
 import org.codehaus.jackson.map.ObjectMapper;
 
 

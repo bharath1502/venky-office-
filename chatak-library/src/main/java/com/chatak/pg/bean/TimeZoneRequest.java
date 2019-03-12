@@ -15,10 +15,12 @@ public class TimeZoneRequest extends SearchRequest{
 	
 	private String dayLightTimeOffset;
 	
+	@Override
 	public Long getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}

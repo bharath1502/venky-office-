@@ -39,6 +39,7 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
     return cleanXSS(value);
   }
 
+  @Override
   public String getHeader(String name) {
     logger.debug("Ineader .. parameter .......");
     String value = super.getHeader(name);

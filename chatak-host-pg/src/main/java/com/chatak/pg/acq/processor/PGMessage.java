@@ -70,7 +70,7 @@ public abstract class PGMessage {
 
 		}
 		catch(ISOException e) {
-			System.err.println("ISOException in RequestMessage " + e.getLocalizedMessage());
+			logger.error("ISOException in RequestMessage " + e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
@@ -91,7 +91,7 @@ public abstract class PGMessage {
 				mISOMessage.set(fldno, value);
 		}
 		catch(Exception e) {
-			System.err.println("ISOException in RequestMessage " + e.getLocalizedMessage());
+			logger.error("ISOException in RequestMessage " + e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
@@ -105,7 +105,7 @@ public abstract class PGMessage {
 				mISOMessage.set(fldno, value);
 		}
 		catch(ISOException e) {
-			System.err.println("ISOException in RequestMessage " + e.getLocalizedMessage());
+			logger.error("ISOException in RequestMessage " + e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
@@ -119,7 +119,7 @@ public abstract class PGMessage {
 	 * @return String The value associated with that filed number
 	 */
 	public String getFieldValue(int fldno) {
-		String fieldValue = null; // "";
+		String fieldValue = null; 
 		try {
 			if(mISOMessage != null) {
 				Object obj = mISOMessage.getValue(fldno);
@@ -143,7 +143,7 @@ public abstract class PGMessage {
 	 * @return String The value associated with that filed number
 	 */
 	public byte[] getFieldByteValue(int fldno) {
-		byte[] fieldValue = null; // "";
+		byte[] fieldValue = null; 
 		try {
 			if(mISOMessage != null) {
 				Object obj = mISOMessage.getValue(fldno);

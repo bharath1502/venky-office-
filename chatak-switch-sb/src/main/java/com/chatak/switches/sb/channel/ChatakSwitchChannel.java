@@ -136,9 +136,7 @@ public class ChatakSwitchChannel extends BaseChannel {
     }
     catch(ISOException e) {
       evt.addMessage(e);
-      if(incomingBytes != null) {
         JPOSUtil.logISOData(isoMsg, logger);
-      }
       throw e;
     }
     catch(EOFException e) {

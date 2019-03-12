@@ -9,12 +9,17 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jpos.iso.ISOUtil;
 
 /**
  *  This is an utility class to encoded the password
  */
+
 public class PasswordEncoder {
+	
+  static  Logger logger = LogManager.getLogger(PasswordEncoder.class); 
 
   public PasswordEncoder() {
   }
@@ -85,7 +90,7 @@ public class PasswordEncoder {
   }
 
   public static void main(String arg[]) throws Exception {
-    System.out.println("MDS(DESede) Encrypt : " + PasswordEncoder.encrypt(""));
-    System.out.println("MDS(DESede) Decrypt : " + PasswordEncoder.decrypt("CF5C6A2A2E626A57"));
+    logger.info("MDS(DESede) Encrypt : " + PasswordEncoder.encrypt(""));
+    logger.info("MDS(DESede) Decrypt : " + PasswordEncoder.decrypt("CF5C6A2A2E626A57"));
   }
 }

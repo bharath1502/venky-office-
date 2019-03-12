@@ -202,7 +202,6 @@ public class TransactionFormatter {
       // 5bytes tpdu + data
       // Skipping 2 bytes length and 5 bytes tpdu
 
-      // memcpy(lengthBytesBinary, data, 2 );
       lengthBytesBinary[0] = data[indexBinary++];
       lengthBytesBinary[1] = data[indexBinary++];
       // indexBinary = indexBinary + 5; //5 bytes tpdu

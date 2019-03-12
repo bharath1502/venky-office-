@@ -89,6 +89,7 @@
 														 />
 													</fieldset> --%>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.transactionid"/></label> 
 														<form:input path="txnRefNumber" cssClass="form-control"
 														id="transactionIdDiv" maxlength="15" readonly="true"
@@ -100,6 +101,7 @@
 													
 													<!--Panel Action Button End -->
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.invoicenumber"/></label>
 														<form:input path="invoiceNumber" cssClass="form-control"
 															id="invoiceNumberDiv1" readonly="true" />
@@ -108,6 +110,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.cardnumber"/></label>
 														<form:input path="cardNum" cssClass="form-control"
 															readonly="true" id="cardNumberDiv1"	/>
@@ -116,6 +119,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="transaction-refund.label.authcode"/></label>
 														<form:input path="authId" cssClass="form-control"
 															id="authNumberDiv1" readonly="true"	/>
@@ -124,6 +128,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.expirationdate"/></label>
 														<form:input path="expDate" cssClass="form-control"
 															readonly="true" id="expDateDiv"	/>
@@ -132,6 +137,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.Subtotal"/><span class="required-field">*</span></label>
 														<fmt:formatNumber type="number"
 															value="${virtualTeminalRefund.subTotal}"
@@ -144,6 +150,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.fee"/><span class="required-field">*</span></label>
 														<fmt:formatNumber type="number" value="${virtualTeminalRefund.feeAmount}" pattern="<%=Constants.AMOUNT_FORMAT %>" var="feeAmount" />
 														<input name="feeAmount" class="form-control" onkeypress="return amountValidate(this,event)"
@@ -155,6 +162,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.totalamount"/></label>
 														<fmt:formatNumber type="number" value="${virtualTeminalRefund.txnAmount}" pattern="<%=Constants.AMOUNT_FORMAT %>" var="txnAmount" />
 														<input name="txnAmount" class="form-control"
@@ -165,6 +173,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.cardholdername"/></label>
 														<form:input path="cardHolderName" cssClass="form-control" readonly="true" id="cardHolderNameDiv" onkeydown="validateSpace(this)"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -172,6 +181,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-6">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.description"/><span class="required-field">*</span></label>
 														<form:textarea path="description" cssClass="form-control"
 															id="descriptionDiv"
@@ -182,19 +192,23 @@
 													</fieldset>
 													
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<form:hidden path="taxAmt" />
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<!-- <!-- <label data-toggle="tooltip" data-placement="top" title="">Tip Amount</label> -->
 														<form:hidden path="tipAmount" id="tipAmountDiv" />
 														<form:hidden path="merchantId" id="merchantIdHDiv" />
 														<form:hidden path="terminalId" id="terminalIdHDiv" />
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<!-- <label data-toggle="tooltip" data-placement="top" title="">Shipping Charges</label> -->
 														<form:hidden path="shippingAmt" id="shippingAmtDiv" />
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 
 														<form:hidden path="cgRefNumber" id="cgRefNumberDiv" />
 														<%-- <form:hidden path="txnRefNumber" id="txnRefNumberDiv" /> --%>

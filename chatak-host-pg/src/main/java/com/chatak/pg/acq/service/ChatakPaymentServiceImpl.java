@@ -1250,7 +1250,6 @@ public class ChatakPaymentServiceImpl implements PaymentService {
     pgemvTransaction.setPgTransactionId(txnRefNumber);
     pgemvTransaction.setPsn(emvData.getPsn());
     pgemvTransaction.setTcc(emvData.getTcc());
-    //pgemvTransaction.setTerminalType(terminalType);
     pgemvTransaction.setTsn(emvData.getTsn());
     pgemvTransaction.setTvr(emvData.getTvr());
     pgemvTransaction.setTxnStatusInfo(emvData.getTxnStatusInfo());

@@ -2322,7 +2322,9 @@ input.alignright{
 .search-table-align{
 	font-size:10px !important;
 }
-
+.clear-Both {
+	clear:both;
+}
 .general-popup {
 	background-color: #f2f2f2;
 	border-radius: 7px;

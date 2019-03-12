@@ -330,6 +330,9 @@ function validateFeeProgram() {
 	if (validateFeePrgmName()
 			| !clientValidation('flatFee', 'fee','flatFeeErr')
 			| !validateFeePercentValue()
+			| !clientValidation('isoId','partner_name_dropdown','isoError')
+			| !clientValidation('panLow','partner_name_dropdown','panError')
+			| !clientValidation('programManagerId','partner_name_dropdown','pmError')
 			| !validateSharing()) {
 		return false;
 	} else {

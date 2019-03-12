@@ -573,7 +573,7 @@ public class FeeProgramController implements URLMappingConstants {
   public ModelAndView changeFeeProgramStatus(final HttpSession session,
       @FormParam("suspendActiveId") final Long feeProgramId,
       @FormParam("suspendActiveStatus") final String feeProgramStatus,
-      @FormParam("reason") final String reason, Map<String, Serializable> model,
+      @FormParam("reason") final String reason, Map model,
       HttpServletRequest request, HttpServletResponse response) {
     logger.info("Entering:: FeeProgramController:: changeFeeProgramStatus method");
 
@@ -595,7 +595,11 @@ public class FeeProgramController implements URLMappingConstants {
               : (Integer) session.getAttribute(Constants.PAGE_NUMBER),
           (Integer) session.getAttribute("totalRecords"), model);
 			if (ActionErrorCode.ERROR_CODE_00.equals(responseDetails.getErrorCode())) {
-				modelAndView = showFeeProgramSearch(request, response, model, session);
+				feeProgramDTO.setPageIndex(Constants.ONE);
+			      FeeProgramResponseDetails feeProgramResponse =
+			          feeProgramService.searchFeeProgramForJpa(feeProgramDTO);
+			      List<FeeProgramDTO> searchList = feeProgramResponse.getFeeCodeList();
+			      session.setAttribute(Constants.SEARCH_LIST, searchList);
 				model.put(Constants.SUCESS, messageSource.getMessage("fee.program.status.change.sucess", null,
 						LocaleContextHolder.getLocale()));
 			} else {
@@ -608,6 +612,7 @@ public class FeeProgramController implements URLMappingConstants {
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting:: FeeProgramController:: changeFeeProgramStatus method");
+    modelAndView.addObject("flag", true);
     return modelAndView;
   }
   

@@ -660,7 +660,6 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
             OAuthToken token = null;
             // OAuth generation
             logger.info("OAuth Genartion");
-            if (null != applicationClientDTO) {
               if (!StringUtil.isNullAndEmpty(applicationClientDTO.getRefreshToken())) {
                 logger.info("Refresh Token is Not Empty");
                 token = JsonUtil.getValidOAuth2TokenLoginRefresh(applicationClientDTO);
@@ -684,7 +683,6 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
               applicationClient.setRefreshToken(token.getRefresh_token());
               pgMerchantService.saveOrUpdateApplicationClient(applicationClient);
               logger.info("Updated Application Client >> Exiting");
-            }
             logger.info("Exiting :: TransactionRestController :: generateAccessTokenOnRefreshToken");
           } catch (Exception e) {
             logger.error("Error :: TransactionRestController :: generateAccessTokenOnRefreshToken : " + e.getMessage(), e);

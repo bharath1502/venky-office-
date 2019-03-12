@@ -41,6 +41,8 @@ import com.chatak.pay.controller.model.Request;
 import com.chatak.pay.controller.model.Response;
 import com.chatak.pay.controller.model.SplitStatusRequest;
 import com.chatak.pay.controller.model.SplitStatusResponse;
+import com.chatak.pay.controller.model.TmkDataRequest;
+import com.chatak.pay.controller.model.TmkDataResponse;
 import com.chatak.pay.controller.model.TransactionHistoryResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
@@ -1099,7 +1101,20 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
             @RequestBody LogonRequest logonRequest) {
 		LogonResponse logonResponse = new LogonResponse();
 		return logonResponse;
-		
+	}
+	
+	private TmkDataResponse getTMKByDeviceSerialNumber(TmkDataRequest tmkDataRequest){
+		TmkDataResponse tmkDataResponse = new TmkDataResponse();
+		String tmk = "";
+		try {
+		  tmk = JsonUtil.postRequest(String.class, tmkDataRequest, "serviceEndPoint");
+		} catch (ChatakPayException | HttpClientException e) {
+			e.printStackTrace();
+		}
+		if(!tmk.equals("")){
+			tmkDataResponse.setTmk(tmk);
+		}
+		return tmkDataResponse;
 	}
 	
 	@RequestMapping(value="/processEnc",method=RequestMethod.POST)
@@ -1109,6 +1124,5 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
             @RequestBody ProcessEncRequest processEncRequest) {
 		Response processEncResponse = new Response();
 		return processEncResponse;
-		
 	}
 }

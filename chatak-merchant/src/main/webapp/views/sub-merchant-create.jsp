@@ -668,7 +668,6 @@
 				$("#allowAutoSettlement").prop("checked", true);
 			}
 		}
-		document.getElementById('lookingFor').setAttribute('maxlength', '100');
 		
 		$(document).ready(function() {
 			 $("#parentMerchantcode").prop("disabled", true);

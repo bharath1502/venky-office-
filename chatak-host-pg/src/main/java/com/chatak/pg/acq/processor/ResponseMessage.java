@@ -90,10 +90,10 @@ public class ResponseMessage extends PGMessage {
       status = true;
     }
     catch(ISOVException e) {
-      System.err.println("ISOVException " + e.getMessage());
+      logger.error("ISOVException " + e.getMessage());
     }
     catch(ISOException e) {
-      System.err.println("ISOException " + e.getLocalizedMessage());
+      logger.error("ISOException " + e.getLocalizedMessage());
       JPOSUtil.logISOData(mISOMessage, logger);
     }
     if(status)

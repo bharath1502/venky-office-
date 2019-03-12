@@ -6,14 +6,18 @@ package com.chatak.pg.util;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 /**
  * << Add Comments Here >>
  *
- * @author Girmiti Software
+ * @author Girmiti Software	
  * @date 22-Dec-2014 12:35:25 pm
  * @version 1.0
  */
 public class TransactionId {
+	
+	private static Logger logger = LogManager.getLogger(TransactionId.class);
   /**
    * RFC5289 Transaction ID length.
    */
@@ -201,7 +205,7 @@ public class TransactionId {
   
   public static void main(String[] args) {
     TransactionId id = new TransactionId();
-    System.out.println(createNewTransactionID());
+    logger.info(createNewTransactionID());
   }
 
 }

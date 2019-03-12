@@ -1103,7 +1103,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		return logonResponse;
 	}
 	
-	private TmkDataResponse getTmk(TmkDataRequest tmkDataRequest){
+	private TmkDataResponse getTMKByDeviceSerialNumber(TmkDataRequest tmkDataRequest){
 		TmkDataResponse tmkDataResponse = new TmkDataResponse();
 		String tmk = "";
 		try {

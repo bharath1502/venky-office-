@@ -1659,7 +1659,8 @@ function specialchar(data,div_id)  {
 			return flag;
 		} else {
 			setDiv(errorMsg, "&nbsp;");
-		}if (flag) {
+		}
+		if (flag) {
 			flag = validateDates(divId, errorMsg);
 			if (!flag)
 				return flag;

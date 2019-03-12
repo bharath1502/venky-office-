@@ -49,7 +49,8 @@ function validateCreateMerchantStep1() {
 			setLable('confirmMfax', getVal('fax').trim());
 		}else{
 			setLable('confirmMfax', "");
-		}if(businessTypeValue != ""){
+		}
+		if(businessTypeValue != ""){
 			setLable('confirmBusinessType', businessTypeValue);
 		}else{
 			setLable('confirmBusinessType', "");
@@ -73,7 +74,8 @@ function validateCreateMerchantStep1SignUp() {
 			setLable('confirmMfax', getVal('fax').trim());
 		}else{
 			setLable('confirmMfax', "");
-		}if(businessTypeValue != ""){
+		}
+		if(businessTypeValue != ""){
 			setLable('confirmBusinessType', businessTypeValue);
 		}else{
 			setLable('confirmBusinessType', "");
@@ -221,7 +223,8 @@ function validateCreateMerchantStep1edit() {
 		setLable('confirmMfax', faxValue);
 		}else{
 			setLable('confirmMfax', "");
-		}if(businessTypeValue != ""){
+		}
+		if(businessTypeValue != ""){
 			setLable('confirmBusinessType', businessTypeValue);
 		}else{
 			setLable('confirmBusinessType', "");

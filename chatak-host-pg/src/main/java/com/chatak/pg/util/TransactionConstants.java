@@ -6,7 +6,7 @@ package com.chatak.pg.util;
 public class TransactionConstants {
 	
 	private TransactionConstants() {
-		
+		//Do nothing
 	}
 
   // SMS templates for payment gateway transaction

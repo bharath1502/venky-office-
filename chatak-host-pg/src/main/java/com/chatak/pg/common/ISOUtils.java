@@ -12,7 +12,7 @@ import java.io.PrintStream;
 public class ISOUtils {
 	
 	private ISOUtils() {
-		
+		//Do nothing
 	}
 
   /**

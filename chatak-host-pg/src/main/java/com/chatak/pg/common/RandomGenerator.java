@@ -9,7 +9,7 @@ import java.util.*;
 public class RandomGenerator {
 	
 	private RandomGenerator() {
-		
+		//Do nothing
 	}
 
   /**

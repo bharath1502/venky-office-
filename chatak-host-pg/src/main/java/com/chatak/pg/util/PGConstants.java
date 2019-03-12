@@ -3,7 +3,7 @@ package com.chatak.pg.util;
 public class PGConstants {
 	
 	private PGConstants() {
-		
+		//Do nothing
 	}
 
 	// Transaction Types

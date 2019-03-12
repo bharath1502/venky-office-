@@ -101,7 +101,6 @@ public class BINDaoImpl implements BINDao {
    */
   @Override
   public List<Long> getAllActiveBins() throws DataAccessException {
-//    logger.info("BINDaoImpl | getAllActiveBins | Entering");
 //    List<PGBINRange> list = binRepository.getAllActiveBins();
 //    List<Long> binList = new ArrayList<Long>(1);
 //    if (CommonUtil.isListNotNullAndEmpty(list)) {

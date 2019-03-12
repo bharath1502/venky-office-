@@ -290,7 +290,6 @@ private Response processsPGAccount(AccountBalanceDTO accountBalanceDTO, String t
     merchant.setMerchantCallBackURL(pgMerchant.getMerchantCallBack());
     merchant.setMerchantConfigId(pgMerchant.getMerchantConfig().getId());
     merchant.setLitleMID(pgMerchant.getLitleMID());
-    //merchant.setAutoSettlementStatus(pgMerchant.getMerchantConfig().getAutoSettlement().toString());
     merchantDao.getMerchantConfigDetailsForAccountCreate(merchant);
   }
 

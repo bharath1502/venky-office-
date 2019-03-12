@@ -108,5 +108,4 @@ public interface MerchantRepository extends JpaRepository<PGMerchant, Long>, Que
   public PGMerchant findByMerchantConfig(@Param("deviceManufactId") PGMerchantConfig deviceManufactId);
   
 //  @Query(value = "select pgm.id, pgmc.autoSettlement from PGMerchant pgm join PGMerchantConfig pgmc on pgm.merchantConfig = pgmc.id and pgm.merchantCode = :merchantCode")
-//  public PGMerchant getMerchantAutoSettlementByCode(@Param("merchantCode") String merchantCode);
 }

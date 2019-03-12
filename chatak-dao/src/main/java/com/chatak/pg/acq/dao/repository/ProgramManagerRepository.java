@@ -40,5 +40,4 @@ public interface ProgramManagerRepository
   public List<ProgramManager> findByBatchTime(@Param("pmSystemConvertedTime")String pmSystemConvertedTime);
   
 //  @Query("select batchPrefix from ProgramManager pm where pm.id = :id")
-//  public String findBatchPrefixByProgramManagerId(@Param("id")Long id);
 }

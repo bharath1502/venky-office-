@@ -1093,7 +1093,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 	}
 	
 	@RequestMapping(value="/logon",method=RequestMethod.POST)
-	public Response logon(HttpServletRequest request,
+	public LogonResponse logon(HttpServletRequest request,
             HttpServletResponse response,
             HttpSession session,
             @RequestBody LogonRequest logonRequest) {

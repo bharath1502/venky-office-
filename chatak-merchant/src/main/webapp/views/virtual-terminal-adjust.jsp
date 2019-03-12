@@ -115,6 +115,7 @@
 													</div>
 												</fieldset> -->
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-adjust.label.referencenumber"/><span class="required-field">*</span></label>
 													<input type="text" class="form-control" id="refNumberDiv"
 														onblur="this.value=this.value.trim();validRefNumber('refNumberDiv','refNumberErrorDiv')" />
@@ -137,6 +138,7 @@
 											</fieldset>
 											<fieldset class="col-sm-12 fetch-content">
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.invoicenumber"/><span class="required-field">*</span></label>
 													<form:input path="invoiceNumber" cssClass="form-control"
 														id="invoiceNumberDiv1"
@@ -146,6 +148,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.cardnumber"/><span class="required-field">*</span></label>
 													<form:input path="cardNum" cssClass="form-control"
 														id="cardNumberDiv1"
@@ -155,6 +158,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="transaction-refund.label.authcode"/><span class="required-field">*</span></label>
 													<form:input path="authId" cssClass="form-control"
 														id="authNumberDiv1"
@@ -164,6 +168,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-contract-create.label.subtotal"/><span class="required-field">*</span></label>
 													<fmt:formatNumber type="number"
 													value="${virtualTeminalAdjust.subTotal}"
@@ -176,6 +181,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.tipamount"/></label>
 													<form:input path="tipAmount" cssClass="form-control"
 														id="tipAmountDiv" onblur="doAddAdjust()" />
@@ -184,6 +190,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title="">Total<span class="required-field">*</span></label>
 													<form:input path="txnAmount" cssClass="form-control"
 														id="totalAmtDiv"

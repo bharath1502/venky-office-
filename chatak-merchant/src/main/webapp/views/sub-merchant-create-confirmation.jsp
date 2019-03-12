@@ -193,6 +193,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend>s</legend>
 														<input type="submit"
 															class="form-control button pull-right pos-next"
 															value="<spring:message code="search-sub-merchant.label.create"/>"> <input type="button"

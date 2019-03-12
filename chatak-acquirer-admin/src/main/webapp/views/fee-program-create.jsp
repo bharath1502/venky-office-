@@ -18,6 +18,8 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
+<script src="../js/feeprogram.js"></script>
+<script src="../js/validation.js"></script>
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -179,7 +181,7 @@
 													<label><spring:message code="fee-report.label.pm.name"/><span
 														class="required-field">*</span></label>
 													<form:select id="programManagerId" path="programManagerId" onclick="validatePM()" onchange="getIso(this.value)"
-														cssClass="form-control" >
+														cssClass="form-control" onblur="clientValidation('programManagerId','partner_name_dropdown','pmError')" >
 														<form:option value=""><spring:message code="fee-report.label.select"/></form:option>
 														<c:if test="${not empty cardProgramList}">
 															<c:forEach items="${cardProgramList}" var="programManager">
@@ -195,7 +197,7 @@
 													<label><spring:message code="admin.iso.label.message"/><span
 														class="required-field">*</span></label>
 													<form:select id="isoId" path="isoId" onclick="validateISO()" onchange="getPan(this.value)"
-														cssClass="form-control" >
+														cssClass="form-control" onblur="clientValidation('isoId','partner_name_dropdown','isoError')" >
 														<form:option value=""><spring:message code="fee-report.label.select"/></form:option>
 														<c:if test="${not empty isoRequestsList}">
 															<c:forEach items="${isoRequestsList}" var="iso">
@@ -211,7 +213,7 @@
 													<label><spring:message code="admin.panLow-panHigh.label.message"/><span
 														class="required-field">*</span></label>
 													<form:select id="panLow" path="panId"
-														cssClass="form-control" >
+														cssClass="form-control" onblur="clientValidation('panLow','partner_name_dropdown','panError')">
 														<form:option value=""><spring:message code="fee-report.label.select"/></form:option>
 														<c:if test="${not empty panRequestsList}">
 															<c:forEach items="${panRequestsList}" var="pan">
@@ -220,10 +222,10 @@
 														</c:if>
 													</form:select>
 													<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="isoError">&nbsp;</span>
+														<span class="red-error" id="panError">&nbsp;</span>
 													</div>
 												</fieldset>
-												<fieldset class="col-md-3 col-sm-6">
+												<fieldset class="col-md-3 col-sm-6 clear-Both">
 													<label data-toggle='tooltip' data-placement='top' title=''><spring:message
 													code="fee-program-create.label.%value" /><span
 												class='required-field'>*</span></label>

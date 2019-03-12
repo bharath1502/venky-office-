@@ -34,6 +34,9 @@ import com.chatak.pay.controller.model.ClientCurrencyDTO;
 import com.chatak.pay.controller.model.ClientSsoLoginResponse;
 import com.chatak.pay.controller.model.LoginRequest;
 import com.chatak.pay.controller.model.LoginResponse;
+import com.chatak.pay.controller.model.LogonRequest;
+import com.chatak.pay.controller.model.LogonResponse;
+import com.chatak.pay.controller.model.ProcessEncRequest;
 import com.chatak.pay.controller.model.Request;
 import com.chatak.pay.controller.model.Response;
 import com.chatak.pay.controller.model.SplitStatusRequest;
@@ -1087,5 +1090,25 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		}
 		logger.info("Exiting:: TransactionRestController:: sendMail method");
 		return resp;
+	}
+	
+	@RequestMapping(value="/logon",method=RequestMethod.POST)
+	public LogonResponse logon(HttpServletRequest request,
+            HttpServletResponse response,
+            HttpSession session,
+            @RequestBody LogonRequest logonRequest) {
+		LogonResponse logonResponse = new LogonResponse();
+		return logonResponse;
+		
+	}
+	
+	@RequestMapping(value="/processEnc",method=RequestMethod.POST)
+	public Response processEnc(HttpServletRequest request,
+            HttpServletResponse response,
+            HttpSession session,
+            @RequestBody ProcessEncRequest processEncRequest) {
+		Response processEncResponse = new Response();
+		return processEncResponse;
+		
 	}
 }

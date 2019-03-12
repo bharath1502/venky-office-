@@ -625,6 +625,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
 	  return transactionRepository.findByTransactionId(id);
   }
   
+  @Override
   protected BooleanExpression isMerchantIdorParentMerchantId(List<String> merchantCodeList) {
     return QPGTransaction.pGTransaction.merchantId.in(merchantCodeList);
   }

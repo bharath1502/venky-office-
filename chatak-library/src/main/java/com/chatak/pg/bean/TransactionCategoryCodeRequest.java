@@ -12,6 +12,7 @@ public class TransactionCategoryCodeRequest extends SearchRequest {
 
   private String description;
 
+  @Override
   public Long getId() {
     return id;
   }
@@ -20,6 +21,7 @@ public class TransactionCategoryCodeRequest extends SearchRequest {
     return transactionCategoryCode;
   }
 
+  @Override
   public void setId(Long id) {
     this.id = id;
   }

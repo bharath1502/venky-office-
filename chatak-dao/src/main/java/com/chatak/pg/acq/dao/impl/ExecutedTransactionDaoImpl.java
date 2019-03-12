@@ -801,6 +801,7 @@ public class ExecutedTransactionDaoImpl extends TransactionDaoImpl
     return litleEFTRequest;
   }
 
+  @Override
   protected BooleanExpression isRevenueType(String revenueType) {
     if (revenueType != null && !"".equals(revenueType)) {
       if (revenueType.equals(OriginalChannelEnum.MERCHANT_WEB.value())

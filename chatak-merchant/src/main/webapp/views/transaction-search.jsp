@@ -69,7 +69,8 @@
 									<div class="col-sm-12">
 										<div class="row">
 											<div class="field-element-row">
-												<fieldset class="col-sm-4"> 
+												<fieldset class="col-sm-4">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-update.label.merchantcode"/></label>
 													<form:select cssClass="form-control" path="merchant_code" id="merchant_code" >
 														<form:option value="-1">..:<spring:message code="transactions-search.label.select"/>:..</form:option>
@@ -81,14 +82,16 @@
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>
-												<fieldset class="col-sm-4"> 
+												<fieldset class="col-sm-4">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title="">Terminal Code</label>
 													<form:input cssClass="form-control" path="terminal_id" id="terminal_id" maxlength="16" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>
-												<fieldset class="col-sm-4"> 
+												<fieldset class="col-sm-4">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title="">Transaction Type</label>
 													<form:select cssClass="form-control" path="transaction_type" id="transaction_type" >
 														<form:option value="0">..:Select:..</form:option>
@@ -107,7 +110,8 @@
 										</div>
 										<div class="row">
 											<div class="field-element-row">
-												<fieldset class="col-sm-4"> 
+												<fieldset class="col-sm-4">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title="">Transaction from</label>
 													<div class="input-group">
 														<form:input cssClass="form-control" path="from_date" id="from_date" />
@@ -117,7 +121,8 @@
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>
-												<fieldset class="col-sm-4"> 
+												<fieldset class="col-sm-4">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title="">Transaction till</label>
 													<div class="input-group">
 														<form:input cssClass="form-control" path="to_date" id="to_date" />
@@ -127,7 +132,8 @@
 														<span class="red-error">&nbsp;</span>
 													</div> 
 												</fieldset>
-												<fieldset class="col-sm-4"> 
+												<fieldset class="col-sm-4">
+												<legend></legend> 
 													<label data-toggle="tooltip" data-placement="top" title="">Status</label>
 													<form:select cssClass="form-control" path="status" id="status" >
 														<form:option value="-1">..:Select:..</form:option>

@@ -83,9 +83,11 @@
 						<!-- Search Table Block Start -->
 						<div id="showDates">
 												<fieldset class="col-sm-12">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.selectdaterange"/>:</label>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.fromdate"/><span class="required-field">*</span></label>
 													<div class="input-group focus-field">
 														<input name="" id="transFromDate" onblur="return clientValidation('transFromDate', 'startDate','transFromDateErrorDiv');"
@@ -99,6 +101,7 @@
 												</fieldset>
 												
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.todate"/><span class="required-field">*</span></label>
 													<div class="input-group focus-field">
 														<input name="" class="form-control effectiveDate" id="transToDate"
@@ -112,6 +115,7 @@
 												</fieldset>
 												
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.currency"/>:<span class="required-field">*</span></label>
 														<select class="form-control" name="" id="currencyType" >
 															<option value="USD"><spring:message code="reports.label.USD"/></option>
@@ -122,6 +126,7 @@
 													</fieldset>
 													
 													<fieldset class="col-sm-3">
+													<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reports.label.merchantcode"/></label>
 													<select name="" id="merchantCode"  onkeypress="return numbersonly(this,event)" class="form-control">
 														<option value=""><spring:message code="common.label.search"/></option>
@@ -300,6 +305,7 @@
 					<div id="my_popup" class="locatioin-list-popup" style="display: none;">
 					<span class="glyphicon glyphicon-remove" onclick="closePopup()"></span>
 					<fieldset class="col-sm-12 padding0">
+					<legend></legend>
 							<div id="popUpTxnResult" ></div>
 					</fieldset>
 					<!-- Form Button Information Start -->

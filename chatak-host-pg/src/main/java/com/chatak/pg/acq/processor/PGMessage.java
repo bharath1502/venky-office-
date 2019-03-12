@@ -70,7 +70,7 @@ public abstract class PGMessage {
 
 		}
 		catch(ISOException e) {
-			System.err.println("ISOException in RequestMessage " + e.getLocalizedMessage());
+			logger.error("ISOException in RequestMessage " + e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
@@ -91,7 +91,7 @@ public abstract class PGMessage {
 				mISOMessage.set(fldno, value);
 		}
 		catch(Exception e) {
-			System.err.println("ISOException in RequestMessage " + e.getLocalizedMessage());
+			logger.error("ISOException in RequestMessage " + e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
@@ -105,7 +105,7 @@ public abstract class PGMessage {
 				mISOMessage.set(fldno, value);
 		}
 		catch(ISOException e) {
-			System.err.println("ISOException in RequestMessage " + e.getLocalizedMessage());
+			logger.error("ISOException in RequestMessage " + e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}

@@ -119,6 +119,7 @@
 											<section class="field-element-row account-details-content" style="display:none;">
 												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.companyname"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="businessName"
 															id="businessName" maxlength="50"
@@ -128,6 +129,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.firstname"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="firstName"
 															id="firstName" maxlength="50"
@@ -137,6 +139,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.lastname"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="lastName"
 															id="lastName" maxlength="50" onblur="this.value=this.value.trim();validateLastName()" />
@@ -145,6 +148,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.phone"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" onkeypress="return numbersonly(this,event)" path="phone"
 															id="phone" maxlength="10" onblur="this.value=this.value.trim();validatePhone()" />
@@ -153,6 +157,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.fax"/></label>
 														<form:input cssClass="form-control" path="fax" id="fax" onkeypress="return amountValidate(this,event)"
 															maxlength="13"  onblur="this.value=this.value.trim();clientValidation('fax','fax','faxEr')"/><%-- onblur="validateFax()" --%>
@@ -161,6 +166,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.e-mailid"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="emailId"
 															id="emailId" maxlength="50" onblur="this.value=this.value.trim();validateEmailId()"/>
@@ -170,6 +176,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address1"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="address1"
 															id="address1" maxlength="50" onblur="this.value=this.value.trim();validateAddress1()" />
@@ -178,6 +185,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address2"/></label>
 														<form:input cssClass="form-control" path="address2"
 															id="address2" maxlength="50" onblur="this.value=this.value.trim();validateAddress2();clientValidation('address2','address2','address2Er')" />
@@ -186,6 +194,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.city"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="city" id="city"
 															maxlength="50" onblur="this.value=this.value.trim();validateCity()" />
@@ -194,6 +203,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.country"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="country"
 															id="country" onblur="validateCountry()"
@@ -208,6 +218,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.state"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="state"
 															id="state" onblur="validateState()">
@@ -220,6 +231,7 @@
 													</fieldset>
 
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.zipcode"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="pin" id="pin" onkeypress ="generalZipCode()"
 															maxlength="7" onblur="this.value=this.value.trim();return zipCodeNotEmpty(id);" />
@@ -242,6 +254,7 @@
 														</div>
 													</fieldset> --%>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.businesstype"/></label>
 														<form:select cssClass="form-control" path="businessType"
 															id="businessType">
@@ -278,6 +291,7 @@
 												</fieldset>												
 												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.merchantcode" /><span
 															class="required-field">*</span></label>
@@ -292,6 +306,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="additional-information.label.username" /><span
 															class="required-field">*</span></label>
@@ -308,6 +323,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
+													<legend></legend>
 														<input type="button"
 															class="form-control button pull-right acc-next" onclick="createValidationForMerchant()"
 															value="<spring:message code="sub-merchant-create.label.continue"></spring:message>"> <input
@@ -326,6 +342,7 @@
 											<section class="field-element-row bank-info-details-content" style="display:none;">
 												<fieldset class="col-sm-12">													
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.name"></spring:message><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="bankAccountName"
 															id="bankAccountName" maxlength="50" 
@@ -335,6 +352,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.bankroutingnumber"></spring:message><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="bankRoutingNumber" onkeypress="return amountValidate(this,event)"
 															id="bankRoutingNumber" maxlength="9"  
@@ -344,6 +362,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.bankaccountnumber"></spring:message><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="bankAccountNumber" id="bankAccountNumber" 
 														maxlength="50" onblur="this.value=this.value.trim();return clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv');" />
@@ -352,6 +371,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="dash-board.label.type"></spring:message><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="bankAccountType"
 															id="bankAccountType" onblur="return clientValidation('bankAccountType', 'account_type','bankAccountTypeErrorDiv');">
@@ -365,6 +385,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address1"/></label>
 														<form:input cssClass="form-control" path="bankAddress1"
 															id="bankAddress1" maxlength="50" onblur="this.value=this.value.trim();return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');" onkeydown="validateSpace(this)"/>
@@ -373,6 +394,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.address2"/></label>
 														<form:input cssClass="form-control" path="bankAddress2"
 															id="bankAddress2" maxlength="50" onblur="this.value=this.value.trim();return clientValidation('bankAddress2', 'bank_address2','bankAddress2ErrorDiv');" onkeydown="validateSpace(this)"/>
@@ -381,6 +403,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.city"></spring:message></label>
 														<form:input cssClass="form-control" path="bankCity" id="bankCity" maxlength="50" 
 														onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_city_id','bankCityErrorDiv');"  onkeydown="validateSpace(this)"/>
@@ -389,6 +412,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.country"></spring:message><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="bankCountry"
 															id="bankCountry" onblur="return clientValidation('bankCountry', 'country','bankCountryErrorDiv');"
@@ -403,6 +427,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.state"></spring:message><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="bankState"
 															id="bankState" onblur="return clientValidation('bankState', 'state','bankStateErrorDiv');">
@@ -413,6 +438,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.zipcode"></spring:message><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="bankPin" id="bankPin" onkeypress ="generalZipCode()"
 															maxlength="7" onblur="this.value=this.value.trim();return zipCodeNotEmpty(id)" />
@@ -421,6 +447,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="sub-merchant-create.label.nameonaccount"></spring:message><span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="bankNameOnAccount"
@@ -431,6 +458,7 @@
 													</fieldset>
 											
 													<fieldset class="col-sm-3">
+													<legend></legend>
 														<label><spring:message code="sub-merchant-create.label.merchantcurrency"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="currencyId"
 															id="currencyId" onchange="fetchCurrency(this.value,'currencyId')" readonly="true" />
@@ -443,6 +471,7 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-8 pull-right">
+													<legend></legend>
 														<input type="button"
 															class="form-control button pull-right bank-next" onclick="createValidationStep2()"
 															value="<spring:message code="sub-merchant-create.label.continue"></spring:message>"> <input type="button"

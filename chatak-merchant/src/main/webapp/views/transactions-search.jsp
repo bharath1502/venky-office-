@@ -137,6 +137,7 @@
 										<div class="row">
 											<div class="field-element-row">
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.txnid" /></label>
 													<form:input path="transactionId" id="transactionId"
@@ -148,6 +149,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.processortxnid" /></label>
 													<form:input path="processCode" id="processCode"
@@ -158,6 +160,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.cardnumber" /></label>
 													<form:input path="cardNumber" id="cardNumber"
@@ -169,6 +172,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.cardholdername" /></label>
 													<form:input path="cardHolderName" id="cardHolderName"
@@ -179,6 +183,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.fromdate" /></label>
 													<div class="input-group focus-field jquery-datepicker">
@@ -193,6 +198,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.todate" /></label>
 													<div class="input-group focus-field jquery-datepicker">
@@ -207,6 +213,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.fromamtrange" /></label>
 													<form:input path="fromAmtRange" id="fromAmtRange"
@@ -218,6 +225,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.toamtrange" /></label>
 													<form:input path="toAmtRange" cssClass="form-control"
@@ -229,6 +237,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.txntype" /></label>
 													<form:select path="transaction_type" id="transactionType"
@@ -251,6 +260,7 @@
 													</div>
 												</fieldset>
 												<fieldset class="col-sm-3">
+												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="transactions-search.label.transactions" /></label>
 													<form:select path="status" id="status"
@@ -632,6 +642,7 @@
 					style="display: none; width: 880px;">
 					<span class="glyphicon glyphicon-remove" onclick="closePopup()"></span>
 					<fieldset class="col-sm-12 padding0">
+					<legend></legend>
 						<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 								code="transactions-search.label.comments" /><span
 							class="required-field">*</span></label>
@@ -660,6 +671,7 @@
 					<span class="glyphicon glyphicon-remove"
 						onclick="closeSelectPopup()"></span>
 					<fieldset class="col-sm-12 padding0">
+					<legend></legend>
 						<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 								code="transactions-search.label.selectitem" /><span
 							class="required-field"></span></label>

@@ -1,5 +1,7 @@
 package com.chatak.pg.server.config;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
 
 import com.chatak.pg.exception.ConfigException;
@@ -8,6 +10,8 @@ import com.chatak.pg.exception.ConfigException;
  * This class deals with the SSL Configuration parameters
  */
 public class TcpConfig {
+	
+  static  Logger logger = LogManager.getLogger(TcpConfig.class);
 
   // configuration group
   private final static String GROUP = "tcpIp";
@@ -51,7 +55,7 @@ public class TcpConfig {
    */
   public TcpConfig(String verId) throws ConfigException {
     mVersion = verId;
-    System.out.println("Vesion ID: "+verId);
+    logger.info("Vesion ID: "+verId);
     Node node = ApplicationConfig.getNodeForAttribute(GROUP, ATTR_VERSION, verId);
     if(node != null) {
       init(node);

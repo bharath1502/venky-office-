@@ -33,10 +33,12 @@ public class GetBankListResopnse extends Response {
 		this.pgBanks = pgBanks;
 	}
 
+	@Override
 	public Integer getTotalNoOfRows() {
 		return totalNoOfRows;
 	}
 
+	@Override
 	public void setTotalNoOfRows(Integer totalNoOfRows) {
 		this.totalNoOfRows = totalNoOfRows;
 	}

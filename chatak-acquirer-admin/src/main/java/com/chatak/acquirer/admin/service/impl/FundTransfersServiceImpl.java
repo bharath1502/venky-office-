@@ -257,11 +257,9 @@ private void setPGAccountTx(PGAccountTransactions pgAccountTransactions, PGAccou
       FundTransferDTO fundTransferDTO = populateFundTransferDTO(entry.getKey(), PGConstants.FUND_TRANSFER_EFT);
       Double amount = 0.00;
       amount = setAmount(list2, amount);
-      if (null != amount) {
         amount = amount / Constants.MAX_PAGE_SIZE;
         fundTransferDTO.setAmountToTransfer(amount.toString());
         response = processEFTFundsTransfer(fundTransferDTO);
-      }
       processLitleEFT(response, list2);
     }
     return response;
@@ -297,11 +295,9 @@ private Double setAmount(List<LitleEFTDTO> list2, Double amount) {
     FundTransferDTO fundTransferDTO =
         populateFundTransferDTO(litleEFTDTO.getMerchantCode(), PGConstants.FUND_TRANSFER_EFT);
     Double amount = 0.00 + litleEFTDTO.getAmount();
-    if (null != amount) {
       amount = amount / Constants.MAX_PAGE_SIZE;
       fundTransferDTO.setAmountToTransfer(amount.toString());
       response = processEFTFundsTransfer(fundTransferDTO);
-    }
     if (null != response && response.getErrorCode().equals(Constants.SUCCESS_CODE)) {
       PGTransaction transaction =
           refundTransactionDao.getTransactionOnId(litleEFTDTO.getTransactionId());

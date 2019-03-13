@@ -10,6 +10,10 @@ import java.io.PrintStream;
  *           format
  */
 public class ISOUtils {
+	
+	private ISOUtils() {
+		//Do nothing
+	}
 
   /**
    * This method convert the ISO Message into string format.

@@ -15,7 +15,11 @@ import org.springframework.context.ApplicationContext;
  * @version 1.0
  */
 public class SpringDAOBeanFactory {
-
+	
+	private SpringDAOBeanFactory() {
+		//Do nothing
+	}
+	
   public static ApplicationContext appContext = null;
   public static ApplicationContext getSpringContext() {
     return appContext;

@@ -39,5 +39,4 @@ public interface ProgramManagerRepository
   @Query("select pm from ProgramManager pm where pm.pmSystemConvertedTime like %:pmSystemConvertedTime%")
   public List<ProgramManager> findByBatchTime(@Param("pmSystemConvertedTime")String pmSystemConvertedTime);
   
-//  @Query("select batchPrefix from ProgramManager pm where pm.id = :id")
 }

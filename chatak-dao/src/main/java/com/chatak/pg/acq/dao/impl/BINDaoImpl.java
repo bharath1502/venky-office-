@@ -101,15 +101,6 @@ public class BINDaoImpl implements BINDao {
    */
   @Override
   public List<Long> getAllActiveBins() throws DataAccessException {
-//    List<PGBINRange> list = binRepository.getAllActiveBins();
-//    List<Long> binList = new ArrayList<Long>(1);
-//    if (CommonUtil.isListNotNullAndEmpty(list)) {
-//      for (PGBINRange pgBin : list) {
-//        binList.add(pgBin.getBin());
-//      }
-//    }
-//    return binList;
-    
     // PERF >> Retrieve only BIN column that is required
 	if(BINS.isEmpty()) {
 	  List<Long> binList = binRepository.getActiveBins();

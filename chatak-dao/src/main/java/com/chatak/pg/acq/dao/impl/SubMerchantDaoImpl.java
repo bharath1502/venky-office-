@@ -634,6 +634,7 @@ private void getListOfSubMerchants(List<MerchantRequest> subMerchantList, List<O
     }
     List<Long> list = query.from(QPGMerchant.pGMerchant)
         .where(isBusinessNameLike(searchMerchant.getBusinessName()),
+        	isMerchantCodeEq(searchMerchant.getSubMerchantCode()),
             isCityLike(searchMerchant.getCity()), isCountryEq(searchMerchant.getCountry()),
             isEmailLike(searchMerchant.getEmailId()),
             isFirstNameLike(searchMerchant.getFirstName()),

@@ -95,6 +95,7 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.switchtype"/><span class="required-field">*</span></label>
 														<form:select cssClass="form-control" path="switchType"
 															id="switchType" onblur="validateSwitchType()">
+															<form:option value=""><spring:message code="reports.option.select"/></form:option>
 															<form:option value="SOCKET"><spring:message code="switch.label.socket"/></form:option>
 															<form:option value="WEB SERVICES"><spring:message code="switch.label.webservice"/></form:option>
 														</form:select>

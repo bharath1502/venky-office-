@@ -48,7 +48,6 @@ public abstract class Processor {
 
     // Update the field 44 for Message to be printed on POS
     String msg = ActionCode.getInstance().getMessage(actionCode);
-    //setFormattedResponseField(44, ByteConversionUtils.asciiToHex(msg));
     
     _txnAuthorizer.set_actionCode(actionCode);
     _txnAuthorizer.set_autoMessage(msg);

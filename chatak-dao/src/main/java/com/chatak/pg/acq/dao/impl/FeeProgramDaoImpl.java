@@ -376,19 +376,6 @@ public class FeeProgramDaoImpl implements FeeProgramDao {
 	    return Collections.emptyList();
 	  }
 	  
-    /*JPAQuery query = new JPAQuery(entityManager);
-    List<PGAcquirerFeeValue> tupleCardList =
-        query.distinct()
-            .from(QPGFeeProgram.pGFeeProgram, QPGAcquirerFeeValue.pGAcquirerFeeValue)
-            .where(
-                isStatusEq(
-                    Constants.ACTIVE).and(QPGFeeProgram.pGFeeProgram.cardProgramId.eq(cardProgramId))
-                                .and(QPGFeeProgram.pGFeeProgram.feeProgramId
-                                    .eq(QPGAcquirerFeeValue.pGAcquirerFeeValue.feeProgramId)))
-        .list(QPGAcquirerFeeValue.pGAcquirerFeeValue);
-    if (CommonUtil.isListNotNullAndEmpty(tupleCardList)) {
-      return tupleCardList;
-    }
-    return Collections.emptyList();*/
+    
   }
 }

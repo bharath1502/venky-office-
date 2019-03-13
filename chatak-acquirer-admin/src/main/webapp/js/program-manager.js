@@ -27,6 +27,8 @@ function ProgramManagerValidation() {
 			| !clientValidation('companyName','company_name','pgmmgrcompanynameerrormsg')
 			| !clientValidation('country','country','countryNameErrormsg')
 	        | !clientValidation('state','state','stateNameErrormsg')
+	        | !clientValidation('acquirerCurrencyName','orderType','acquirerCurrencyNameErrormsg')
+	        | !validateBank('acquirerBankName','acquirerBankNameerrormsg')
 	        | !clientValidation('extension','extension_not_mandatory','extensionerr')
 	        | !clientValidation('timezone','state','timezone_ErrorDiv')
 	        | !clientValidation('batchPrefix','batch_prefix','pgmmgrbatchPrefixerrormsg')

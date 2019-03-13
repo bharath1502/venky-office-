@@ -848,7 +848,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 
 	@Override
 	public PGMerchant getMerchantAutoSettlementByCode(String merchantCode) {
-		//return merchantRepository.getMerchantAutoSettlementByCode(merchantCode);
 		// PERF >> Return only 2 columns instead of the complete object
 		PGMerchant merchant = new PGMerchant();
 		Query qry = entityManager

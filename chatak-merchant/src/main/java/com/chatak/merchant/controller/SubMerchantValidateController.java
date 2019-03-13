@@ -469,7 +469,11 @@ public class SubMerchantValidateController implements URLMappingConstants {
         merchantRequest.setPageIndex(Constants.ONE);
         merchantRequest.setPageSize(totalRecords);
       }
-      searchResponse = merchantInfoService.searchSubMerchantList(merchantRequest);
+      if (null != merchantRequest.getSubMerchantCode() && !"".equals(merchantRequest.getSubMerchantCode())) {
+          searchResponse = merchantService.searchMerchant(merchantRequest);
+      } else {
+           searchResponse = merchantInfoService.searchSubMerchantList(merchantRequest);
+      }
       List<MerchantData> list = searchResponse.getMerchants();
       ExportDetails exportDetails = new ExportDetails();
       if (StringUtil.isListNotNullNEmpty(list)) {

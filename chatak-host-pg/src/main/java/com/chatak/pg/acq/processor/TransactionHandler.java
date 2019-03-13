@@ -74,7 +74,6 @@ public class TransactionHandler {
 	 * @throws TransactionException
 	 */
 	public byte[] processTransaction(byte[] txnRequest) throws TransactionException {
-		//public byte[] processTransaction(String reqStr) throws TransactionException, Exception {
 		logger.info("================= START PROCESS TRANSACTION ==============");
 		byte[] txnResponse = null;
 
@@ -170,17 +169,7 @@ public class TransactionHandler {
 			pgActivityLog.setF55(_txnAuthorizer.get_ISOInputRequest().get_Field55());
 		}
 
-
-		//pgActivityLog.setPosTxnTime(_txnAuthorizer.get_ISOInputRequest().get_expDate());
-		//pgActivityLog.setPosTxnDate(posTxnDate);
-		//pgActivityLog.setMcc(mcc);
-		//pgActivityLog.setTxnCountryCode(txnCountryCode);
-		//pgActivityLog.setTxnCurrencyCode(txnCurrencyCode);
-		//pgActivityLog.setAiCountryCode(aiCountryCode);
-		//pgActivityLog.setPanCountryCode(panCountryCode);
-		//pgActivityLog.setFwdCountryCode(fwdCountryCode);
-		//pgActivityLog.setResponseCode(mResponseMessage.getGatewayResponse());
-
+		
 		logger.info("Before committing pgActivityLog :: TransactionHandler :: logActivity");
 		//get Dao instance 
 		activityLogDao.logRequest(pgActivityLog);

@@ -1,0 +1,25 @@
+- hosts: all
+  vars:
+    provider:
+      registry: "{{ registry }}"
+      build_number: "{{build_number}}"
+  become_user: root
+  become: true
+  tasks:
+    - name: Make sure that we can connect to the machine
+      ping:
+
+    - name: stop previous version docker
+      shell: docker stop hce
+    
+    - name: remove stopped container
+      shell: docker rm -f hce 
+
+    - name: docker login
+      shell: docker login -u admin -p admin123 192.168.2.171:8082
+
+    - name: pull docker image from docker repo
+      shell: docker pull {{registry}}/hce:{{build_number}}
+
+    - name: create docker image
+      shell: docker run -d --name hce -p 8012:8012 {{registry}}/hce:{{build_number}}

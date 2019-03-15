@@ -230,7 +230,8 @@ function validateCreateMerchantStep1edit() {
 			setLable('confirmMfax', getVal('fax').trim());
 		} else {
 			setLable('confirmMfax', "");
-		} if (businessTypeValue != "") {
+		} 
+		if (businessTypeValue != "") {
 			setLable('confirmBusinessType', businessTypeValue);
 		} else {
 			setLable('confirmBusinessType', "");

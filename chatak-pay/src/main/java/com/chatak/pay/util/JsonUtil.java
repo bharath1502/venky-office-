@@ -47,6 +47,10 @@ public class JsonUtil {
   private static final Logger logger =  LogManager.getLogger(JsonUtil.class);
 
   public static final String BASE_SERVICE_URL = Properties.getProperty("chatak-pay.service.url");
+  
+  public static final String HSM_SERVICE_URL = Properties.getProperty("hsm.service.url");
+  
+  public static final String TMS_SERVICE_URL = Properties.getProperty("tms.service.url");
 
   public static final String BASE_PREPAID_SERVICE_URL = Properties.getProperty("prepaid.service.url");
 
@@ -60,9 +64,9 @@ public class JsonUtil {
   public static final String ISSUANCE_BASE_OAUTH_REFRESH_SERVICE_URL =
       Properties.getProperty("chatak-issuance.oauth.refresh.service.url");
 
-  private static String TOKEN_TYPE_BEARER = "Bearer ";
+  public static String TOKEN_TYPE_BEARER = "Bearer ";
 
-  private static String TOKEN_TYPE_BASIC = "Basic ";
+  public static String TOKEN_TYPE_BASIC = "Basic ";
 
   private static String AUTH_HEADER = "Authorization";
 
@@ -161,6 +165,24 @@ public class JsonUtil {
 	    try {
 	    	Header[] headers = new Header[] { new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
 					new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER ) };
+	      resultantObject = httpClient.invokePost(request,className, headers, false);
+	    }catch (HttpClientException hce) {
+	        logger.error("ERROR: JsonUtil :: postRequest method "+ hce.getHttpErrorCode() + hce.getMessage(), hce);
+	    	throw hce;
+	    }catch (Exception e) {
+	        logger.error("Error::PostReqeust::Method", e);
+	        throw new ChatakPayException(e.getMessage());
+	      }
+	    logger.info("Exiting::PostReqeust::Method");
+	    return resultantObject;
+	}
+  
+  public static <T extends Object> T postRequestForRKI(Class<T> className,Object request,String serviceEndPoint,String tokenType) throws ChatakPayException, HttpClientException {
+		T resultantObject = null;
+		HttpClient httpClient = new HttpClient("", serviceEndPoint);
+	    try {
+	    	Header[] headers = new Header[] { new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
+					new BasicHeader(AUTH_HEADER, tokenType ) };
 	      resultantObject = httpClient.invokePost(request,className, headers, false);
 	    }catch (HttpClientException hce) {
 	        logger.error("ERROR: JsonUtil :: postRequest method "+ hce.getHttpErrorCode() + hce.getMessage(), hce);

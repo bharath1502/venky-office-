@@ -21,9 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.chatak.pay.constants.ChatakPayErrorCode;
 import com.chatak.pay.controller.model.CardData;
 import com.chatak.pay.controller.model.Response;
+import com.chatak.pay.controller.model.SessionKeyRequest;
+import com.chatak.pay.controller.model.SessionKeyResponse;
+import com.chatak.pay.controller.model.TmkDataRequest;
+import com.chatak.pay.controller.model.TmkDataResponse;
 import com.chatak.pay.controller.model.TransactionHistoryResponse;
 import com.chatak.pay.controller.model.TransactionRequest;
 import com.chatak.pay.controller.model.TransactionResponse;
+import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pay.exception.InvalidRequestException;
 import com.chatak.pay.exception.SplitTransactionException;
 import com.chatak.pay.model.TransactionDTO;
@@ -45,7 +50,6 @@ import com.chatak.pg.acq.dao.IsoServiceDao;
 import com.chatak.pg.acq.dao.MerchantCardProgramMapDao;
 import com.chatak.pg.acq.dao.MerchantDao;
 import com.chatak.pg.acq.dao.MerchantUpdateDao;
-import com.chatak.pg.acq.dao.MerchantUserDao;
 import com.chatak.pg.acq.dao.OnlineTxnLogDao;
 import com.chatak.pg.acq.dao.ProgramManagerDao;
 import com.chatak.pg.acq.dao.RefundTransactionDao;
@@ -53,20 +57,20 @@ import com.chatak.pg.acq.dao.SplitTransactionDao;
 import com.chatak.pg.acq.dao.TransactionDao;
 import com.chatak.pg.acq.dao.VoidTransactionDao;
 import com.chatak.pg.acq.dao.model.CardProgram;
+import com.chatak.pg.acq.dao.model.MPosSessionKey;
 import com.chatak.pg.acq.dao.model.PGAccount;
 import com.chatak.pg.acq.dao.model.PGAccountHistory;
 import com.chatak.pg.acq.dao.model.PGAcquirerFeeValue;
 import com.chatak.pg.acq.dao.model.PGBatch;
 import com.chatak.pg.acq.dao.model.PGCurrencyConfig;
 import com.chatak.pg.acq.dao.model.PGMerchant;
-import com.chatak.pg.acq.dao.model.PGMerchantCardProgramMap;
-import com.chatak.pg.acq.dao.model.PGMerchantUsers;
 import com.chatak.pg.acq.dao.model.PGOnlineTxnLog;
 import com.chatak.pg.acq.dao.model.PGSplitTransaction;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.repository.AccountRepository;
 import com.chatak.pg.acq.dao.repository.CurrencyCodeRepository;
 import com.chatak.pg.acq.dao.repository.CurrencyConfigRepository;
+import com.chatak.pg.acq.dao.repository.MPosSessionKeyRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
 import com.chatak.pg.bean.AuthRequest;
 import com.chatak.pg.bean.AuthResponse;
@@ -89,6 +93,7 @@ import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.NationalPOSEntryModeEnum;
 import com.chatak.pg.enums.TransactionStatus;
 import com.chatak.pg.enums.TransactionType;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.ProcessingFee;
 import com.chatak.pg.model.TransactionHistoryRequest;
 import com.chatak.pg.user.bean.PanRangeRequest;
@@ -199,10 +204,10 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	
 	@Autowired
 	private TransactionDao transactionDao;
-
-	@Autowired
-	private MerchantUserDao merchantUserDao;
 	
+	@Autowired
+	private MPosSessionKeyRepository mPosSessionKeyRepository;
+
 	@Transactional
 	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) throws ChatakInvalidTransactionException {
 		MDCLoggerUtil.setMDCLoggerParamsAdmin(transactionRequest.getInvoiceNumber());
@@ -1586,5 +1591,40 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 			}
 		}
 		return panId;
+	}
+	
+	@Override
+	public SessionKeyResponse getSessionKeyForTmk(SessionKeyRequest sessionKeyRequest) {
+		SessionKeyResponse sessionKeyResponse = new SessionKeyResponse();
+		try {
+			sessionKeyResponse = JsonUtil.postRequestForRKI(SessionKeyResponse.class, sessionKeyRequest, JsonUtil.HSM_SERVICE_URL+Properties.getProperty("hsm.service.session.key.endpoint"),JsonUtil.TOKEN_TYPE_BASIC +Properties.getProperty("hsm.service.oauth.token"));
+		} catch (ChatakPayException | HttpClientException e) {
+			e.printStackTrace();
+		}
+		if(sessionKeyResponse != null &&  StringUtils.isNotNullAndEmpty(sessionKeyResponse.getSessionKeyUnderLMK())) {
+			MPosSessionKey mPosSessionKey = null;
+			mPosSessionKey = mPosSessionKeyRepository.findByDeviceSerial(sessionKeyRequest.getDeviceSerialNumber());
+			if(mPosSessionKey != null) {
+				mPosSessionKeyRepository.updateMPosSessionKeyDeviceSkByDeviceSerail(
+						sessionKeyResponse.getSessionKeyUnderLMK(), sessionKeyRequest.getDeviceSerialNumber());
+			} else {
+			mPosSessionKey = new MPosSessionKey();
+			mPosSessionKey.setDeviceSerail(sessionKeyRequest.getDeviceSerialNumber());
+			mPosSessionKey.setDeviceSk(sessionKeyResponse.getSessionKeyUnderLMK());
+			mPosSessionKeyRepository.save(mPosSessionKey);
+			}
+		}
+		return sessionKeyResponse; 
+	}
+	
+	@Override
+	public TmkDataResponse getTMKByDeviceSerialNumber(TmkDataRequest tmkDataRequest) {
+		TmkDataResponse tmkDataResponse = new TmkDataResponse();
+		try {
+			tmkDataResponse = JsonUtil.postRequestForRKI(TmkDataResponse.class, tmkDataRequest, JsonUtil.TMS_SERVICE_URL+Properties.getProperty("tms.service.tmk.endpoint"),JsonUtil.TOKEN_TYPE_BEARER);
+			} catch (ChatakPayException | HttpClientException e) {
+				e.printStackTrace();
+			}
+			return tmkDataResponse;
 	}
 }

@@ -1102,10 +1102,10 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 		LogonResponse logonResponse = new LogonResponse();
 		TmkDataResponse tmkDataResponse = getTMKByDeviceSerialNumber(
 				logonRequest.getDeviceInfo().getDeviceSerialNumer());
-		if (tmkDataResponse != null && tmkDataResponse.getTmk() != null && !tmkDataResponse.getTmk().equals("")) {
+		if (tmkDataResponse != null && StringUtil.isNullAndEmpty(tmkDataResponse.getTmk())) {
 			SessionKeyResponse sessionKeyResponse = getSessionKeyForTmk(
 					logonRequest.getDeviceInfo().getDeviceSerialNumer(), tmkDataResponse.getTmk());
-			if (sessionKeyResponse != null && sessionKeyResponse.getResults() != null)
+			if (sessionKeyResponse != null && StringUtil.isNullAndEmpty(sessionKeyResponse.getResults()))
 				logonResponse.setSessionKey(sessionKeyResponse.getResults());
 		}
 		return logonResponse;

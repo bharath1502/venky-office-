@@ -1598,22 +1598,24 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 		SessionKeyResponse sessionKeyResponse = new SessionKeyResponse();
 		try {
 			sessionKeyResponse = JsonUtil.postRequestForRKI(SessionKeyResponse.class, sessionKeyRequest, JsonUtil.HSM_SERVICE_URL+Properties.getProperty("hsm.service.session.key.endpoint"),JsonUtil.TOKEN_TYPE_BASIC +Properties.getProperty("hsm.service.oauth.token"));
+			if(sessionKeyResponse != null &&  StringUtils.isNotNullAndEmpty(sessionKeyResponse.getSessionKeyUnderLMK())) {
+				MPosSessionKey mPosSessionKey = null;
+				mPosSessionKey = mPosSessionKeyRepository.findByDeviceSerial(sessionKeyRequest.getDeviceSerialNumber());
+				if(mPosSessionKey != null) {
+					mPosSessionKeyRepository.updateMPosSessionKeyDeviceSkByDeviceSerail(
+							sessionKeyResponse.getSessionKeyUnderLMK(), sessionKeyRequest.getDeviceSerialNumber());
+				} else {
+				mPosSessionKey = new MPosSessionKey();
+				mPosSessionKey.setDeviceSerail(sessionKeyRequest.getDeviceSerialNumber());
+				mPosSessionKey.setDeviceSk(sessionKeyResponse.getSessionKeyUnderLMK());
+				mPosSessionKeyRepository.save(mPosSessionKey);
+				}
+			}
 		} catch (ChatakPayException | HttpClientException e) {
 			e.printStackTrace();
+			log.error("Error :: PGTransactionServiceImpl :: getSessionKeyForTmk method", e);
 		}
-		if(sessionKeyResponse != null &&  StringUtils.isNotNullAndEmpty(sessionKeyResponse.getSessionKeyUnderLMK())) {
-			MPosSessionKey mPosSessionKey = null;
-			mPosSessionKey = mPosSessionKeyRepository.findByDeviceSerial(sessionKeyRequest.getDeviceSerialNumber());
-			if(mPosSessionKey != null) {
-				mPosSessionKeyRepository.updateMPosSessionKeyDeviceSkByDeviceSerail(
-						sessionKeyResponse.getSessionKeyUnderLMK(), sessionKeyRequest.getDeviceSerialNumber());
-			} else {
-			mPosSessionKey = new MPosSessionKey();
-			mPosSessionKey.setDeviceSerail(sessionKeyRequest.getDeviceSerialNumber());
-			mPosSessionKey.setDeviceSk(sessionKeyResponse.getSessionKeyUnderLMK());
-			mPosSessionKeyRepository.save(mPosSessionKey);
-			}
-		}
+		
 		return sessionKeyResponse; 
 	}
 	
@@ -1624,6 +1626,7 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 			tmkDataResponse = JsonUtil.postRequestForRKI(TmkDataResponse.class, tmkDataRequest, JsonUtil.TMS_SERVICE_URL+Properties.getProperty("tms.service.tmk.endpoint"),JsonUtil.TOKEN_TYPE_BEARER);
 			} catch (ChatakPayException | HttpClientException e) {
 				e.printStackTrace();
+				log.error("Error :: PGTransactionServiceImpl :: getTMKByDeviceSerialNumber method", e);
 			}
 			return tmkDataResponse;
 	}

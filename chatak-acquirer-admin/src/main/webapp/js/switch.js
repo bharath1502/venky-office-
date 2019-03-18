@@ -40,7 +40,7 @@ function editSwitch(switchId) {
 
 function validateCreateSwitch() {
 	var flag = true;
-	if (!validateSwitchName() | !validatePrimarySwitchURL()
+	if (!clientValidation('switchName','middle_name','switchNameEr') | !validatePrimarySwitchURL()
 			| !validatePrimarySwitchPort() | !validateSecondarySwitchURL()
 			| !validateSecondarySwitchPort() | !validatePriority()) {
 		return false;

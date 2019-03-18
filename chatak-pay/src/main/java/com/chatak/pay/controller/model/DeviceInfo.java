@@ -8,11 +8,11 @@ public class DeviceInfo {
 	
 	private String deviceType;
 	
-	private String deviceSerialNumer;
-	
+	private String deviceSerialNumber;
+	               
 	private String deviceOS;
 	
-	private String deviceOSVersion;
+	private String deviceOSversion;
 	
 	public String getDeviceModel() {
 		return deviceModel;
@@ -39,11 +39,11 @@ public class DeviceInfo {
 	}
 
 	public String getDeviceSerialNumer() {
-		return deviceSerialNumer;
+		return deviceSerialNumber;
 	}
 
-	public void setDeviceSerialNumer(String deviceSerialNumer) {
-		this.deviceSerialNumer = deviceSerialNumer;
+	public void setDeviceSerialNumber(String deviceSerialNumber) {
+		this.deviceSerialNumber = deviceSerialNumber;
 	}
 
 	public String getDeviceOS() {
@@ -54,12 +54,12 @@ public class DeviceInfo {
 		this.deviceOS = deviceOS;
 	}
 
-	public String getDeviceOSVersion() {
-		return deviceOSVersion;
+	public String getDeviceOSversion() {
+		return deviceOSversion;
 	}
 
-	public void setDeviceOSVersion(String deviceOSVersion) {
-		this.deviceOSVersion = deviceOSVersion;
+	public void setDeviceOSversion(String deviceOSversion) {
+		this.deviceOSversion = deviceOSversion;
 	}
 
 }

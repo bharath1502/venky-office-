@@ -124,7 +124,7 @@ function validContactPersonCell() {
 
 function validContactPersonPhone() {
 	var bankPhone = get('bankPhone').value.trim();
-	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})?[-. ]?([0-9]{4})$/;
 
 	if (isEmpty(bankPhone)) {
 		setError(get('bankPhone'), webMessages.pleaseEnterContactPhoneNumber);

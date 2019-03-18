@@ -9,15 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pg.acq.dao.model.MPosSessionKey;
 
-public interface MPosSessionKeyRepository extends JpaRepository<MPosSessionKey, Long>,QueryDslPredicateExecutor<MPosSessionKey>{
-	
+public interface MPosSessionKeyRepository
+		extends JpaRepository<MPosSessionKey, Long>, QueryDslPredicateExecutor<MPosSessionKey> {
+
 	@Modifying
 	@Transactional
 	@Query("update MPosSessionKey sk set sk.deviceSk= :deviceSk where sk.deviceSerial = :deviceSerial")
     public int updateMPosSessionKeyDeviceSkByDeviceSerail(@Param("deviceSk")String deviceSk,@Param("deviceSerial")String deviceSerail);
-	
+
 	public MPosSessionKey findByDeviceSerial(String deviceSerail);
-	
-	
 
 }

@@ -1612,7 +1612,6 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 				}
 			}
 		} catch (ChatakPayException | HttpClientException e) {
-			e.printStackTrace();
 			log.error("Error :: PGTransactionServiceImpl :: getSessionKeyForTmk method", e);
 		}
 		
@@ -1625,7 +1624,6 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 		try {
 			tmkDataResponse = JsonUtil.postRequestForRKI(TmkDataResponse.class, tmkDataRequest, JsonUtil.TMS_SERVICE_URL+Properties.getProperty("tms.service.tmk.endpoint"),JsonUtil.TOKEN_TYPE_BEARER);
 			} catch (ChatakPayException | HttpClientException e) {
-				e.printStackTrace();
 				log.error("Error :: PGTransactionServiceImpl :: getTMKByDeviceSerialNumber method", e);
 			}
 			return tmkDataResponse;

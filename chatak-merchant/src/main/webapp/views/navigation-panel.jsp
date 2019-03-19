@@ -90,6 +90,8 @@
 <spring:message code="merchant.services.schedule.report.feature.id" var="scheduleReport"></spring:message>
 <spring:message code="merchant.services.funding.report.feature.id" var="dailyFundingReport"></spring:message>
 
+<spring:message code="merchant.services.faqManagement.feature.id" var="dailyFundingReport"></spring:message>
+
 <!--Header Block Start -->
 
 <%-- <header class="col-sm-12 all-page-header">
@@ -248,6 +250,8 @@
 			
 			<li><a href="merchant-change-password"><spring:message code="change-password.label.changepassword"/></a></li>
 			<li><a href="chatak_merchant_myprofile"><spring:message code="myprofile.label.myprofile"/></a></li>
+			<li ><a href="faq-management-search"><spring:message code="merchant.faq.Management.message"/></a></li>
+					
 			
 		</ul> <!--Navigation Block Sub Menu End -->
 	</li>

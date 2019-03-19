@@ -301,7 +301,7 @@ var ValidationRules = {
 	},
 	
 	first_name_SplChar : {
-		type : "alphanumsplchar",
+		type : "username",
 		min : "2",
 		max : "100",
 		mandatory : true

@@ -1022,6 +1022,10 @@ public class Constants {
   public static final String MASK_DATE_FORMAT = "99/99/9999";
   
   public static final String MPOS_MERCHANT = "Merchant";
+  
+  public static final String RSA = "RSA";
+  
+  public static final String DEK = "DEK";
 
   public static final String YES = "Yes";
 

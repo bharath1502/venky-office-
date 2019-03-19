@@ -39,6 +39,8 @@ import com.chatak.pay.controller.model.LogonResponse;
 import com.chatak.pay.controller.model.ProcessEncRequest;
 import com.chatak.pay.controller.model.Request;
 import com.chatak.pay.controller.model.Response;
+import com.chatak.pay.controller.model.SessionKeyRequest;
+import com.chatak.pay.controller.model.SessionKeyResponse;
 import com.chatak.pay.controller.model.SplitStatusRequest;
 import com.chatak.pay.controller.model.SplitStatusResponse;
 import com.chatak.pay.controller.model.TmkDataRequest;
@@ -63,7 +65,6 @@ import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.bean.ChangePasswordRequest;
 import com.chatak.pg.bean.ForgotPasswordRequest;
-import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.TransactionType;
@@ -76,7 +77,6 @@ import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.DateUtil;
 import com.chatak.pg.util.Properties;
 import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
-import com.chatak.switches.sb.exception.ServiceException;
 import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 import com.sleepycat.je.utilint.Timestamp;
 /**
@@ -1098,30 +1098,40 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
 	public LogonResponse logon(HttpServletRequest request,
             HttpServletResponse response,
             HttpSession session,
-            @RequestBody LogonRequest logonRequest) {
+			@RequestBody LogonRequest logonRequest) {
 		LogonResponse logonResponse = new LogonResponse();
+		TmkDataResponse tmkDataResponse = getTMKByDeviceSerialNumber(
+				logonRequest.getDeviceInfo().getDeviceSerialNumer());
+		if (tmkDataResponse != null && StringUtil.isNullAndEmpty(tmkDataResponse.getTmk())) {
+			SessionKeyResponse sessionKeyResponse = getSessionKeyForTmk(
+					logonRequest.getDeviceInfo().getDeviceSerialNumer(), tmkDataResponse.getTmk());
+			if (sessionKeyResponse != null && StringUtil.isNullAndEmpty(sessionKeyResponse.getResults()))
+				logonResponse.setSessionKey(sessionKeyResponse.getResults());
+		}
 		return logonResponse;
 	}
 	
-	private TmkDataResponse getTMKByDeviceSerialNumber(TmkDataRequest tmkDataRequest){
-		TmkDataResponse tmkDataResponse = new TmkDataResponse();
-		String tmk = "";
-		try {
-		  tmk = JsonUtil.postRequest(String.class, tmkDataRequest, "serviceEndPoint");
-		} catch (ChatakPayException | HttpClientException e) {
-			e.printStackTrace();
-		}
-		if(!tmk.equals("")){
-			tmkDataResponse.setTmk(tmk);
-		}
-		return tmkDataResponse;
+	private TmkDataResponse getTMKByDeviceSerialNumber(String deviceSerialNumber) {
+		TmkDataRequest tmkDataRequest = new TmkDataRequest();
+		tmkDataRequest.setSerialNumber(deviceSerialNumber);
+		return pgTransactionService.getTMKByDeviceSerialNumber(tmkDataRequest);
+	}
+	
+	private SessionKeyResponse getSessionKeyForTmk(String deviceSerialNumber, String encryptedKey) {
+		SessionKeyRequest sessionKeyRequest = new SessionKeyRequest();
+		sessionKeyRequest.setAlgorithm(Constants.RSA);
+		sessionKeyRequest.setKeyAlias(Constants.DEK);
+		sessionKeyRequest.setDeviceSerialNumber(deviceSerialNumber);
+		sessionKeyRequest.setEncryptedKey(encryptedKey);
+		return pgTransactionService.getSessionKeyForTmk(sessionKeyRequest);
+
 	}
 	
 	@RequestMapping(value="/processEnc",method=RequestMethod.POST)
 	public Response processEnc(HttpServletRequest request,
             HttpServletResponse response,
             HttpSession session,
-            @RequestBody ProcessEncRequest processEncRequest) {
+			@RequestBody ProcessEncRequest processEncRequest) {
 		Response processEncResponse = new Response();
 		return processEncResponse;
 	}

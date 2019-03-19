@@ -1,17 +1,15 @@
 package com.chatak.pay.controller.model;
 
-public class TmkDataRequest extends Request{
+public class TmkDataRequest{
 
-	private static final long serialVersionUID = 1L;
+	private String serialNumber;
 	
-	private String deviceSerialNumber;
-	
-	public String getDeviceSerialNumber() {
-		return deviceSerialNumber;
+	public String getSerialNumber() {
+		return serialNumber;
 	}
 
-	public void setDeviceSerialNumber(String deviceSerialNumber) {
-		this.deviceSerialNumber = deviceSerialNumber;
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
 	}
 	
 	

@@ -4,17 +4,11 @@ public class TmkDataResponse extends Response{
 
 	private static final long serialVersionUID = 1L;
 	
-	private String deviceSerialNumber;
-	
 	private String tmk;
 	
-	public String getDeviceSerialNumber() {
-		return deviceSerialNumber;
-	}
-
-	public void setDeviceSerialNumber(String deviceSerialNumber) {
-		this.deviceSerialNumber = deviceSerialNumber;
-	}
+	private String responseCode;
+	
+	private String responseMessage;
 	
 	public String getTmk() {
 		return tmk;
@@ -22,6 +16,22 @@ public class TmkDataResponse extends Response{
 
 	public void setTmk(String tmk) {
 		this.tmk = tmk;
+	}
+	
+	public String getResponseCode() {
+		return responseCode;
+	}
+
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
+	}
+
+	public String getResponseMessage() {
+		return responseMessage;
+	}
+
+	public void setResponseMessage(String responseMessage) {
+		this.responseMessage = responseMessage;
 	}
 	
 	

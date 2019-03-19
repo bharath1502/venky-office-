@@ -287,7 +287,7 @@
 															code="common.label.contactphonenumber" /><span
 														class="required-field">*</span></label>
 													<form:input path="contactPersonPhone" id="bankPhone"
-														cssClass="form-control"
+														cssClass="form-control" onkeypress="return numbersonly(this, event)" 
 														onblur="this.value=this.value.trim();validContactPersonPhone()"
 														maxlength="<%=Constants.PHONE.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"

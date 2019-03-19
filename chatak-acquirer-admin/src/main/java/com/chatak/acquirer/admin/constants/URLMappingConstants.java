@@ -1101,4 +1101,30 @@ public interface URLMappingConstants {
    
    String GET_ISSUANCE_CARD_PROGRAMS_BY_PM_ID = "getIssuanceCardProgramsByPmId";
    
+   /*FAQ Management*/
+   String SHOW_FAQ_MANAGEMENT_SEARCH="showFaqManagementSearch";
+   
+   String FAQ_MANAGEMENT_SEARCH_PAGE="faq-management-search";
+   
+   String SHOW_FAQ_MANAGEMENT_CREATE = "showFaqManagementCreate";
+
+   String FAQ_MANAGEMENT_CREATE_PAGE = "faq-management-create";
+
+   String FETCH_MODULE_FOR_CATEGORY_ID = "fetchModuleNameForCat";
+
+   String FAQ_MANAGEMENT_CREATE = "createFaqManagement";
+   
+   String FAQ_MANAGEMENT_SEARCH_ACTION = "searchFaqManagement";
+   
+   String SHOW_FAQ_MANAGEMENT_EDIT = "showFaqManagementEdit";
+
+   String FAQ_MANAGEMENT_EDIT_PAGE = "faq-management-edit";
+
+   String FAQ_MANAGEMENT_ACTION = "editNewsAction";
+
+   String FAQ_MANAGEMENT_EDIT = "editFaqMgmtAction";
+   
+   String FAQ_PAGINATION_ACTION="getFaq";
+
+
 }

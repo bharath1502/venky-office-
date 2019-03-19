@@ -351,4 +351,8 @@ public interface URLMappingConstants {
 	
 	public static final String GET_PARTNER_NAME_BY_MERCHANT_CODE = "getPartnerNameByMerchantCode";
 	
+	public static final String SHOW_FAQ_MANAGEMENT_PAGE ="faq-management-search";
+	
+	public static final String SEARCH_FAQ_MANAGEMENT_REPORT="searchFaqManagementReport";
+	
 }

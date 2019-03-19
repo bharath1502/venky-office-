@@ -235,6 +235,8 @@ public class Constants {
   public static final String RESELLERS_MODEL = "resellerValues";
 
   public static final String BANK_MODEL = "bank";
+  
+  public static final String FAQ_MANAGEMENT_MODEL = "faqManagementRequest";
 
   public static final String PAYMENT_SCHEME_INFO = "paymentSchemeSearchData";
 
@@ -1020,5 +1022,9 @@ public class Constants {
   public static final String MASK_DATE_FORMAT = "99/99/9999";
   
   public static final String MPOS_MERCHANT = "Merchant";
+
+  public static final String YES = "Yes";
+
+  public static final String NO = "No";
 
 }

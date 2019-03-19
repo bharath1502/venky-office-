@@ -285,5 +285,16 @@ public interface FeatureConstants {
     public static final String ADMIN_SERVICE_MERCHANT_REVENUE_REPORT_FEATURE_ID = Properties.getProperty("admin.services.merchantRevenue.report.feature.id");
 
     public static final String ADMIN_SERVICE_PM_REVENUE_REPORT_FEATURE_ID = Properties.getProperty("admin.services.pmRevenue.report.feature.id");
+      
+    /*FAQ Management*/
+    public static final String ADMIN_SERVICE_FAQ_MANAGEMENT_FEATURE_ID =Properties.getProperty("admin.services.faq.management.feature.id");
+    
+    public static final String ADMIN_SERVICE_FAQ_MANAGEMENT_CREATE_FEATURE_ID =Properties.getProperty("admin.services.faq.management.create.feature.id");
+    
+    public static final String ADMIN_SERVICE_FAQ_MANAGEMENT_EDIT_FEATURE_ID =Properties.getProperty("admin.services.faq.management.edit.feature.id");
+    
+    public static final String ADMIN_SERVICE_FAQ_MANAGEMENT_VIEW_FEATURE_ID =Properties.getProperty("admin.services.faq.management.search.feature.id");
+    
+    public static final String ADMIN_SERVICE_FAQ_MANAGEMENT_SEARCH_FEATURE_ID =Properties.getProperty("admin.services.faq.management.delete.feature.id");
 
 }

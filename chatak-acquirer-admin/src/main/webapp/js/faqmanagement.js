@@ -23,7 +23,7 @@ function changeFaqStatus(faqId, status, statusName) {
 
 
 function fetchModuleNameForCat(id) {
-	
+	var id=get('categoryId').value;
 	if(id == ""){
 		return;
 	}

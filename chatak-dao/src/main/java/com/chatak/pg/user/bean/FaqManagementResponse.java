@@ -15,8 +15,8 @@ public class FaqManagementResponse extends Response{
     return faqManagementList;
   }
 
-  public void setFaqManagementList(List<FaqManagementRequest> faqManagementRequestList) {
-     this.faqManagementList=faqManagementRequestList;
+  public void setFaqManagementList(List<FaqManagementRequest> faqManagementList) {
+     this.faqManagementList=faqManagementList;
     
   }
 

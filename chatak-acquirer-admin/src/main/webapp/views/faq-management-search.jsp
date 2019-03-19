@@ -37,7 +37,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
+<body onload="fetchModuleNameForCat(categoryId)" oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -124,7 +124,7 @@
 															<spring:message
 																code="prepaid-admin-module-search.label.select" />
 														</form:option>
-														<c:forEach items="${faqManagementRequestList}" var="entity">
+														<c:forEach items="${faqManagementResponse}" var="entity">
 															<form:option value="${entity.moduleId}">${entity.moduleName}</form:option>
 														</c:forEach>
 													</form:select> 
@@ -188,37 +188,37 @@
 							</tr>
 							</thead>
 							<c:choose>
-								<c:when test="${!(fn:length(faqManagementRequestList) eq 0) }">
-									<c:forEach items="${faqManagementRequestList}" var="faqManagementRequestList">
+								<c:when test="${!(fn:length(faqManagementRequestLists) eq 0) }">
+									<c:forEach items="${faqManagementRequestLists}" var="faqManagementRequestLists">
 									<tr>
-									 <td data-title="Category">${faqManagementRequestList.categoryName} &nbsp; </td>
-									  <td data-title="Module">${faqManagementRequestList.moduleName} &nbsp; </td>
-										<td data-title="Question" title="${faqManagementRequestList.questionName}">${faqManagementRequestList.questionName} &nbsp; </td>								
-											 <td data-title="Answer">${faqManagementRequestList.questionAnswer} &nbsp; </td>			
+									 <td data-title="Category">${faqManagementRequestLists.categoryName} &nbsp; </td>
+									  <td data-title="Module">${faqManagementRequestLists.moduleName} &nbsp; </td>
+										<td data-title="Question" title="${faqManagementRequestLists.questionName}">${faqManagementRequestLists.questionName} &nbsp; </td>								
+											 <td data-title="Answer">${faqManagementRequestLists.questionAnswer} &nbsp; </td>			
 										<c:choose>
-										<c:when test="${faqManagementRequestList.status eq 'PendingSuspended'}">
+										<c:when test="${faqManagementRequestLists.status eq 'PendingSuspended'}">
 										<td data-title="Suspended"><spring:message code="Suspended"/> &nbsp; </td>
 										</c:when>
 										<c:otherwise>
-										<td data-title="Status">${faqManagementRequestList.status}  &nbsp; </td>
+										<td data-title="Status">${faqManagementRequestLists.status}  &nbsp; </td>
 										</c:otherwise>
 										</c:choose>
 										 <td data-title="Action">
 											<c:choose>
-											            <c:when test="${faqManagementRequestList.status eq 'PendingSuspended' }">
-															<a href="javascript:changeNewsFeedStatus('${faqManagementRequestList.id}','Pending','Pending')" title="<spring:message code="Pending"/>">
+											            <c:when test="${faqManagementRequestLists.status eq 'PendingSuspended' }">
+															<a href="javascript:changeNewsFeedStatus('${faqManagementRequestLists.id}','Pending','Pending')" title="<spring:message code="Pending"/>">
 																	<img alt="Active" src="../images/active.png" title='<spring:message code="Pending"/>'></img>
 																</a>
 														</c:when>
-														<c:when test="${fn:containsIgnoreCase(faqManagementRequestList.status,'Active') }">
-															<a href="javascript:editFaqData('${faqManagementRequestList.faqId}')" title="<spring:message code="common.label.edit"/>"><span
+														<c:when test="${fn:containsIgnoreCase(faqManagementRequestLists.status,'Active') }">
+															<a href="javascript:editFaqData('${faqManagementRequestLists.faqId}')" title="<spring:message code="common.label.edit"/>"><span
 														      class="glyphicon glyphicon-pencil"></span></a>
 													       <%--  <a href="javascript:changeFaqStatus('${faqManagementRequestList.id}','Suspended','Suspended')" title=""Suspend">
 																 <img src="../images/deactive.png" alt="Suspend" title="<spring:message code="Suspend"/>"></img></a> --%>
 														</c:when>
 														<c:otherwise>
-															<c:if test="${fn:containsIgnoreCase(faqManagementRequestList.status,'Suspended')}">
-																<a href="javascript:changeNewsFeedStatus('${faqManagementRequestList.id}','Active','Active')" title="Active">>
+															<c:if test="${fn:containsIgnoreCase(faqManagementRequestLists.status,'Suspended')}">
+																<a href="javascript:changeNewsFeedStatus('${faqManagementRequestLists.id}','Active','Active')" title="Active">>
 																	<img alt="Active" src="../images/active.png" title="Activate"></img>
 																</a>
 															</c:if>
@@ -237,7 +237,7 @@
 							</table>
 							<!-- Search Table Content End -->
 							<table class="table table-striped table-bordered table-condensed">
-								<c:if test="${!(fn:length(faqManagementRequestList) eq 0) }">
+								<c:if test="${!(fn:length(faqManagementRequestLists) eq 0) }">
 									<tr class="table-footer-main">
 										<td colspan="10" class="search-table-header-column">
 												<div class="col-sm-12">

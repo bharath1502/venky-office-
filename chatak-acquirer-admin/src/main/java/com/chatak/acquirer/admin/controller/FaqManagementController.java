@@ -104,6 +104,7 @@ public class FaqManagementController implements URLMappingConstants {
 			session.setAttribute("categoryId", categoryId);
 			FaqManagementResponse faqManagementResponse = faqManagementService.searchModule(faqManagementRequest);
 			faqManagementResponse.setErrorMessage("SUCCESS");
+			model.put("faqManagementResponse", faqManagementResponse);
 			return JsonUtil.convertObjectToJSON(faqManagementResponse);
 		} catch (Exception e) {
 			logger.error("ERROR:: FaqManagementController:: fetchModuleNameForCategory method", e);
@@ -153,7 +154,7 @@ public class FaqManagementController implements URLMappingConstants {
 					faqManagementRequest.getPageSize());
 			List<FaqManagementRequest> faqManagementRequestList = faqManagementResponse.getFaqManagementList();
 			if (CommonUtil.isListNotNullAndEmpty(faqManagementRequestList)) {
-				model.put("faqManagementRequestList", faqManagementRequestList);
+				model.put("faqManagementRequestLists", faqManagementRequestList);
 				model.put("totalRecords", faqManagementResponse.getTotalNoOfRows());
 			}
 		} catch (Exception e) {

@@ -1,4 +1,4 @@
-<html><head><script language="JavaScript" type="text/javascript">
+<html><head><title>Void</title><script language="JavaScript" type="text/javascript">
 var contextPath='<%=request.getContextPath()%>';
 function validate_form()
 {

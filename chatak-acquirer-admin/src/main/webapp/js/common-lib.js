@@ -405,7 +405,7 @@ function invalidWords(validMessage) {
 	validMessage = validMessage.trim();
 	var messageLength = validMessage.split(' ');
 	for ( var i = 0; i < messageLength.length; i++) {
-		if (messageLength[i].length > parseFloat(20))
+		if (messageLength[i].length < parseFloat(20))
 			return false;
 
 	}

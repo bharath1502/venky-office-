@@ -1,1 +1,1 @@
-docker build -f "Dockerfile" -t gateway:$version
+docker build -f "Dockerfile" -t paygate:$version

@@ -113,7 +113,8 @@
 																code="currency-search-page.label.currencycodenumeric" /><span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control" readonly="true"
-															path="currencyCodeNumeric" id="currencyCodeNumeric" />
+															path="currencyCodeNumeric" id="currencyCodeNumeric" 
+															onblur="validateCurrencyCodeNumeric()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip"
 															data-placement="top" title="">
 															<span id="currencyCodeNumericEr" class="red-error">&nbsp;</span>
@@ -125,7 +126,8 @@
 																code="currency-search-page.label.currencyCodeAlpha" /><span
 															class="required-field">*</span></label>
 														<form:input cssClass="form-control" readonly="true"
-															path="currencyCodeAlpha" id="currencyCodeAlpha" />
+															path="currencyCodeAlpha" id="currencyCodeAlpha"
+															onblur="validateCurrencyCodeAlpha()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip"
 															data-placement="top" title="">
 															<span id="currencyCodeAlphaEr" class="red-error">&nbsp;</span>
@@ -135,7 +137,8 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="currency-create-page.label.currencyexponent" /><span
 															class="required-field">*</span></label>
-														<form:input cssClass="form-control" onkeypress="return isNumberKey(event);" maxlength="1" path="currencyExponent" id="currencyExponent" />
+														<form:input cssClass="form-control" onkeypress="return isNumberKey(event);" maxlength="1" path="currencyExponent" id="currencyExponent" 
+														onblur="validateCurrencyExport()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip"
 															data-placement="top" title="">
 															<span id="currencyExponentEr" class="red-error">&nbsp;</span>

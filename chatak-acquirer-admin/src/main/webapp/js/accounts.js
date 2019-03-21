@@ -182,8 +182,7 @@ function formatNum(testid) {
 	if(testid == "avlamt" || testid == "curamt" ){
 		if (testid == "avlamt") {
 			$("#avlBal").text(":" + $("#" + testid).val());
-		}
-		if (testid == "curamt") {
+		} if (testid == "curamt") {
 			$("#curBal").text(":" + $("#" + testid).val());
 		}
 	}

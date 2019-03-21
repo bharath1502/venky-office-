@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html><head><title>Void</title><script language="JavaScript" type="text/javascript">
 var contextPath='<%=request.getContextPath()%>';
 function validate_form()

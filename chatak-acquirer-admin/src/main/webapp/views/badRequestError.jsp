@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
+<!DOCTYPE html>
 <html>
 <head>
 <title>Bad Request Error</title>

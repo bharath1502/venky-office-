@@ -402,6 +402,7 @@ public class LoginController implements URLMappingConstants {
           sessionInformation.expireNow();
           sessionRegistry.removeSessionInformation(encUName);
           Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
+          myCookie.setHttpOnly(true);
           myCookie.setMaxAge(0);
           response.addCookie(myCookie);
           modelAndView.setViewName(Constants.CHATAK_INVALID_SESSION);
@@ -579,6 +580,7 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
     // Service code
     String encUName = PasswordHandler.encrypt(loginDetails.getAcqU());
     Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, encUName + session.getId());
+    myCookie.setHttpOnly(true);
     myCookie.setMaxAge(Constants.MAX_AGE);
     response.addCookie(myCookie);
     loginDetails.setjSession(userAgent + encUName + session.getId());
@@ -602,6 +604,7 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
     String cookieValue = StringUtil.getCookieValue(request);
     sessionRegistry.removeSessionInformation(cookieValue);
     Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
+    myCookie.setHttpOnly(true);
     myCookie.setMaxAge(0);
     response.addCookie(myCookie);
   }

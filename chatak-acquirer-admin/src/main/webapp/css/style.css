@@ -1228,12 +1228,6 @@ input[type=color] {
 /* Style Definition for Header Inner Table End*/
 
 /* ===[ media queries ]=== */
-
-	 /* ===[ Large desktop ]=== */
-        @media (min-width: 1200px) { 
-            
-        }
-		
     
     /* ===[ Phones, tablets and desktop ]=== */
         @media ( max-width : 979px) {
@@ -1284,10 +1278,6 @@ input[type=color] {
 		display: table;
 		width: 100%;
 	}
-}
-
-/* ===[ Portrait tablet to landscape and desktop ]=== */
-@media ( min-width : 768px) and (max-width: 979px) {
 }
 
 /* ===[ Landscape phone to portrait tablet ]=== */
@@ -1394,10 +1384,6 @@ input[type=color] {
 	.table-right-footer {
 		margin-right: 0px;
 	}
-}
-
-/* ===[ Landscape phones and down ]=== */
-@media ( max-width : 479px) {
 }
 
 /* Container Heading for content separation Start */

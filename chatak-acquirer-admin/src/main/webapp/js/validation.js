@@ -1521,8 +1521,9 @@ function specialchar(data,div_id)  {
 		}else if(!isValidCharsExtended(data)){
 		setDiv(div_id,"Invalid input");			
 			return false;
-		}else
-			return true;
+		} else {
+		return true;
+	}
 	}
 
 	function editPartner(partnerId){

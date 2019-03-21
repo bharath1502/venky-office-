@@ -1341,8 +1341,9 @@ function specialchar(data, div_id) {
 	} else if (!isValidCharsExtended(data)) {
 		setDiv(div_id, "Invalid input");
 		return false;
-	} else
+	} else {
 		return true;
+	}
 }
 
 function editPartner(partnerId) {
@@ -1506,8 +1507,9 @@ function specialcharwithspace(data, div_id) {
 		setDiv(div_id, webMessages.invalidinput);
 		loadMsgTitleText();
 		return false;
-	} else
+	} else {
 		return true;
+	}
 }
 
 function validateFromDate(divId, errorMsg) {

@@ -2,6 +2,7 @@
 <%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html>
 <head>
+<title>Invalid Token</title>
 <link href="../css/pg.css" rel="stylesheet">
 </head>
 <body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">

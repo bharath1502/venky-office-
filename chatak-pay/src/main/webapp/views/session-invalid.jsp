@@ -1,5 +1,6 @@
 <html>
 <head>
+<title>Session Invalid</title>
 <link href="../../css/pg.css" rel="stylesheet">
 </head>
 <body>

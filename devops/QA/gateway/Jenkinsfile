@@ -1,0 +1,133 @@
+pipeline {
+  options {
+	buildDiscarder(logRotator(numToKeepStr: '02'))
+  }
+    agent any
+        parameters {
+            string(
+                name:'URL',
+                defaultValue:"default",
+                description: "enter URL")
+            string(
+                name:'groupid',
+                defaultValue:'default',
+                description:'enter groupid')
+            string(
+                name:'artifactid1',
+                defaultValue:'default',
+                description:'enter artifactid1')
+            string(
+                name:'artifactid2',
+                defaultValue:'default',
+                description:'enter artifactid2')
+            string(
+                name:'image',
+                defaultValue:'default',
+                description:'enter image name')
+        }
+        stages {
+            stage('SCM') {
+                steps {
+                    checkout scm
+                    }
+                }
+                stage('Sonar-Quality') {
+                    steps {
+                        script {
+                            sh '''
+                                cd build
+                                mvn clean
+                                mvn clean install -Dmaven.test.skip=true
+                                mvn sonar:sonar -Dsonar.host.url=http://admin:admin01@192.168.0.82:9000 -Dsonar.projectKey="cl-acquirer" -Dsonar.projectName="Closed_loop-Acquiring"
+                            '''
+                        }
+                    }
+                }
+                stage('Test-Cases') {
+                    steps {
+                        script {
+                            sh '''
+                                cd build
+                                ls -lrt
+                            '''
+                        }
+                    }
+                }
+                stage('Build') {
+                    steps {
+                        script {
+                            sh '''
+                                cd build
+                                mvn clean install -Dmaven.test.skip=true
+                            '''
+                        }
+                    }
+                }
+                stage('Package') {
+                    steps {
+                        script {
+                            sh '''
+                                cd build
+                                mvn package -Dmaven.test.skip=true
+                            '''
+                        }
+                    }
+                }
+                stage('Archive artifact') {
+                  steps {
+                    echo 'I am successfull completed :)'
+                    archiveArtifacts '**/*.war'
+                  }
+                }
+                stage('Deploy-To-Nexus') {
+                  steps {
+                    script {
+                    	sh '''
+                        	mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-admin -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-acquirer-admin/target/gateway-admin.war
+          	  				mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-merchant -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-merchant/target/gateway-merchant.war
+						'''
+                    }
+                  }
+                }
+                stage('Artifact-Download') {
+                    steps {
+                        script {
+                            sh '''
+                                cd devops/QA/gateway
+                                sh file.sh
+                            '''
+                        }
+                    }
+                }
+                stage('Build-APP-Image') {
+                    steps {
+                        script {
+                            sh '''
+                                cd devops/QA/gateway
+                                docker build -t $image:${BUILD_NUMBER} .
+                            '''
+                        }
+                    }
+                }
+                stage('Push-Docker-IMAGE') {
+                    steps {
+                        script {
+                            sh '''
+                                cd devops/QA/gateway
+                                sh docker.sh
+                            '''
+                        }
+                    }
+                }
+                stage('RUN-Image') {
+                    steps {
+                        script {
+                            sh '''
+                                cd devops/QA/gateway
+                                ansible-playbook playbook.yml -i hosts --extra-vars "registry=192.168.0.91:8082 build_number=${BUILD_NUMBER}"
+                            '''
+                        }
+                    }
+                }
+        }
+}

@@ -9,6 +9,7 @@
 <%-- <%@page import="com.chatak.acquirer.admin.constant.JSPConstants"%>//need to do--%>
 <%@page import="com.chatak.pg.util.Constants"%>
 <head>
+<title>Navigation Panel</title>
 <!-- Bootstrap -->
 <link href="../css/style.css" rel="stylesheet">
 </head>

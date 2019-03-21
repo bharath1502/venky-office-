@@ -16,7 +16,8 @@ function openCancelConfirmationPopup() {
 			&& (isEmpty(get('secondarySwitchURL').value.trim()))
 			&& (isEmpty(getVal('secondarySwitchPort').trim()))
 			&& (isEmpty(getVal('priority').trim()))) {
-		window.location.href = 'switch-search';
+		//window.location.href = 'switch-search';
+		$('#my_popup1').popup("show");
 	}
 
 	else {

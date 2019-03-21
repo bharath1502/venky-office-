@@ -16,6 +16,11 @@ pipeline {
                 name:'artifactid1',
                 defaultValue:'default',
                 description:'enter artifactid1')
+           string(
+                name:'artifactid2',
+                defaultValue:'default',
+                description:'enter artifactid2')
+          
             string(
                 name:'image',
                 defaultValue:'default',
@@ -34,7 +39,7 @@ pipeline {
                                 cd build
                                 mvn clean
                                 mvn clean install -Dmaven.test.skip=true
-                                mvn sonar:sonar -Dsonar.host.url=http://admin:admin01@192.168.0.82:9000 -Dsonar.projectKey="cl-hce" -Dsonar.projectName="Closed_loop-HCE"
+                                mvn sonar:sonar -Dsonar.host.url=http://admin:admin01@192.168.0.82:9000 -Dsonar.projectKey="cl-acquirer" -Dsonar.projectName="Closed_loop-acquirer"                                                                                                                                                                              " -Dsonar.projectName="Closed_loop-HCE"
                             '''
                         }
                     }
@@ -79,7 +84,8 @@ pipeline {
                   steps {
                     script {
                     	sh '''
-                        mvn deploy:deploy-file -DgroupId=chatak-issuance -DartifactId=issuance-processor -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=prepaidprocessor/target/issuance-processor.war
+                        mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-admin -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-acquirer-admin/target/gateway-admin.war
+          	            mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-merchant -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-merchant/target/gateway-merchant.war
 						'''
                     }
                   }
@@ -88,7 +94,7 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                cd devops/QA/processor
+                                cd devops/QA/gateway
                                 sh file.sh
                             '''
                         }
@@ -98,7 +104,7 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                cd devops/QA/processor
+                                cd devops/QA/gateway
                                 docker build -t $image:${BUILD_NUMBER} .
                             '''
                         }
@@ -108,7 +114,7 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                cd devops/QA/processor
+                                cd devops/QA/gateway
                                 sh docker.sh
                             '''
                         }
@@ -118,7 +124,7 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                cd devops/QA/processor
+                                cd devops/QA/gateway
                                 ansible-playbook playbook.yml -i hosts --extra-vars "registry=192.168.0.91:8082 build_number=${BUILD_NUMBER}"
                             '''
                         }

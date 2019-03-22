@@ -36,9 +36,7 @@ pipeline {
                         script {
                             sh '''
                                 cd build
-                                mvn clean
-                                mvn clean install -Dmaven.test.skip=true
-                                mvn sonar:sonar -Dsonar.host.url=http://admin:admin01@192.168.0.82:9000 -Dsonar.projectKey="cl-acquirer" -Dsonar.projectName="Closed_loop-Acquiring"
+                                ls
                             '''
                         }
                     }

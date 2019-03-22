@@ -155,9 +155,9 @@ function validateSecondarySwitchPort() {
 function validatePriority() {
 	var priority = getVal('priority').trim();
 	if (isEmpty(priority)) {
-		var priorityVal = 1;
-		get('priority').value = priorityVal;
-		return true;
+		setError(get('priority'), webMessages.enterpriority);
+		loadMsgTitleText();
+		return false;
 	} else if (!isDigit(priority) || priority.length > 1 || priority == 0) {
 		setError(get('priority'), webMessages.invalidPriority);
 		loadMsgTitleText();

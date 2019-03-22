@@ -22,4 +22,4 @@
       shell: docker pull {{registry}}/gateway:{{build_number}}
 
     - name: create docker image
-      shell: docker run -d --name gateway -p 8012:8012 {{registry}}/gateway:{{build_number}}
+      shell: docker run -d --name gateway -p 8061:8061 {{registry}}/gateway:{{build_number}}

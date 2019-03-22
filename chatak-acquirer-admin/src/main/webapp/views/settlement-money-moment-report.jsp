@@ -79,7 +79,7 @@
 								<!-- Page Form Start -->
 							
 								<form:form action="executeSettlementData"
-									name="executeSettlementData" >
+									name="executeSettlementData" method="post">
 									<input type="hidden" id="timeZoneOffset" name="timeZoneOffset" />
                                     <input type="hidden" id="timeZoneRegion" name="timeZoneRegion" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">

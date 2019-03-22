@@ -17,6 +17,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -174,7 +175,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
     return modelAndView;
   }
 
-  @RequestMapping(value = CHATAK_ADMIN_GET_DAILY_FUNDING_REPORT)
+  @PostMapping(value = CHATAK_ADMIN_GET_DAILY_FUNDING_REPORT)
   public ModelAndView getDailyFundingReport(HttpServletRequest request,
       HttpServletResponse response, GetDailyFundingReportRequest dailyFundingReport,
       BindingResult bindingResult, Map model, HttpSession session) {

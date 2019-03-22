@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -732,7 +733,7 @@ public class UserManagementController implements URLMappingConstants {
     return modelAndView;
   }
 
-  @RequestMapping(value = CHATAK_USER_TYPE_VALUE)
+  @PostMapping(value = CHATAK_USER_TYPE_VALUE)
   public ModelAndView showUserTypeValue(HttpServletRequest request, HttpServletResponse response,
       @FormParam("rolesType") final String rolesType, Map model, HttpSession session) {
     logger.info("Entering:: UserManagementController:: showCreateUser method");

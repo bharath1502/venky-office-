@@ -34,24 +34,18 @@
 		<!--Container block Start -->
 		<div class="container-fluid">
 			<!--Header Block Start -->
-			<!-- 			<header class="col-sm-12 all-page-header"> -->
-			<!-- 				Header Logo Start				 -->
-			<!-- 				<div class="col-sm-4">  -->
-			<!-- 					<img src="../images/chatak_logo.jpg" height="35px" alt="Logo"/> -->
-			<!-- 				</div> -->
-			<!-- 				Header Logo End	 -->
-			<!-- 				Header Welcome Text and Logout button Start -->
-			<!-- 				<div class="col-sm-5 col-xs-offset-3"> -->
-			<!-- 					<div class="pull-right user-settings"> -->
+			 			
+							
+			
+			
+			
+			
 			<!-- 						<table> -->
 			<!-- 							<tr> -->
-			<!-- 								<td><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></td> -->
-			<!-- 							</tr> -->
-			<!-- 						</table> -->
-			<!-- 					</div> -->
-			<!-- 				</div> -->
+			
+			
 			<!-- 				Header Welcome Text and Logout button End	 -->
-			<!-- 			</header> -->
+			
 			<!--Header Block End -->
 			<!--Navigation Block Start -->
 			<%@include file="navigation-panel.jsp"%>
@@ -108,7 +102,7 @@
 								<form:form action="editRole" name="editRoleForm" method="post">
 									<input type="hidden" id="roleIdData" name="roleIdData" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
-									<!-- <input type="hidden" id="roleNameData" name="roleNameData" /> 
+									
 									<input type="hidden" id="statusData" name="statusData" /> -->
 
 								</form:form>
@@ -311,21 +305,12 @@
 							<table class="table table-striped table-bordered table-condensed">
 
 							<!-- 							<tr> -->
-							<!-- 								<td>Paying Admin</td>																 -->
-							<!-- 								<td>Paying Administrator</td>								 -->
-							<!-- 								<td>Active</td> -->
+							
 							<!-- 								<td>									 -->
-							<!-- 									<a href="access-role-edit.html"><span class="glyphicon glyphicon-pencil"></span></a>									 -->
-							<!-- 								</td> -->
-							<!-- 							</tr> -->
+							
 							<!-- 							<tr> -->
-							<!-- 								<td>Super Admin</td>																 -->
-							<!-- 								<td>Paying Administrator</td>								 -->
-							<!-- 								<td>Active</td> -->
 							<!-- 								<td>									 -->
-							<!-- 									<a href="access-role-edit.html"><span class="glyphicon glyphicon-pencil"></span></a>									 -->
-							<!-- 								</td> -->
-							<!-- 							</tr> -->
+							
 							<tr class="table-footer-main">
 								<td colspan="10" class="search-table-header-column">
 

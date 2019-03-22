@@ -83,15 +83,7 @@
 															<span class="red-error" id="merchantIdErrorDiv">&nbsp;</span>
 														</div>
 													</fieldset>
-													<!-- <fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title="">Transaction ID<span
-															class="required-field">*</span></label> <input type="text"
-															class="form-control" id="refNumberDiv"
-															onblur="this.value=this.value.trim();validRefNumber('refNumberDiv','refNumberErrorDiv')" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error" id="refNumberErrorDiv">&nbsp;</span>
-														</div>
-													</fieldset> -->
+													
 													
 													<!--Panel Action Button Start -->
 													<div class="col-sm-12 form-action-buttons" id="hideSearchButton">

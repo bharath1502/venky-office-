@@ -26,7 +26,7 @@
 			<!--Header Block Start -->
 			<!--Header Block End -->
 			<!--Navigation Block Start -->
-			<!-- <nav class="col-sm-12 nav-bar" id="main-navigation"> -->
+			
 				<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 				<%@include file="navigation-panel.jsp"%>
 			<!-- </nav> -->

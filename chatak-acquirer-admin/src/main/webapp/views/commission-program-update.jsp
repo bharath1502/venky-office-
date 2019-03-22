@@ -208,7 +208,7 @@
 											</div>
 									 <fieldset class="col-sm-12 padding0 filter-content added-row" >
 										<fieldset class="col-sm-12" style="margin-top: -13px;">
-											<!-- <label class="col-sm-3 head-border">Discount Rate</label> -->
+											
 										</fieldset>
 											<c:forEach var="rows" items="${commissionDTO.otherCommissionDTO}" varStatus="status">	
 											<div class="col-sm-12 commission-values" style='margin-left: 220px;'>

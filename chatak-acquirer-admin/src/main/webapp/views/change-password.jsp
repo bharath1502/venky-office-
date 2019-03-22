@@ -46,7 +46,7 @@
 			<%-- <%@include file="navigation-panel.jsp"%> --%>
 			<!--Article Block Start-->
 			<article>
-				<!-- <div class="col-xs-3"></div> -->
+				
 				<div class="col-xs-12 content-wrapper login-page-content">
 
 
@@ -131,7 +131,7 @@
 						</div>
 					</div>
 				</div>
-				<!-- <div class="col-xs-3"></div> -->
+				
 			</article>
 			<!--Article Block End-->
 			<div class="footer-container">

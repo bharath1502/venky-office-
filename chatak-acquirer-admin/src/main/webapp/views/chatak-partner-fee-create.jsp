@@ -103,12 +103,7 @@
 											<span class="red-error">&nbsp;</span>
 										</div>
 									</fieldset>
-									<!-- <fieldset class="col-sm-4">
-										<div><input type="submit"
-											class="form-action-buttons form-control button"
-											value="Create"></div>
-									</fieldset>
-									<fieldset class="col-sm-4"></fieldset> -->
+									
 								</form:form>
 							</div>
 						</div>

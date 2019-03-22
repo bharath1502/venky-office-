@@ -301,7 +301,7 @@ var ValidationRules = {
 	},
 	
 	first_name_SplChar : {
-		type : "alphanumsplchar",
+		type : "username",
 		min : "2",
 		max : "100",
 		mandatory : true
@@ -1045,6 +1045,38 @@ var ValidationRules = {
 		max : "30",
 		mandatory : false
 	},
+	questionName : {
+		type : "alphanumericEnterQuestionAndSpace",
+		min : "5",
+		max : "500",
+		mandatory : true
+
+	},
+	
+	questionAnswer : {
+		type : "alphanumericEnterQuestionAndSpace",
+		min : "5",
+		max : "500",
+		mandatory : true
+
+	},
+	
+	categoryName : {
+		type : "dropdown",
+		min : "0",
+		max : "100",
+		mandatory : true
+
+	},
+	
+	moduleName : {
+		type : "dropdown",
+		min : "0",
+		max : "100",
+		mandatory : true
+
+	},
+
 };
 
 var validationType;
@@ -1091,6 +1123,11 @@ function clientValidation(field_id, field_name,div_id) {
 			if(!alphanumericDotAndSpace(data,div_id))
 				   return false;
 		} 
+		if (ValidationRules[name].type == "alphanumericEnterQuestionAndSpace") {
+			if (!alphanumericQuestionAndSpace(data, div_id))
+				return false;
+
+		}	
 		if (ValidationRules[name].type == "numericWithDash") {
 			if(!numericWithDash(data,div_id))
 				   return false;
@@ -1223,7 +1260,19 @@ function alphanumericDotAndSpace(data,div_id) {
 		loadMsgTitleText();
 		return false;
 	}
-}	
+}
+	function alphanumericQuestionAndSpace(data, div_id) {
+		var questionRegex = /^[A-Za-z0-9?.-\s]+$/;
+		if (questionRegex.test(data)) {
+		setDiv(div_id, "");
+		return true;
+
+		} else {
+		setDiv(div_id, webMessages.SPECIALCHARSALPHASNUMERICSWITHQUESTIONMARK);
+		return false;
+		}
+	}
+	
 	function numericWithDash(data,div_id) {
 		var regex = /^[0-9-]*$/;
 		if (regex.test(data)) {

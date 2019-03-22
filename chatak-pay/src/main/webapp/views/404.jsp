@@ -1,5 +1,6 @@
 <html>
 <head>
+<title>404</title>
 <link href="css/pg.css" rel="stylesheet">
 <script type="text/javascript">
 

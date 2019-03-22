@@ -287,6 +287,7 @@ var C_MERCHANT_MSG = {
 		InvalidAgentANI : "Only Alpha Numeric allowed",
 		shouldbegreaterthanzero : "Should be greater than zero",
 		pleaseEnterValidCardNumber : "Numbers Only",
+		SPECIALCHARSALPHASNUMERICSWITHQUESTIONMARK : "*Can contain only .-?space and alphabets,numerics*",
 
 		pleaseentervalidcurrencyname : "Please Enter Valid Currency Name",
 		pleaseentervalidvurrencycodenumeric : "Please Enter Valid Currency Code Numeric",

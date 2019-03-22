@@ -9,6 +9,7 @@
 <%-- <%@page import="com.chatak.acquirer.admin.constant.JSPConstants"%>//need to do--%>
 <%@page import="com.chatak.pg.util.Constants"%>
 <head>
+<title>Navigation Panel</title>
 <!-- Bootstrap -->
 <link href="../css/style.css" rel="stylesheet">
 </head>
@@ -182,6 +183,13 @@
 <spring:message code="admin.services.bank.edit.feature.id" var="bankEdit"></spring:message>
 <spring:message code="admin.services.bank.delete.feature.id" var="bankDelete"></spring:message>
 
+<spring:message code="admin.services.faq.management.feature.id" var="faqManagement"></spring:message>
+<spring:message code="admin.services.faq.management.create.feature.id" var="faqManagementCreate"></spring:message>
+<spring:message code="admin.services.faq.management.edit.feature.id" var="faqManagementEdit"></spring:message>
+<spring:message code="admin.services.faq.management.view.feature.id" var="faqManagementView"></spring:message>
+<spring:message code="admin.services.faq.management.delete.feature.id" var="faqManagementDelete"></spring:message>
+
+
 <%-- <spring:message code="admin.services.reseller.feature.id" var="reseller"></spring:message>
 <spring:message code="admin.services.reseller.create.feature.id" var="resellerCreate"></spring:message>
 <spring:message code="admin.services.reseller.view.feature.id" var="resellerView"></spring:message>
@@ -342,6 +350,7 @@
 					<c:if test="${fn:contains(existingFeatures,feePrograms)}">
 						<li style="text-align:left;"><a href="show-fee-program-search"><spring:message code="fee-program-search.label.feeprogram"/></a></li>
 					</c:if>
+					
 					<%-- <c:if test="${fn:contains(existingFeatures,commissionPrograms)}">
 						<li style="text-align:left;"><a href="show-commission-program-search"><spring:message code="commission-program-search.label.commisisionprogram"/></a></li>
 					</c:if> --%>
@@ -379,6 +388,10 @@
 					<c:if test="${fn:contains(existingFeatures,bank)}">
 						<li style="text-align:left;"><a href="bank-search"><spring:message code="pending-merchant-show.label.bank"/></a></li>
 					</c:if>  
+					
+					<c:if test="${fn:contains(existingFeatures,faqManagement)}">
+						<li style="text-align:left;"><a href="showFaqManagementSearch"><spring:message code="chatak-report-lable-faq-management"/></a></li>
+					</c:if>
 					<%-- <c:if test="${fn:contains(existingFeatures,reseller)}">
 						<li style="text-align:left;"><a href="reseller-search-page"><spring:message code="pending-merchant-show.label.reseller"/></a></li>
 					</c:if> --%>

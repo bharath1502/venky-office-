@@ -2,6 +2,7 @@
 <%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html>
 <head>
+<title>Error Page</title>
 <link href="../css/pg.css" rel="stylesheet">
 <script type="text/javascript">
 	

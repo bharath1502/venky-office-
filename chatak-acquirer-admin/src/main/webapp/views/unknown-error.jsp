@@ -1,6 +1,7 @@
 <%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
 <html>
 <head>
+<title>Unknown Error</title>
 <link href="../css/pg.css" rel="stylesheet">
 <script type="text/javascript">
 	

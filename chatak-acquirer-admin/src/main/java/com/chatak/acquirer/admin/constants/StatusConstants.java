@@ -24,7 +24,13 @@ public interface StatusConstants
 	
 	public static final String ERROR = "error";
 	
+	public static final Integer QUESTION = 500;
+	
+	public static final String FAQ_MANAGEMENT_SESSION = "FaqSession";
+	
 	public static final String ALLOW_RIGHT_CLICK =
 		      Properties.getProperty("chatak.admin.allow.right.click.flag");
+
+	public static final Object YES = "Yes";
 	
 }

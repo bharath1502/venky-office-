@@ -251,7 +251,7 @@
 															code="common.label.zipcode" /><span
 														class="required-field">*</span></label>
 													<form:input cssClass="form-control" path="zip" id="zip"
-														maxlength="7" onkeypress="generalZipCode()"
+														maxlength="7" onkeypress="generalZipCode();return numbersonly(this, event)"
 														onblur="this.value=this.value.trim();return zipCodeNotEmpty(id)" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">

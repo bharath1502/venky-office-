@@ -1,1 +1,1 @@
-192.168.2.171 ansible_ssh_user=root ansible_ssh_pass=vijay@123
+192.168.0.92 ansible_ssh_user=root ansible_ssh_pass=admin@123

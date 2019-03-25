@@ -1,5 +1,6 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
+<!DOCTYPE html>
 <html>
 <head>
 <title>Error Page</title>

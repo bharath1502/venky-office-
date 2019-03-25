@@ -1,4 +1,5 @@
 <%@ page import="com.chatak.acquirer.admin.constants.StatusConstants"%>
+<!DOCTYPE html>
 <html>
 <head>
 <title>Unknown Error</title>

@@ -340,7 +340,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	 * @return
 	 */
 	private Object getMerchantlistCountry(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getCountry() != "" ? searchMerchant.getCountry() : null;
+		return !searchMerchant.getCountry().equals("") ? searchMerchant.getCountry() : null;
 	}
 
 	/**
@@ -348,7 +348,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	 * @return
 	 */
 	private Object getMerchantlistEmailId(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getEmailId() != "" ? searchMerchant.getEmailId() : null;
+		return !searchMerchant.getEmailId().equals("") ? searchMerchant.getEmailId() : null;
 	}
 
 	/**
@@ -356,7 +356,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	 * @return
 	 */
 	private Object getMerchantlistBusinessName(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getBusinessName() != "" ? searchMerchant.getBusinessName() : null;
+		return !searchMerchant.getBusinessName().equals("") ? searchMerchant.getBusinessName() : null;
 	}
 
 	/**
@@ -364,7 +364,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	 * @return
 	 */
 	private Object getMerchantlistMerchantCode(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getMerchantCode() != "" ? searchMerchant.getMerchantCode() : null;
+		return !searchMerchant.getMerchantCode().equals("") ? searchMerchant.getMerchantCode() : null;
 	}
 
 	/**
@@ -372,7 +372,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	 * @return
 	 */
 	private Object getMerchantlistCardProgramName(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getCardProgramName() != "" ? searchMerchant.getCardProgramName() : null;
+		return !searchMerchant.getCardProgramName().equals("") ? searchMerchant.getCardProgramName() : null;
 	}
 
 	/**
@@ -380,7 +380,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	 * @return
 	 */
 	private Object getMerchantlistIsoName(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getIsoName() != "" ? searchMerchant.getIsoName() : null;
+		return !searchMerchant.getIsoName().equals("") ? searchMerchant.getIsoName() : null;
 	}
 
 	/**
@@ -388,7 +388,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	 * @return
 	 */
 	private Object getMerchantlistProgramManagerName(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getProgramManagerName() != "" ? searchMerchant.getProgramManagerName() : null;
+		return !searchMerchant.getProgramManagerName().equals("") ? searchMerchant.getProgramManagerName() : null;
 	}
 
 	/**
@@ -396,7 +396,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	 * @return
 	 */
 	private Object getMerchantlistEntityType(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getEntityType() != "" ? searchMerchant.getEntityType() : null;
+		return !searchMerchant.getEntityType().equals("") ? searchMerchant.getEntityType() : null;
 	}
 
   private void setPGMerchantDetails(PGMerchant merchant, Tuple tuple) {

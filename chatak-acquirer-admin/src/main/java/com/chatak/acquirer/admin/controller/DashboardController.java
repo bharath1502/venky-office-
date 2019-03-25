@@ -431,11 +431,11 @@ private void validateMerchant(Map model, Merchant merchant) {
       if (userName != null && entityType.equals(PGConstants.ADMIN)
     		  || entityType.equals(Constants.PM_USER_TYPE)
     		  || entityType.equals(Constants.ISO_USER_TYPE)) {
-        responseval = userService.unblockAdminUser(userName);
       } else {
+    	  responseval = userService.unblockAdminUser(userName);
         responseval = userService.unblockMerchantUser(userName);
       }
-      if (responseval != null && responseval.getErrorCode() == "00") {
+      if (responseval != null && responseval.getErrorCode().equals("00")) {
         modelAndView = showUnblockUsers(request, model, session, new GenericUserDTO());
         model.put(Constants.SUCESS, messageSource.getMessage("chatak.unblockuser.success.message",
             null, LocaleContextHolder.getLocale()));

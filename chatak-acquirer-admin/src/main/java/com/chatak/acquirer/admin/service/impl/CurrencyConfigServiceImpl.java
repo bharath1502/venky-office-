@@ -108,14 +108,14 @@ public class CurrencyConfigServiceImpl implements CurrencyConfigService,PGConsta
 				currenyValue.setCurrencyCodeNumeric(pgCurrencyConfig.getCurrencyCodeNumeric());
 				currenyValue.setCurrencyCodeAlpha(pgCurrencyConfig.getCurrencyCodeAlpha());
 				currenyValue.setCurrencyExponent(pgCurrencyConfig.getCurrencyExponent());
-				if (pgCurrencyConfig.getStatus() == STATUS_SUCCESS){
+				if (pgCurrencyConfig.getStatus().equals(STATUS_SUCCESS)){
 					currenyValue.setStatus(S_STATUS_ACTIVE);
-        		}else if (pgCurrencyConfig.getStatus() == STATUS_PENDING) {
+        		}else if (pgCurrencyConfig.getStatus().equals(STATUS_PENDING)) {
         			currenyValue.setStatus(S_STATUS_PENDING);
         		}
-        		 else if (pgCurrencyConfig.getStatus() == STATUS_DELETED) {
+        		 else if (pgCurrencyConfig.getStatus().equals(STATUS_DELETED)) {
         			 currenyValue.setStatus(S_STATUS_DELETED);
-         		} else if (pgCurrencyConfig.getStatus() == STATUS_SUSPENDED) {
+         		} else if (pgCurrencyConfig.getStatus().equals(STATUS_SUSPENDED)) {
          			currenyValue.setStatus(S_STATUS_SUSPENDED);
          		}
 				currencyDTOs.add(currenyValue);

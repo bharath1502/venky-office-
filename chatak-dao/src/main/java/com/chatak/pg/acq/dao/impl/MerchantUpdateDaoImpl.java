@@ -163,7 +163,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       pgMerchantUser.setAddress(addMerchantRequest.getAddress1());
       pgMerchantUsers.add(pgMerchantUser);
       merchant.setPgMerchantUsers(pgMerchantUsers);
-      if(addMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT){
+      if(!addMerchantRequest.getMerchantType().equals(PGConstants.SUB_MERCHANT)){
       //Merchant to Entity Mapping
       Set<PGMerchantEntityMap> pgMerchantEntityMaps = new HashSet<>();
 			PGMerchantEntityMap merchantEntityMap = new PGMerchantEntityMap();
@@ -388,7 +388,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       }
     }
     if (null == merchantDb.getParentMerchantId()
-        && (PGConstants.STATUS_SUCCESS != updateMerchantRequest.getStatus())) {
+        && (!PGConstants.STATUS_SUCCESS.equals(updateMerchantRequest.getStatus()))) {
       validateParentMerchantId(updateMerchantRequest, merchantDb);
     }
     PGAccount pgAccount = accountRepository.findByEntityIdAndCategory(merchantDb.getMerchantCode(),
@@ -516,7 +516,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       pgMerchantBank.setCountry(updateMerchantRequest.getBankCountry());
       pgMerchantBank.setPin(updateMerchantRequest.getBankPin());
       
-		if (updateMerchantRequest.getMerchantType() != PGConstants.SUB_MERCHANT
+		if (!updateMerchantRequest.getMerchantType().equals(PGConstants.SUB_MERCHANT)
 				&& updateMerchantRequest.getProcess().equals(PGConstants.UPDATE)) {
 		}
 		merchantRepository.save(merchantDb);
@@ -616,8 +616,8 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 
   private void validatePGMerchant(UpdateMerchantRequest updateMerchantRequest, PGMerchant merchantDb,
 		PGMerchant subMerchant, PGAccount pgSubMerchantAccount) {
-	if (PGConstants.STATUS_DELETED != subMerchant.getStatus()
-	    && PGConstants.STATUS_INACTIVE != subMerchant.getStatus()) {
+	if (!PGConstants.STATUS_DELETED.equals(subMerchant.getStatus())
+	    && !PGConstants.STATUS_INACTIVE.equals(subMerchant.getStatus())) {
 	  subMerchant.setStatus(updateMerchantRequest.getStatus());
 	  subMerchant.setUpdatedDate(DateUtil.getCurrentTimestamp());
 	  subMerchant.getPgMerchantUsers().get(0)

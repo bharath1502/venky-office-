@@ -190,8 +190,8 @@ public class LoginController implements URLMappingConstants {
     	  session.setAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME,
     	  			(String) session.getAttribute(CSRFTokenManager.CSRF_TOKEN_FOR_SESSION_ATTR_NAME));
     	  
-    	  if (loginResponse.getMessage() == Properties
-    	      .getProperty("admin.service.login.password.expiration.error.message")) {
+    	  if (loginResponse.getMessage().equals(Properties
+        	      .getProperty("admin.service.login.password.expiration.error.message"))) {
     	    modelAndView = setModel(request, model, session, modelAndView, loginResponse);
     	  } else if (checkValidStatus(loginResponse)) {
           modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse,
@@ -452,8 +452,8 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
         LoginResponse loginResponse) {
       logger.info("LoginController::login::false::status");
       modelAndView.addObject(Constants.ERROR, loginResponse.getMessage());
-      if (loginResponse.getMessage() == Properties
-          .getProperty("admin.service.login.password.expiration.error.message")) {
+      if (loginResponse.getMessage().equals(Properties
+              .getProperty("admin.service.login.password.expiration.error.message"))) {
         session.setAttribute(Constants.LOGIN_USER_ID, loginResponse.getUserId());
         modelAndView = changePassword(model, request, session);
         modelAndView.addObject(Constants.ERROR,

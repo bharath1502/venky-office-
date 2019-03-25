@@ -507,7 +507,7 @@ public class UserManagementController implements URLMappingConstants {
       rowData[Integer.parseInt("9")] = userData.getLastName();
       rowData[Integer.parseInt("10")] = userData.getEmail();
       rowData[Integer.parseInt("11")] = status;
-      if (userData.getStatus() == Constants.TWO) {
+      if (userData.getStatus().equals(Constants.TWO)) {
         rowData[Integer.parseInt("12")] = userData.getUpdatedDate();
       } else {
         rowData[Integer.parseInt("12")] = " ";
@@ -521,11 +521,11 @@ public class UserManagementController implements URLMappingConstants {
     String status;
     if (userData.getStatus() == 0) {
       status = "Active";
-    } else if (userData.getStatus() == Constants.ONE) {
+    } else if (userData.getStatus().equals(Constants.ONE)) {
       status = "Pending";
-    } else if (userData.getStatus() == Constants.TWO) {
+    } else if (userData.getStatus().equals(Constants.TWO)) {
       status = "Suspended";
-    } else if (userData.getStatus() == Constants.THREE) {
+    } else if (userData.getStatus().equals(Constants.THREE)) {
       status = "Deleted";
     } else {
       status = "Declined";

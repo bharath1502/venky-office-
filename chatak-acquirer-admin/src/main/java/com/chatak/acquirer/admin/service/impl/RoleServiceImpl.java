@@ -412,8 +412,8 @@ public class RoleServiceImpl implements RoleService {
     RoleResponse roleResponse = new RoleResponse();
     PGUserRoles pgRoleData = usersRoleDao.getRoleOnRoleName(roleName);
     if (pgRoleData != null) {
-      if (pgRoleData.getStatus() == PGConstants.STATUS_INACTIVE
-          || pgRoleData.getStatus() == PGConstants.STATUS_ACTIVE) {
+      if (pgRoleData.getStatus().equals(PGConstants.STATUS_INACTIVE)
+          || pgRoleData.getStatus().equals(PGConstants.STATUS_ACTIVE)) {
         roleResponse.setRoleId(pgRoleData.getRoleId());
         roleResponse.setRoleName(pgRoleData.getRoleName());
         roleResponse.setErrorCode(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY);

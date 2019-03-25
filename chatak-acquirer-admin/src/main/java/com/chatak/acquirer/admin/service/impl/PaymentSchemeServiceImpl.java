@@ -155,8 +155,8 @@ public class PaymentSchemeServiceImpl implements PaymentSchemeService, PGConstan
     PaymentSchemeNameResponse paymentSchemeNameResponse = new PaymentSchemeNameResponse();
     PGPaymentScheme paymentScheme = paymentSchemeDao.getPaymentSchemeName(paymentSchemeName);
     if (paymentScheme != null) {
-      if (paymentScheme.getStatus() == PGConstants.STATUS_INACTIVE
-          || paymentScheme.getStatus() == PGConstants.STATUS_ACTIVE) {
+      if (paymentScheme.getStatus().equals(PGConstants.STATUS_INACTIVE)
+          || paymentScheme.getStatus().equals(PGConstants.STATUS_ACTIVE)) {
         paymentSchemeNameResponse.setId(paymentScheme.getId());
         paymentSchemeNameResponse.setPaymentSchemeName(paymentScheme.getPaymentSchemeName());
         paymentSchemeNameResponse.setErrorCode(ActionErrorCode.ERROR_CODE_DUPLICATE_ENTRY);

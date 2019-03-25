@@ -41,7 +41,7 @@ function editSwitch(switchId) {
 function validateCreateSwitch() {
 	var flag = true;
 	if (!clientValidation('switchName','middle_name','switchNameEr') | !validatePrimarySwitchURL()
-			| !validatePrimarySwitchPort() | !validateSecondarySwitchURL()
+			| !validatePrimarySwitchPort() | !validateSecondarySwitchURL() | !validateSwitchType()
 			| !validateSecondarySwitchPort() | !validatePriority()) {
 		return false;
 	}

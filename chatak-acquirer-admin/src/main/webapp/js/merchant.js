@@ -64,8 +64,8 @@ function closeCancelConfirmationPopup() {
 function validateCreateMerchantStep1() {
 	var flag = true;
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
-			| !validatePhone() 	| !validateAddress1() | !validateCity() | !validateEmailId()
-			| !validateState() | !validateCountry() | !validatePin()
+			| !validatePhone() 	| !validateAddressOne() | !validateCityDetails() | !validateEmailId()
+			| !validateStateDetails() | !validateCountryDetails() | !validatePin()
 		    | !vlalidateUserName() | !createValidationForBasicInfo() |!zipCodeNotEmpty('pin')) {
 		return false;
 	} else {
@@ -219,8 +219,8 @@ function validateCreateMerchantStep4() {
 function validateCreateMerchantStep1edit() {
 	var flag = true;
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
-			| !validatePhone() | !validateAddress1() | !validateEmailId()
-			| !validateCity() | !validateState() | !validateCountry()
+			| !validatePhone() | !validateAddressOne() | !validateEmailId()
+			| !validateCityDetails() | !validateStateDetails() | !validateCountryDetails()
 			| !validatePin() | !createValidationForBasicInfo()) {
 		return false;
 	} else {
@@ -429,7 +429,7 @@ function validateCreateMerchantStep5() {
 	return flag;
 }
 
-function validateAddress1() {
+function validateAddressOne() {
 	var address1 = get('address1').value.trim();
 	if (isEmpty(address1)) {
 		setError(get('address1'), webMessages.validationthisfieldismandatory);
@@ -457,7 +457,7 @@ function validateAddress2() {
 	return true;
 }
 
-function validateCity() {
+function validateCityDetails() {
 	var city = get('city').value.trim();
 	if (isEmpty(city)) {
 		setError(get('city'), webMessages.validationthisfieldismandatory);
@@ -474,7 +474,7 @@ function validateCity() {
 	}
 }
 
-function validateState() {
+function validateStateDetails() {
 	var state = get('state').value.trim();
 	if (isEmpty(state)) {
 		setError(get('state'), webMessages.validationthisfieldismandatory);
@@ -487,7 +487,7 @@ function validateState() {
 	}
 }
 
-function validateCountry() {
+function validateCountryDetails() {
 	var country = get('country').value.trim();
 	if (isEmpty(country)) {
 		setError(get('country'), webMessages.validationthisfieldismandatory);
@@ -2719,8 +2719,8 @@ function getPartners(pmID, elementId) {
 function validateCreateSubMerchantStep1() {
 	var flag = true;
 	if (!validateBusinessName() | !validateFirstName() | !validateLastName()
-			| !validatePhone() | !validateAddress1() | !validateCity() | !validateEmailId()
-			| !validateState() | !validateCountry() | !validatePin()
+			| !validatePhone() | !validateAddressOne() | !validateCityDetails() | !validateEmailId()
+			| !validateStateDetails() | !validateCountryDetails() | !validatePin()
 			| !validateParentMerchantId() |!vlalidateUserName() |!createValidationForBasicInfo()) {
 		return false;
 	} else {

@@ -395,7 +395,7 @@ var ValidationRules = {
 	
 	account_numberBank : {
 		type : "numeric",
-		min : "0",
+		min : "10",
 		max : "20",
 		mandatory : true
 

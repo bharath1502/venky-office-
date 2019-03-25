@@ -92,11 +92,11 @@ public class BlackListedCardServiceImpl implements BlackListedCardService, PGCon
 
   private void verifyStatus(BlackListedCardRequest searchBlackListedCard,
       BlackListedCardRequest blRequest) {
-    if (blRequest.getStatus() == STATUS_SUCCESS) {
+    if (blRequest.getStatus().equals(STATUS_SUCCESS)) {
       searchBlackListedCard.setStatusDisp(S_STATUS_ACTIVE);
-    } else if (blRequest.getStatus() == STATUS_PENDING) {
+    } else if (blRequest.getStatus().equals(STATUS_PENDING)) {
       searchBlackListedCard.setStatusDisp(S_STATUS_PENDING);
-    } else if (blRequest.getStatus() == STATUS_SUSPENDED) {
+    } else if (blRequest.getStatus().equals(STATUS_SUSPENDED)) {
       searchBlackListedCard.setStatusDisp(S_STATUS_SUSPENDED);
     }
   }

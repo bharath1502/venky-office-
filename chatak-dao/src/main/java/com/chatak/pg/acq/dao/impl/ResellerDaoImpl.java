@@ -81,13 +81,13 @@ public class ResellerDaoImpl implements ResellerDao, PGConstants {
             addResellerRequest.getEmailId(), addResellerRequest.getResellerName());
 
     if ((StringUtils.isListNotNullNEmpty(pgResellerList))
-        && pgResellerList.get(0).getStatus() != PGConstants.STATUS_DELETED) {
+        && !pgResellerList.get(0).getStatus().equals(PGConstants.STATUS_DELETED)) {
 
       pgResellerList =
           resellerRepository.findByEmailIdOrderByUpdatedDateDesc(addResellerRequest.getEmailId());
 
       if ((StringUtils.isListNotNullNEmpty(pgResellerList))
-          && pgResellerList.get(0).getStatus() != PGConstants.STATUS_DELETED) {
+          && !pgResellerList.get(0).getStatus().equals(PGConstants.STATUS_DELETED)) {
         addResellerResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
         addResellerResponse.setErrorMessage(PGConstants.DUPLICATE_RESELLER_EMAIL_ID);
         return addResellerResponse;
@@ -96,7 +96,7 @@ public class ResellerDaoImpl implements ResellerDao, PGConstants {
       pgResellerList = resellerRepository
           .findByResellerNameOrderByUpdatedDateDesc(addResellerRequest.getResellerName());
       if ((StringUtils.isListNotNullNEmpty(pgResellerList))
-          && pgResellerList.get(0).getStatus() != PGConstants.STATUS_DELETED) {
+          && !pgResellerList.get(0).getStatus().equals(PGConstants.STATUS_DELETED)) {
         addResellerResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z10);
         addResellerResponse.setErrorMessage(
             ActionErrorCode.getInstance().getMessage(ActionErrorCode.ERROR_CODE_Z10));

@@ -295,7 +295,7 @@ public class AdminUserDaoImpl implements AdminUserDao {
             List<PGAdminUser> adminUsers = adminUserDaoRepository
                     .findByEmailAndPassword(email, pgPass);
             if (null != adminUsers && !adminUsers.isEmpty()
-                && adminUsers.get(0).getStatus() == PGConstants.STATUS_SUCCESS) {
+                && adminUsers.get(0).getStatus().equals(PGConstants.STATUS_SUCCESS)) {
                 return adminUsers.get(0);
             }
         } catch (Exception e) {

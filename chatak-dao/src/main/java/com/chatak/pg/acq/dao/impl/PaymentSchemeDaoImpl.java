@@ -127,7 +127,7 @@ public class PaymentSchemeDaoImpl implements PaymentSchemeDao {
 				List<PGPaymentScheme> pgPaymentScheme1 = paymentSchemeRepository.findByContactEmailOrderByUpdatedDateDesc(EmailID);
 
 				if (StringUtils.isListNotNullNEmpty(pgPaymentScheme1) 
-						&& pgPaymentScheme1.get(0).getId() != addPaymentSchemeRequest.getId()) {
+						&& !pgPaymentScheme1.get(0).getId().equals(addPaymentSchemeRequest.getId())) {
 
 					addPaymentSchemeResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);
 					addPaymentSchemeResponse.setErrorMessage(PGConstants.DUPLICATE_PAYMENT_SCHEME_EMAIL_ID);

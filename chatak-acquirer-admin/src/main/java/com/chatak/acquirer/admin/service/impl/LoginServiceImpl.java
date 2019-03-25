@@ -154,7 +154,7 @@ public class LoginServiceImpl implements LoginService {
 
 	private void setLoginResponse(LoginResponse loginResponse, PGAdminUser adminUser)
 			throws InstantiationException, IllegalAccessException {
-		if (adminUser != null && adminUser.getStatus() == PGConstants.STATUS_SUCCESS) {
+		if (adminUser != null && adminUser.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
 			if (adminUser.getEmailVerified().equals(Constants.ONE)) {
 				long currentPassCreateOrModifiedDateTimeMillis = 0;
 				currentPassCreateOrModifiedDateTimeMillis = getAdminUser(adminUser);

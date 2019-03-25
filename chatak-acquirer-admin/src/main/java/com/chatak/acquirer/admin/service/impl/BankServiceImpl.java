@@ -432,7 +432,7 @@ public class BankServiceImpl implements BankService, PGConstants {
   private void getPgmerchantValue(List<PGMerchant> pgMerchantList) throws ChatakAdminException {
     if (CommonUtil.isListNotNullAndEmpty(pgMerchantList)) {
       for (PGMerchant pgMerchant : pgMerchantList) {
-        if (STATUS_ACTIVE == pgMerchant.getStatus()) {
+        if (STATUS_ACTIVE.equals(pgMerchant.getStatus())) {
           throw new ChatakAdminException();
         }
       }

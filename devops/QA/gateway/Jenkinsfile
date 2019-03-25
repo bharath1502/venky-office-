@@ -16,11 +16,10 @@ pipeline {
                 name:'artifactid1',
                 defaultValue:'default',
                 description:'enter artifactid1')
-           string(
+            string(
                 name:'artifactid2',
                 defaultValue:'default',
                 description:'enter artifactid2')
-          
             string(
                 name:'image',
                 defaultValue:'default',
@@ -37,9 +36,7 @@ pipeline {
                         script {
                             sh '''
                                 cd build
-                                mvn clean
-                                mvn clean install -Dmaven.test.skip=true
-                                mvn sonar:sonar -Dsonar.host.url=http://admin:admin01@192.168.0.82:9000 -Dsonar.projectKey="cl-acquirer" -Dsonar.projectName="Closed_loop-acquirer"                                                                                                                                                                              " -Dsonar.projectName="Closed_loop-HCE"
+                                ls
                             '''
                         }
                     }
@@ -84,8 +81,8 @@ pipeline {
                   steps {
                     script {
                     	sh '''
-                        mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-admin -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-acquirer-admin/target/gateway-admin.war
-          	            mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-merchant -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-merchant/target/gateway-merchant.war
+                        	mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-admin -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-acquirer-admin/target/gateway-admin.war
+          	  				mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=gateway-merchant -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-merchant/target/gateway-merchant.war
 						'''
                     }
                   }

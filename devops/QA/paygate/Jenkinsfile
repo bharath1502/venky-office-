@@ -16,6 +16,10 @@ pipeline {
                 name:'artifactid1',
                 defaultValue:'default',
                 description:'enter artifactid1')
+          string(
+                name:'artifactid2',
+                defaultValue:'default',
+                description:'enter artifactid2')
             string(
                 name:'image',
                 defaultValue:'default',
@@ -32,9 +36,7 @@ pipeline {
                         script {
                             sh '''
                                 cd build
-                                mvn clean
-                                mvn clean install -Dmaven.test.skip=true
-                                mvn sonar:sonar -Dsonar.host.url=http://admin:admin01@192.168.0.82:9000 -Dsonar.projectKey="cl-hce" -Dsonar.projectName="Closed_loop-HCE"
+                                ls
                             '''
                         }
                     }
@@ -79,7 +81,8 @@ pipeline {
                   steps {
                     script {
                     	sh '''
-                        mvn deploy:deploy-file -DgroupId=chatak-issuance -DartifactId=issuance-processor -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=prepaidprocessor/target/issuance-processor.war
+                            mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=paygate -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-pay/target/paygate.war
+          	  				mvn deploy:deploy-file -DgroupId=chatak-acq -DartifactId=chatak-host-pg -Dversion=4.0.0-SNAPSHOT -DgeneratePom=true -Dpackaging=war -DrepositoryId=nexus -Durl=http://192.168.0.91:8081/repository/maven-snapshots/ -Dfile=chatak-host-pg/target/chatak-host-pg.war
 						'''
                     }
                   }
@@ -88,7 +91,7 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                cd devops/QA/processor
+                                cd devops/QA/paygate
                                 sh file.sh
                             '''
                         }
@@ -98,7 +101,7 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                cd devops/QA/processor
+                                cd devops/QA/paygate
                                 docker build -t $image:${BUILD_NUMBER} .
                             '''
                         }
@@ -108,7 +111,7 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                cd devops/QA/processor
+                                cd devops/QA/paygate
                                 sh docker.sh
                             '''
                         }
@@ -118,7 +121,7 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                cd devops/QA/processor
+                                cd devops/QA/paygate
                                 ansible-playbook playbook.yml -i hosts --extra-vars "registry=192.168.0.91:8082 build_number=${BUILD_NUMBER}"
                             '''
                         }

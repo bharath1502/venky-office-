@@ -2983,7 +2983,6 @@ function fetchCardProgramByMerchantId(merchantId){
 
 function openCreateCancelConfirmationPopup() {
 	if ((isEmpty(get('businessName').value))
-			&& (isEmpty(get('businessURL').value.trim()))
 			&& (isEmpty(get('firstName').value.trim()))
 			&& (isEmpty(get('lastName').value.trim()))
 			&& (isEmpty(get('phone').value.trim()))

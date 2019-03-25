@@ -126,6 +126,7 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
                 * Constants.TIME_OUT));
         if (lastRequestDate.after(curDate)) {
           Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
+          myCookie.setHttpOnly(true);
           myCookie.setMaxAge(0);
           response.addCookie(myCookie);
           sessionRegistry.removeSessionInformation(encUName);
@@ -159,6 +160,7 @@ public class ChatakAcqInterceptor extends HandlerInterceptorAdapter implements S
 
   private boolean invalidSession(javax.servlet.http.HttpServletResponse response) {
     Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
+    myCookie.setHttpOnly(true);
     myCookie.setMaxAge(0);
     response.addCookie(myCookie);
     try {

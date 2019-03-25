@@ -93,8 +93,9 @@ function continueEditRole() {
 	if(!checkValidEditRoles()){
 		flag=false;
 		return flag;
-	} else 
+	} else {
 		return flag;
+	}
 }
 
 

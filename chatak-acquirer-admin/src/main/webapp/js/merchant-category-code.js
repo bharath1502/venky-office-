@@ -74,8 +74,9 @@ function validCreateMcc() {
 
 	if (!validateMcc() | !validateTCCMultiSelect() | !validateDescription()) {
 		return false;
-	} else
+	} else {
 		return true;
+	}
 }
 
 function validUpdateMcc() {
@@ -86,8 +87,9 @@ function validUpdateMcc() {
 
 	if (!validateMcc() | !validateTCCMultiSelect() | !validateDescription()) {
 		return false;
-	} else
+	} else {
 		return true;
+	}
 }
 
 function editMCC(mcc) {

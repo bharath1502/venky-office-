@@ -180,10 +180,12 @@ function formatNum(testid) {
 		$("#"+testid).val(num + currencyMinorUnit + inputAmount[1]);
 	}
 	if(testid == "avlamt" || testid == "curamt" ){
-		if(testid == "avlamt")
-		$("#avlBal").text(":"+$("#"+testid).val());
-		if(testid == "curamt")
-		$("#curBal").text(":"+$("#"+testid).val());
+		if (testid == "avlamt") {
+			$("#avlBal").text(":" + $("#" + testid).val());
+		} 
+		if (testid == "curamt") {
+			$("#curBal").text(":" + $("#" + testid).val());
+		}
 	}
 }
 function amountFmt()

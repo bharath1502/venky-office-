@@ -21,6 +21,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -454,7 +455,7 @@ private void validateMerchant(Map model, Merchant merchant) {
     return modelAndView;
   }
   
-	@RequestMapping(value = FETCH_SETTLEMENT_DATA_BY_PMID)
+	@PostMapping(value = FETCH_SETTLEMENT_DATA_BY_PMID)
 	public ModelAndView showViewSettlementDetails(HttpServletRequest request, HttpServletResponse response,
 			@FormParam("programViewId") final Long programViewId, @FormParam("batchDate") final Timestamp batchDate, HttpSession session, Map model) {
 	    logger.info("Entering :: DashboardController :: showViewSettlementDetails :: Acquirer Programa manager id : " + programViewId);

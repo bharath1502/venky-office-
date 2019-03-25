@@ -220,13 +220,17 @@ public class MerchantEntityMapDaoImpl implements MerchantEntityMapDao {
 	private void merchantFilterParameters(GetMerchantListRequest searchMerchant, StringBuilder query) {
 		if(!StringUtils.isNullAndEmpty(searchMerchant.getMerchantCode())) {
 			query.append(" and ( a.MERCHANT_CODE= '"+searchMerchant.getMerchantCode()+"' ) "); 
-		} if(!StringUtils.isNullAndEmpty(searchMerchant.getBusinessName())){
+		} 
+		if(!StringUtils.isNullAndEmpty(searchMerchant.getBusinessName())){
 			query.append(" and (a.BUSINESS_NAME= '"+searchMerchant.getBusinessName()+"' )");
-		} if(!StringUtils.isNullAndEmpty(searchMerchant.getEmailId())){
+		} 
+		if(!StringUtils.isNullAndEmpty(searchMerchant.getEmailId())){
 			query.append(" and (a.EMAIL= '"+searchMerchant.getEmailId()+"' )");
-		} if(!StringUtils.isNullAndEmpty(searchMerchant.getCountry())){
+		} 
+		if(!StringUtils.isNullAndEmpty(searchMerchant.getCountry())){
 			query.append(" and (a.COUNTRY= '"+searchMerchant.getCountry()+"' )");
-		} if(!StringUtils.isNullAndEmpty(searchMerchant.getStatus())){
+		} 
+		if(!StringUtils.isNullAndEmpty(searchMerchant.getStatus())){
 			query.append(" and (a.STATUS= '"+searchMerchant.getStatus()+"' )");
 		}
 	}
@@ -402,13 +406,17 @@ public class MerchantEntityMapDaoImpl implements MerchantEntityMapDao {
 	private void subMerchantFilterParameters(GetMerchantListRequest searchMerchant, StringBuilder query) {
 		if(!StringUtils.isNullAndEmpty(searchMerchant.getSubMerchantCode())) {
 			query.append(" and ( a.MERCHANT_CODE= '"+searchMerchant.getSubMerchantCode()+"' ) "); 
-		} if(!StringUtils.isNullAndEmpty(searchMerchant.getBusinessName())){
+		} 
+		if(!StringUtils.isNullAndEmpty(searchMerchant.getBusinessName())){
 			query.append(" and (a.BUSINESS_NAME= '"+searchMerchant.getBusinessName()+"' )");
-		} if(!StringUtils.isNullAndEmpty(searchMerchant.getEmailId())){
+		} 
+		if(!StringUtils.isNullAndEmpty(searchMerchant.getEmailId())){
 			query.append(" and (a.EMAIL= '"+searchMerchant.getEmailId()+"' )");
-		} if(!StringUtils.isNullAndEmpty(searchMerchant.getCountry())){
+		} 
+		if(!StringUtils.isNullAndEmpty(searchMerchant.getCountry())){
 			query.append(" and (a.COUNTRY= '"+searchMerchant.getCountry()+"' )");
-		} if(!StringUtils.isNullAndEmpty(searchMerchant.getStatus())){
+		} 
+		if(!StringUtils.isNullAndEmpty(searchMerchant.getStatus())){
 			query.append(" and (a.STATUS= '"+searchMerchant.getStatus()+"' )");
 		}
 	}

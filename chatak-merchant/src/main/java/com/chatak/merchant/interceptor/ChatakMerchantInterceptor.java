@@ -98,6 +98,7 @@ public class ChatakMerchantInterceptor extends HandlerInterceptorAdapter impleme
       }
     } else {
       Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
+      myCookie.setHttpOnly(true);
       myCookie.setMaxAge(0);
       response.addCookie(myCookie);
       try {
@@ -134,6 +135,7 @@ public class ChatakMerchantInterceptor extends HandlerInterceptorAdapter impleme
         Date curDate = new Date();
         if (lastRequestDate.after(curDate)) {
           Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
+          myCookie.setHttpOnly(true);
           myCookie.setMaxAge(0);
           response.addCookie(myCookie);
           sessionRegistry.removeSessionInformation(encUName);

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -924,7 +925,7 @@ public class SettlementReportController implements URLMappingConstants {
     return convertedAmt.divide(new BigDecimal(Constants.ONE_HUNDRED));
   }
 	  
-	@RequestMapping(value = EXECUTE_SETTLEMENT_DATA)
+	@PostMapping(value = EXECUTE_SETTLEMENT_DATA)
 	public ModelAndView executeSettlementTxn(HttpServletRequest request, Map model, HttpSession session) {
 		logger.info("Entering :: SettlementReportController :: executeSettlementTxn");
 

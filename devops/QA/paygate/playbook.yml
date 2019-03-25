@@ -16,7 +16,7 @@
       shell: docker rm -f paygate
 
     - name: docker login
-      shell: docker login -u admin -p admin123 192.168.2.171:8082
+      shell: docker login -u admin -p admin123 192.168.0.91:8082
 
     - name: pull docker image from docker repo
       shell: docker pull {{registry}}/paygate:{{build_number}}

@@ -62,7 +62,7 @@
 									<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" />
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
-									<!-- <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" /> -->
+									
 								</form:form>
 								<!--Success and Failure Message End-->
 							</div>
@@ -122,7 +122,7 @@
 								<th>Merchant Code</th>
 								<th>Txn Type</th>
 								<th>Merchant Txn Amount</th>
-								<!-- <th>Acquiring Channel</th>
+								
 								<th>Entry Mode</th> -->
 								<th>Description</th>
 								<th>Status</th>
@@ -228,10 +228,7 @@
 																<img src="../images/pdf.png">
 															</button>
 														</a>
-														<!-- <a>
-															<input type="checkbox" class="autoCheck check" id="totalRecordsDownload">
-															Download All 
-														</a> -->
+														
 													</div>
 												</div>
 											</div>

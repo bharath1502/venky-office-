@@ -136,9 +136,7 @@
 													<form:input cssClass="form-control" path="questionName"
 														id="questionName" maxlength="<%= StatusConstants.QUESTION.toString() %>" title="Use wild card like % * to search"
 														 onkeypress = "return charactersonly(this,event)"/>
-													<!-- <div class="discriptionErrorMsg">
-														<span id="questionNameErrorDiv" class="red-error">&nbsp;</span>
-													</div> -->
+													
 												</fieldset>
 											</div>
 										</div>

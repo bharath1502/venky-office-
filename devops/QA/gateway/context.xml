@@ -35,10 +35,10 @@
     -->
 <Environment name="java/chatakAcquirerPaySysConfig" override="false"
                 type="java.lang.String"
-                value="file:///home/chatak-pg-acquirer.properties" />
+                value="file:///usr/local/tomcat/resources/chatak-pg-acquirer.properties" />
 <Environment name="java/chatakAcquirerSysConfig" override="false"
                 type="java.lang.String"
-                value="file:///home/chatak-pg-acquirer.properties" />
+                value="file:///usr/local/tomcat/resources/chatak-pg-acquirer.properties" />
 
 
 </Context>

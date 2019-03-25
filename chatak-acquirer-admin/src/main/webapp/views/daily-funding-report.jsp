@@ -16,8 +16,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<!-- <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" /> -->
+
 	   <link href="../css/jquery-datepicker.css" rel="stylesheet">
 	   <link href="../css/rome.css" rel="stylesheet">
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

@@ -105,12 +105,8 @@ function validContactPersonName() {
 function validContactPersonCell() {
 	var bankMobile = get('bankMobile').value.trim();
 	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-
-	if (isEmpty(bankMobile)) {
-		setError(get('bankMobile'), webMessages.pleaseEnterContactMobileNumber);
-		loadMsgTitleText();
-		return false;
-	} else if (!spaceRegx.test(bankMobile)) {
+    
+	if (!spaceRegx.test(bankMobile)) {
 		setError(get('bankMobile'), webMessages.invalidContactMobileNumber);
 		loadMsgTitleText();
 		return false;

@@ -296,12 +296,12 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
 	<script src="../js/common-lib.js"></script>
+	<script src="../js/validation.js"></script>
 	<script src="../js/messages.js" type="text/javascript"></script>
 	<script src="../js/admin-user.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
-	
 	<script>
 	
 	function updateHref($this) {

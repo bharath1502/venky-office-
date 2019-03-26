@@ -101,11 +101,11 @@ public class SwitchServiceImpl implements SwitchService, PGConstants {
   }
 
   private SwitchRequest setSwitchStatus(SwitchRequest searchSwitch, SwitchRequest swRequest) {
-    if (swRequest.getStatus() == STATUS_SUCCESS) {
+    if (swRequest.getStatus().equals(STATUS_SUCCESS)) {
       searchSwitch.setStatusDisp(S_STATUS_ACTIVE);
-    } else if (swRequest.getStatus() == STATUS_PENDING) {
+    } else if (swRequest.getStatus().equals(STATUS_PENDING)) {
       searchSwitch.setStatusDisp(S_STATUS_PENDING);
-    } else if (swRequest.getStatus() == STATUS_SUSPENDED) {
+    } else if (swRequest.getStatus().equals(STATUS_SUSPENDED)) {
       searchSwitch.setStatusDisp(S_STATUS_SUSPENDED);
     }
     return searchSwitch;
@@ -204,11 +204,11 @@ public class SwitchServiceImpl implements SwitchService, PGConstants {
   }
 
   private SwitchRequest setSwitchDisplayStatus(PGSwitch switchs, SwitchRequest switchRequest) {
-    if (switchs.getStatus() == STATUS_SUCCESS) {
+    if (switchs.getStatus().equals(STATUS_SUCCESS)) {
       switchRequest.setStatusDisp(S_STATUS_ACTIVE);
-    } else if (switchs.getStatus() == STATUS_PENDING) {
+    } else if (switchs.getStatus().equals(STATUS_PENDING)) {
       switchRequest.setStatusDisp(S_STATUS_PENDING);
-    } else if (switchs.getStatus() == STATUS_SUSPENDED) {
+    } else if (switchs.getStatus().equals(STATUS_SUSPENDED)) {
       switchRequest.setStatusDisp(S_STATUS_SUSPENDED);
     }
     return switchRequest;

@@ -22,6 +22,4 @@
       shell: docker pull {{registry}}/paygate:{{build_number}}
 
     - name: create docker image
-      shell: docker run -d --name paygate -p 8062:8062 {{registry}}/paygate:{{build_number}}
-    - name: mounting logs
-      shell: docker run -it -v /home/dockerization/acquirer/gateway/gateway-logs:/usr/local/tomcat/logs /bin/bash
+      shell: docker run -d --name paygate -p 8062:8062 -v /home/dockerization/acquirer/paygate/paygate-logs:/usr/local/tomcat/logs {{registry}}/paygate:{{build_number}}

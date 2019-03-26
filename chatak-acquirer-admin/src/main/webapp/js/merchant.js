@@ -257,7 +257,8 @@ function validateCreateMerchantStep2edit() {
 			|!clientValidation('currencyId', 'currencyValue','currencyEr')
 			|!clientValidation('bankState', 'state','bankStateErrorDiv')
 		    |!(zipCodeNotEmpty('bankPin'))
-		    |!clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv')){
+		    |!clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv')
+		    |!validRoutingNumber()){
 		flag = false;
 		return flag;
 	}else{
@@ -1611,7 +1612,7 @@ function validRoutingNumber() {
 					+ parseInt(fieldId.charAt(5), 10) + parseInt(fieldId
 					.charAt(8), 10)));
 	var checksumMod = checksumTotal % 10;
-	if (checksumMod !== 0) {
+	if (checksumMod == 0) {
 		setDiv('bankRoutingNumberEr', webMessages.invalidNumber);
 		loadMsgTitleText();
 		return false;

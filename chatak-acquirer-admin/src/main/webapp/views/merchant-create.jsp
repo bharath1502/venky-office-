@@ -33,10 +33,8 @@
 			<!--Header Block Start -->
 			<!--Header Block End -->
 			<!--Navigation Block Start -->
-			<!-- <nav class="col-sm-12 nav-bar" id="main-navigation"> -->
 			<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 			<%@include file="navigation-panel.jsp"%>
-			<!-- </nav> -->
 			<!--Navigation Block Start -->
 			<!--Article Block Start-->
 			<article>
@@ -51,9 +49,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first">
-						<a href="merchant-search">Search</a>
-					</div> -->
 					<c:if test="${fn:contains(existingFeatures,merchantView) || fn:contains(existingFeatures,merchantEdit) || fn:contains(existingFeatures,merchantDelete)||fn:contains(existingFeatures,merchantCreate)}">
 					<div class="tab-header-container-first">
 						<a href="merchant-search-page"><spring:message code="common.label.search"/></a>
@@ -146,7 +141,6 @@
 															onkeypress="return amountValidate(this,event)"
 															id="bankRoutingNumber" maxlength="9"
 															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr'),validateRoutingNumber();" />
-														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -176,7 +170,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/></label>
 														<form:input cssClass="form-control" path="bankAddress1"
 															id="bankAddress1" maxlength="50"
 															onblur="this.value=this.value.trim();return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');" />
@@ -194,7 +188,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/></label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
 															onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_city_name','bankCityErrorDiv');" />

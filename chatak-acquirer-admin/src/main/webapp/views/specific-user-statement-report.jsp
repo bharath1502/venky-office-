@@ -43,9 +43,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Profile Listing</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 							<div class="col-sm-12">
@@ -81,14 +78,6 @@
 					<!-- Content Block End -->
 					<!-- Search Table Block Start -->
 					<div class="search-results-table table-scroll">
-						<!-- <table class="table table-striped table-bordered table-condensed" style="margin-bottom: 0px;">
-							Search Table Header Start
-							<tr>
-								<td colspan="10" class="search-table-header-column"><span
-									class="glyphicon glyphicon-search search-table-icon-text"></span>
-									<span>Search</span></td>
-							</tr>
-							</table> -->
 							<!-- Search Table Header End -->
 							<!-- Search Table Content Start -->
 							<table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">

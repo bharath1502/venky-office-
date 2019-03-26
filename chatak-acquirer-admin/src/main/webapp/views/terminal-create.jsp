@@ -269,9 +269,6 @@
 													<fieldset class="col-sm-6">
 														<fieldset class="fieldset merchant-content">
 															<legend class="legend">Terminal Details</legend>
-															<!--label>Label1: </label><input type="text"><br>
-															<label data-toggle="tooltip" data-placement="top" title="">Label2: </label><input type="text"><br>
-															<label data-toggle="tooltip" data-placement="top" title="">Label3: </label><input type="text"-->
 															<table class="confirm-info-table">
 																<tr>
 																	<td>Merchant Code:</td>

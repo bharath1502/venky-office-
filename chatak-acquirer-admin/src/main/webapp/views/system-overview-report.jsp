@@ -15,8 +15,6 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<!-- <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" /> -->
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -42,17 +40,12 @@
 					<div class="breadCrumb">
 						<span class="breadcrumb-text"><spring:message
 								code="reports.label.reports" /></span>
-						<!-- <span class="glyphicon glyphicon-play icon-font-size"></span> 
-						<span class="breadcrumb-text">Global System Reports</span> -->
 						<span class="glyphicon glyphicon-play icon-font-size"></span> <span
 							class="breadcrumb-text"><spring:message
 								code="reports.label.overviewandbalancesheet" /></span>
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="col-sm-12">
@@ -82,22 +75,6 @@
 					<div class="search-results-table table-scroll">
 						<!-- Search Table Header End -->
 						<!-- Search Table Content Start -->
-						<!-- <table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">
-							<thead>
-								<tr>
-									<th>Pending Registrations</th>
-									<th>Pending Profiles</th>
-									<th>Active Profiles</th>
-									<th>Frozen Profiles</th>
-								</tr>
-							</thead>
-										<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-							</table> -->
 
 						<table id="serviceResults"
 							class="table table-striped table-bordered table-responsive table-condensed tablesorter">
@@ -148,50 +125,6 @@
 							<%-- 	</c:choose> --%>
 						</table>
 
-						<!-- <table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">
-							<thead>
-								<tr>
-									<th>Manual Revenues</th>
-									<th>Count</th>
-									<th>Total</th>
-								</tr>
-							</thead>
-										<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-							</table>
-							<table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">
-							<thead>
-								<tr>
-									<th>System Revenues</th>
-									<th>Count</th>
-									<th>Total</th>
-								</tr>
-							</thead>
-										<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-							</table>
-							<table id="serviceResults" class="table table-striped table-bordered table-responsive table-condensed tablesorter">
-							<thead>
-								<tr>
-									<th>All Generated Revenues</th>
-									<th>Count</th>
-									<th>Total</th>
-								</tr>
-							</thead>
-										<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-							</table> -->
-
-
 						<table class="table table-striped table-bordered table-condensed"
 							style="margin-bottom: 0px;">
 							<%-- <c:if test="${ !(fn:length(accessLogReportList) eq 0)}"> --%>
@@ -227,8 +160,6 @@
 						<div class="col-sm-8 form-action-buttons" style="width: 96%;">
 							<div class="col-sm-5"></div>
 							<div class="col-sm-7">
-								<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 								<a type="button" href="home"
 									class="form-control button pull-right"><spring:message
 										code="reports.label.backbutton" /></a>

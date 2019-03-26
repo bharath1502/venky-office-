@@ -45,9 +45,6 @@
 					<div class="tab-header-container-first active-background">
 						<a href="#">Search</a>
 					</div>
-					<!-- <div class="tab-header-container">
-						<a href="merchant-details-account-create?entityType=Merchant">Create</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">

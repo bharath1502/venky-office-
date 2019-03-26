@@ -47,9 +47,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="col-sm-12">
@@ -131,8 +128,6 @@
 												<div class="col-sm-10 form-action-buttons" style="width: 100%;">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 													<a type="button" onclick="submitSpecificEFTTransfersDateRange()" class="form-control button pull-right">Generate</a>
 													<a type="button" href="home" class="form-control button pull-right">Back</a>
 											</div>
@@ -144,7 +139,6 @@
 								style="margin: 0px;">
 								<thead>
 									<tr>
-										<!-- <th>Merchant Code</th> -->
 										<th>Company Name</th>
 										<th>Start Date</th>
 										<th>End Date</th>
@@ -277,8 +271,6 @@
 							<div class="col-sm-8 form-action-buttons" style="width: 96%;">
 						<div class="col-sm-5"></div>
 						<div class="col-sm-7">
-							<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 							<a type="button" href="specific-user-eftTransfers-show" class="form-control button pull-right">Back</a>
 						</div>
 					</div>

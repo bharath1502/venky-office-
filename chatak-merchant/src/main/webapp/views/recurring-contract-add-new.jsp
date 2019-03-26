@@ -201,14 +201,6 @@
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
 							<span class="glyphicon glyphicon-remove" onclick="closePopup2()"></span>
 							<fieldset class="col-sm-12 padding0">
-								<!-- <fieldset class="col-sm-3"> 
-								<label data-toggle="tooltip" data-placement="top" title="">Contract Id<span class="required-field">*</span></label>
-								<input type="text" class="form-control" />
-								<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-									<span class="red-error">&nbsp;</span>
-								</div> 
-							</fieldset> -->
-							
 							<input type="hidden" name="recurringCustInfoId" value="${recurringContractInfoDTO.recurringCustInfoId }" />
 								<fieldset class="col-sm-3">
 								<legend></legend>

@@ -16,13 +16,6 @@
 <link href="../css/style.css" rel="stylesheet">
 <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
 	type="text/css" />
-<!-- <script src="../js/jquery.min.js"></script>
-Include all compiled plugins (below), or include individual files as needed
-<script src="../js/bootstrap.min.js"></script>
-<script src="../js/utils.js"></script>
-<script src="../js/jquery.datetimepicker.js"></script>
-<script src="../js/jquery.cookie.js"></script>
-<script src="../js/common-lib.js"></script> -->
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -34,8 +27,6 @@ Include all compiled plugins (below), or include individual files as needed
 		<!--Container block Start -->
 		<div class="container-fluid">
 			<!--Header Block Start -->
-			<!-- <header class="col-sm-12 all-page-header">
-			<!--Header Block End -->
 			<!--Navigation Block Start -->
 			<jsp:include page="navigation-panel.jsp"></jsp:include>
 			<%-- <%@include file="navigation-panel.jsp"%> --%>
@@ -56,9 +47,6 @@ Include all compiled plugins (below), or include individual files as needed
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first">
-						<a href="merchant-search">Search</a>
-					</div> -->
 					<c:if
 						test="${fn:contains(existingFeatures,subMerchantView) || fn:contains(existingFeatures,subMerchantEdit) || fn:contains(existingFeatures,subMerchantDelete)||fn:contains(existingFeatures,subMerchantCreate)}">
 						<div class="tab-header-container-first">
@@ -72,9 +60,6 @@ Include all compiled plugins (below), or include individual files as needed
 									code="manage.label.sub-merchant.create" /></a>
 						</div>
 					</c:if>
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="#">Create</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder padding0">
@@ -185,7 +170,7 @@ Include all compiled plugins (below), or include individual files as needed
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.fax" />
-															<!-- <span class="required-field">*</span> --></label>
+															</label>
 														<form:input cssClass="form-control" path="fax" id="fax"
 															onkeypress="return amountValidate(this,event)"
 															maxlength="13" onblur="this.value=this.value.trim();clientValidation('fax','fax','faxEr')" />
@@ -459,7 +444,6 @@ Include all compiled plugins (below), or include individual files as needed
 															onkeypress="return amountValidate(this,event)"
 															id="bankRoutingNumber" maxlength="9"
 															onblur="this.value=this.value.trim();validSettlRoutingNumber()" />
-														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="settlRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -501,7 +485,7 @@ Include all compiled plugins (below), or include individual files as needed
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.address1" />
-															<!-- <span class="required-field">*</span> --></label>
+															</label>
 														<form:input cssClass="form-control" path="bankAddress1"
 															id="bankAddress1" maxlength="50"
 															onblur="this.value=this.value.trim();return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');" />
@@ -522,7 +506,7 @@ Include all compiled plugins (below), or include individual files as needed
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.city" />
-															<!-- <span class="required-field">*</span> --></label>
+															</label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
 															onblur="this.value=this.value.trim();validateBankCity()" />
@@ -657,13 +641,6 @@ Include all compiled plugins (below), or include individual files as needed
 		</div>
 		<!--Container block End -->
 	</div>
-	
-	<!-- <script src="../js/validation.js"></script>
-	<script src="../js/chatak-ajax.js"></script>
-	<script src="../js/messages.js"></script>
-	Body Wrapper block End
-	<script type="text/javascript" src="../js/merchant.js"></script>
-	<script type="text/javascript" src="../js/backbutton.js"></script> -->
 	
 	<!--Body Wrapper block End -->
 	<script src="../js/jquery.min.js"></script>

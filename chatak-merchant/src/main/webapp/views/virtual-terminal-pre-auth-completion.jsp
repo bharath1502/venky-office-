@@ -86,31 +86,6 @@
 									<div class="row">
 										<div class="field-element-row">
 											<fieldset class="col-sm-12">
-												<!-- <fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title="">Invoice Number<span class="required-field">*</span></label>
-													<input type="text" class="form-control"
-														id="invoiceNumberDiv"
-														onblur="this.value=this.value.trim();validInvoiceNumber('invoiceNumberDiv','invoiceNumberErrorDiv')" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="invoiceNumberErrorDiv">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title="">Card Number<span class="required-field">*</span></label>
-													<input type="text" class="form-control" id="cardNumberDiv"
-														onblur="this.value=this.value.trim();validCardNumber('cardNumberDiv','cardNumberErrorDiv')" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="cardNumberErrorDiv">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title="">Auth Code<span class="required-field">*</span></label>
-													<input type="text" class="form-control" id="authNumberDiv"
-														onblur="this.value=this.value.trim();validAuthNumber('authNumberDiv','authNumberErrorDiv')" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="authNumberErrorDiv">&nbsp;</span>
-													</div>
-												</fieldset> -->
 												<fieldset class="col-sm-3">
 												<legend></legend>
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.transactionid"/><span class="required-field">*</span></label>
@@ -201,27 +176,15 @@
 												</fieldset>
 												<fieldset class="col-sm-3">
 												<legend></legend>
-													<!-- 	<label data-toggle="tooltip" data-placement="top" title="">Tax Amount</label> -->
 													<form:hidden path="taxAmt" id="taxAmtDiv" />
-													<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
-													</div> -->
 												</fieldset>
 												<fieldset class="col-sm-3">
 												<legend></legend>
-													<!-- <label data-toggle="tooltip" data-placement="top" title="">Tip Amount</label> -->
 													<form:hidden path="tipAmount" id="tipAmountDiv" />
-													<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
-													</div> -->
 												</fieldset>
 												<fieldset class="col-sm-3">
 												<legend></legend>
-													<!-- <label data-toggle="tooltip" data-placement="top" title="">Shipping Charges</label> -->
 													<form:hidden path="shippingAmt" id="shippingAmtDiv" />
-													<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error">&nbsp;</span>
-													</div> -->
 												</fieldset>
 												<fieldset class="col-sm-3">
 												<legend></legend>
@@ -287,7 +250,6 @@
 													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 														<span class="red-error" id="zipcodeErrorDiv">&nbsp;</span>
 													</div>
-													<!-- <input type="hidden" id="txnRefNum" name="txnRefNum" /> -->
 												</fieldset>
 												<fieldset class="col-sm-3">
 												<legend></legend>

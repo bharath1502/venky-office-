@@ -205,7 +205,6 @@
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
 													<legend></legend>
-														<!-- <input type="button" class="form-control button pull-right atm-next" value="Continue"> -->
 														<input type="submit" class="form-control button pull-right marginL10" value="<spring:message code="recurring-search.label.savecontinue"/>" onclick="return validateRecurringPayment()">
 														<input type="button" class="form-control button pull-right marginL10" value="<spring:message code="sub-merchant-create.label.previous"/>" onclick="recurringCreatePreviousPage('${recurringPaymentInfoDTO.recurringCustomerInfoId}')">							
 														<input type="button" class="form-control button pull-right marginL10" value="<spring:message code="merchant-forgot-password.label.cancel"/>" onclick="return cancel()">

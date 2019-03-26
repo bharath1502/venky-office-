@@ -99,7 +99,6 @@
 																onkeypress="return amountValidate(this,event)"
 																id="bankRoutingNumber" maxlength="9"
 																onblur="return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
-															<!-- onblur="return validRoutingNumber()"  -->
 															<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 																<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
 															</div>
@@ -129,7 +128,7 @@
 															</div>
 														</fieldset>
 														<fieldset class="col-sm-3">
-															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/><!-- <span class="required-field">*</span> --></label>
+															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/></label>
 															<form:input cssClass="form-control validate"
 																path="bankAddress1" id="bankAddress1" maxlength="50"
 																onblur="return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');" />
@@ -147,7 +146,7 @@
 															</div>
 														</fieldset>
 														<fieldset class="col-sm-3">
-															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/><!-- <span class="required-field">*</span> --></label>
+															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/></label>
 															<form:input cssClass="form-control validate"
 																path="bankCity" id="bankCity" maxlength="50"
 																onblur="return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');" />
@@ -278,8 +277,7 @@
 														</fieldset>
 														<fieldset class="col-sm-3">
 															<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																	code="merchant.label.merchantcallbackURL" /> <!-- <span
-															class="required-field">*</span> --></label>
+																	code="merchant.label.merchantcallbackURL" /></label>
 															<form:input cssClass="form-control"
 																path="merchantCallBackURL" id="merchantCallBackURL"
 																maxlength="50" />
@@ -461,7 +459,6 @@
 													value="Update" onclick="return validateAccountDetails();">
 												<input type="button" class="form-control button pull-right"
 													value="Cancel" onclick="resetMerchantAccountSearch()">
-												<!-- <input type="button" class="form-control button pull-right" value="Reset" onclick="resetAccountPage()"> -->
 											</div>
 										</div>
 										<!--Panel Action Button End -->
@@ -490,7 +487,6 @@
 <script src="../js/utils.js"></script>
 	<script src="../js/sortable.js"></script>
 	<script src="../js/common-lib.js"></script>
-	<!-- <script type="text/javascript" src="../js/backbutton.js"></script> -->
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/validation.js"></script>
 	<script src="../js/merchant.js"></script>

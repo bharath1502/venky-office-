@@ -13,10 +13,6 @@
 																	<td><spring:message code="sub-merchant-create.label.companyname"/>:</td>
 																	<td><div id="confirmMbusinessName"></div></td>
 																</tr>
-																<!-- <tr>
-																	<td>Merchant Code:</td>
-																	<td><div id="confirmMmerchantCode"></div></td>
-																</tr> -->
 																<tr>
 																	<td><spring:message code="search-sub-merchant.label.firstname"/>:</td>
 																	<td><div id="confirmMfirstName"></div></td>
@@ -177,7 +173,6 @@
 																<tr>
 																	<td><spring:message code="configurations.label.virtualterminaloptions"/>:</td>
 																	<td><div id="confirmMvirtualTerminalList"></div></td>
-																	<!-- <td><div id="confirmMvirtualTerminal"></div></td> -->
 																</tr>
 																<tr>
 																<td><spring:message code="configurations.label.online"/>:</td>

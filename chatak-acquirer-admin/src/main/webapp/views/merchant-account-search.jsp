@@ -185,10 +185,6 @@
 							</tr>
 							</thead>
 							<tbody>
-								<!-- <tr>
-									<td class="sale-op-r">R</td>
-									<td class="sale-op-v">V</td>
-								</tr> -->
 								<c:choose>
 								<c:when test="${!(fn:length(searchResponse.merchantAccountSearchDtoList) eq 0) }">
 									<c:forEach items="${searchResponse.merchantAccountSearchDtoList}" var="accountData">

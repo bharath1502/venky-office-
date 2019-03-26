@@ -523,7 +523,6 @@
 	<script src="../js/jquery.datetimepicker.js"></script>
 	<script src="../js/validation.js"></script>
 	<script type="text/javascript" src="../js/merchant.js"></script>
-	<!-- <script type="text/javascript" src="../js/chatak-ajax.js"></script> -->
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/messages.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>

@@ -42,21 +42,15 @@
 					<div class="breadCrumb">
 						<span class="breadcrumb-text"><spring:message code="reports.label.reports" /></span> 
 						<span class="glyphicon glyphicon-play icon-font-size"></span> 
-						<!-- <span class="breadcrumb-text">Global System Reports</span>
-						<span class="glyphicon glyphicon-play icon-font-size"></span> --> 
 						<span class="breadcrumb-text"><spring:message code="reports.label.pendingtransactions" /></span>
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
 						<!--Success and Failure Message Start-->
 						<div class="row">
-					<!-- <div class="col-sm-12"> -->
 						<!--Success and Failure Message Start-->
 						<div class="col-xs-12">
 							<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -118,8 +112,6 @@
 												<div class="col-sm-12 form-action-buttons">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 													<button type="submit" onclick="return submitManualTransferDateRange()" class="form-control button pull-right"><spring:message code="reports.label.generatebutton" /></button>
 													<a type="button" href="showGlobalSysPendingTransReports" class="form-control button pull-right"><spring:message code="accounts-manual-credit.label.resetbutton" /></a>
 											</div>
@@ -156,11 +148,9 @@
 										<th style="width: 86px;"><spring:message code="reports.label.pendingtransactions.accounttype" /></th>
 										<th style="width: 88px;"><spring:message code="reports.label.pendingtransactions.transactionID" /></th>
 										<th style="width: 139px;"><spring:message code="reports.label.pendingtransactions.transactiondescription" /></th>
-										<!-- <th>Card Type</th> -->
 										<th style="width: 60px;"><spring:message code="currency-search-page.label.currencycode" /></th>
 										<th style="width: 43px;"><spring:message code="reports.label.pendingtransactions.credit" /></th>
 										<th style="width: 53px;"><spring:message code="reports.label.pendingtransactions.debit" /></th>
-										<!-- <th>Credit</th> -->
 									</tr>
 								</thead>
 								<c:choose>

@@ -458,7 +458,7 @@ Include all compiled plugins (below), or include individual files as needed
 															path="bankRoutingNumber"
 															onkeypress="return amountValidate(this,event)"
 															id="bankRoutingNumber" maxlength="9"
-															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');validSettlRoutingNumber()" />
+															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
 														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>

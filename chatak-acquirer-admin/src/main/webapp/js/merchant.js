@@ -99,7 +99,7 @@ function validateCreateMerchantStep2() {
 			|!clientValidation('currencyId', 'currencyValue','currencyEr')
 			|!clientValidation('bankState', 'state','bankStateErrorDiv')
 		    |!clientValidation('bankNameOnAccount', 'first_name_SplChar','bankNameOnAccountErrorDiv')
-			|!validateRoutingNumber()){
+			){
 		flag = false;
 		return flag;
 	} else {

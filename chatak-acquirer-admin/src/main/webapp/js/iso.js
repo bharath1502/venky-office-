@@ -153,7 +153,7 @@ function validateUpdateIso(){
 			| !validateCity()
 			| !validateCountry()
 			| !validateState()
-			| !validateZip()
+			| !zipCodeNotEmpty('zip')
 			| !readPartnerLogo(imageData,'isoLogoErrorDiv')) {
 		clearValidationType();
 		flag = false;

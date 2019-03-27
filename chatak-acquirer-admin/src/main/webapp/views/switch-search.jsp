@@ -125,7 +125,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.primaryswitchURL"/></label>
 														<form:input cssClass="form-control" path="primarySwitchURL"
-															 id="primarySwitchURL" onblur="clientValidation('primarySwitchURL','url','primarySwitchURLEr')"/>
+															 id="primarySwitchURL" onblur="validateSearchPrimarySwitchURL()"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="primarySwitchURLEr" class="red-error">&nbsp;</span>
 														</div>
@@ -141,7 +141,7 @@
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.secondaryswitchURL"/></label>
 														<form:input cssClass="form-control" path="secondarySwitchURL"
-															 id="secondarySwitchURL" onblur="clientValidation('secondarySwitchURL','url','secondarySwitchURLEr')"/>
+															 id="secondarySwitchURL" onblur="validateSearchSecondarySwitchURL()"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="secondarySwitchURLEr" class="red-error">&nbsp;</span>
 														</div>

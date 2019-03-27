@@ -287,8 +287,8 @@ public class ChatakPaymentServiceImpl implements PaymentService {
       Long feeAmount = feeDetailDao.getPGFeeAmount(PGConstants.TXN_TYPE_SALE);
       Long txnTotalAmount = captureRequest.getTxnAmount() + feeAmount;
 
-      PGSwitchTransaction pgSwitchTransaction = null;
-      PGTransaction pgTransaction = null;
+      PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
+      PGTransaction pgTransaction = new PGTransaction();
       captureRequest.setTxnRefNumber(txnRefNum);
       try{
         
@@ -601,8 +601,8 @@ public class ChatakPaymentServiceImpl implements PaymentService {
       Long feeAmount = feeDetailDao.getPGFeeAmount(PGConstants.TXN_TYPE_SALE_ADJ);
       Long txnTotalAmount = adjustmentRequest.getTxnAmount() + feeAmount;
       
-      PGSwitchTransaction pgSwitchTransaction = null;
-      PGTransaction pgTransaction = null;
+      PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
+      PGTransaction pgTransaction = new PGTransaction();
       adjustmentRequest.setTxnRefNumber(txnRefNum);
       try{
         //Fetch original transaction
@@ -696,14 +696,16 @@ public class ChatakPaymentServiceImpl implements PaymentService {
         
       }catch(Exception e){
         log.error("Exception :"+ e);
+        if (pgSwitchTransaction!= null) {
         pgSwitchTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgSwitchTransaction.setTxnMode(adjustmentRequest.getMode());
         switchTransactionDao.createTransaction(pgSwitchTransaction);
-        
+        }
+        if (pgTransaction!=null) {
         pgTransaction.setStatus(PGConstants.STATUS_FAILED);
         pgTransaction.setTxnMode(adjustmentRequest.getMode());
         voidtransactiondao.createTransaction(pgTransaction);
-        
+        }
         adjustmentResponse.setErrorCode(ActionCode.ERROR_CODE_Z5);
         adjustmentResponse.setErrorMessage(ActionCode.getInstance().getMessage(ActionCode.ERROR_CODE_Z5));
       }
@@ -759,8 +761,8 @@ public class ChatakPaymentServiceImpl implements PaymentService {
       Long feeAmount = feeDetailDao.getPGFeeAmount(PGConstants.TXN_TYPE_VOID);
       Long txnTotalAmount = voidRequest.getTxnAmount() + feeAmount;
       
-      PGSwitchTransaction pgSwitchTransaction = null;
-      PGTransaction pgTransaction = null;
+      PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
+      PGTransaction pgTransaction = new PGTransaction();
       try{
         //Fetch original transaction
         PGTransaction saleOrRefundransaction = voidtransactiondao.getTransactionToVoid(
@@ -909,8 +911,8 @@ public class ChatakPaymentServiceImpl implements PaymentService {
       String authId = RandomGenerator.generateRandNumeric(PGConstants.LENGTH_AUTH_ID);
       Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-      PGSwitchTransaction pgSwitchTransaction = null;
-      PGTransaction pgTransaction = null;
+      PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
+      PGTransaction pgTransaction = new PGTransaction();
       reversalRequest.setTxnRefNumber(txnRefNum);
       try{
         //Fetch original transaction

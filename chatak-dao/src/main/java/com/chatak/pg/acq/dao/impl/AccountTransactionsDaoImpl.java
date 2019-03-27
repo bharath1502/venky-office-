@@ -689,8 +689,8 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
       GetTransactionsListRequest getTransactionsListRequest) {
     log.info("Entering :: AccountTransactionsDaoImpl :: getTotalNumberOfRecordsOnManulSearch ");
     try {
-      if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
-          && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
+      if (!getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_CREDIT)
+          && !getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_DEBIT)
           && getTransactionsListRequest.getAcqChannel().equalsIgnoreCase("web")) {
         List<String> merchantCode = new ArrayList<>();
         if (!StringUtil.isNullEmpty(getTransactionsListRequest.getMerchant_code())) {

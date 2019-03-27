@@ -595,7 +595,7 @@ public class MerchantProfileDaoImpl extends MerchantDaoImpl implements MerchantP
 	    PGAccount pgSubMerchantAccount = accountRepository.findByEntityIdAndCategory(
 	        subMerchant.getMerchantCode(), PGConstants.PRIMARY_ACCOUNT);
 	    if (null != pgSubMerchantAccount) {
-	      if (PGConstants.STATUS_DELETED != subMerchant.getStatus()) {
+	      if (!PGConstants.STATUS_DELETED.equals(subMerchant.getStatus())) {
 	        subMerchant.setStatus(merchantDb.getStatus());
 	        subMerchant.setUpdatedDate(DateUtil.getCurrentTimestamp());
 	        subMerchant.getPgMerchantUsers().get(0).setStatus(merchantDb.getStatus());

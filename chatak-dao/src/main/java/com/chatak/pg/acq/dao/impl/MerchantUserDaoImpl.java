@@ -547,6 +547,9 @@ private OrderSpecifier<Timestamp> orderByCreatedDateDesc() {
   public List<MposFeatures> findByRoleId(Long userId) throws DataAccessException {
 
     List<MposFeatures> mposFeaturesList = null;
+    if (userId == null) {
+    	return Collections.emptyList();
+    }
     try {
       JPAQuery query = new JPAQuery(entityManager);
       List<Tuple> tupleList = query

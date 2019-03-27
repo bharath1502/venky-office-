@@ -453,7 +453,7 @@
 									<div class="col-sm-12 button-content" id="submitUpdate">
 										<fieldset class="col-sm-7 pull-right">
 										<legend></legend>
-											<input type="submit"
+											<input type="button"
 												class="form-control button pull-right pos-next"
 												value='<spring:message code="common.label.confirm"/>' onclick="return validateProfileSubmit();">
 											<div>

@@ -1,6 +1,7 @@
 package com.chatak.pg.common;
 
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -32,7 +33,7 @@ public class PasswordEncoder {
    */
   public static String generatePin(int length) {
     String charString = "0123456789";
-    Random rnd = new Random();
+    SecureRandom rnd = new SecureRandom();
     StringBuilder sb = new StringBuilder(length);
     for(int i = 0; i < length; i++) {
       sb.append(charString.charAt(rnd.nextInt(charString.length())));

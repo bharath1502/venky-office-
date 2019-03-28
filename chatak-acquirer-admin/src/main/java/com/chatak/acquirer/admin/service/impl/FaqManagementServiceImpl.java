@@ -139,7 +139,7 @@ public class FaqManagementServiceImpl implements FaqManagementService {
 				faqManagementRequestList.add(0, faqManagementRequests);
 				response.setTotalNoOfRows(faqManagementRequestList.size());
 				response.setFaqManagementList(faqManagementRequestList);
-				response.setErrorCode(Constants.ERROR);
+				response.setErrorCode(Constants.SUCCESS_CODE);
 				response.setErrorMessage(Constants.SUCCESS);
 			}
 		} catch (Exception e) {
@@ -147,6 +147,26 @@ public class FaqManagementServiceImpl implements FaqManagementService {
 			response.setErrorCode(Constants.ERROR);
 			response.setErrorMessage(Constants.ERROR_DATA);
 
+		}
+		return response;
+	}
+
+	@Override
+	public FaqManagementResponse updateFaqManagement(FaqManagementRequest faqManagementRequest)
+			throws ChatakAdminException {
+		FaqManagementResponse response = new FaqManagementResponse();
+		try {
+			FaqManagement faqManagementDto = CommonUtil.copyBeanProperties(faqManagementRequest, FaqManagement.class);
+			faqManagementDto = faqmanagementDao.updateFaqManagement(faqManagementDto);
+			faqManagementDto.setStatus(faqManagementRequest.getStatus());
+			faqmanagementDao.saveOrUpdateFaqManagement(faqManagementDto);
+			response.setErrorCode(Constants.SUCCESS_CODE);
+			response.setErrorMessage(Constants.SUCCESS);
+			logger.info("Exiting:: FaqHandlerImpl:: updateFaqManagement method");
+		} catch (Exception e) {
+			logger.error("ERROR: FaqHandlerImpl:: updateFaqManagement method", e);
+			response.setErrorCode(Constants.ERROR);
+			response.setErrorMessage(Constants.ERROR_DATA);
 		}
 		return response;
 	}

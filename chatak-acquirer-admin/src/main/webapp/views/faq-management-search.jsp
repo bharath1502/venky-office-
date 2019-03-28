@@ -74,12 +74,16 @@
 					<input type="hidden" id="faqIdData" name="faqIdData" />
 					<input type="hidden" name="CSRFToken" value="${tokenval}">
 				    </form:form>
-				    <form:form action="getFaq" name="paginationForm"
-									method="post">
-									<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
-										type="hidden" id="totalRecordsId" name="totalRecords" />
-										<input type="hidden" name="CSRFToken" value="${tokenval}">
-								</form:form>
+					<form:form action="getFaq" name="paginationForm" method="post">
+						<input type="hidden" id="pageNumberId" name="pageNumber" />
+						<input type="hidden" id="totalRecordsId" name="totalRecords" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
+					</form:form>
+					<form:form action="changeStatusAction" name="changeStatus"
+						method="post">
+						<input type="hidden" id="faqId" name="faqId" />
+						<input type="hidden" name="CSRFToken" value="${tokenval}">
+					</form:form>
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
@@ -205,21 +209,16 @@
 										</c:choose>
 										 <td data-title="Action">
 											<c:choose>
-											            <c:when test="${faqManagementRequestLists.status eq 'PendingSuspended' }">
-															<a href="javascript:changeNewsFeedStatus('${faqManagementRequestLists.id}','Pending','Pending')" title="<spring:message code="Pending"/>">
-																	<img alt="Active" src="../images/active.png" title='<spring:message code="Pending"/>'></img>
-																</a>
-														</c:when>
 														<c:when test="${fn:containsIgnoreCase(faqManagementRequestLists.status,'Active') }">
 															<a href="javascript:editFaqData('${faqManagementRequestLists.faqId}')" title="<spring:message code="common.label.edit"/>"><span
 														      class="glyphicon glyphicon-pencil"></span></a>
-													       <%--  <a href="javascript:changeFaqStatus('${faqManagementRequestList.id}','Suspended','Suspended')" title=""Suspend">
-																 <img src="../images/deactive.png" alt="Suspend" title="<spring:message code="Suspend"/>"></img></a> --%>
+													        <a href="javascript:changeFaqStatus('${faqManagementRequestLists.faqId}','Suspended','Suspended')" title="Suspend">
+																 <img src="../images/active.png" alt="Suspend" title="Suspend"></img></a> 
 														</c:when>
 														<c:otherwise>
 															<c:if test="${fn:containsIgnoreCase(faqManagementRequestLists.status,'Suspended')}">
-																<a href="javascript:changeNewsFeedStatus('${faqManagementRequestLists.id}','Active','Active')" title="Active">>
-																	<img alt="Active" src="../images/active.png" title="Activate"></img>
+																<a href="javascript:changeFaqStatus('${faqManagementRequestLists.faqId}','Active','Active')" title="Active">
+																	<img alt="Active" src="../images/deactive.png" title="Activate"></img>
 																</a>
 															</c:if>
 														</c:otherwise>
@@ -295,6 +294,28 @@
 		</div>
 		<!--Container block End -->
 	</div>
+	<!-- Pop Up box information starts here -->
+		<div id="faqDiv" class="locatioin-list-popup">
+		<span class="glyphicon glyphicon-remove" onclick="closePopup()"></span>
+		<h2><spring:message code="prepaid-admin-programmanager-search-label.ChangeStatus"/></h2>
+		<form:form action="changeFaqStatus" name="spActivationForm" method="post">
+		 <input type="hidden" id="faqId" name="faqId" />
+        <input type="hidden" id="faqstatus" name="faqstatus" />
+        <input type="hidden" name="CSRFToken" value="${tokenval}">
+		<label><span class="requiredFiled">*</span><spring:message code="prepaid-admin-label.Reason"/>  </label>
+		<textarea id="reason" name="reason" maxlength="<%= StatusConstants.REASON %>"  onblur="clientValidation('reason', 'reason','popDescError_div')"></textarea>
+		<div class="discriptionErrorMsg">
+			<span class="red-error" id="popDescError_div">&nbsp;</span>
+		</div> 
+		<!--Panel Action Button Start -->
+		<div class="col-sm-12 form-action-buttons">											
+			<div class="col-sm-12">							
+				<input type="submit" class="form-control button pull-right" value="<spring:message code="prepaid-admin-button.submit"/>" onclick="return validatePopupDesc();">																								
+			</div>	
+		</div>
+		</form:form>
+		<!--Panel Action Button End -->
+	</div>
 	
     <script src="../js/jquery.popupoverlay.js"></script>
 	<script src="../js/sortable.js"></script>
@@ -329,10 +350,10 @@
 			});
 		});
 		function closePopup(){
-			$('#newsFeedDiv').popup("hide");
+			$('#faqDiv').popup("hide");
 		}
 		function openPopup(){
-			$('#newsFeedDiv').popup("show");
+			$('#faqDiv').popup("show");
 		}
 		function closePublishPopup(){
 			$('#publishPopupDiv').popup("hide");

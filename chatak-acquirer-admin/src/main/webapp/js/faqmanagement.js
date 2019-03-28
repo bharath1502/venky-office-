@@ -16,9 +16,11 @@ function editFaqData(faqId){
 }
 
 function changeFaqStatus(faqId, status, statusName) {
+	clearPopupDesc();
+	openPopup();
 	setDiv("sts", webMessages.Faq_status + status + '?');
-	get('faqId').value = id;
-	get('status').value = status;
+	get('faqId').value = faqId;
+	get('faqstatus').value = status;
 }
 
 

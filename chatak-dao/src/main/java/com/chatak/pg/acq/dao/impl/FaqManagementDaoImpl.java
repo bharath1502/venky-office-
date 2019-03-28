@@ -257,4 +257,10 @@ public class FaqManagementDaoImpl implements FaqManagementDao {
 		}
 		return faqManagementRequestList;
 	}
+
+	@Override
+	public FaqManagement updateFaqManagement(FaqManagement faqManagementDto) throws DataAccessException {
+		return faqManagementRepository.findByFaqId(faqManagementDto.getFaqId());
+
+		}
 }

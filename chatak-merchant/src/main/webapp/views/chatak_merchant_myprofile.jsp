@@ -453,7 +453,7 @@
 									<div class="col-sm-12 button-content" id="submitUpdate">
 										<fieldset class="col-sm-7 pull-right">
 										<legend></legend>
-											<input type="button"
+											<input type="submit"
 												class="form-control button pull-right pos-next"
 												value='<spring:message code="common.label.confirm"/>' onclick="return validateProfileSubmit();">
 											<div>
@@ -502,6 +502,7 @@
 	<script src="../js/merchant-profile.js" type="text/javascript"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js"></script>
+	<script src="../js/validation.js"></script>
 	<!-- <script src="../js/merchant-profile.js"></script> -->
 
 	<script>

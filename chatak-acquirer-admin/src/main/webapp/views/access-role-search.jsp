@@ -33,21 +33,9 @@
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
-			<!--Header Block Start -->
-			 			
-							
-			
-			
-			
-			
-			<!-- 						<table> -->
-			<!-- 							<tr> -->
-			
-			
-			<!-- 				Header Welcome Text and Logout button End	 -->
-			
-			<!--Header Block End -->
+		
 			<!--Navigation Block Start -->
+			
 			<%@include file="navigation-panel.jsp"%>
 			<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 			<!--Navigation Block Start -->
@@ -296,7 +284,7 @@
 								</c:when>
 								<c:otherwise>
 									<tr>
-										<td colspan="3" style="color: red;"><spring:message code="access-role-search.label.norolesfound"/></td>
+										<td colspan="4" style="color: red;"><spring:message code="access-role-search.label.norolesfound"/></td>
 									</tr>
 								</c:otherwise>
 

@@ -609,7 +609,7 @@ public class UserServiceImpl implements UserService, PGConstants {
           || Constants.USERS_GROUP_SUBMERCHANT.equalsIgnoreCase(usersGroupType)) {
         PGMerchantUsers merchantUser = merchantUserDao.findByMerchantUserId(userId);
         PGMerchant pgMerchant = merchantUserDao.findById(merchantUser.getPgMerchantId());
-        if (pgMerchant != null && pgMerchant.getStatus() != PGConstants.STATUS_DELETED
+        if (pgMerchant != null && !pgMerchant.getStatus().equals(PGConstants.STATUS_DELETED)
             && pgMerchant.getEmailId().equalsIgnoreCase(merchantUser.getEmail())) {
           throw new ChatakAdminException();
         }

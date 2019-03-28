@@ -222,6 +222,7 @@ public class TcpClient {
     }
     catch(InterruptedException e) {
       logger.error("Awakened prematurely !");
+      Thread.currentThread().interrupt();
     }
   }
 

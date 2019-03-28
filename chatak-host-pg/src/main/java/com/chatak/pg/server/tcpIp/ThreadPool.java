@@ -104,6 +104,7 @@ public class ThreadPool {
                 return;
             }
             catch(InterruptedException ignored) {
+            Thread.currentThread().interrupt();
             }
           }
 

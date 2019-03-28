@@ -108,15 +108,15 @@ public class ResellerServiceImpl implements ResellerService, PGConstants {
         resellerRespObj.setCountry(pgReseller.getCountry());
         resellerRespObj
             .setAccountBalance(StringUtils.amountToString(pgReseller.getAccountBalance()));
-        if (pgReseller.getStatus() == STATUS_SUCCESS) {
+        if (pgReseller.getStatus().equals(STATUS_SUCCESS)) {
           resellerRespObj.setStatus(S_STATUS_ACTIVE);
-        } else if (pgReseller.getStatus() == STATUS_PENDING) {
+        } else if (pgReseller.getStatus().equals(STATUS_PENDING)) {
           resellerRespObj.setStatus(S_STATUS_PENDING);
-        } else if (pgReseller.getStatus() == STATUS_DELETED) {
+        } else if (pgReseller.getStatus().equals(STATUS_DELETED)) {
           resellerRespObj.setStatus(S_STATUS_DELETED);
-        } else if (pgReseller.getStatus() == STATUS_SUSPENDED) {
+        } else if (pgReseller.getStatus().equals(STATUS_SUSPENDED)) {
           resellerRespObj.setStatus(S_STATUS_SUSPENDED);
-        } else if (pgReseller.getStatus() == STATUS_SELF_REGISTERATION_PENDING) {
+        } else if (pgReseller.getStatus().equals(STATUS_SELF_REGISTERATION_PENDING)) {
           resellerRespObj.setStatus(S_STATUS_SELFREGISTERED);
         }
         resellerValues.add(resellerRespObj);

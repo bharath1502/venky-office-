@@ -30,10 +30,8 @@
 			<!--Header Block Start -->
 			<!--Header Block End -->
 			<!--Navigation Block Start -->
-			<!-- <nav class="col-sm-12 nav-bar" id="main-navigation"> -->
 				<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 				<%@include file="navigation-panel.jsp"%>
-			<!-- </nav> -->
 			<!--Navigation Block Start -->
 			<!--Article Block Start-->
 			<article>
@@ -58,12 +56,6 @@
 						<a href="#"><spring:message code="common.label.create"/></a>
 					</div>
 					</c:if>
-					<!-- <div class="tab-header-container-first">
-						<a href="merchant-search">Search</a>
-					</div> -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="#">Create</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder padding0">

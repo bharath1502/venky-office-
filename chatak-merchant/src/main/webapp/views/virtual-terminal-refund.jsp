@@ -260,29 +260,16 @@
 												</fieldset>
 												<fieldset class="col-sm-3">
 												<legend></legend>
-													<!-- <label data-toggle="tooltip" data-placement="top" title="">Tax Amount</label> -->
 													<form:hidden path="taxAmt" />
-													<!-- <div class="discriptionErrorMsg" id="taxAmtDiv">
-															<span class="red-error">&nbsp;</span>
-														</div>  -->
 												</fieldset>
 												<fieldset class="col-sm-3">
 												<legend></legend>
-													<!-- <!-- <label data-toggle="tooltip" data-placement="top" title="">Tip Amount</label> -->
 													<form:hidden path="tipAmount" id="tipAmountDiv" />
-													<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error">&nbsp;</span>
-														</div>  -->
 												</fieldset>
 												<fieldset class="col-sm-3">
 												<legend></legend>
-													<!-- <label data-toggle="tooltip" data-placement="top" title="">Shipping Charges</label> -->
 													<form:hidden path="shippingAmt" id="shippingAmtDiv" />
-													<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error">&nbsp;</span>
-														</div>  -->
 												</fieldset>
-												<!-- <input type="hidden" id="txnRefNum" name="txnRefNum" /> -->
 												<fieldset class="col-sm-3">
 												<legend></legend>
 

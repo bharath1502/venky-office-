@@ -92,7 +92,6 @@
 					<a href="virtual-terminal-void"><spring:message code="virtual-terminal-sale.label.void"/></a>
 				</div>
 				<div class="tab-header-container">
-					<!-- <a href="virtual-terminal-adjust">Adjust</a> -->
 					<a href="virtual-terminal-adjust"><spring:message code="virtual-terminal-sale.label.adjust"/></a>
 				</div>
 				<!-- Tab Buttons End -->

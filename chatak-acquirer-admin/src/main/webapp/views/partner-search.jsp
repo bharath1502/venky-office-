@@ -405,7 +405,6 @@
 			<input type="hidden" id="partnerStatus" name="partnerStatus" /> <input
 				type="hidden" id="partnerName" name="partnerName" />
 			 <input type="hidden" name="CSRFToken" value="${tokenval}">
-			<!--  <input type="hidden" id="totalRecordsId" name="totalRecords" /> -->
 			<label><span class="requiredFiled">*</span>
 			<spring:message code="prepaid-admin-label.Reason" /></label>
 			<textarea id="reason" name="reason" maxlength="250"
@@ -422,9 +421,6 @@
 			</div>
 		</form:form>
 		<!--Panel Action Button End -->
-		<!-- <p>
-			<b>Note</b>
-		</p> -->
 	</div>
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script>

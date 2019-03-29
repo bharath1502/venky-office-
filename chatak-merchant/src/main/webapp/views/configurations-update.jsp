@@ -171,7 +171,6 @@
 																	 <legend></legend>
 																		<label data-toggle="tooltip" data-placement="top" title="">
 																			<spring:message code="common.label.agentName"/>
-																			<!-- <span class="required-field">*</span> -->
 																		</label>
 																		<form:select cssClass="form-control" path="agentId"
 																			id="agentId" onblur="this.value=this.value.trim();return validateAgentName()"

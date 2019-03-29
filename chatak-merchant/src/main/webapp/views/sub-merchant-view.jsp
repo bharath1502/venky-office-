@@ -383,7 +383,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.city"></spring:message><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="search-sub-merchant.label.city"></spring:message></label>
 														<form:input cssClass="form-control" path="bankCity" id="bankCity" maxlength="50" 
 														onblur="return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');"  />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">

@@ -61,12 +61,6 @@
 						<a href="virtual-terminal-sale"><spring:message code="virtual-terminal-refund.label.saletab"/></a>
 					</div>
 					</c:if>
-					<!-- 	<div class="tab-header-container">
-					<a href="virtual-pre-auth">Pre Auth</a>
-				</div>
-				<div class="tab-header-container">
-					<a href="virtual-terminal-pre-auth-completion">Pre Auth Lookup</a>
-				</div> -->
 				  <c:if test="${fn:contains(existingFeatures,virtualTerminalRefund)}">
 					<div class="tab-header-container active-background">
 						<a href="#"><spring:message code="virtual-terminal-refund.label.refundtab"/></a>
@@ -75,10 +69,6 @@
 					<%-- <div class="tab-header-container">
 						<a href="virtual-terminal-void"><spring:message code="virtual-terminal-refund.label.voidtab"/></a>
 					</div> --%>
-					<!-- 	<div class="tab-header-container">
-					<a href="virtual-terminal-adjust">Adjust</a>
-					<a href="#">Adjust</a>
-				</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
@@ -125,10 +115,6 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-refund.label.description"/></label>
 														<form:textarea path="description" cssClass="form-control"
 															id="descriptionDiv" />
-															<!-- onblur="this.value=this.value.trim();validateDesc()" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error" id="descriptionErrorDiv">&nbsp;</span>
-														</div> -->
 													</fieldset>
 													<!--Panel Action Button Start -->
 													<div class="col-sm-12 form-action-buttons">
@@ -260,28 +246,15 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<!-- <label data-toggle="tooltip" data-placement="top" title="">Tax Amount</label> -->
 														<form:hidden path="taxAmt" />
-														<!-- <div class="discriptionErrorMsg" id="taxAmtDiv">
-															<span class="red-error">&nbsp;</span>
-														</div>  -->
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<!-- <!-- <label data-toggle="tooltip" data-placement="top" title="">Tip Amount</label> -->
 														<form:hidden path="tipAmount" id="tipAmountDiv" />
 														<%-- <form:hidden path="merchantId" id="merchantIdHDiv" /> --%>
-														<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error">&nbsp;</span>
-														</div>  -->
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<!-- <label data-toggle="tooltip" data-placement="top" title="">Shipping Charges</label> -->
 														<form:hidden path="shippingAmt" id="shippingAmtDiv" />
-														<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error">&nbsp;</span>
-														</div>  -->
 													</fieldset>
-													<!-- <input type="hidden" id="txnRefNum" name="txnRefNum" /> -->
 													<fieldset class="col-sm-3">
 
 														<form:hidden path="cgRefNumber" id="cgRefNumberDiv" />

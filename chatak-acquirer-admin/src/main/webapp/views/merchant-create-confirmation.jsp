@@ -37,8 +37,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.merchantcallbackURL"/><!-- <span
-															class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.merchantcallbackURL"/></label>
 														<form:input cssClass="form-control"
 															path="merchantCallBackURL" id="merchantCallBackURL"
 															maxlength="50"
@@ -60,7 +59,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferlimit"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferlimit"/></label>
 														<form:input cssClass="form-control" maxlength="10"
 															path="autoTransferLimit" id="autoTransferLimit"
 															onblur="this.value=this.value.trim();validateAutoTransferLimit()" />
@@ -83,7 +82,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferperiod"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferperiod"/></label>
 														<form:select cssClass="form-control"
 															onchange="showAutoTransferDayFields()"
 															path="autoTransferDay" id="autoTransferDay">

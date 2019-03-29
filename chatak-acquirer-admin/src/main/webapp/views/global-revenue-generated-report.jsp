@@ -47,9 +47,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="col-sm-12">
@@ -65,7 +62,6 @@
 									<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" /> 
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
-									<!-- <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" /> -->
 								</form:form>
 
 						<form:form action="globalRevenueGeneratedReports" name="globalRevenueGeneratedReports">
@@ -144,15 +140,12 @@
 												<div class="col-sm-10 form-action-buttons" style="width: 100%;">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 													<a type="button" onclick="submitRevenueGeneratedRange()" class="form-control button pull-right">Generate</a>
 													<a type="button" href="home" class="form-control button pull-right">Back</a>
 											</div>
 										</div>
 											</div>
 
-						<!-- <div class="search-results-table table-scroll" style="display: none;" id="transinfo"> -->
 						<div class="search-results-table table-scroll" style="display: none; padding: 0px;" id="transinfo">
 							<table class="table table-striped table-bordered table-condensed" >
 								<thead>
@@ -189,7 +182,6 @@
 										<th style="width: 97px;">User Name</th>
 										<th style="width: 92px;">Company Or Full Name</th>
 										<th style="width: 83px;">Account Number</th>
-										<!-- <th>Account Type</th> -->
 										<th style="width: 83px;">Txn ID</th>
 										<th style="width: 91px;">Txn Description</th>
 										<th style="width: 58px;">Total Txn Amount</th>
@@ -257,10 +249,6 @@
 																	<img src="../images/pdf.png">
 																</button>
 															</a>
-															<!-- <a>
-															<input type="checkbox" class="autoCheck check" id="totalRecordsDownload">
-															Download All 
-														</a> -->
 														</div>
 													</div>
 												</div>
@@ -273,8 +261,6 @@
 							<div class="col-sm-8 form-action-buttons" style="width: 96%;">
 								<div class="col-sm-5"></div>
 								<div class="col-sm-7">
-									<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 									<a type="button" href="showGlobalSysRevenueGeneratedReports"
 										class="form-control button pull-right">Back</a>
 								</div>

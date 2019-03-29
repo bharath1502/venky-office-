@@ -127,7 +127,6 @@
 <!--Header Block End -->
 <!--Navigation Block Start -->
 <nav class="col-md-12 nav-bar">
-<!-- <input type="text" id="isWindowClose" name="windowClose"> -->
 <span class="glyphicon glyphicon-list menu-icon"></span>
 	<ul class="navigation">
 		<c:if test="${fn:contains(existingFeatures,dashboard)}">

@@ -29,9 +29,6 @@
 </head>
 <body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
-
-	<!-- <script src="../js/common-lib.min.js"></script> -->
-
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
 		<!--Container block Start -->
@@ -62,12 +59,8 @@
 							<%-- <form:form modelAttribute="" action="chatak_merchant_myprofile"
 							method="post"> --%>
 							<!--  -->
-							<!-- modelAttribute="userProfileRequest" -->
 
 							<!-- Breadcrumb start -->
-							<!-- 	<div class="breadCrumb">
-								<span class="breadcrumb-text">Bank account EFT transfers</span>
-							</div> -->
 							<!-- Tab Buttons End -->
 							<!-- Content Block Start -->
 
@@ -238,10 +231,6 @@
 								<div class="col-sm-12 button-content" id="myEdit">
 									<fieldset class="col-sm-7 pull-right">
 									<legend></legend>
-										<!-- <input type="button"
-											class="form-control button pull-right pos-next" value="Edit"> -->
-										<!-- <input type="button" class="form-control button pull-right"
-											value="Back" onclick="return backTodashBoard();"> -->
 									</fieldset>
 									<fieldset>
 									<legend></legend>
@@ -263,7 +252,6 @@
 	<!--Body Wrapper block End -->
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<!-- 	<script src="../js/common-lib.min.js"></script> -->
 	<script src="../js/backbutton.js" type="text/javascript"></script>
 	<script src="../js/changePassword.js" type="text/javascript"></script>
 	<script src="../js/merchant-profile.js" type="text/javascript"></script>
@@ -272,7 +260,6 @@
 	<script src="../js/common-lib.js" type="text/javascript"></script>
 	<script src="../js/admin-user.js" type="text/javascript"></script>
 	<script src="../js/validation.js" type="text/javascript"></script>
-	<!-- <script src="../js/merchant-profile.js"></script> -->
 
 	<script>
 		/* Common Navigation Include Start */

@@ -9,9 +9,6 @@
 													<fieldset class="col-sm-3">
 													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="configurations.label.processor"/><span class="required-field">*</span></label>
-														<!-- <select class="form-control">
-															<option>..:Select:..</option>
-														</select> -->
 														<form:select cssClass="form-control" path="processor" id="processor" onblur="validateProcessor()">
 																<form:option value="">..:<spring:message code="sub-merchant-create.label.select" />:..</form:option>
 															<c:forEach items="${processorNames}" var="processorName">
@@ -351,9 +348,6 @@
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
 													<legend></legend>
-														<!-- <input type="button"
-															class="form-control button pull-right atm-next"
-															value="Continue" onclick="validateRadio();">  -->
 															<input type="button"
 															class="form-control button pull-right marginL10 atm-prev"
 															value="<spring:message code="sub-merchant-create.label.previous"></spring:message>">

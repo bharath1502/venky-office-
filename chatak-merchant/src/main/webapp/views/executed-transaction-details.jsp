@@ -280,7 +280,6 @@
 			<br>
 			<div>
 				<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="dash-board.label.transactionreferenceno"/>. : </label><span id="txnRefNo">&nbsp;</span> 
-				<!-- <label data-toggle="tooltip" data-placement="top" title="">CG Reference No. : </label><span id="cgRefNo">&nbsp;</span>  -->
 			</div>
 			<br>
 		</div>
@@ -317,7 +316,6 @@
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="../js/jquery.min.js"></script>
-	<!-- <script src="../js/transactions.js"></script> -->
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script> <script src="../js/utils.js"></script>
 	<script src="../js/sortable.js"></script>

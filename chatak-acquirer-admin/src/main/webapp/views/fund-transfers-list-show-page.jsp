@@ -117,7 +117,6 @@
 					</form:form> --%>
 					<!-- Search Table Block Start -->
 					<div class="search-results-table">
-						<!-- <table class="table table-striped tablesorter table-bordered table-condensed"> -->
 						<table class="table table-striped table-bordered table-condensed"
 							style="margin: 1px;">
 							<tr>
@@ -151,7 +150,6 @@
 									<th style="width: 55px;"><spring:message code="reports.label.transactions.status"/></th>
 									<th class="sorter-false tablesorter-header tablesorter-headerUnSorted"><spring:message code="commission-program-search.label.actiontable"/></th>
 									<th style="width: 100px;" class="sorter-false tablesorter-header tablesorter-headerUnSorted"><input type="checkbox" id="selectall" />Bulk Transfer</th>
-									<!-- <th>Action</th> -->
 								</tr>
 							</thead>
 							<c:choose>
@@ -202,8 +200,6 @@
 														<td><input type="checkbox" id="checkBoxtn"
 															class="transaction"
 															value="{ &quot;pgTransfersId&quot;:&quot;${pgTransfers.pgTransfersId}&quot;}" /></td>
-
-														<!-- value="{txnId:'${transaction.transactionId}',merchantCode:'${transaction.merchant_code }',terminalId:'${transaction.terminal_id }',txnType:'${transaction.transaction_type }'}"  -->
 													</c:when>
 
 													<c:otherwise>

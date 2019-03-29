@@ -52,13 +52,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					
-					<!-- 	<div class="tab-header-container">
-					<a href="virtual-pre-auth">Pre Auth</a>
-				</div>
-				<div class="tab-header-container">
-					<a href="virtual-terminal-pre-auth-completion">Pre Auth Lookup</a>
-				</div> -->
 					<div class="tab-header-container-first active-background">
 						<a href="#"><spring:message code="transactions-search.label.refundbutton"/></a>
 					</div>
@@ -197,14 +190,12 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<!-- <!-- <label data-toggle="tooltip" data-placement="top" title="">Tip Amount</label> -->
 														<form:hidden path="tipAmount" id="tipAmountDiv" />
 														<form:hidden path="merchantId" id="merchantIdHDiv" />
 														<form:hidden path="terminalId" id="terminalIdHDiv" />
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<!-- <label data-toggle="tooltip" data-placement="top" title="">Shipping Charges</label> -->
 														<form:hidden path="shippingAmt" id="shippingAmtDiv" />
 													</fieldset>
 													<fieldset class="col-sm-3">

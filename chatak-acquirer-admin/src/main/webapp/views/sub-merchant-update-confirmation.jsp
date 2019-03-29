@@ -24,8 +24,7 @@
 		</fieldset>
 		<fieldset class="col-sm-3">
 			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.merchantcallbackURL" /> <!-- <span
-															class="required-field">*</span> --></label>
+					code="manage.label.sub-merchant.merchantcallbackURL" /></label>
 			<form:input cssClass="form-control" path="merchantCallBackURL"
 				id="merchantCallBackURL" maxlength="50"
 				onblur="this.value=this.value.trim();validateCallbackURL()" />
@@ -54,7 +53,7 @@
 		</fieldset>
 		<fieldset class="col-sm-3">
 			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.autotransferlimit" /> <!-- <span class="required-field">*</span> --></label>
+					code="manage.label.sub-merchant.autotransferlimit" /></label>
 			<form:input cssClass="form-control" maxlength="10"
 				path="autoTransferLimit" id="autoTransferLimit"
 				onblur="this.value=this.value.trim();validateAutoTransferLimit()" />

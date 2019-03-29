@@ -35,6 +35,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.CurrencyDTO;
 import com.chatak.pg.util.Constants;
@@ -376,7 +377,7 @@ public class CurrencyController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_ADMIN_PAGINATION_CURRENCY, method = RequestMethod.POST)
   public ModelAndView getPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering :: CurrencyController :: getPaginationList method ");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_CURRENCY_SEARCH_PAGE);
     try {
@@ -387,11 +388,11 @@ public class CurrencyController implements URLMappingConstants {
       Response currencyDTOlist = currencyConfigService.searchCurrencyConfig(currencyDTO);
       if (StringUtil.isListNotNullNEmpty(currencyDTOlist.getResponseList())) {
         session.setAttribute(Constants.CURRENCY_MODEL, currencyDTO);
-        modelAndView.addObject("pageSize", currencyDTO.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, currencyDTO.getPageSize());
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             currencyDTOlist.getTotalNoOfRows());
         session.setAttribute("pageNumber", pageNumber);
-        session.setAttribute("totalRecords", totalRecords);
+        session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
       }
       modelAndView.addObject(Constants.CURRENCY_MODEL, currencyDTO);
     } catch (Exception e) {
@@ -409,7 +410,7 @@ public class CurrencyController implements URLMappingConstants {
       HttpServletResponse response, @FormParam("downloadType") final String downloadType,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering :: CurrencyController :: downloadCurrencyReport method ");
-    Integer totalRecords = Integer.valueOf(request.getParameter("totalRecords"));
+    Integer totalRecords = Integer.valueOf(request.getParameter(PGConstants.TOTAL_RECORDS));
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_CURRENCY_SEARCH_PAGE);
     try {
       List<CurrenyValue> list;

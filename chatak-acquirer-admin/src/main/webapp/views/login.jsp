@@ -22,8 +22,6 @@
 <link href="../css/style.css" rel="stylesheet">
 <link rel="icon" href="../images/favicon.png" type="image/png">
 
-<!-- <script src="../js/common-lib.js" type="text/javascript"></script> -->
-
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -116,8 +114,6 @@
 										<a href="forgot-password" class="pull-left"><spring:message code="login.label.forgotpassword"/>?</a>
 									</div>
 									<div class="col-sm-6">
-										<!-- <button type="submit"
-											class="form-control button login-main-button">Login</button> -->
 										<input type="submit"  value='<spring:message code="login.label.loginbutton"/>'
 											class="form-control1 button login-main-button width65P pull-right" id="loginSubmit" onclick="trimUserData()">
 									</div>
@@ -154,7 +150,6 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script>
 	<script src="../js/utils.js"></script>
-	<!-- <script type="text/javascript" src="../js/backbutton.js"></script> -->
 	<script src="../js/common-lib.js"></script>
 	
     <script src="../js/jquery.cookie.js"></script>

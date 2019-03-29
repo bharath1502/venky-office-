@@ -58,11 +58,6 @@
 						<span class="glyphicon glyphicon-play icon-font-size"></span>
 						<span class="breadcrumb-text"><spring:message code="common.label.view"/></span>
 					</div>
-					<!-- <div class=" pull-right" style="margin-right: 40px"
-						id="subMerchant">
-						<img alt="Create sub merchant" src="../images/user_icon.png"><a
-							href="sub-merchant-create">Add Sub Merchant</a>
-					</div> -->
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
 					<div class="tab-header-container-first">
@@ -152,7 +147,6 @@
 															maxlength="9"
 															onkeypress="return amountValidate(this,event)"
 															onblur="return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
-														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -182,7 +176,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/></label>
 														<form:input cssClass="form-control" path="bankAddress1"
 															id="bankAddress1" maxlength="50"
 															onblur="return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');" />
@@ -200,7 +194,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/></label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
 															onblur="return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');" />
@@ -313,9 +307,6 @@
 												</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.processor"/><span class="required-field">*</span></label>
-														<!-- <select class="form-control">
-															<option>..:Select:..</option>
-														</select> -->
 														<form:select cssClass="form-control" path="processor"
 															id="processor" onblur="validateProcessor()">
 															<form:option value=""><spring:message code="reports.option.select"/></form:option>
@@ -328,8 +319,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.merchantcallbackURL"/><!-- <span
-															class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.merchantcallbackURL"/></label>
 														<form:input cssClass="form-control"
 															path="merchantCallBackURL" id="merchantCallBackURL"
 															onblur="validateCallbackURL()" />
@@ -349,7 +339,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferlimit"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferlimit"/></label>
 														<form:input cssClass="form-control"
 															path="autoTransferLimit" id="autoTransferLimit"
 															onblur="validateAutoTransferLimit()" />

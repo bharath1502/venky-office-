@@ -39,16 +39,11 @@
 					<!-- Breadcrumb start -->
 					<div class="breadCrumb">
 						<span class="breadcrumb-text"><spring:message code="reports.label.reports" /></span> 
-						<!-- <span class="glyphicon glyphicon-play icon-font-size"></span> 
-						<span class="breadcrumb-text">Global System Reports</span> -->
 						<span class="glyphicon glyphicon-play icon-font-size"></span>
 						<span class="breadcrumb-text"><spring:message code="reports.label.balancereports" /></span>
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Profile Listing</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 							<div class="col-sm-12">
@@ -196,14 +191,11 @@
 						<div class="col-sm-8 form-action-buttons" style="width: 96%;">
 								<div class="col-sm-5"></div>
 								<div class="col-sm-7">
-									<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 									<a type="button" href="home"
 										class="form-control button pull-right"><spring:message code="reports.label.backbutton" /></a>
 								</div>
 							</div>
 						</div>
-					<!-- </div> -->
 					<!-- Search Table Block End -->
 				</div>
 			</article>

@@ -44,9 +44,6 @@
 				<!--Header Logo End -->	
 			</header>
 			<!--Header Block End -->
-			<!--Navigation Block Start -> 
-			<nav class="col-sm-12 nav-bar" id="main-navigation"></nav>
-			<!--Navigation Block Start -->   			
 			<!--Article Block Start-->
 			<article>
 				<div class="col-xs-12 content-wrapper">					
@@ -82,10 +79,6 @@
 																	<span class="fa fa-credit-card"></span>Credit/Debit Card
 																	<span class="left-arrow arrow2"></span>
 																</li>
-																<!-- <li class="list list3" onclick="hideShow(3)">
-																	<span class="fa fa-credit-card"></span>Debit Card
-																	<span class="left-arrow arrow3"></span>
-																</li> -->
 																</c:if>
 																<c:if test="${PROCESS_MODE eq 'T'}">
 																	<li class="list list2 active" onclick="hideShow(2)">

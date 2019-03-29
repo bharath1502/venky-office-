@@ -46,9 +46,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 							<div class="col-sm-12">
@@ -73,7 +70,6 @@
 									<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" /> 
 									<input type="hidden" id="downloadTypeId" name="downloadType" />
 								    <input type="hidden" name="CSRFToken" value="${tokenval}">
-									<!-- <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" /> -->
 								</form:form>
 
 							</div>
@@ -153,8 +149,6 @@
 												<div class="col-sm-10 form-action-buttons" style="width: 100%;">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7" style="padding-right: 28px;">
-												<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 													<a type="button" onclick="submitDateRange()" class="form-control button pull-right"><spring:message code="reports.label.generatebutton"/></a>
 													<a type="button" href="specific-user-allTransactions-show" class="form-control button pull-right"><spring:message code="reports.label.backbutton"/></a>
 											</div>
@@ -220,10 +214,6 @@
 																<img src="../images/pdf.png">
 															</button>
 														</a>
-														<!-- <a>
-															<input type="checkbox" class="autoCheck check" id="totalRecordsDownload">
-															Download All 
-														</a> -->
 													</div>
 												</div>
 											</div>
@@ -256,8 +246,6 @@
 								<div class="col-sm-8 form-action-buttons" style="width: 96%;">
 									<div class="col-sm-5"></div>
 									<div class="col-sm-7">
-										<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 										<a type="button" href="specific-user-allTransactions-show"
 											class="form-control button pull-right"><spring:message code="reports.label.backbutton"/></a>
 									</div>

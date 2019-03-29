@@ -40,7 +40,6 @@
 
 <ul class="navigation">
 	<li id="navListId1"><a href="dash-board"><spring:message code="dash-board.label.dashboard"/></a></li>
-	<!-- <li id="navListId9"><a href="search-sub-merchant">Sub merchants</a></li> -->
 	<li id="navListId9"><a href="search-sub-merchant"><spring:message code="search-sub-merchant.label.submerchant"/></a></li>
 	<li id="navListId2"><a href="virtual-terminal-sale"><spring:message code="virtual-terminal-sale.label.virtualterminal"/></a></li>
 	<li id="navListId4" class="dropdown">

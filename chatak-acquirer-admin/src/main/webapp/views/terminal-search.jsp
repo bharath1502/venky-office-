@@ -40,14 +40,6 @@
 						<span class="breadcrumb-text">Search</span>
 					</div>
 					<!-- Breadcrumb End -->
-					<!-- Tab Buttons Start -->
-					<!--div class="tab-header-container-first active-background">
-						<a href="#">Search </a>					
-					</div>					
-					<div class="tab-header-container">
-						<a href="manage-account-create.html">Create</a>
-					</div>					
-					<!-- Tab Buttons End -->
 					<form:form action="getTerminals" name="paginationForm" method="post">
 						<input type="hidden" id="pageNumberId" name="pageNumber" /> <input
 							type="hidden" id="totalRecordsId" name="totalRecords" />

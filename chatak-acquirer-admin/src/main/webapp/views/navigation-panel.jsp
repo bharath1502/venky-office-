@@ -275,9 +275,6 @@
 				<tr>
 				<td><spring:message code="header.label.lastLoginTime"/> ${loginResponse.lastLonginTime }</td>
 				</tr>
-				<!-- <tr>
-					<td><div id="showTimer" style="font-weight: bold;"></div></td>
-				</tr> -->
 			</table>
 		</div>
 	</div>
@@ -292,7 +289,6 @@
 <!--Header Block End -->
 <!--Navigation Block Start -->
 <nav class="col-md-12 nav-bar">
-<!-- <input type="text" id="isWindowClose" name="windowClose"> -->
 <span class="glyphicon glyphicon-list menu-icon"></span>
 	<ul class="navigation">
 		<c:if test="${fn:contains(existingFeatures,dashboard) || fn:contains(existingFeatures,resellerDashboard)}">
@@ -412,7 +408,6 @@
 			<li style="text-align:left;"><a href="accounts-manual-debit"><spring:message code="accounts-manual-debit.label.manualdebit"/></a></li>
 			</c:if>
 			<%-- <li style="text-align:left;"><a href="show-account-transfer"><spring:message code="show-account-transfer.label.accounttransfer"/> </a></li> --%>
-			<!-- <li style="text-align:left;"><a href="#">Account Sweeper</a></li> -->
 			<%-- <li style="text-align:left;"><a href="getLitleEFTTransactionListToDashBoard"><spring:message code="show-account-transfer.label.manualsweeper"/></a></li> --%>
 		</ul>
 	</li>
@@ -513,12 +508,6 @@
 			</li>
 	</c:if>
 
-	<!-- <li id="navListId8" class="dropdown">
-		<a href="#" class="dropdown-toggle">Issuing</a>
-		<a href="switchToIssuance" class="dropdown-toggle">Issuing</a>
-	</li> -->
-	
-	
 	<li id="navListId9" class="dropdown pull-right" style="margin:0px">
 		<a href="#" class="dropdown-toggle"><spring:message code="chatak-admin.lable.menu" /></a>
 		<ul class="dropdown-menu" role="menu">

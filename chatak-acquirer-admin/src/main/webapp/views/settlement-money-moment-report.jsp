@@ -212,7 +212,6 @@
 										<div class="col-sm-7">
 											<input type="submit" class="form-control button pull-right" onclick="return setTimeZone()"
 												value="<spring:message code="admin.label.confirm"/>"  >
-												<!-- onclick=" return executeSettlement() -->
 											<input type="button" class="form-control button pull-right"
 												value="<spring:message code="reports.label.cancelbutton"/>"
 												onclick="showSettlementPage()">

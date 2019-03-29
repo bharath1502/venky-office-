@@ -139,9 +139,6 @@
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
-														<!-- <input type="submit"
-															class="form-control button pull-right acc-next"
-															value="Update" onclick="return validateUpdatePaymentScheme()"> -->
 															<input type="submit"
 															class="form-control button pull-right acc-next"
 															value='<spring:message code="common.label.update"/>' onclick="return validateUpdatePaymentScheme()"> 
@@ -149,8 +146,6 @@
 															class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.cancel"/>' onclick="openCancelConfirmationPopup()">
 															
-															<!-- <input type="button" class="form-control button pull-right" 
-															value="Reset" onclick="resetPaymentSchemeInfo()"> -->
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->

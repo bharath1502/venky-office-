@@ -512,7 +512,6 @@
 			<br>
 			<div>
 				<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="home.label.referenceno"/></label><span id="txnRefNo">&nbsp;</span> 
-				<!-- <label data-toggle="tooltip" data-placement="top" title="">CG Reference No. : </label><span id="cgRefNo">&nbsp;</span>  -->
 			</div>
 			<br>
 		</div>

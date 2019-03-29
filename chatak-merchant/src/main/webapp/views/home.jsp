@@ -45,14 +45,6 @@
 						<span class="breadcrumb-text"><spring:message code="search-sub-merchant.label.search"/></span>
 					</div>
 					<!-- Breadcrumb End -->
-					<!-- Tab Buttons Start -->
-					<!--div class="tab-header-container-first active-background">
-						<a href="#">Search </a>					
-					</div>					
-					<div class="tab-header-container">
-						<a href="manage-account-create.html">Create</a>
-					</div>					
-					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
 						<div class="row">

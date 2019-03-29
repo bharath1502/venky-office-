@@ -66,9 +66,6 @@
 							class="breadcrumb-text"><spring:message
 								code="common.label.edit" /></span>
 					</div>
-					<!-- <div class=" pull-right" style="margin-right:40px" id="subMerchant">
-						<img alt="Create sub merchant" src="../images/user_icon.png"><a href="sub-merchant-create">Add Sub Merchant</a>
-					</div> -->
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
 					<div class="tab-header-container-first">
@@ -214,7 +211,6 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="merchant.label.autotransferlimit" />
-														<!-- <span class="required-field">*</span> --></label>
 													<form:input cssClass="form-control" maxlength="10"
 														path="autoTransferLimit" id="autoTransferLimit"
 														onblur="this.value=this.value.trim();validateAutoTransferLimit()" />
@@ -248,7 +244,7 @@
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="merchant.label.autotransferperiod" />
-														<!-- <span class="required-field">*</span> --></label>
+														</label>
 													<form:select cssClass="form-control"
 														onchange="showAutoTransferDayFields()"
 														path="autoTransferDay" id="autoTransferDay">

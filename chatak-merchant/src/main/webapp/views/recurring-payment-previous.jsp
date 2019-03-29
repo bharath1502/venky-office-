@@ -127,7 +127,6 @@
 													<legend></legend> 
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="recurring-search.label.cardnumber"/><span class="required-field">*</span></label>
 														<form:input path="cardNumber" id="cardNumber" cssClass="form-control" maxlength="250" readonly="true"/>
-													<!-- 	<input ype="text" id="cardNumber" name="cardNumber" class="form-control" onkeypress="return numbersonly(this,event)" onblur="return clientValidation('cardNumber', 'card_Number','cardNumber_ErrorDiv');"/> -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="cardNumber_ErrorDiv" class="red-error">&nbsp;</span>
 														</div> 

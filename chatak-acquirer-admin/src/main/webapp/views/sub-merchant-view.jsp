@@ -178,7 +178,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.fax" /> <!-- <span class="required-field">*</span> --></label>
+																code="manage.label.sub-merchant.fax" /> </label>
 														<form:input cssClass="form-control" path="fax" id="fax"
 															onkeypress="return amountValidate(this,event)"
 															maxlength="13" />
@@ -452,7 +452,6 @@
 															maxlength="9"
 															onkeypress="return amountValidate(this,event)"
 															onblur="return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
-														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -493,7 +492,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.address1" /> <!-- <span class="required-field">*</span> --></label>
+																code="manage.label.sub-merchant.address1" /> </label>
 														<form:input cssClass="form-control" path="bankAddress1"
 															id="bankAddress1" maxlength="50"
 															onblur="return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');" />
@@ -513,7 +512,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-																code="manage.label.sub-merchant.city" /> <!-- <span class="required-field">*</span> --></label>
+																code="manage.label.sub-merchant.city" /> </label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
 															onblur="return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');" />

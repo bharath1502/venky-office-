@@ -92,7 +92,6 @@
 					<a href="virtual-terminal-void">Void</a>
 				</div>
 				<div class="tab-header-container">
-					<!-- <a href="virtual-terminal-adjust">Adjust</a> -->
 					<a href="#">Adjust</a>
 				</div>
 				<!-- Tab Buttons End -->

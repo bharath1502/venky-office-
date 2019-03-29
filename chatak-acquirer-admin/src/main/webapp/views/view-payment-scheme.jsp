@@ -143,8 +143,6 @@
 															class="form-control button pull-right marginL10"
 															value='<spring:message code="common.label.cancel"/>' onclick="goToPaymentSchemeSearch()">
 															
-															<!-- <input type="button" class="form-control button pull-right" 
-															value="Reset" onclick="resetPaymentSchemeInfo()"> -->
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->

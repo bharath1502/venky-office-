@@ -12,10 +12,6 @@
 						<td>Company Name:</td>
 						<td><div id="confirmMbusinessName"></div></td>
 					</tr>
-					<!-- <tr>
-						<td>Merchant Code:</td>
-						<td><div id="confirmMmerchantCode"></div></td>
-					</tr> -->
 					<tr>
 						<td>First Name:</td>
 						<td><div id="confirmMfirstName"></div></td>
@@ -60,10 +56,6 @@
 						<td>Zip Code:</td>
 						<td><div id="confirmMpin"></div></td>
 					</tr>
-					<!-- <tr>
-						<td>Time Zone:</td>
-						<td><div id="confirmMtimeZone"></div></td>
-					</tr> -->
 					<tr id="hideStatusfieldCon">
 						<td>Status:</td>
 						<td><div id="confirmMstatus"></div></td>

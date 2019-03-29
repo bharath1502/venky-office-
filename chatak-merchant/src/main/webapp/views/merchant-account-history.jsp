@@ -257,7 +257,6 @@
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="../js/jquery.min.js"></script>
-	<!-- <script src="../js/transactions.js"></script> -->
 	<script src="../js/common-lib.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="../js/bootstrap.min.js"></script> <script src="../js/utils.js"></script>
@@ -267,7 +266,6 @@
 	<script src="../js/jquery.cookie.js"></script>
 	 <script src="../js/messages.js"></script>
 	 <script src="../js/common-lib.js"></script>
-	<!-- <script src="../js/jquery-simple-pagination-plugin.js"></script> -->
 	<script>
 		$(document)
 				.ready(

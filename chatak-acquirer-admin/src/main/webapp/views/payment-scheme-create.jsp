@@ -60,9 +60,6 @@
 						<a href="#"><spring:message code="common.label.create"/></a>
 					</div>
 					</c:if>
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="#">Create</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">

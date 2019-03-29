@@ -44,13 +44,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!--div class="tab-header-container-first active-background">
-						<a href="#">Search </a>					
-					</div>					
-					<div class="tab-header-container">
-						<a href="manage-account-create.html">Create</a>
-					</div>					
-					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
 						<div class="row">
@@ -222,15 +215,6 @@
 											</div>
 										</div>
 										<div class="col-sm-8">	
-											<!-- <ul class="pagination custom-table-footer-pagination">
-												<li><a href="#">&laquo;</a></li>
-												<li><a href="#">1</a></li>
-												<li><a href="#">2</a></li>
-												<li><a href="#">3</a></li>
-												<li><a href="#">4</a></li>
-												<li><a href="#">5</a></li>
-												<li><a href="#">&raquo;</a></li>
-											</ul>	 -->
 										</div>
 									</div>								
 								</td>

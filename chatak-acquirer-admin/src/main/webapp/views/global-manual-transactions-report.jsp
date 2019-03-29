@@ -37,16 +37,11 @@
 					<!-- Breadcrumb start -->
 					<div class="breadCrumb">
 						<span class="breadcrumb-text"><spring:message code="reports.label.reports" /></span> 
-						<!-- <span class="glyphicon glyphicon-play icon-font-size"></span> 
-						<span class="breadcrumb-text">Global System Reports</span> -->
 						<span class="glyphicon glyphicon-play icon-font-size"></span> 
 						<span class="breadcrumb-text"><spring:message code="reports.label.balancereports.manualtransactions" /></span>
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
@@ -102,8 +97,6 @@
 												<div class="col-sm-12 form-action-buttons">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 													<button type="submit" onclick="return submitManualTransferDateRange()" class="form-control button pull-right"><spring:message code="reports.label.generatebutton" /></button>
 													<a type="button" href="showGlobalSysManualTransReports" class="form-control button pull-right"><spring:message code="accounts-manual-credit.label.resetbutton" /></a>
 											</div>
@@ -166,7 +159,6 @@
 												<td></td>
 												</c:otherwise>
 												</c:choose>
-<!-- 												<td></td> -->
 											</tr>
 										</c:forEach>
 									</c:when>

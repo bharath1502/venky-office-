@@ -151,7 +151,6 @@
 													<fieldset class="col-sm-8">
 													<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="fraud-basic.label.addcountry"/><span class="required-field">*</span></label>
-														<!--input type="text" class="form-control add-country" value="" /-->
 														<form:select cssClass="form-control add-country"
 															id="country" multiple="false" onblur=" validateCountry()"
 															path="isoCountryList">

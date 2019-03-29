@@ -10,9 +10,6 @@
 			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 					code="manage.label.sub-merchant.processor" /><span
 				class="required-field">*</span></label>
-			<!-- <select class="form-control">
-															<option>..:Select:..</option>
-														</select> -->
 			<form:select cssClass="form-control" path="processor" id="processor"
 				onblur="validateProcessor()">
 				<form:option value="">..:<spring:message
@@ -27,8 +24,7 @@
 		</fieldset>
 		<fieldset class="col-sm-3">
 			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.merchantcallbackURL" /> <!-- <span
-															class="required-field">*</span> --></label>
+					code="manage.label.sub-merchant.merchantcallbackURL" /></label>
 			<form:input cssClass="form-control" path="merchantCallBackURL"
 				id="merchantCallBackURL" onblur="validateCallbackURL()" />
 			<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -53,7 +49,7 @@
 		</fieldset>
 		<fieldset class="col-sm-3">
 			<label data-toggle="tooltip" data-placement="top" title=""><spring:message
-					code="manage.label.sub-merchant.autotransferlimit" /> <!-- <span class="required-field">*</span> --></label>
+					code="manage.label.sub-merchant.autotransferlimit" /> </label>
 			<form:input cssClass="form-control" maxlength="10"
 				path="autoTransferLimit" id="autoTransferLimit"
 				onblur="validateAutoTransferLimit()" />

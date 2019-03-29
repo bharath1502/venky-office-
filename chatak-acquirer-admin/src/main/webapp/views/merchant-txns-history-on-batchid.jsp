@@ -86,14 +86,11 @@
 								<!-- Page Form End -->
 							</div>
 						</div>
-					<!-- </div> -->
 					<!-- Content Block End -->
 
 					<!-- Search Table Block Start -->
                      <c:if test="${flag ne false }">
 					<div class="search-results-table search-table-align" id="checkb">
-
-						<!-- <table class="table table-striped table-bordered table-condensed" style="margin: 1px;">
 
 						</table> -->
 						<table id="serviceResults"

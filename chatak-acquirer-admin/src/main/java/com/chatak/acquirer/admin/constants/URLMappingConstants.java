@@ -1125,6 +1125,8 @@ public interface URLMappingConstants {
    String FAQ_MANAGEMENT_EDIT = "editFaqMgmtAction";
    
    String FAQ_PAGINATION_ACTION="getFaq";
+   
+   String FAQ_MANAGEMENT_STATUS ="changeFaqStatus";
 
 
 }

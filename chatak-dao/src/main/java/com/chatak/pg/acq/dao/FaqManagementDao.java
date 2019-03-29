@@ -30,4 +30,6 @@ public interface FaqManagementDao {
 
 	 public List<FaqManagementRequest> findByCategoryMappingId(FaqManagementRequest faqManagementRequest)throws DataAccessException;
 
+	 public FaqManagement updateFaqManagement(FaqManagement faqManagementDto)throws DataAccessException;
+
 }

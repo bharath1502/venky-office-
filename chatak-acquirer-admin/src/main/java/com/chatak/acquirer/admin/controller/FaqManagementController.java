@@ -252,4 +252,37 @@ public class FaqManagementController implements URLMappingConstants {
 		return modelAndView;
 	}
 
+	
+	@RequestMapping(value = FAQ_MANAGEMENT_STATUS, method = RequestMethod.POST)
+	public ModelAndView changeFaqManagementStatus(HttpServletRequest request, HttpServletResponse response,
+			final HttpSession session, Map<String, Object> model, @FormParam("faqId") final Long faqId,
+			@FormParam("faqstatus") final String faqstatus, @FormParam("reason") final String reason) {
+
+		logger.info("Entring ::FaqManagementController :: changeFaqManagementStatus method");
+
+		ModelAndView modelAndView = new ModelAndView(FAQ_MANAGEMENT_SEARCH_PAGE);
+
+		try {
+			FaqManagementRequest faqManagementRequest = new FaqManagementRequest();
+			faqManagementRequest.setFaqId(faqId);
+			faqManagementRequest.setStatus(faqstatus);
+			FaqManagementResponse faqManagementResponse = faqManagementService
+					.updateFaqManagement(faqManagementRequest);
+			if (faqManagementResponse.getErrorCode().equals(Constants.SUCCESS_CODE)) {
+				String successData = messageSource.getMessage("prepaid.faq.success.update.message", null,
+						LocaleContextHolder.getLocale());
+				model.put(Constants.SUCESS, successData);
+			} else {
+				model.put(Constants.ERROR, faqManagementResponse.getErrorMessage());
+			}
+			modelAndView = showFaqManagementSearch(request, response, session, model);
+		} catch (Exception e) {
+			logger.error("ERROR:: FaqManagementController:: changeFaqManagementStatus method", e);
+			model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
+					null, LocaleContextHolder.getLocale()));
+		}
+		logger.info("Exiting :: FaqManagementController :: changeFaqManagementStatus method");
+		return modelAndView;
+	}
+
 }

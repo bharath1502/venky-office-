@@ -21,4 +21,6 @@ public interface FaqManagementService {
 
 	public FaqManagementResponse searcFaqMgmtById(FaqManagementRequest faqManagementRequest) throws ChatakAdminException;
 
+	public FaqManagementResponse updateFaqManagement(FaqManagementRequest faqManagementRequest) throws ChatakAdminException;
+
 }

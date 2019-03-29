@@ -303,7 +303,7 @@ public class ResellerDaoImpl implements ResellerDao, PGConstants {
         resellerRepository.findByEmailIdOrderByUpdatedDateDesc(updateResellerRequest.getEmailId());
 
     if (StringUtils.isListNotNullNEmpty(resellerDb)
-        && resellerDb.get(0).getStatus() != PGConstants.STATUS_DELETED
+        && !resellerDb.get(0).getStatus().equals(PGConstants.STATUS_DELETED)
         && !resellerDb.get(0).getResellerId().equals(updateResellerRequest.getResellerId())) {
 
       updateResellerResponse.setErrorCode(ActionErrorCode.ERROR_CODE_Z5);

@@ -897,7 +897,7 @@ function validateProcessor() {
 function validateCallbackURL() {
 //	var reg = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
 	if(get('merchantCallBackURL')) {
-		var reg = /(http|https:\/\/[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
+		var reg = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
 		var merchantCallBackURL = get('merchantCallBackURL').value.trim();
 		if (isEmpty(merchantCallBackURL)) {
 			setError(get('merchantCallBackURL'), '');

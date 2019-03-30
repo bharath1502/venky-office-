@@ -502,6 +502,7 @@
 	<script src="../js/merchant-profile.js" type="text/javascript"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js"></script>
+	<script src="../js/validation.js"></script>
 	<!-- <script src="../js/merchant-profile.js"></script> -->
 
 	<script>

@@ -36,9 +36,6 @@
 				<!--Header Logo End -->	
 			</header>
 			<!--Header Block End -->
-			<!--Navigation Block Start -> 
-			<nav class="col-sm-12 nav-bar" id="main-navigation"></nav>
-			<!--Navigation Block Start -->   			
 			<!--Article Block Start-->
 			<article>
 				<div id="progressingId" class="col-xs-12 content-wrapper">

@@ -49,11 +49,6 @@
 							class="breadcrumb-text"><spring:message code="search-sub-merchant.label.create"/></span>
 					</div>
 					<!-- Breadcrumb End -->
-					<!-- <div class=" pull-right" style="margin-right: 40px"
-						id="subMerchant">
-						<img alt="Create sub merchant" src="../images/user_icon.png"><a
-							href="sub-merchant-create">Add Sub Merchant</a>
-					</div> -->
 					<!-- Tab Buttons Start -->
 					<div class="tab-header-container-first active-background">
 						<a href="#"><spring:message code="search-sub-merchant.label.create"/></a>

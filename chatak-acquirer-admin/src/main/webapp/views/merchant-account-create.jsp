@@ -96,7 +96,6 @@
 														<form:input cssClass="form-control validate" path="bankRoutingNumber" onkeypress="return amountValidate(this,event)"
 															id="bankRoutingNumber" maxlength="9"  
 															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');"/>
-															<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -122,7 +121,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/></label>
 														<form:input cssClass="form-control validate" path="bankAddress1"
 															id="bankAddress1" maxlength="50" onblur="this.value=this.value.trim();return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -138,7 +137,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/></label>
 														<form:input cssClass="form-control validate" path="bankCity" id="bankCity" maxlength="50" 
 														onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');"  />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -219,8 +218,7 @@
 														</form:select>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.merchantcallbackURL"/><!-- <span
-															class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.merchantcallbackURL"/></label>
 														<form:input cssClass="form-control"
 															path="merchantCallBackURL" id="merchantCallBackURL" maxlength="50" onblur="this.value=this.value.trim();"/>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -239,7 +237,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferlimit"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransferlimit"/></label>
 														<form:input cssClass="form-control validate" maxlength="10"
 															path="autoTransferLimit" id="autoTransferLimit"
 															onblur="this.value=this.value.trim();validateAutoTransferLimit()" />
@@ -262,7 +260,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransfer"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.autotransfer"/></label>
 														<form:select cssClass="form-control validate" onchange="showAutoTransferDayFields()"
 															path="autoTransferDay" id="autoTransferDay">
 															<form:option value=""><spring:message code="reports.option.select"/></form:option>

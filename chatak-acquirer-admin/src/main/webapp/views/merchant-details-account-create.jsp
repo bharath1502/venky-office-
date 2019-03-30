@@ -133,15 +133,6 @@
 												</fieldset>
 											</div>
 										</div>
-										<!--Panel Action Button Start -->
-										<!-- <div class="col-sm-12 form-action-buttons">
-											<div class="col-sm-5"></div>
-											<div class="col-sm-7">
-												<input type="submit" class="form-control button pull-right" value="Search" > 
-												<input type="button" class="form-control button pull-right" value="Reset" onclick="resetPage()">
-											</div>
-										</div> -->
-										<!--Panel Action Button End -->
 									</div>
 								</form:form>
 								<!-- Page Form End -->

@@ -91,7 +91,7 @@
 									<input type="hidden" id="roleIdData" name="roleIdData" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
 									
-									<input type="hidden" id="statusData" name="statusData" /> -->
+									
 
 								</form:form>
 

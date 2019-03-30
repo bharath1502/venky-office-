@@ -51,9 +51,6 @@
 				<div class="tab-header-container-first">
 					<a href="virtual-terminal-sale"><spring:message code="virtual-terminal-void.label.saletab" /></a>
 				</div>
-				<!-- <div class="tab-header-container">
-					<a href="virtual-pre-auth">Pre Auth</a>
-				</div>
 				<div class="tab-header-container">
 					<a href="virtual-terminal-pre-auth-completion">Pre Auth
 						Lookup</a>
@@ -64,9 +61,6 @@
 				<div class="tab-header-container active-background">
 					<a href="#"><spring:message code="virtual-terminal-void.label.voidtab" /></a>
 				</div>
-				<!-- <div class="tab-header-container">
-					<a href="#">Adjust</a>
-				</div> -->
 				<!-- Tab Buttons End -->
 				<!-- Content Block Start -->
 				<div class="main-content-holder">

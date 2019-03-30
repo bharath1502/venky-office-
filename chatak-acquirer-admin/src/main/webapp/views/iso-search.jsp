@@ -385,8 +385,6 @@
 				name="manageProgramManagerId" /> <input type="hidden"
 				id="manageProgramManagerStatus" name="manageProgramManagerStatus" />
 				<input type="hidden" name="CSRFToken" value="${tokenval}">
-			<!-- <input type="hidden" id="partnerName" name="partnerName" />   -->
-			<!--  <input type="hidden" id="totalRecordsId" name="totalRecords" /> -->
 			<label><span class="requiredFiled">*</span> <spring:message code="prepaid-admin-label.Reason"/></label>
 			<textarea id="reason" name="reason" maxlength="250"
 				onblur="validatePopupDesc();clientValidation('reason', 'reason','popDescError_div')"></textarea>
@@ -402,9 +400,6 @@
 			</div>
 		</form:form>
 		<!--Panel Action Button End -->
-		<!-- <p>
-			<b>Note</b>
-		</p> -->
 		<br>
 	</div>
 	<script src="../js/jquery.min.js"></script>

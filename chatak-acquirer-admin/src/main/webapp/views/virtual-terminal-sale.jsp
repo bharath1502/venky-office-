@@ -108,13 +108,6 @@
 						<a href="#"><spring:message code="virtual-terminal-sale.label.saletab"/></a>
 					</div>
 					</c:if>
-					<!-- <div class="tab-header-container">
-						<a href="virtual-pre-auth">Pre Auth</a>
-					</div> -->
-					<!-- <div class="tab-header-container">
-						<a href="virtual-terminal-pre-auth-completion">Pre Auth
-							Lookup</a>
-					</div> -->
 					<c:if test="${fn:contains(existingFeatures,virtualTerminalRefund)}">
 					<div class="tab-header-container">
 						<a href="virtual-terminal-refund"><spring:message code="virtual-terminal-sale.label.refundtab"/></a>
@@ -123,10 +116,6 @@
 					<%-- <div class="tab-header-container">
 						<a href="virtual-terminal-void"><spring:message code="virtual-terminal-sale.label.voidtab"/></a>
 					</div> --%>
-					<!-- <div class="tab-header-container">
-						<a href="virtual-terminal-adjust">Adjust</a>
-						<a href="#">Adjust</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
@@ -309,10 +298,6 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="virtual-terminal-sale.label.description"/></label>
 													<form:textarea path="description" cssClass="form-control"
 														id="descriptionDiv" />
-														<!-- onblur="this.value=this.value.trim();validateDesc()" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="descriptionErrorDiv">&nbsp;</span>
-													</div> -->
 												</fieldset>
 
 											</div>

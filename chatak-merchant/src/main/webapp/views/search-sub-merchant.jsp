@@ -52,11 +52,6 @@
 								code="search-sub-merchant.label.search" /></span>
 					</div>
 					<!-- Breadcrumb End -->
-					<!-- <div class=" pull-right" style="margin-right: 40px"
-						id="subMerchant">
-						<img alt="Create sub merchant" src="../images/user_icon.png"><a
-							href="sub-merchant-create">Add Sub Merchant</a>
-					</div> -->
 					<!-- Tab Buttons Start -->
 					<c:if
 						test="${fn:contains(existingFeatures,subMerchantView) || fn:contains(existingFeatures,subMerchantEdit) || fn:contains(existingFeatures,subMerchantDelete)||fn:contains(existingFeatures,subMerchantCreate)}">

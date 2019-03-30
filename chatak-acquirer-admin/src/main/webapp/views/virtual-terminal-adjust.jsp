@@ -53,22 +53,12 @@
 					<a href="virtual-terminal-sale">Sale</a>
 				</div>
 				</c:if>
-				<!-- <div class="tab-header-container">
-					<a href="virtual-pre-auth">Pre Auth</a>
-				</div>
-				<div class="tab-header-container">
-					<a href="virtual-terminal-pre-auth-completion">Pre Auth
-						Completion</a>
-				</div> -->
 				<div class="tab-header-container">
 					<a href="virtual-terminal-refund">Refund</a>
 				</div>
 				<div class="tab-header-container">
 					<a href="virtual-terminal-void">Void</a>
 				</div>
-				<!-- <div class="tab-header-container active-background">
-					<a href="#">Adjust</a>
-				</div> -->
 				<!-- Tab Buttons End -->
 				<!-- Content Block Start -->
 				<div class="main-content-holder">
@@ -90,31 +80,6 @@
 									<div class="row">
 										<div class="field-element-row">
 											<fieldset class="col-sm-12">
-												<!-- <fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title="">Invoice Number<span class="required-field">*</span></label>
-													<input type="text" class="form-control"
-														id="invoiceNumberDiv"
-														onblur="this.value=this.value.trim();validInvoiceNumber('invoiceNumberDiv','invoiceNumberErrorDiv')" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="invoiceNumberErrorDiv">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title="">Card Number<span class="required-field">*</span></label>
-													<input type="text" class="form-control" id="cardNumberDiv"
-														onblur="this.value=this.value.trim();validCardNumber('cardNumberDiv','cardNumberErrorDiv')" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="cardNumberErrorDiv">&nbsp;</span>
-													</div>
-												</fieldset>
-												<fieldset class="col-sm-3">
-													<label data-toggle="tooltip" data-placement="top" title="">Auth Code<span class="required-field">*</span></label>
-													<input type="text" class="form-control" id="authNumberDiv"
-														onblur="this.value=this.value.trim();validAuthNumber('authNumberDiv','authNumberErrorDiv')" />
-													<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-														<span class="red-error" id="authNumberErrorDiv">&nbsp;</span>
-													</div>
-												</fieldset> -->
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title="">Reference Number<span class="required-field">*</span></label>
 													<input type="text" class="form-control" id="refNumberDiv"

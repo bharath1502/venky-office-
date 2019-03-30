@@ -161,10 +161,8 @@
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">
 													<legend></legend>
-														<!-- <input type="button" class="form-control button pull-right atm-next" value="Continue"> -->
 														<input type="submit" class="form-control button pull-right marginL10 widthP30" value="Update" onclick="return validateAdvancedFraud()">
 														<input type="button" class="form-control button pull-right" value="Cancel" onclick="return cancelAdvancedFraud()">
-														<!-- <input type="button" class="form-control button pull-right marginL10 atm-prev" value="Previous"> -->
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->

@@ -30,26 +30,6 @@
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
-			<!--Header Block Start -->
-			<!-- 		<header class="col-sm-12 all-page-header">
-				Header Logo Start				
-				<div class="col-sm-4"> 
-					<img src="../images/chatak_logo.jpg" height="35px" alt="Logo"/>
-				</div>
-				Header Logo End	
-				Header Welcome Text and Logout button Start
-				<div class="col-sm-5 col-xs-offset-3">
-					<div class="pull-right user-settings">
-						<table>
-							<tr>
-								<td><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></td>
-							</tr>
-						</table>
-					</div>
-				</div>
-				Header Welcome Text and Logout button End	
-			</header> -->
-			<!--Header Block End -->
 			<!--Navigation Block Start -->
 			<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 			<%@include file="navigation-panel.jsp"%>
@@ -77,9 +57,6 @@
 						<a href="reseller-create-page"><spring:message code="common.label.create"/></a>
 					</div>
 					</c:if>
-					<!-- <div class="tab-header-container">
-						<a href="merchant-create">Create</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder">
@@ -155,9 +132,6 @@
 														<label data-toggle="tooltip" data-placement="top" title=""> <spring:message code="common.label.emailid"/></label>
 														<form:input cssClass="form-control" path="emailId"
 															id="emailId" maxlength="50"  />
-														<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="lastNameEr" class="red-error">&nbsp;</span>
-														</div> -->
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""> <spring:message code="reseller-create.label.phone"/></label>

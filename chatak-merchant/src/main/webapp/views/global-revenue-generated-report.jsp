@@ -49,9 +49,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="col-sm-12">
@@ -70,7 +67,6 @@
 									<input type="hidden" id="totalRecords" name="totalRecords" />
 									 <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
-									<!-- <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" /> -->
 								</form>
 
 						<form action="globalRevenueGeneratedReports" name="globalRevenueGeneratedReports">
@@ -165,15 +161,12 @@
 							                <div class="col-sm-10 form-action-buttons" style="width: 100%;">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 													<a type="button" onclick="submitRevenueGeneratedRange()" class="form-control button pull-right"><spring:message code="reports.label.generate"/></a>
 													<a type="button" class="form-control button pull-right" onclick="resetAll()"><spring:message code="virtual-terminal-sale.label.resetbutton"/></a>
 											</div>
 										</div>
 											</div>
 
-						<!-- <div class="search-results-table table-scroll" style="display: none;" id="transinfo"> -->
 						<div class="search-results-table table-scroll" style="display: none;padding: 10px;" id="transinfo">
 							<table class="table table-striped table-bordered table-condensed"
 								style="margin: 1px;">
@@ -351,8 +344,6 @@
 							<div class="col-sm-8 form-action-buttons" style="width: 96%;">
 								<div class="col-sm-5"></div>
 								<div class="col-sm-7">
-									<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
 									<a type="button" href="showGlobalSysRevenueGeneratedReports"
 										class="form-control button pull-right"><spring:message code="common.label.back"/></a>
 								</div>

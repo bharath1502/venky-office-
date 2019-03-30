@@ -112,10 +112,6 @@
 		<div class="container-fluid">
 			<!--Header Block Start -->
 			<header class="col-sm-12 all-page-header">
-				<!--Header Logo Start -->
-				<!-- <div class="col-sm-4">
-					<img src="images/chatak_logo.jpg" height="35px" alt="Logo"/>
-				</div> -->
 				<!--Navigation Block Start -->
 				<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 				<%@include file="navigation-panel.jsp"%>

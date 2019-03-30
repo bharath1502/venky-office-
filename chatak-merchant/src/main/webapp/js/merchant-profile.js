@@ -4,14 +4,14 @@ var lastNameRegx = /^[A-Za-z0-9@][A-Za-z0-9. ]*$/;
 
 function validateProfileSubmit() {
 	if (!validateAddress1() 
-			| !validateCity()
-			| !validateURL() /*&& validatefederalTaxId()*/ 
+			| !validateCity() /*&& validatefederalTaxId()*/ 
 			| !validateState()
 			| !validateCountry() 
 			| !validatePin()
 			| !validateBusinessName() 
 			| !validateFirstName() 
 			| !validateLastName()
+			| !validatePhone()
 			/*&& validateFax() && validatestateTaxId()
 		    && validateBusinessStartDate()
 			&& validateEstimatedYearlySale() && validateNoOfEmployees()

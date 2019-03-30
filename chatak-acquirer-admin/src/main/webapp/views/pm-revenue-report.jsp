@@ -52,7 +52,6 @@
 					<div class="main-content-holder">
 						<!--Success and Failure Message Start-->
 						<div class="row">
-					<!-- <div class="col-sm-12"> -->
 						<!--Success and Failure Message Start-->
 						<div class="col-xs-12">
 							<div class="discriptionMsg" data-toggle="tooltip" data-placement="top" title="">

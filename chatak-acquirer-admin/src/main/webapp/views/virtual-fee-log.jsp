@@ -46,9 +46,6 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="col-sm-12">
@@ -63,7 +60,6 @@
 							<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" /> 
 							<input type="hidden" id="downloadTypeId" name="downloadType" /> 
 							<input type="hidden" name="CSRFToken" value="${tokenval}">
-							<!-- <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" /> -->
 						</form:form>
 						<form:form action="showVirtualFeeLogReport" name="showVirtualFeeLogReport" method="post">
 							<input type="hidden" id="fromDate" name="fromDate" />
@@ -103,8 +99,6 @@
 									<div class="col-sm-10 form-action-buttons" style="width: 100%;">
 								<div class="col-sm-5"></div>
 								<div class="col-sm-7">
-									<!-- <input type="button" class="form-control button pull-right"
-										value="Search">  -->
 										<a type="button" onclick="submitVirtualFeeLogDateRange()" class="form-control button pull-right"><spring:message code="reports.label.generatebutton"/></a>
 										<a type="button" href="home" class="form-control button pull-right"><spring:message code="reports.label.backbutton"/></a>
 								</div>
@@ -118,7 +112,6 @@
 										<th style="width: 109px;"><spring:message code="reports.label.transactions.dateortime"/></th>
 										<th style="width: 83px;"><spring:message code="reports.label.balancereports.manualtransactions.transactionID"/></th>
 										<th style="width: 96px;"><spring:message code="show-dynamic-MDR-edit.label.transactiontype"/></th>
-										<!-- <th style="width: 101px;">Merchant Code</th> -->
 										<th style="width: 101px;"><spring:message code="pending-merchant-show-remaining.label.companyname"/></th>
 										<th style="width: 72px;">Txn Amount</th>
 										<th style="width: 79px;">Merchant Fee</th>
@@ -185,10 +178,6 @@
 																	<img src="../images/pdf.png">
 																</button>
 															</a>
-															<!-- <a>
-															<input type="checkbox" class="autoCheck check" id="totalRecordsDownload">
-															Download All 
-														</a> -->
 														</div>
 													</div>
 												</div>

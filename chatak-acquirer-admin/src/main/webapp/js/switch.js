@@ -211,12 +211,47 @@ $('#secondarySwitchURL').keypress(function(e) {
 
 function searchValidation(){
 	if(!clientValidation('switchName','middle_name','switchNameEr')
-			| !clientValidation('primarySwitchURL','url','primarySwitchURLEr')
+			| !validateSearchPrimarySwitchURL()
 			| !clientValidation('primarySwitchPort','switch_port_validation','primarySwitchPortEr')
-			| !clientValidation('secondarySwitchURL','url','secondarySwitchURLEr')
+			| !validateSearchSecondarySwitchURL()
 			| !clientValidation('secondarySwitchPort','switch_port_validation','secondarySwitchPortEr')
 			| !clientValidation('priority','priority_validation','priorityEr')){
 		return false;
 	}
 	return true;
+}
+
+function validateSearchPrimarySwitchURL() {
+	var reg = /(\w)+\.(\w)+\.(\w)/;
+	var primarySwitchURL = get('primarySwitchURL').value.trim();
+	if (isEmpty(primarySwitchURL)) {
+		setError(get('primarySwitchURL'), '');
+		loadMsgTitleText();
+		return true;
+	} else if (reg.test(primarySwitchURL) == false) {
+		setError(get('primarySwitchURL'), webMessages.invalidPrimarySwitchURL);
+		loadMsgTitleText();
+		return false;
+	} else {
+		setError(get('primarySwitchURL'), '');
+		return true;
+	}
+}
+
+function validateSearchSecondarySwitchURL() {
+	var reg = /(\w)+\.(\w)+\.(\w)/;
+	var secondarySwitchURL = get('secondarySwitchURL').value.trim();
+	if (isEmpty(secondarySwitchURL)) {
+		setError(get('secondarySwitchURL'), '');
+		loadMsgTitleText();
+		return true;
+	} else if (reg.test(secondarySwitchURL) == false) {
+		setError(get('secondarySwitchURL'),
+				webMessages.invalidSecondarySwitchURL);
+		loadMsgTitleText();
+		return false;
+	} else {
+		setError(get('secondarySwitchURL'), '');
+		return true;
+	}
 }

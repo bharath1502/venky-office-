@@ -79,11 +79,6 @@
 						<span class="glyphicon glyphicon-play icon-font-size"></span> 
 						<span class="breadcrumb-text"><spring:message code="manage.label.sub-merchant.search" /></span>
 					</div>
-					<!-- <div class=" pull-right" style="margin-right: 40px"
-						id="subMerchant">
-						<img alt="Create sub merchant" src="../images/user_icon.png"><a
-							href="sub-merchant-create">Add Sub Merchant</a>
-					</div> -->
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
 					<c:if test="${fn:contains(existingFeatures,subMerchantView) || fn:contains(existingFeatures,subMerchantEdit) || fn:contains(existingFeatures,subMerchantDelete)||fn:contains(existingFeatures,subMerchantCreate)}">
@@ -97,9 +92,6 @@
 					</div>
 					</c:if>
 					
-					<!-- <div class="tab-header-container active-background">
-						<a href="#">View</a>
-					</div> -->
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder padding0">

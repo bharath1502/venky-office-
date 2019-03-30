@@ -349,7 +349,6 @@
 															value="<spring:message code="merchant-forgot-password.label.cancel"/>" onclick="return cancel()"> <input
 															type="button" class="form-control button pull-right"
 															value="<spring:message code="search-sub-merchant.lable.reset"/>" onclick="return resetRecurringCreateCustomer()">
-														<!--input type="button" class="form-control button pull-right marginL10" value="Previous"-->
 													</fieldset>
 												</div>
 												<!--Panel Action Button End -->

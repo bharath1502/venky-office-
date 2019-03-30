@@ -114,9 +114,6 @@
 															<form:option value="Contactless"><spring:message code="payment.label.contactless"/></form:option>
 															<form:option value="Magnet Stripe"><spring:message code="payment.label.magnetstripe"/></form:option>
 														</form:select>
-														<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="typeOfCardEr" class="red-error">&nbsp;</span>
-														</div> -->
 													</fieldset>											
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="payment.label.rid"/></label>

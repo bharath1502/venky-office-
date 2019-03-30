@@ -30,10 +30,8 @@
 			<!--Header Block Start -->
 			<!--Header Block End -->
 			<!--Navigation Block Start -->
-			<!-- <nav class="col-sm-12 nav-bar" id="main-navigation"> -->
 				<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 				<%@include file="navigation-panel.jsp"%>
-			<!-- </nav> -->
 			<!--Navigation Block Start -->
 			<!--Article Block Start-->
 			<article>
@@ -98,9 +96,6 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.emailid"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="emailId"
 															id="emailId" maxlength="50" onblur="validateEmailId()" readonly="true" />
-														<!-- <div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span id="lastNameEr" class="red-error">&nbsp;</span>
-														</div> -->
 													</fieldset>
 													<fieldset class="col-sm-3">
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="reseller-create.label.phone"/><span class="required-field">*</span></label>

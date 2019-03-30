@@ -60,7 +60,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.fax"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="merchant.label.fax"/></label>
 														<form:input cssClass="form-control" path="fax" id="fax" onkeypress="return amountValidate(this,event)"
 															maxlength="13" onblur="this.value=this.value.trim();clientValidation('fax','fax','faxEr')"/><%--  onblur="validateFax()" --%>
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -229,7 +229,6 @@
 															maxlength="9"
 															onkeypress="return amountValidate(this,event)"
 															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
-														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -259,7 +258,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.address1"/></label>
 														<form:input cssClass="form-control" path="bankAddress1"
 															id="bankAddress1" maxlength="50"
 															onblur="this.value=this.value.trim();return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');"
@@ -279,7 +278,7 @@
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/><!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="common.label.city"/></label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
 															onblur="this.value=this.value.trim();return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');"

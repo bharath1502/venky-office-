@@ -178,7 +178,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">Fax<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Fax</label>
 														<form:input cssClass="form-control" path="fax" id="fax"
 															onkeypress="return amountValidate(this,event)"
 															maxlength="13" />
@@ -347,7 +347,6 @@
 															onkeypress="return amountValidate(this,event)"
 															id="bankRoutingNumber" maxlength="9"
 															onblur="return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');" />
-														<!-- onblur="return validRoutingNumber()"  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -380,7 +379,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">Address 1<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Address 1</label>
 														<form:input cssClass="form-control" path="bankAddress1"
 															id="bankAddress1" maxlength="50"
 															onblur="return clientValidation('bankAddress1', 'bank_address2','bankAddress1ErrorDiv');" onkeydown="validateSpace(this)"/>
@@ -400,7 +399,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">City<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">City</label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
 															onblur="return clientValidation('bankCity', 'bank_address2','bankCityErrorDiv');" onkeydown="validateSpace(this)"/>
@@ -483,7 +482,7 @@
 
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">SSN<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">SSN</label>
 														<form:input cssClass="form-control" path="legalSSN"
 															onkeypress="return amountValidate(this,event)"
 															id="legalSSN" maxlength="20" />
@@ -494,7 +493,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">First Name<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">First Name</label>
 														<form:input cssClass="form-control" path="legalFirstName"
 															id="legalFirstName" maxlength="50" onblur="return clientValidation('legalFirstName', 'first_name_NotMand','legalFirstNameErrorDiv');"/><!--  -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -503,7 +502,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">Last Name<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Last Name</label>
 														<form:input cssClass="form-control" path="legalLastName"
 															id="legalLastName" maxlength="50" onblur="return clientValidation('legalLastName', 'first_name_NotMand','legalLastNameErrorDiv');"/><!--   -->
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
@@ -512,7 +511,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">Mobile Phone<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Mobile Phone</label>
 														<form:input cssClass="form-control"
 															path="legalMobilePhone" maxlength="10"
 															id="legalMobilePhone" onblur="return clientValidation('legalMobilePhone', 'mobile_optional','legalMobilePhoneErrorDiv');"/><!--  -->
@@ -522,7 +521,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title=""> Date of Birth<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title=""> Date of Birth</label>
 														<div class="input-group focus-field">
 															<form:input cssClass="form-control effectiveDate"
 																path="legalDOB" id="legalDOB" />
@@ -537,7 +536,7 @@
 
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">Passport Number<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Passport Number</label>
 														<form:input cssClass="form-control" path="legalPassport"
 															id="legalPassport" maxlength="20" onblur="return clientValidation('legalPassport', 'passport_number','legalPassportErrorDiv');"/>
 														<%--   --%>
@@ -547,7 +546,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">Country of Residence<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Country of Residence</label>
 														<form:input cssClass="form-control"
 															path="legalCountryResidence" id="legalCountryResidence"
 															maxlength="50" />
@@ -559,7 +558,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">Country of Citizenship<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Country of Citizenship</label>
 														<form:input cssClass="form-control" path="legalCitizen" maxlength="50"
 															id="legalCitizen" />
 														<%-- onblur="return clientValidation('legalCitizen', 'bank_country','legalCitizenErrorDiv');" --%>
@@ -569,7 +568,7 @@
 													</fieldset>
 													<fieldset class="col-sm-3">
 													<legend></legend>
-														<label data-toggle="tooltip" data-placement="top" title="">Home Phone<!-- <span class="required-field">*</span> --></label>
+														<label data-toggle="tooltip" data-placement="top" title="">Home Phone</label>
 														<form:input cssClass="form-control" path="legalHomePhone"
 															onkeypress="return amountValidate(this,event)"  maxlength="12"
 															id="legalHomePhone" />
@@ -949,7 +948,6 @@
 	 <script src="../js/rome.js"></script>
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/validation.js"></script>
-	<!-- <script src="../js/chatak-ajax.js"></script> -->
 	<script src="../js/messages.js"></script>
 	<script type="text/javascript" src="../js/merchant.js"></script>
 	<script type="text/javascript" src="../js/backbutton.js"></script>

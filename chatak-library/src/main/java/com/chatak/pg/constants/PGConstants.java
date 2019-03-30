@@ -468,4 +468,38 @@ public interface PGConstants {
    String TXN_0186 = "TXN_0186";
    String TXN_0187 = "TXN_0187";
    String TXN_0188 = "TXN_0188";
+   
+   public static final String TRANSACTION_REPORT_BATCHID = "transaction-report-batchID";
+  
+   public static final String REPORT_LABEL_TRANSACTIONS_DATEORTIME = "reports.label.transactions.dateortime";
+  
+   public static final String FAQ_MANAGEMENT_REQUEST = "faqManagementRequest";
+   
+   public static final String PROGRAM_MANAGER_LIST = "programManagersList";
+   
+   public static final String TOTAL_RECORDS = "totalRecords";
+   
+   public static final String PAGE_SIZE = "pageSize";
+   
+   public static final String SEARCH_LIST = "searchList";
+   
+   public static final String TOKENVAL = "tokenval";
+   
+   public static final String EXECUTED_LIST_SIZE = "executedListSize";
+   
+   public static final String MERCHANT_DATA_MAP = "merchantDataMap";
+   
+   public static final String SEARCH_RESPONSE = "searchResponse";
+   
+   public static final String MERCHANT_ACCOUNT_SEARCH_DTO = "merchantAccountSearchDto";
+   
+   public static final String BANKLIST = "bankList";
+   
+   public static final String SELECTED_ENTITY_LIST = "selectedEntityList";
+   
+   public static final String PREPAID_ADMIN_GENERAL_ERROR_MESSAGE = "prepaid.admin.general.error.message";
+   
+   public static final String PROGRAM_MANAGER_REQUEST = "programManagerRequest";
+   
+   public static final String CURRENCY_LIST = "currencyList";
 }

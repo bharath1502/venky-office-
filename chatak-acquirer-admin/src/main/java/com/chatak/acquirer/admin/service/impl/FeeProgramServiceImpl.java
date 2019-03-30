@@ -319,7 +319,7 @@ private void setFeeProgramValue(FeeProgramDTO feeProgramDTO, List<PGAcquirerFeeV
         && !(pgAccount.getEntityType().equalsIgnoreCase(PGConstants.DEFAULT_REVENUE_ACCOUNT))
         && pgAccount.getStatus().equalsIgnoreCase(PGConstants.S_STATUS_ACTIVE)) {
       PGMerchant pgMerchant = merchantRepository.findByMerchantCode(pgAccount.getEntityId());
-      if (pgMerchant != null && pgMerchant.getStatus() == PGConstants.STATUS_SUCCESS) {
+      if (pgMerchant != null && pgMerchant.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
         logger.info("prepaidservice :: FeeProgramServiceImpl :: validateFeePgmAccNo Exiting");
         return true;
       }

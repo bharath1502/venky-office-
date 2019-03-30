@@ -196,9 +196,9 @@ public class AccountTransactionsDaoImpl implements AccountTransactionsDao {
       }
       List<Tuple> tupleList = null;
       JPAQuery query = new JPAQuery(entityManager);
-      if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
-          && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
-          && getTransactionsListRequest.getAcqChannel() == "web") {
+      if (!getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_CREDIT)
+          && !getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_DEBIT)
+          && getTransactionsListRequest.getAcqChannel().equals("web")) {
         tupleList = query.from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
             .where(
                 QPGAccountTransactions.pGAccountTransactions.merchantCode
@@ -365,9 +365,9 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
       GetTransactionsListRequest getTransactionsListRequest) {
     log.info("Entering ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearch ");
     try {
-      if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
-          && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
-          && getTransactionsListRequest.getAcqChannel() == "web") {
+      if (!getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_CREDIT)
+          && !getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_DEBIT)
+          && getTransactionsListRequest.getAcqChannel().equals("web")) {
         JPAQuery query = new JPAQuery(entityManager);
         List<Long> list = query.from(QPGAccountTransactions.pGAccountTransactions,QPGAccount.pGAccount)
             .where(
@@ -689,8 +689,8 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
       GetTransactionsListRequest getTransactionsListRequest) {
     log.info("Entering :: AccountTransactionsDaoImpl :: getTotalNumberOfRecordsOnManulSearch ");
     try {
-      if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
-          && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
+      if (!getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_CREDIT)
+          && !getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_DEBIT)
           && getTransactionsListRequest.getAcqChannel().equalsIgnoreCase("web")) {
         List<String> merchantCode = new ArrayList<>();
         if (!StringUtil.isNullEmpty(getTransactionsListRequest.getMerchant_code())) {
@@ -780,9 +780,9 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 		  }
 		  List<Tuple> tupleList = null;
 		  JPAQuery query = new JPAQuery(entityManager);
-		  if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
-				  && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
-				  && getTransactionsListRequest.getAcqChannel() == "web") {
+		  if (!getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_CREDIT) 
+				  && !getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_DEBIT)
+				  && getTransactionsListRequest.getAcqChannel().equals("web")) {
 			  tupleList = query.from(QPGAccountTransactions.pGAccountTransactions, QPGAccount.pGAccount)
 					  .where(
 							  QPGAccountTransactions.pGAccountTransactions.merchantCode
@@ -864,9 +864,9 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 		  GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType) {
 	  log.info("Entering ::AccountTransactionsDaoImpl ::getTotalNumberOfRecordsOnSearchForEntity ");
 	  try {
-		  if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
-				  && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
-				  && getTransactionsListRequest.getAcqChannel() == "web") {
+		  if (!getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_CREDIT)
+				  && !getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_DEBIT)
+				  && getTransactionsListRequest.getAcqChannel().equals("web")) {
 			  JPAQuery query = new JPAQuery(entityManager);
 			  List<Long> list = query.from(QPGAccountTransactions.pGAccountTransactions,QPGAccount.pGAccount)
 					  .where(
@@ -994,8 +994,8 @@ private GetTransactionsListResponse validateListAndSetAccountTransactionDTO(Inte
 		  GetTransactionsListRequest getTransactionsListRequest, Long entityId, String userType) {
 	  log.info("Entering :: AccountTransactionsDaoImpl :: getTotalNumberOfRecordsOnManulSearchForEntityId ");
 
-	  if (getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_CREDIT
-			  && getTransactionsListRequest.getTransaction_type() != AccountTransactionCode.MANUAL_DEBIT
+	  if (!getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_CREDIT) 
+			  && !getTransactionsListRequest.getTransaction_type().equals(AccountTransactionCode.MANUAL_DEBIT)
 			  && getTransactionsListRequest.getAcqChannel().equalsIgnoreCase("web")) {
 		  List<String> merchantCode = new ArrayList<>();
 		  if (!StringUtil.isNullEmpty(getTransactionsListRequest.getMerchant_code())) {

@@ -295,7 +295,7 @@ public class FeeCodeController implements URLMappingConstants {
     PartnerFeeCodeDTO partnerFeeCodeDTO = new PartnerFeeCodeDTO();
     PGMerchant merchant = new PGMerchant();
     try {
-      if (null != merchantCode && "" != merchantCode) {
+      if (null != merchantCode && !merchantCode.equals("")) {
         merchant = feeCodeService.getAcquirerFeeByMerchantCode(merchantCode);
         List<PGMerchant> feeAcquirerCodeSearch = new ArrayList<>();
         if (null != merchant) {

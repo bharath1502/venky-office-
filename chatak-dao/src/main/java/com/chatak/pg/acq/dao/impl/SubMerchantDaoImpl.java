@@ -433,12 +433,12 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
 	  subMerchantParam.setParameter("ProgramManagerName", searchProgramManagerName(searchMerchant));
 	 subMerchantParam.setParameter("CardProgrmName", searchCardProgramName(searchMerchant));
 	 subMerchantParam.setParameter("MerchantName", searchBusinessName(searchMerchant));
-	  subMerchantParam.setParameter("City", searchMerchant.getCity() != "" ? searchMerchant.getCity() : null);
-		subMerchantParam.setParameter("Country", searchMerchant.getCountry() != "" ? searchMerchant.getCountry() : null);
-	 subMerchantParam.setParameter("Email", searchMerchant.getEmailId() != "" ? searchMerchant.getEmailId() : null);
-		subMerchantParam.setParameter("subMerchantCode", searchMerchant.getSubMerchantCode() != "" ? searchMerchant.getSubMerchantCode() :  null);
+	 subMerchantParam.setParameter("City", !searchMerchant.getCity().equals("") ? searchMerchant.getCity() : null);
+		subMerchantParam.setParameter("Country", !searchMerchant.getCountry().equals("") ? searchMerchant.getCountry() : null);
+	 subMerchantParam.setParameter("Email", !searchMerchant.getEmailId().equals("") ? searchMerchant.getEmailId() : null);
+		subMerchantParam.setParameter("subMerchantCode", !searchMerchant.getSubMerchantCode().equals("") ? searchMerchant.getSubMerchantCode() :  null);
 	 subMerchantParam.setParameter("status", searchMerchant.getStatus() != null ? searchMerchant.getStatus() : null);
-	 subMerchantParam.setParameter("isoName", searchMerchant.getIsoName() != "" ? searchMerchant.getIsoName() : null);
+	 subMerchantParam.setParameter("isoName", !searchMerchant.getIsoName().equals("") ? searchMerchant.getIsoName() : null);
 	 subMerchantParam.setParameter("startIndex" , startIndex);
 	subMerchantParam.setParameter("resultSize", resultIndex);
 			  List<Object> listOfReport = subMerchantParam.getResultList();
@@ -470,7 +470,7 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
 	 * @return
 	 */
 	private Object searchBusinessName(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getBusinessName() != "" ? searchMerchant.getBusinessName() : null;
+		return !searchMerchant.getBusinessName().equals("") ? searchMerchant.getBusinessName() : null;
 	}
 
 	/**
@@ -478,7 +478,7 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
 	 * @return
 	 */
 	private Object searchCardProgramName(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getCardProgramName() != "" ? searchMerchant.getCardProgramName() : null;
+		return !searchMerchant.getCardProgramName().equals("") ? searchMerchant.getCardProgramName() : null;
 	}
 
 	/**
@@ -486,7 +486,7 @@ public class SubMerchantDaoImpl extends MerchantDaoImpl implements SubMerchantDa
 	 * @return
 	 */
 	private Object searchProgramManagerName(GetMerchantListRequest searchMerchant) {
-		return searchMerchant.getProgramManagerName() != "" ? searchMerchant.getProgramManagerName() : null;
+		return !searchMerchant.getProgramManagerName().equals("") ? searchMerchant.getProgramManagerName() : null;
 	}
 
 /**
@@ -813,14 +813,14 @@ private void getListOfSubMerchants(List<MerchantRequest> subMerchantList, List<O
 				searchCardProgramName(searchMerchant));
 		subMerchantParam.setParameter("MerchantName",
 				searchBusinessName(searchMerchant));
-		subMerchantParam.setParameter("City", searchMerchant.getCity() != "" ? searchMerchant.getCity() : null);
+		subMerchantParam.setParameter("City", !searchMerchant.getCity().equals("") ? searchMerchant.getCity() : null);
 		subMerchantParam.setParameter("Country",
-				searchMerchant.getCountry() != "" ? searchMerchant.getCountry() : null);
-		subMerchantParam.setParameter("Email", searchMerchant.getEmailId() != "" ? searchMerchant.getEmailId() : null);
+				!searchMerchant.getCountry().equals("") ? searchMerchant.getCountry() : null);
+		subMerchantParam.setParameter("Email", !searchMerchant.getEmailId().equals("") ? searchMerchant.getEmailId() : null);
 		subMerchantParam.setParameter("subMerchantCode",
-				searchMerchant.getSubMerchantCode() != "" ? searchMerchant.getSubMerchantCode() : null);
+				!searchMerchant.getSubMerchantCode().equals("") ? searchMerchant.getSubMerchantCode() : null);
 		subMerchantParam.setParameter("status", searchMerchant.getStatus() != null ? searchMerchant.getStatus() : null);
-		subMerchantParam.setParameter("isoName", searchMerchant.getIsoName() != "" ? searchMerchant.getIsoName() : null);
+		subMerchantParam.setParameter("isoName", !searchMerchant.getIsoName().equals("") ? searchMerchant.getIsoName() : null);
 		List<Object> subMerchantList = subMerchantParam.getResultList();
 		return (StringUtils.isListNotNullNEmpty(subMerchantList) ? subMerchantList.size() : 0);
 	}

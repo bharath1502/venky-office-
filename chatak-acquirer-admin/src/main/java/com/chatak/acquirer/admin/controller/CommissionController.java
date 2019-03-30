@@ -181,7 +181,7 @@ public class CommissionController implements URLMappingConstants {
       commissionDTO.setCreatedBy(loginResponse.getUserId().toString());
       model.put(Constants.COMMISSION_DTO, commissionDTO);
       if (commissionDTO.getMerchantOnBoardingFee() == null
-          || commissionDTO.getMerchantOnBoardingFee() == "") {
+          || commissionDTO.getMerchantOnBoardingFee().equals("")) {
         commissionDTO.setMerchantOnBoardingFee("0");
       }
       Response commissionprogramResponse = commissionService.createCommission(commissionDTO);
@@ -279,7 +279,7 @@ public class CommissionController implements URLMappingConstants {
       commissionDTO.setCreatedDate(commProgramResponse.getCommProgList().get(0).getCreatedDate());
       commissionDTO.setUpdatedBy(loginResponse.getUserId().toString());
       if (commissionDTO.getMerchantOnBoardingFee() == null
-          || commissionDTO.getMerchantOnBoardingFee() == "") {
+          || commissionDTO.getMerchantOnBoardingFee().equals("")) {
         commissionDTO.setMerchantOnBoardingFee("0");
       }
       Response responseDetails = commissionService.updateCommissionProgram(commissionDTO);

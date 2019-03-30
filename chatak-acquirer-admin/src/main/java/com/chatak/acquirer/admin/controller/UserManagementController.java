@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -507,7 +508,7 @@ public class UserManagementController implements URLMappingConstants {
       rowData[Integer.parseInt("9")] = userData.getLastName();
       rowData[Integer.parseInt("10")] = userData.getEmail();
       rowData[Integer.parseInt("11")] = status;
-      if (userData.getStatus() == Constants.TWO) {
+      if (userData.getStatus().equals(Constants.TWO)) {
         rowData[Integer.parseInt("12")] = userData.getUpdatedDate();
       } else {
         rowData[Integer.parseInt("12")] = " ";
@@ -521,11 +522,11 @@ public class UserManagementController implements URLMappingConstants {
     String status;
     if (userData.getStatus() == 0) {
       status = "Active";
-    } else if (userData.getStatus() == Constants.ONE) {
+    } else if (userData.getStatus().equals(Constants.ONE)) {
       status = "Pending";
-    } else if (userData.getStatus() == Constants.TWO) {
+    } else if (userData.getStatus().equals(Constants.TWO)) {
       status = "Suspended";
-    } else if (userData.getStatus() == Constants.THREE) {
+    } else if (userData.getStatus().equals(Constants.THREE)) {
       status = "Deleted";
     } else {
       status = "Declined";
@@ -732,7 +733,7 @@ public class UserManagementController implements URLMappingConstants {
     return modelAndView;
   }
 
-  @RequestMapping(value = CHATAK_USER_TYPE_VALUE)
+  @PostMapping(value = CHATAK_USER_TYPE_VALUE)
   public ModelAndView showUserTypeValue(HttpServletRequest request, HttpServletResponse response,
       @FormParam("rolesType") final String rolesType, Map model, HttpSession session) {
     logger.info("Entering:: UserManagementController:: showCreateUser method");

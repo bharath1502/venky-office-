@@ -404,8 +404,8 @@ public class MerchantServiceImpl implements MerchantService, PGConstants {
 
   private void mailNotificationForMerchantActivation(Merchant merchant,
       UpdateMerchantRequest updateMerchantRequest) throws ChatakAdminException {
-    if (merchant.getStatus() == PGConstants.STATUS_ACTIVE
-        && merchant.getSessionStatus() == PGConstants.STATUS_INACTIVE) {
+    if (merchant.getStatus().equals(PGConstants.STATUS_ACTIVE)
+        && merchant.getSessionStatus().equals(PGConstants.STATUS_INACTIVE)) {
       Map<String, String> map = new HashMap<>();
       map.put("firstName", updateMerchantRequest.getFirstName());
       try {

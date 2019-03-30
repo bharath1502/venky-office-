@@ -312,7 +312,7 @@ public class PGMerchantServiceImpl implements PGMerchantService {
     try {
       PGMerchantUsers merchantUsers = merchantUserDao.findByUserName(loginRequest.getUsername());
       if (merchantUsers != null) {
-    	if (merchantUsers.getStatus() == PGConstants.STATUS_SUCCESS) {
+    	if (merchantUsers.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
         log.info(
             "RestService | PGMerchantServiceImpl | authenticateMerchantUser | Merchant user Details Found");
         if (EncryptionUtil.encodePassword(loginRequest.getPassword())
@@ -475,7 +475,7 @@ public class PGMerchantServiceImpl implements PGMerchantService {
       throws ChatakPayException {
     try {
       PGMerchantUsers pgMerchantUsers = merchantUserDao.findByUserName(userName);
-      if (pgMerchantUsers.getStatus() == PGConstants.STATUS_SUCCESS) {
+      if (pgMerchantUsers.getStatus().equals(PGConstants.STATUS_SUCCESS)) {
       if (!(EncryptionUtil.encodePassword(currentPassword))
           .equals(pgMerchantUsers.getMerPassword()))
         throw new ChatakPayException(messageSource.getMessage("current.password.error.message",

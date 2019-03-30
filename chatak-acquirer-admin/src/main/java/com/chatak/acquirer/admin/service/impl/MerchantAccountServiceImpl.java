@@ -371,15 +371,15 @@ private Response processsPGAccount(AccountBalanceDTO accountBalanceDTO, String t
         response = new MerchantDetailsForAccountCreate();
         pgMerchant = pgMerchantsList.get(i);
 
-        if (pgMerchant.getStatus() == STATUS_SUCCESS) {
+        if (pgMerchant.getStatus().equals(STATUS_SUCCESS)) {
           response.setStatus(S_STATUS_ACTIVE);
-        } else if (pgMerchant.getStatus() == STATUS_PENDING) {
+        } else if (pgMerchant.getStatus().equals(STATUS_PENDING)) {
           response.setStatus(S_STATUS_PENDING);
-        } else if (pgMerchant.getStatus() == STATUS_DELETED) {
+        } else if (pgMerchant.getStatus().equals(STATUS_DELETED)) {
           response.setStatus(S_STATUS_DELETED);
-        } else if (pgMerchant.getStatus() == STATUS_SUSPENDED) {
+        } else if (pgMerchant.getStatus().equals(STATUS_SUSPENDED)) {
           response.setStatus(S_STATUS_SUSPENDED);
-        } else if (pgMerchant.getStatus() == STATUS_SELF_REGISTERATION_PENDING) {
+        } else if (pgMerchant.getStatus().equals(STATUS_SELF_REGISTERATION_PENDING)) {
           response.setStatus(S_STATUS_SELFREGISTERED);
         }
         response.setMerchantCode(pgMerchant.getMerchantCode());

@@ -105,12 +105,8 @@ function validContactPersonName() {
 function validContactPersonCell() {
 	var bankMobile = get('bankMobile').value.trim();
 	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-
-	if (isEmpty(bankMobile)) {
-		setError(get('bankMobile'), webMessages.pleaseEnterContactMobileNumber);
-		loadMsgTitleText();
-		return false;
-	} else if (!spaceRegx.test(bankMobile)) {
+    
+	if (!spaceRegx.test(bankMobile)) {
 		setError(get('bankMobile'), webMessages.invalidContactMobileNumber);
 		loadMsgTitleText();
 		return false;
@@ -186,7 +182,7 @@ function validateAddress1() {
 	var address1 = get('address1').value.trim();
 	var regex = /^[A-Za-z0-9,-._\/\s#]{1,60}$/;
 	if (isEmpty(address1)) {
-		setError(get('address1'), webMessages.pleaseEnterAddress1);
+		setError(get('address1'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
 	} else if (address1.length < 5 || !(address1 != 0)) {
@@ -217,7 +213,7 @@ function validateCity() {
 	var cityRegx = /^[A-Za-z0-9\#\$\&]+(\s{0,1}[a-zA-Z0-9,])*$/;
 
 	if (isEmpty(city)) {
-		setError(get('city'), webMessages.pleaseEnterCity);
+		setError(get('city'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
 	} else if (!cityRegx.test(city) || !(city != 0) || !(city.length != 1) ) {

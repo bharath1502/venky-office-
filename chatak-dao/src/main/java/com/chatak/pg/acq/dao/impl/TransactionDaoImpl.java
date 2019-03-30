@@ -1105,9 +1105,9 @@ public class TransactionDaoImpl implements TransactionDao {
 	    List<PanRangeRequest> panRangeRequests = new ArrayList<>();
 		JPAQuery query = new JPAQuery(entityManager);
 		List<Tuple> tuples = query.from(QPGMerchant.pGMerchant, QPGMerchantEntityMap.pGMerchantEntityMap, QPanRanges.panRanges)
-				.where(isMerchantCodeEq(merchantId)
-						.and(QPGMerchant.pGMerchant.id.eq(QPGMerchantEntityMap.pGMerchantEntityMap.merchantId))
-						.and(QPGMerchantEntityMap.pGMerchantEntityMap.entityId.eq(QPanRanges.panRanges.isoId)))
+				.where((QPGMerchant.pGMerchant.id.eq(QPGMerchantEntityMap.pGMerchantEntityMap.merchantId))
+						.and(QPGMerchantEntityMap.pGMerchantEntityMap.entityId.eq(QPanRanges.panRanges.isoId))
+						.and(isMerchantCodeEq(merchantId)))
 				.list(QPanRanges.panRanges.id, QPanRanges.panRanges.panHigh, QPanRanges.panRanges.panLow, QPGMerchantEntityMap.pGMerchantEntityMap.entityId);
 
 		log.info("TransactionDaoImpl | getPgTransactions :: List: " + tuples.size());

@@ -395,7 +395,7 @@ var ValidationRules = {
 	
 	account_numberBank : {
 		type : "numeric",
-		min : "0",
+		min : "10",
 		max : "20",
 		mandatory : true
 
@@ -1521,8 +1521,9 @@ function specialchar(data,div_id)  {
 		}else if(!isValidCharsExtended(data)){
 		setDiv(div_id,"Invalid input");			
 			return false;
-		}else
-			return true;
+		} else {
+		return true;
+	}
 	}
 
 	function editPartner(partnerId){

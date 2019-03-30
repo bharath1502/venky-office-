@@ -234,30 +234,30 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
   }
 
   private MerchantData getMerchantStatus(MerchantData merchantRespObj, PGMerchant pgMerchant) {
-    if (pgMerchant.getStatus() == STATUS_SUCCESS) {
+    if (pgMerchant.getStatus().equals(STATUS_SUCCESS)) {
       merchantRespObj.setStatus(S_STATUS_ACTIVE);
-    } else if (pgMerchant.getStatus() == STATUS_DELETED) {
+    } else if (pgMerchant.getStatus().equals(STATUS_DELETED)) {
         merchantRespObj.setStatus(S_STATUS_DELETED);
-    } else if (pgMerchant.getStatus() == STATUS_PENDING) {
+    } else if (pgMerchant.getStatus().equals(STATUS_PENDING)) {
       merchantRespObj.setStatus(S_STATUS_PENDING);
-    } else if (pgMerchant.getStatus() == STATUS_SELF_REGISTERATION_PENDING) {
+    } else if (pgMerchant.getStatus().equals(STATUS_SELF_REGISTERATION_PENDING)) {
         merchantRespObj.setStatus(S_STATUS_SELFREGISTERED);
-    } else if (pgMerchant.getStatus() == STATUS_SUSPENDED) {
+    } else if (pgMerchant.getStatus().equals(STATUS_SUSPENDED)) {
       merchantRespObj.setStatus(S_STATUS_SUSPENDED);
     }
     return merchantRespObj;
   }
   
   private MerchantCreateResponse getSubMerchantStatus(MerchantCreateResponse merchantRespObj, MerchantRequest pgMerchant) {
-	    if (pgMerchant.getStatus() == STATUS_SUCCESS) {
+	    if (pgMerchant.getStatus().equals(STATUS_SUCCESS)) {
 	      merchantRespObj.setStatus(S_STATUS_ACTIVE);
-	    } else if (pgMerchant.getStatus() == STATUS_DELETED) {
+	    } else if (pgMerchant.getStatus().equals(STATUS_DELETED)) {
 	        merchantRespObj.setStatus(S_STATUS_DELETED);
-	    } else if (pgMerchant.getStatus() == STATUS_PENDING) {
+	    } else if (pgMerchant.getStatus().equals(STATUS_PENDING)) {
 	      merchantRespObj.setStatus(S_STATUS_PENDING);
-	    } else if (pgMerchant.getStatus() == STATUS_SELF_REGISTERATION_PENDING) {
+	    } else if (pgMerchant.getStatus().equals(STATUS_SELF_REGISTERATION_PENDING)) {
 	        merchantRespObj.setStatus(S_STATUS_SELFREGISTERED);
-	    } else if (pgMerchant.getStatus() == STATUS_SUSPENDED) {
+	    } else if (pgMerchant.getStatus().equals(STATUS_SUSPENDED)) {
 	      merchantRespObj.setStatus(S_STATUS_SUSPENDED);
 	    }
 	    return merchantRespObj;
@@ -265,7 +265,7 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 
   private GetMerchantListResponse getMerchantResponse(GetMerchantListRequest searchMerchant, String userType, Long entityId) {
     GetMerchantListResponse getMerchantListResponse = new GetMerchantListResponse();
-    if (null != searchMerchant.getSubMerchantCode() && "" != searchMerchant.getSubMerchantCode()) {
+    if (null != searchMerchant.getSubMerchantCode() && !searchMerchant.getSubMerchantCode().equals("")) {
       getMerchantListResponse = subMerchantDao.getMerchantlistOnSubMerchantCode(searchMerchant);
     } else if (userType.equalsIgnoreCase(Constants.PM_USER_TYPE)) {
     	getMerchantListResponse = merchantEntityMapDao.fetchMerchantsForPM(searchMerchant, entityId);
@@ -732,15 +732,15 @@ public class MerchantUpdateServiceImpl implements MerchantUpdateService, PGConst
 
 	private MerchantCreateResponse getMerchantCreateStatus(MerchantCreateResponse merchantRespObj,
 			MerchantRequest pgMerchant) {
-		if (pgMerchant.getStatus() == STATUS_SUCCESS) {
+		if (pgMerchant.getStatus().equals(STATUS_SUCCESS)) {
 			merchantRespObj.setStatus(S_STATUS_ACTIVE);
-		} else if (pgMerchant.getStatus() == STATUS_DELETED) {
+		} else if (pgMerchant.getStatus().equals(STATUS_DELETED)) {
 			merchantRespObj.setStatus(S_STATUS_DELETED);
-		} else if (pgMerchant.getStatus() == STATUS_PENDING) {
+		} else if (pgMerchant.getStatus().equals(STATUS_PENDING)) {
 			merchantRespObj.setStatus(S_STATUS_PENDING);
-		} else if (pgMerchant.getStatus() == STATUS_HOLD) {
+		} else if (pgMerchant.getStatus().equals(STATUS_HOLD)) {
 			merchantRespObj.setStatus(PG_TXN_DECLILNED);
-		} else if (pgMerchant.getStatus() == STATUS_SUSPENDED) {
+		} else if (pgMerchant.getStatus().equals(STATUS_SUSPENDED)) {
 			merchantRespObj.setStatus(S_STATUS_SUSPENDED);
 		}
 		return merchantRespObj;

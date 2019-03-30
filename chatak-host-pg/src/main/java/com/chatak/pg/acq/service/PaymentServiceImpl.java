@@ -123,8 +123,8 @@ public class PaymentServiceImpl implements PaymentService {
 			Long feeAmount = feeDetailDao.getPGFeeAmount(PGConstants.TXN_TYPE_AUTH);
 			Long txnTotalAmount = authRequest.getTxnAmount() + feeAmount;
 
-			PGSwitchTransaction pgSwitchTransaction = null;
-			PGTransaction pgTransaction = null;
+			PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
+			PGTransaction pgTransaction = new PGTransaction();
 			authRequest.setTxnRefNumber(txnRefNum);
 
 			try{
@@ -250,8 +250,8 @@ public class PaymentServiceImpl implements PaymentService {
 			Long feeAmount = feeDetailDao.getPGFeeAmount(PGConstants.TXN_TYPE_SALE);
 			Long txnTotalAmount = captureRequest.getTxnAmount() + feeAmount;
 
-			PGSwitchTransaction pgSwitchTransaction = null;
-			PGTransaction pgTransaction = null;
+			PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
+			PGTransaction pgTransaction = new PGTransaction();
 			captureRequest.setTxnRefNumber(txnRefNum);
 			try{
 				
@@ -377,8 +377,8 @@ public class PaymentServiceImpl implements PaymentService {
 			Long feeAmount = feeDetailDao.getPGFeeAmount(PGConstants.TXN_TYPE_SALE);
 			Long txnTotalAmount = purchaseRequest.getTxnAmount() + feeAmount;
 			
-			PGSwitchTransaction pgSwitchTransaction = null;
-			PGTransaction pgTransaction = null;
+			PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
+			PGTransaction pgTransaction = new PGTransaction();
 			purchaseRequest.setTxnRefNumber(txnRefNum);
 			
 			try{
@@ -510,8 +510,8 @@ public class PaymentServiceImpl implements PaymentService {
 			Long feeAmount = feeDetailDao.getPGFeeAmount(PGConstants.TXN_TYPE_VOID);
 			Long txnTotalAmount = voidRequest.getTxnAmount() + feeAmount;
 			
-			PGSwitchTransaction pgSwitchTransaction = null;
-			PGTransaction pgTransaction = null;
+			PGSwitchTransaction pgSwitchTransaction = new PGSwitchTransaction();
+			PGTransaction pgTransaction = new PGTransaction();
 			try{
 				//Fetch original transaction
 				PGTransaction saleOrRefundransaction = voidtransactiondao.getTransactionToVoid(

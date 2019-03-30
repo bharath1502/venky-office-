@@ -373,6 +373,7 @@ public class MerchantProfileController implements URLMappingConstants {
     String cookieValue = StringUtil.getCookieValue(request);
     sessionRegistry.removeSessionInformation(cookieValue);
     Cookie myCookie = new Cookie(Constants.COOKIE_CHATAK_NAME, null);
+    myCookie.setHttpOnly(true);
     myCookie.setMaxAge(0);
     response.addCookie(myCookie);
   }

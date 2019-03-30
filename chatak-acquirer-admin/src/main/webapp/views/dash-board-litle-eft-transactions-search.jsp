@@ -162,9 +162,7 @@
 															</button>
 														</a>
 														
-															<input type="checkbox" class="autoCheck check" id="totalRecordsDownload">
-															Download All 
-														</a> -->
+															
 													</div>
 												</div>
 											</div>

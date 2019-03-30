@@ -197,7 +197,7 @@ public final class CommonUtil {
   }
 
   public static Long getLongAmountFromDoubleString(String amount) {
-    return ((amount == null || "" == amount) ? 0l : ((long) (Double.valueOf(amount) * HUNDRED)));
+    return ((amount == null || amount.equals("")) ? 0l : ((long) (Double.valueOf(amount) * HUNDRED)));
   }
 
   public static void main(String[] args) {

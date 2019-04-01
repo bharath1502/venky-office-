@@ -123,7 +123,7 @@
 								<th>Txn Type</th>
 								<th>Merchant Txn Amount</th>
 								
-								<th>Entry Mode</th> -->
+								
 								<th>Description</th>
 								<th>Status</th>
 								<th>Action</th>

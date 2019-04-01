@@ -160,7 +160,7 @@
 													<div class="col-sm-12 button-content">
 														<fieldset class="col-sm-7 pull-right">
 															<input type="submit" class="form-control button pull-right pos-next" id="processBtn" onclick="return validateCredit();amountFmt()" value="Process"> 
-															<input type="button" class="form-control button pull-right marginL10 pos-prev close-fetch-details" value="Back"> <!-- onclick="showEditPage()"  -->
+															<input type="button" class="form-control button pull-right marginL10 pos-prev close-fetch-details" value="Back"> 
 														</fieldset>
 													</div>
 													<!--Panel Action Button End -->

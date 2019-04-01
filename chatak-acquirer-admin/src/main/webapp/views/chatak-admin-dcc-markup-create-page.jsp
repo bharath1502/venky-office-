@@ -29,7 +29,7 @@
 			
 				<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 				<%@include file="navigation-panel.jsp"%>
-			<!-- </nav> -->
+			
 			<!--Navigation Block Start -->
 			<!--Article Block Start-->
 			<article>

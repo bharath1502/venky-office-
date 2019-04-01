@@ -326,7 +326,6 @@ function validateCreateMerchantStep5() {
 	if (!validateVirtualTerminal()
 			| !validateOnlineOptions()
 			| !validateCategory()
-			| !validateProcessor()
 			| !validateAutoPaymentMethod() | !validateAutoTransferLimit()
 			| !continueBtnValidateForOnline()
 			| !continueBtnValidateVirtualTerminal() |!doCheckPayoutAt

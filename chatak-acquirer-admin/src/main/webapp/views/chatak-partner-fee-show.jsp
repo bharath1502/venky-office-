@@ -78,9 +78,7 @@
 					<div class="tab-header-container-first active-background">
 						<a href="#">Search</a>
 					</div>
-					<!-- <div class="tab-header-container">
-						<a href="chatak-partner-fee-create-page">Create</a>
-					</div> -->
+					
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="main-content-holder padding0">
@@ -119,12 +117,7 @@
 											</div>
 										</div>
 									
-									<!-- <fieldset class="col-sm-4">
-										<div><input type="submit"
-											class="form-action-buttons form-control button"
-											value="Create"></div>
-									</fieldset>
-									<fieldset class="col-sm-4"></fieldset> -->
+									
 								</form:form>
 							</div>
 						</div>
@@ -180,9 +173,7 @@
 							<tr>
 								<th style="width: 200px;">Merchant Name</th>
 								<th style="width: 150px;">Merchant Code</th>
-								<!-- <th>% Value</th>
-								<th>Flat fee</th>
-								<th>Edit</th> -->
+								
 								<th class="sorter-false tablesorter-header tablesorter-headerUnSorted" style="width: 120px;">Processing Fees</th>
 							</tr>
 							</thead>

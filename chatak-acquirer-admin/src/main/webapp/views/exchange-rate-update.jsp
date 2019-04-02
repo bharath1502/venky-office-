@@ -49,10 +49,7 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first">
-						<a href="switch-search">Search
-						</a>
-					</div> -->
+					
 					<div class="tab-header-container-first active-background">
 						<a href="#"><spring:message code="common.label.edit"/></a>
 					</div>

@@ -27,27 +27,7 @@
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
-			<!--Header Block Start -->
-			<!-- <header class="col-sm-12 all-page-header">
-				Header Logo Start				
-				<div class="col-sm-4"> 
-					<img src="images/chatak_logo.jpg" height="35px" alt="Logo"/>
-				</div>
-				Header Logo End	
-				Header Welcome Text and Logout button Start
-				<div class="col-sm-5 col-xs-offset-3">
-					<div class="pull-right user-settings">
-						<table>
-							<tr>
-								<td><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></td>
-							</tr>
-						</table>
-					</div>
-				</div>
-				Header Welcome Text and Logout button End	
-			</header> -->
-			<!--Header Block End -->
-			<!--Navigation Block Start -->
+		    <!--Navigation Block Start -->
 			<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 			<%@include file="navigation-panel.jsp"%>
 			<!--Navigation Block Start -->
@@ -125,9 +105,7 @@
 											
 												<fieldset class="col-sm-3">
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="commission-program-search.label.status" /></label>
-													<!-- <select class="form-control">
-														<option>..:Select:..</option>
-													</select> -->
+													
 													<form:select cssClass="form-control" id="status"
 														path="status">
 														<form:option value=""><spring:message code="commission-program-search.label.all" /></form:option>
@@ -187,7 +165,7 @@
 							<thead>
 							<tr>
 								<th><spring:message code="commission-program-search.label.commissionprogramnametable" /></th>
-								<!-- <th>Processor</th> -->
+								
 								<th><spring:message code="commission-program-search.label.statustable" /></th>
 								<th><spring:message code="commission-program-search.label.actiontable" /></th>
 							</tr>
@@ -206,8 +184,7 @@
 												title="Edit" class="table-actionicon-margin"><span
 													class="glyphicon glyphicon-pencil"></span></a>
 													</c:if> 
-													<!-- <a href="#"><span
-													class="glyphicon glyphicon-trash"></span></a></td> -->
+													
 										</tr>
 									</c:forEach>
 								</c:when>

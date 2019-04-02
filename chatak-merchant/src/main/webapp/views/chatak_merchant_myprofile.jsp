@@ -28,7 +28,7 @@
 <body oncontextmenu="disableRightClick(<%=StatusConstants.ALLOW_RIGHT_CLICK%>)">
 
 	
-	<!-- <script src="../js/common-lib.min.js"></script> -->
+	
 
 	<!--Body Wrapper block Start -->
 	<div id="wrapper">
@@ -50,8 +50,8 @@
 
 						<form:form modelAttribute="merchantProfile"
 							action="chatak_merchant_myprofile_edit" method="post">
-							<!--  -->
-							<!-- modelAttribute="userProfileRequest" -->
+							
+							
 
 							<!-- Breadcrumb start -->
 							<div class="breadCrumb">
@@ -236,7 +236,7 @@
 														</div>
 														<fieldset class="col-sm-3">
 														<legend></legend>
-															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.address1"/><!-- <span class="required-field">*</span> --></label>
+															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.address1"/></label>
 															<form:input cssClass="form-control"
 																path="mailingAddress1" id="mailingAddress1"
 																maxlength="50" onblur="this.value=this.value.trim();<%-- validateMailingAddress1() --%>"
@@ -258,7 +258,7 @@
 														</fieldset>
 														<fieldset class="col-sm-3">
 														<legend></legend>
-															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.city"/><!-- <span class="required-field">*</span> --></label>
+															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.city"/></label>
 															<form:input cssClass="form-control" path="mailingCity"
 																id="mailingCity" maxlength="50"
 																onblur="this.value=this.value.trim();<%-- validateMailingCity() --%>" disabled="true" />
@@ -268,7 +268,7 @@
 														</fieldset>
 														<fieldset class="col-sm-3">
 														<legend></legend>
-															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.country"/><!-- <span class="required-field">*</span> --></label>
+															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.country"/></label>
 															<form:select cssClass="form-control"
 																path="mailingCountry" id="mailingCountry"
 																onblur="<%-- validateMailingCountry() --%>"
@@ -285,7 +285,7 @@
 														</fieldset>
 														<fieldset class="col-sm-3">
 														<legend></legend>
-															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.state"/><!--< span class="required-field">*</span> --></label>
+															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.state"/></label>
 															<form:select cssClass="form-control" path="mailingState"
 																id="mailingState" onblur="<%-- validateMailingState() --%>"
 																disabled="true">
@@ -301,7 +301,7 @@
 
 														<fieldset class="col-sm-3">
 														<legend></legend>
-															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.zipcode"/><!-- <span class="required-field">*</span> --></label>
+															<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="myprofile.label.zipcode"/></label>
 															<form:input cssClass="form-control" path="mailingPin"
 																id="mailingPin" maxlength="10"
 																onblur="this.value=this.value.trim();<%-- validateMailingPin() --%>" disabled="true" />
@@ -491,7 +491,7 @@
 	<!--Body Wrapper block End -->
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<!-- 	<script src="../js/common-lib.min.js"></script> -->
+	
 	<script src="../js/backbutton.js" type="text/javascript"></script>
 	<script src="../js/changePassword.js" type="text/javascript"></script>
 	<script src="../js/jquery.min.js" type="text/javascript"></script>
@@ -503,8 +503,7 @@
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/messages.js"></script>
 	<script src="../js/validation.js"></script>
-	<!-- <script src="../js/merchant-profile.js"></script> -->
-
+	
 	<script>
 		/* Common Navigation Include Start */
 

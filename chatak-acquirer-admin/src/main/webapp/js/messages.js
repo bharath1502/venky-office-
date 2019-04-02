@@ -370,8 +370,8 @@ var C_MERCHANT_MSG = {
 		reportsTodatecannotbethefuturedate : "'To date' can not be the future date",
 		InvalidBankCode : "Invalid Bank Code",
 		InvalidBankRoutingNumber : "Invalid bank routing number",
-		InvalidBankAccountNumber : "Invalid bank account number"
-		
+		InvalidBankAccountNumber : "Invalid bank account number",
+		BlacklistedCardValid : "Please enter valid BlacklistedCard Number"
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",
@@ -745,7 +745,8 @@ var C_MERCHANT_MSG = {
 		reportsTodatecannotbethefuturedate : "'Hasta la fecha' no puede ser la fecha futura",
 		InvalidBankCode : "Código bancario inválido",
 		InvalidBankRoutingNumber : "Número de enrutamiento bancario inválido",
-		InvalidBankAccountNumber : "Número de cuenta bancaria inválido"
+		InvalidBankAccountNumber : "Número de cuenta bancaria inválido",
+		BlacklistedCardValid : "Por favor ingrese un número válido de BlacklistedCard"
 	}
 };
 

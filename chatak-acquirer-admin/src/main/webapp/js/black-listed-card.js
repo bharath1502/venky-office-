@@ -37,8 +37,13 @@ var cardNumberval = null;
 function validateCardNumber() {
 	setDiv("descriptionMsg", '');
 	var cardNumber = getVal('cardNumber').trim();
+	var val = /[0-9]$/;
 	if (isEmpty(cardNumber)) {
 		setError(get('cardNumber'), webMessages.pleaseEnterCardNumber);
+		loadMsgTitleText();
+		return false;
+	} else if (!val.test(cardNumber)) {
+		setError(get('cardNumber'), webMessages.BlacklistedCardValid);
 		loadMsgTitleText();
 		return false;
 	} else if (cardNumber.length < 12 || cardNumber.length > 19

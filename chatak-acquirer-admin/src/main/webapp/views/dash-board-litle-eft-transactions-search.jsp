@@ -161,8 +161,6 @@
 																<img src="../images/pdf.png">
 															</button>
 														</a>
-														
-															
 													</div>
 												</div>
 											</div>

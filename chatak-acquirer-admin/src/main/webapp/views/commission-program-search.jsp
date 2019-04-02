@@ -27,27 +27,7 @@
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
-			<!--Header Block Start -->
-			
-				Header Logo Start				
-				<div class="col-sm-4"> 
-					<img src="images/chatak_logo.jpg" height="35px" alt="Logo"/>
-				</div>
-				Header Logo End	
-				Header Welcome Text and Logout button Start
-				<div class="col-sm-5 col-xs-offset-3">
-					<div class="pull-right user-settings">
-						<table>
-							<tr>
-								<td><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></td>
-							</tr>
-						</table>
-					</div>
-				</div>
-				Header Welcome Text and Logout button End	
-			</header> -->
-			<!--Header Block End -->
-			<!--Navigation Block Start -->
+		    <!--Navigation Block Start -->
 			<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 			<%@include file="navigation-panel.jsp"%>
 			<!--Navigation Block Start -->

@@ -284,6 +284,7 @@
 								</c:when>
 								<c:otherwise>
 									<tr>
+									    <td colspan="3" style="color: red;"><spring:message code="access-role-search.label.norolesfound"/></td>
 										<td colspan="4" style="color: red;"><spring:message code="access-role-search.label.norolesfound"/></td>
 									</tr>
 								</c:otherwise>
@@ -292,17 +293,8 @@
 							</table>
 							<table class="table table-striped table-bordered table-condensed">
 
-							<!-- 							<tr> -->
-							
-							<!-- 								<td>									 -->
-							
-							<!-- 							<tr> -->
-							<!-- 								<td>									 -->
-							
 							<tr class="table-footer-main">
 								<td colspan="10" class="search-table-header-column">
-
-
 									<div class="col-sm-12">
 										<c:if test="${!(fn:length(roleList) eq 0) }">
 											<div class="col-sm-3">
@@ -326,10 +318,6 @@
 													</div>
 												</div>
 											</div>
-
-
-
-
 											<div class="col-sm-9">
 												<ul class="pagination custom-table-footer-pagination">
 													<c:if test="${portalListPageNumber gt 1}">

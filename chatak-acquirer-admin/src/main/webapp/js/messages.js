@@ -741,7 +741,7 @@ var C_MERCHANT_MSG = {
 		address_should_contains_message : 'Solamente # , . / y alfanuméricos están permitidos',
 		merchantNotAssociatedToCurrentPM :"Merchant Code no asociado al Entity actual",
 		InvalidAmount : "Monto invalido",
-		InvalidReasonLength : "Longitud invalido",
+		InvalidReasonLength : "La razón no debe ser inferior a 3 caracteres",
 		reportsTodatecannotbethefuturedate : "'Hasta la fecha' no puede ser la fecha futura",
 		InvalidBankCode : "Código bancario inválido",
 		InvalidBankRoutingNumber : "Número de enrutamiento bancario inválido",

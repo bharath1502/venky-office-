@@ -366,7 +366,7 @@ var C_MERCHANT_MSG = {
 		address_should_contains_message : 'Only # , . / and alphanumerics are allowed',
 		merchantNotAssociatedToCurrentPM :"Merchant Code Not Associated To current Entity",
 		InvalidAmount : "Invalid Amount",
-		InvalidReasonLength : "Invalid Length",
+		InvalidReasonLength : "Reason should not be less than 3 characters",
 		reportsTodatecannotbethefuturedate : "'To date' can not be the future date",
 		InvalidBankCode : "Invalid Bank Code",
 		InvalidBankRoutingNumber : "Invalid bank routing number",

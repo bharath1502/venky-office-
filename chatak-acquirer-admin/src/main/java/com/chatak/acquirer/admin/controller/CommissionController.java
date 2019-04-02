@@ -32,6 +32,7 @@ import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.Response;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.CommissionDTO;
 import com.chatak.pg.util.Constants;
@@ -249,7 +250,7 @@ public class CommissionController implements URLMappingConstants {
       model.put(Constants.ERROR, e.getMessage());
     } catch (Exception e) {
       logger.error("ERROR:: CommissionProgramController:: showCommissionProgramEdit method2", e);
-      model.put(Constants.ERROR, Properties.getProperty("prepaid.admin.general.error.message"));
+      model.put(Constants.ERROR, Properties.getProperty(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE));
     }
     logger.info("Exiting:: CommissionProgramController:: showCommissionProgramEdit method");
     return modelAndView;
@@ -314,7 +315,7 @@ public class CommissionController implements URLMappingConstants {
   @RequestMapping(value = COMMISION_PROGRAM_PAGINATION, method = RequestMethod.POST)
   public ModelAndView commissionPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: CommissionProgramController:: commissionPagination method");
     ModelAndView modelAndView = new ModelAndView(COMMISION_PROGRAM_SEARCH_PAGE);
     try {
@@ -347,7 +348,7 @@ public class CommissionController implements URLMappingConstants {
   public ModelAndView downloadCommProgramReport(HttpSession session, Map model,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords,
       HttpServletResponse response) {
     logger.info("Entering:: CommissionProgramController:: downloadCommProgramReport method");

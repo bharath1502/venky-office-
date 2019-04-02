@@ -33,6 +33,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.Bank;
 import com.chatak.pg.model.DynamicMDRDTO;
@@ -117,7 +118,7 @@ public class MDRController implements URLMappingConstants {
     Bank bankRequest = new Bank();
     try {
       validateBankSearchAndPaymentSchemeResponse(modelAndView, paymentSchemeRequest, bankRequest);
-      modelAndView.addObject("pageSize", dynamicMDRDTO.getPageSize());
+      modelAndView.addObject(PGConstants.PAGE_SIZE, dynamicMDRDTO.getPageSize());
       Response dynamicMDRDTOlist = mdrService.searchDynamicMDR(dynamicMDRDTO);
       if (StringUtil.isListNotNullNEmpty(dynamicMDRDTOlist.getResponseList())) {
         modelAndView =
@@ -298,7 +299,7 @@ public class MDRController implements URLMappingConstants {
   @RequestMapping(value = DYNAMIC_MDR_PAGINATION, method = RequestMethod.POST)
   public ModelAndView dynamicMDRPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: MDRController:: dynamicMDRPagination method");
     ModelAndView modelAndView = new ModelAndView(DYNAMIC_MDR_SHOW_SEARCH);
     try {
@@ -316,7 +317,7 @@ public class MDRController implements URLMappingConstants {
       response = mdrService.searchDynamicMDR(dynamicMDRDTO);
       List list = response.getResponseList();
       if (StringUtil.isListNotNullNEmpty(list)) {
-        modelAndView.addObject("pageSize", dynamicMDRDTO.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, dynamicMDRDTO.getPageSize());
         modelAndView =
             PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber, totalRecords);
         modelAndView.addObject(DYNAMIC_MDR_DTO_LIST, list);
@@ -334,7 +335,7 @@ public class MDRController implements URLMappingConstants {
   public ModelAndView downloadDynamicMDRReport(HttpSession session, Map model,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords, HttpServletRequest request,
       HttpServletResponse response) {
     logger.info("Entering:: MDRController:: downloadDynamicMDRReport method");

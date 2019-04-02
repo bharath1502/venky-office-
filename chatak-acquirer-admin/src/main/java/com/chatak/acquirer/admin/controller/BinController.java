@@ -35,6 +35,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.BinDuplicateResponse;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.BinDTO;
 import com.chatak.pg.model.BinResponse;
@@ -120,7 +121,7 @@ public class BinController implements URLMappingConstants {
 
       BinResponse binList = binService.searchBins(binDTO);
       if (binList != null) {
-        modelAndView.addObject("pageSize", binDTO.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, binDTO.getPageSize());
         modelAndView = PaginationUtil.getPagenationModel(modelAndView, binList.getNoOfRecords());
         session.setAttribute(Constants.TOTAL_RECORDS, binList.getNoOfRecords());
         session.setAttribute(Constants.PAGE_NUMBER, Constants.ONE);
@@ -335,7 +336,7 @@ public class BinController implements URLMappingConstants {
   @RequestMapping(value = GET_BINS_FOR_PAGINATIONS, method = RequestMethod.POST)
   public ModelAndView getPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords) {
     logger.info("Entering:: BinController:: getPaginationList method");
     ModelAndView modelAndView = new ModelAndView(ONUS_BIN_CONFIGURATION_SHOW);
 
@@ -349,11 +350,11 @@ public class BinController implements URLMappingConstants {
       binResponse = binService.searchBins(binDTO);
       modelAndView.addObject("binList", binResponse.getBins());
       if (!CollectionUtils.isEmpty(binResponse.getBins())) {
-        modelAndView.addObject("pageSize", binDTO.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, binDTO.getPageSize());
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             binResponse.getNoOfRecords());
         session.setAttribute("pageNumber", pageNumber);
-        session.setAttribute("totalRecords", totalRecords);
+        session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
       }
       modelAndView.addObject("binDTO", binDTO);
 
@@ -368,7 +369,7 @@ public class BinController implements URLMappingConstants {
 
   @RequestMapping(value = GET_BIN_REPORT, method = RequestMethod.POST)
   public ModelAndView downloadBinReport(HttpSession session, HttpServletRequest request,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords, BinDTO binDTO,
       BindingResult bindingResult, HttpServletResponse response) {
     logger.info("Entering:: BinController:: downloadBinReport method");

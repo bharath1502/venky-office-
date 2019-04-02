@@ -110,7 +110,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
       method = RequestMethod.POST)
   public ModelAndView executedTransactionsPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
 
     logger.info(
         "Entering :: ExecutedTransactionsController :: executedTransactionsPagination method");
@@ -171,7 +171,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
   public ModelAndView executedTransactionsReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("requestFrom") final String requestFrom, HttpServletResponse response,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering :: ExecutedTransactionsController :: executedTransactionsReport method");
@@ -279,7 +279,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
       method = RequestMethod.POST)
   public ModelAndView processingTransactionsPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
 
     logger.info(
         "Entering :: ExecutedTransactionsController :: processingTransactionsPagination method");
@@ -342,7 +342,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
       HttpServletRequest request, HttpServletResponse response,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("requestFrom") final String requestFrom,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger
@@ -428,7 +428,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
 
   private List<String> getExecutedTransactionsHeaderList() {
     String[] headerArr = {
-        messageSource.getMessage("reports.label.transactions.dateortime", null,
+        messageSource.getMessage(PGConstants.REPORT_LABEL_TRANSACTIONS_DATEORTIME, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-processedTime", null,
             LocaleContextHolder.getLocale()),
@@ -482,7 +482,7 @@ public class ExecutedTransactionsController implements URLMappingConstants {
 
   private List<String> getProcessingTransactionsHeaderList() {
     String[] headerArr = {
-        messageSource.getMessage("reports.label.transactions.dateortime", null,
+        messageSource.getMessage(PGConstants.REPORT_LABEL_TRANSACTIONS_DATEORTIME, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("admin.common-deviceLocalTxnTime", null,
             LocaleContextHolder.getLocale()),

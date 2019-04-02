@@ -35,6 +35,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.CardNumberResponse;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.BlackListedCard;
 import com.chatak.pg.user.bean.BlackListedCardRequest;
@@ -188,7 +189,7 @@ public class BlackListedCardController implements URLMappingConstants {
           && !CollectionUtils.isEmpty(searchBlackListedCardResponse.getBlackListedCardRequest())) {
         searchBlackListedCardRequestList =
             searchBlackListedCardResponse.getBlackListedCardRequest();
-        modelAndView.addObject("pageSize", searchBlackListedCardRequest.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, searchBlackListedCardRequest.getPageSize());
         modelAndView = PaginationUtil.getPagenationModel(modelAndView,
             searchBlackListedCardResponse.getTotalNoOfRows());
         session.setAttribute(Constants.PAGE_NUMBER, Constants.ONE);
@@ -315,7 +316,7 @@ public class BlackListedCardController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_BLACK_LISTED_CARD_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: BlackListedCardController:: getPaginationList method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE);
     try {
@@ -331,7 +332,7 @@ public class BlackListedCardController implements URLMappingConstants {
       if (searchResponse != null
           && !CollectionUtils.isEmpty(searchResponse.getBlackListedCardRequest())) {
         blackListedCardSearchList = searchResponse.getBlackListedCardRequest();
-        modelAndView.addObject("pageSize", blackListedCardInfo.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, blackListedCardInfo.getPageSize());
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             searchResponse.getTotalNoOfRows());
         session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
@@ -351,7 +352,7 @@ public class BlackListedCardController implements URLMappingConstants {
   public ModelAndView downloadBlackListedCardReport(HttpSession session, HttpServletRequest request,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       HttpServletResponse response, @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering:: BlackListedCardController:: downloadBlackListedCardReport method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_BLACK_LISTED_CARD_PAGE);

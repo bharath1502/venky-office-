@@ -86,7 +86,7 @@
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message code="switch.label.switchname"/><span class="required-field">*</span></label>
 														<form:input cssClass="form-control" path="switchName"
 															id="switchName" maxlength="50"
-															onblur="this.value=this.value.trim();clientValidation('switchName','middle_name','switchNameEr')" />
+															onblur="this.value=this.value.trim();validateSwitchName()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="switchNameEr" class="red-error">&nbsp;</span>
 														</div>

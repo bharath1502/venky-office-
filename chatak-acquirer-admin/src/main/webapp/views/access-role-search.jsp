@@ -284,7 +284,7 @@
 								</c:when>
 								<c:otherwise>
 									<tr>
-										<td colspan="4" style="color: red;"><spring:message code="access-role-search.label.norolesfound"/></td>
+									   <td colspan="3" style="color: red;"><spring:message code="access-role-search.label.norolesfound"/></td>
 									</tr>
 								</c:otherwise>
 

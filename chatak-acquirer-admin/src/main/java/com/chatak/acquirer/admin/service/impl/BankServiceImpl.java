@@ -251,7 +251,7 @@ public class BankServiceImpl implements BankService, PGConstants {
 
     } else {
       response.setErrorCode("99");
-      response.setErrorMessage("failure");
+      response.setErrorMessage(PGConstants.FAILURE);
     }
     return response;
   }
@@ -312,7 +312,7 @@ public class BankServiceImpl implements BankService, PGConstants {
       response.setTotalNoOfRows(currencies.size());
     } else {
       response.setErrorCode("99");
-      response.setErrorMessage("failure");
+      response.setErrorMessage(PGConstants.FAILURE);
     }
     return response;
   }
@@ -338,7 +338,7 @@ public class BankServiceImpl implements BankService, PGConstants {
 
     } else {
       response.setErrorCode("99");
-      response.setErrorMessage("failure");
+      response.setErrorMessage(PGConstants.FAILURE);
     }
     return response;
   }
@@ -482,7 +482,7 @@ public class BankServiceImpl implements BankService, PGConstants {
 
 	    } else {
 	      response.setErrorCode("99");
-	      response.setErrorMessage("failure");
+	      response.setErrorMessage(PGConstants.FAILURE);
 	    }
 	    return response;
 	  }

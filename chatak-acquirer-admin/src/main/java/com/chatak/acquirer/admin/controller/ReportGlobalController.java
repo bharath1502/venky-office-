@@ -314,7 +314,7 @@ public class ReportGlobalController implements URLMappingConstants {
   @RequestMapping(value = SPECIFIC_STATEMENT_REPORT_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getStatementPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: MerchantController:: getStatementPaginationList method");
     ModelAndView modelAndView = new ModelAndView(SPECIFIC_USER_STATEMENT_REPORTS_SHOW);
     Merchant merchant = new Merchant();
@@ -556,7 +556,7 @@ public class ReportGlobalController implements URLMappingConstants {
         for (ReportsDTO reportsDTO : pendingTransactionsReportList) {
           reportsDTO.setTxnJsonString(JsonUtil.convertObjectToJSON(reportsDTO.getTxnPopupDto()));
         }
-        modelAndView.addObject("pageSize", transactionsListRequest.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, transactionsListRequest.getPageSize());
         modelAndView = PaginationUtil.getPagenationModel(modelAndView,
             transactionsListRequest.getNoOfRecords());
         modelAndView.addObject(pendingTransactionsReportList);
@@ -628,7 +628,7 @@ public class ReportGlobalController implements URLMappingConstants {
   public ModelAndView showGlobalRevenueGeneratedReport(HttpServletRequest request,
       HttpServletResponse response, Merchant merchant, BindingResult bindingResult, Map model,
       @FormParam("fromDate") final String fromDate,HttpSession session) {
-    String currency=request.getParameter("currency");
+    String currency=request.getParameter(PGConstants.CURRENCY);
     String revenueType=request.getParameter(Constants.REVENUE_TYPE);
     String merchantCode=request.getParameter("merchantCode");
     String toDate=request.getParameter("toDate");
@@ -697,7 +697,7 @@ public class ReportGlobalController implements URLMappingConstants {
       modelAndView.addObject(Constants.TRANSACTION_DIV, Boolean.TRUE);
       modelAndView.addObject("startDate", request.getFrom_date());
       modelAndView.addObject("endDate", request.getTo_date());
-      modelAndView.addObject("currency", currency);
+      modelAndView.addObject(PGConstants.CURRENCY, currency);
       modelAndView.addObject("rapidRevenue", rapidRevenue);
       modelAndView.addObject("subMerRevenue", subMerRevenue);
       modelAndView.addObject("merchantRevenue", merchantRevenue);

@@ -55,6 +55,14 @@ import com.chatak.pg.util.StringUtils;
 public class TransactionsEFTController implements URLMappingConstants {
 
   private static Logger logger = Logger.getLogger(TransactionsEFTController.class);
+  
+  private static final String LITLE_EFTE_EXECUTED_TRANS_LIST = "litleEFTExecutedTransList";
+  
+  private static final String LITLE_EFT_DTO = "litleEFTDTO";
+  
+  private static final String CHATAK_ADMIN_SETTLEMENT_TXN_CANCEL_SUCCESS = "chatak.admin.settlement.txn.cancel.success";
+  
+  private static final String TRANSACTIONS_FROM_DASHBOARD = "transactionsFromDashBoard";
 
   @Autowired
   private FundTransfersService fundTransfersService;
@@ -94,7 +102,7 @@ public class TransactionsEFTController implements URLMappingConstants {
       if (litleEFTRequest != null && !CollectionUtils.isEmpty(litleEFTRequest.getLitleEFTDTOs())) {
         modelAndView =
             PaginationUtil.getPagenationModel(modelAndView, litleEFTRequest.getNoOfRecords());
-        session.setAttribute("litleEFTExecutedTransList", new ArrayList(litleEFTRequest.getLitleEFTDTOs()));
+        session.setAttribute(LITLE_EFTE_EXECUTED_TRANS_LIST, new ArrayList(litleEFTRequest.getLitleEFTDTOs()));
         for (LitleEFTDTO litleEFTDTO : litleEFTRequest.getLitleEFTDTOs()) {
           litleEFTDTO.setTxnJsonString(JsonUtil.convertObjectToJSON(litleEFTDTO.getTxnDto()));
         }
@@ -102,7 +110,7 @@ public class TransactionsEFTController implements URLMappingConstants {
       if (litleEFTRequest != null) {
         modelAndView.addObject("eftTransactionsList", litleEFTRequest.getLitleEFTDTOs());
       }
-      modelAndView.addObject("litleEFTDTO", new LitleEFTDTO());
+      modelAndView.addObject(LITLE_EFT_DTO, new LitleEFTDTO());
       session.setAttribute("litleEFTRequest", litleEFTRequest);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
@@ -119,7 +127,7 @@ public class TransactionsEFTController implements URLMappingConstants {
   @RequestMapping(value = LITLE_EFT_EXECUTED_TRANSACTIONS_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getPaginationListToEFTTransactions(HttpServletRequest request,
       final HttpSession session, @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("requestObject") String requestObject,
       @FormParam("removedTxns") String[] removedTxns, Map model) {
     logger
@@ -138,7 +146,7 @@ public class TransactionsEFTController implements URLMappingConstants {
       if (litleEFTRequest != null && !CollectionUtils.isEmpty(litleEFTRequest.getLitleEFTDTOs())) {
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             litleEFTRequest.getNoOfRecords());
-        session.setAttribute("litleEFTExecutedTransList", new ArrayList(litleEFTRequest.getLitleEFTDTOs()));
+        session.setAttribute(LITLE_EFTE_EXECUTED_TRANS_LIST, new ArrayList(litleEFTRequest.getLitleEFTDTOs()));
         for (LitleEFTDTO litleEFTDTO : litleEFTRequest.getLitleEFTDTOs()) {
           litleEFTDTO.setTxnJsonString(JsonUtil.convertObjectToJSON(litleEFTDTO.getTxnDto()));
         }
@@ -153,7 +161,7 @@ public class TransactionsEFTController implements URLMappingConstants {
           "ERROR :: TransactionsEFTController :: getPaginationListToEFTTransactions method", e);
     }
     modelAndView.addObject(Constants.SETTLEMENT_DTO, new SettlemetActionDTO());
-    modelAndView.addObject("litleEFTDTO", new LitleEFTDTO());
+    modelAndView.addObject(LITLE_EFT_DTO, new LitleEFTDTO());
     logger
         .info("Exiting :: TransactionsEFTController :: getPaginationListToEFTTransactions method");
     return modelAndView;
@@ -187,14 +195,14 @@ public class TransactionsEFTController implements URLMappingConstants {
       modelAndView = getLitleEFTTransactionListToDashBoard(session, model);
       model.put(Constants.ERROR, e.getMessage());
       modelAndView.addObject(Constants.SETTLEMENT_DTO, new SettlemetActionDTO());
-      modelAndView.addObject("litleEFTDTO", new LitleEFTDTO());
+      modelAndView.addObject(LITLE_EFT_DTO, new LitleEFTDTO());
     } catch (Exception e) {
       logger.error("ERROR :: TransactionsEFTController :: processBulkLitleEFTAction method", e);
       modelAndView = getLitleEFTTransactionListToDashBoard(session, model);
       model.put(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       modelAndView.addObject(Constants.SETTLEMENT_DTO, new SettlemetActionDTO());
-      modelAndView.addObject("litleEFTDTO", new LitleEFTDTO());
+      modelAndView.addObject(LITLE_EFT_DTO, new LitleEFTDTO());
     }
     logger.info("Exiting :: TransactionsEFTController :: processBulkLitleEFTAction method");
     return modelAndView;
@@ -222,14 +230,14 @@ public class TransactionsEFTController implements URLMappingConstants {
           "ERROR :: TransactionsEFTController :: processDashBoardEFTTransfersAction method", e);
       modelAndView = getLitleEFTTransactionListToDashBoard(session, model);
       model.put(Constants.ERROR, e.getMessage());
-      modelAndView.addObject("litleEFTDTO", new LitleEFTDTO());
+      modelAndView.addObject(LITLE_EFT_DTO, new LitleEFTDTO());
     } catch (Exception e) {
       logger.error(
           "ERROR :: TransactionsEFTController :: processDashBoardEFTTransfersAction method", e);
       modelAndView = getLitleEFTTransactionListToDashBoard(session, model);
       model.put(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      modelAndView.addObject("litleEFTDTO", new LitleEFTDTO());
+      modelAndView.addObject(LITLE_EFT_DTO, new LitleEFTDTO());
     }
     logger
         .info("Exiting :: TransactionsEFTController :: processDashBoardEFTTransfersAction method");
@@ -244,7 +252,7 @@ public class TransactionsEFTController implements URLMappingConstants {
         "Entering :: TransactionsEFTController :: downloadEFTTransactionsFromDashBoard method");
     ModelAndView modelAndView = new ModelAndView(LITLE_EFT_EXECUTED_TRANSACTIONS_SHOW);
     List<LitleEFTDTO> litleEFTRequestFromDashBoard =
-        (List<LitleEFTDTO>) session.getAttribute("litleEFTExecutedTransList");
+        (List<LitleEFTDTO>) session.getAttribute(LITLE_EFTE_EXECUTED_TRANS_LIST);
     ExportDetails exportDetails = new ExportDetails();
     try {
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {
@@ -337,9 +345,9 @@ public class TransactionsEFTController implements URLMappingConstants {
       if (isSuccess) {
         if (PGConstants.PG_SETTLEMENT_REJECTED.equals(actionDTO.getSettlementStatus())) {
           modelAndView.addObject(Constants.SUCESS, messageSource.getMessage(
-              "chatak.admin.settlement.txn.cancel.success", null, LocaleContextHolder.getLocale()));
+        	 CHATAK_ADMIN_SETTLEMENT_TXN_CANCEL_SUCCESS, null, LocaleContextHolder.getLocale()));
           model.put(Constants.SUCESS, messageSource.getMessage(
-              "chatak.admin.settlement.txn.cancel.success", null, LocaleContextHolder.getLocale()));
+        		  CHATAK_ADMIN_SETTLEMENT_TXN_CANCEL_SUCCESS, null, LocaleContextHolder.getLocale()));
         } else {
           modelAndView.addObject(Constants.SUCESS, messageSource.getMessage(
               "chatak.admin.settlement.action.success", null, LocaleContextHolder.getLocale()));
@@ -457,7 +465,7 @@ public class TransactionsEFTController implements URLMappingConstants {
 
         transactionService.prepareAndBindTxnPopupData(transactionList);
 
-        session.setAttribute("transactionsFromDashBoard", transactionList);
+        session.setAttribute(TRANSACTIONS_FROM_DASHBOARD, transactionList);
         modelAndView.addObject(Constants.TRANSACTIONS_MODEL, transactionList);
       } else {
         modelAndView.addObject(Constants.TRANSACTIONS_MODEL, transactionList);
@@ -497,7 +505,7 @@ public class TransactionsEFTController implements URLMappingConstants {
       method = RequestMethod.POST)
   public ModelAndView getPaginationListToDashBoard(HttpServletRequest request,
       final HttpSession session, @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("requestObject") String requestObject,
       @FormParam("removedTxns") String[] removedTxns, Map model) {
 
@@ -521,7 +529,7 @@ public class TransactionsEFTController implements URLMappingConstants {
           && !CollectionUtils.isEmpty(transactionsList.getTransactionList())) {
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             transactionsList.getTotalResultCount());
-        session.setAttribute("transactionsFromDashBoard", transactionsList.getTransactionList());
+        session.setAttribute(TRANSACTIONS_FROM_DASHBOARD, transactionsList.getTransactionList());
         transactionService.prepareAndBindTxnPopupData(transactionsList.getTransactionList());
       }
       if (transactionsList != null) {
@@ -545,7 +553,7 @@ public class TransactionsEFTController implements URLMappingConstants {
         .info("Entering :: TransactionsEFTController :: downloadTransactionsFromDashBoard method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_DASH_BOARD_SEARCH_TRANSACTION_PAGE);
     List<Transaction> transactionListFromDashBoard =
-        (List<Transaction>) session.getAttribute("transactionsFromDashBoard");
+        (List<Transaction>) session.getAttribute(TRANSACTIONS_FROM_DASHBOARD);
     ExportDetails exportDetails = new ExportDetails();
     try {
       if (Constants.PDF_FILE_FORMAT.equalsIgnoreCase(downloadType)) {

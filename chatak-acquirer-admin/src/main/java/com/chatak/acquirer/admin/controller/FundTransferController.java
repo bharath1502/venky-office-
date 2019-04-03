@@ -371,7 +371,7 @@ public class FundTransferController implements URLMappingConstants {
     String[] headerArr = {
         messageSource.getMessage("dash-board-litle-eft-transactions-search.label.datetime", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("reports.label.transactions.merchantcode", null,
+        messageSource.getMessage(PGConstants.REPORTS_LABEL_TRANSATIONS_MERCHANT_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("reports.label.transactions.amount", null,
             LocaleContextHolder.getLocale()),

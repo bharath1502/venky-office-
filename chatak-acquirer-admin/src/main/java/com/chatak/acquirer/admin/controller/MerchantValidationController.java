@@ -559,7 +559,7 @@ public class MerchantValidationController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_ADMIN_MERCHANT_REPORT, method = RequestMethod.POST)
   public ModelAndView downloadMerchantReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      HttpServletResponse response, @FormParam("totalRecords") final Integer totalRecords,
+      HttpServletResponse response, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     String downloadType = request.getParameter("downloadType");
     logger.info("Entering:: MerchantValidationController:: downloadMerchantReport method");
@@ -612,7 +612,7 @@ public class MerchantValidationController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant.label.merchantname", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("currency-search-page.label.currencycode", null,
+        messageSource.getMessage(PGConstants.CURRENCY_SEARCH_PAGE_LABEL_CURRENCY_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant-file-exportutil-phone", null,
             LocaleContextHolder.getLocale()),

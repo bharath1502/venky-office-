@@ -62,6 +62,10 @@ public class SettlementReportController implements URLMappingConstants {
 	
 	private static Logger logger = Logger.getLogger(SettlementReportController.class);
 	
+	private static final String ADMIN_COMMON_DEVICE_LOCAL_TXN_TIME = "admin.common-deviceLocalTxnTime:";
+	
+	private static final String ADMIN_COMMON_VALID_DEVICE_LOCAL_TXN_TIME = "admin.common.valid.deviceLocalTxnTime";
+	
 	@Autowired
 	private MessageSource messageSource;
 	
@@ -473,7 +477,7 @@ public class SettlementReportController implements URLMappingConstants {
 			columns[columns.length - 1] = columns[columns.length - 1].replaceAll("\r", "");
 		}
 		if (columns.length == 0) {
-			throw new ChatakAdminException(Properties.getProperty("chatak.admin.user.inactive.error.message"));
+			throw new ChatakAdminException(Properties.getProperty(PGConstants.CHATAK_ADMIN_USER_INACTIVE_ERROR_MESSAGE));
 		}
 		logger.info("Exiting :: SettlementReportController :: fetchColumn");
 	}
@@ -552,9 +556,9 @@ public class SettlementReportController implements URLMappingConstants {
 		if (StringUtil.isNullAndEmpty(merchantId)) {
 			if (!StringUtil.isNull(errorMessage)) {
 				errorMessage = errorMessage + " , " + messageSource
-						.getMessage("reports.label.transactions.merchantcode", null, LocaleContextHolder.getLocale());
+						.getMessage(PGConstants.REPORTS_LABEL_TRANSATIONS_MERCHANT_CODE, null, LocaleContextHolder.getLocale());
 			} else {
-				errorMessage = messageSource.getMessage("reports.label.transactions.merchantcode", null,
+				errorMessage = messageSource.getMessage(PGConstants.REPORTS_LABEL_TRANSATIONS_MERCHANT_CODE, null,
 						LocaleContextHolder.getLocale());
 			}
 		} else if (merchantId.length() == Integer.parseInt("15")) {
@@ -741,14 +745,14 @@ public class SettlementReportController implements URLMappingConstants {
 		logger.info("Entering :: SettlementReportController :: validateDeviceLocalTxnTime");
 		if (StringUtil.isNullAndEmpty(deviceLocalTxnTime)) {
 			if (!StringUtil.isNull(errorMessage)) {
-				errorMessage = errorMessage + " , " + messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
+				errorMessage = errorMessage + " , " + messageSource.getMessage(ADMIN_COMMON_DEVICE_LOCAL_TXN_TIME, null,
 						LocaleContextHolder.getLocale());
 			} else {
-				errorMessage = messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
+				errorMessage = messageSource.getMessage(ADMIN_COMMON_DEVICE_LOCAL_TXN_TIME, null,
 						LocaleContextHolder.getLocale());
 			}
 		} else if ((deviceLocalTxnTime.length() < 0)) {
-			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") +  messageSource.getMessage("admin.common.valid.deviceLocalTxnTime", null,
+			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") +  messageSource.getMessage(ADMIN_COMMON_VALID_DEVICE_LOCAL_TXN_TIME, null,
 					LocaleContextHolder.getLocale());
 		} else {
 			dataRequest.setTxnDesc(deviceLocalTxnTime);
@@ -782,14 +786,14 @@ public class SettlementReportController implements URLMappingConstants {
 		logger.info("Entering :: SettlementReportController :: validateBatchTime");
 		if (StringUtil.isNullAndEmpty(batchTime)) {
 			if (!StringUtil.isNull(errorMessage)) {
-				errorMessage = errorMessage + " , " + messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
+				errorMessage = errorMessage + " , " + messageSource.getMessage(ADMIN_COMMON_DEVICE_LOCAL_TXN_TIME, null,
 						LocaleContextHolder.getLocale());
 			} else {
-				errorMessage = messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
+				errorMessage = messageSource.getMessage(ADMIN_COMMON_DEVICE_LOCAL_TXN_TIME, null,
 						LocaleContextHolder.getLocale());
 			}
 		} else if ((batchTime.length() < 0)) {
-			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") +  messageSource.getMessage("admin.common.valid.deviceLocalTxnTime", null,
+			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") +  messageSource.getMessage(ADMIN_COMMON_VALID_DEVICE_LOCAL_TXN_TIME, null,
 					LocaleContextHolder.getLocale());
 		} else {
 			dataRequest.setBatchtime(DateUtil.toTimestamp(batchTime, PGConstants.DATE_FORMAT));
@@ -803,14 +807,14 @@ public class SettlementReportController implements URLMappingConstants {
 		logger.info("Entering :: SettlementReportController :: validatePMId");
 		if (StringUtil.isNullAndEmpty(pmId)) {
 			if (!StringUtil.isNull(errorMessage)) {
-				errorMessage = errorMessage + " , " + messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
+				errorMessage = errorMessage + " , " + messageSource.getMessage(ADMIN_COMMON_DEVICE_LOCAL_TXN_TIME, null,
 						LocaleContextHolder.getLocale());
 			} else {
-				errorMessage = messageSource.getMessage("admin.common-deviceLocalTxnTime:", null,
+				errorMessage = messageSource.getMessage(ADMIN_COMMON_DEVICE_LOCAL_TXN_TIME, null,
 						LocaleContextHolder.getLocale());
 			}
 		} else if ((pmId.length() < 0)) {
-			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") +  messageSource.getMessage("admin.common.valid.deviceLocalTxnTime", null,
+			errorMessage =(StringUtil.isNullAndEmpty(errorMessage) ? "" : errorMessage + " , ") +  messageSource.getMessage(ADMIN_COMMON_VALID_DEVICE_LOCAL_TXN_TIME, null,
 					LocaleContextHolder.getLocale());
 		} else {
 			programManagerId = pmId;
@@ -996,7 +1000,7 @@ public class SettlementReportController implements URLMappingConstants {
 	
 	private List<String> getSettlementReportHeaderList() {
 		String[] headerArr = {
-				messageSource.getMessage("reports.label.transactions.merchantcode", null,
+				messageSource.getMessage(PGConstants.REPORTS_LABEL_TRANSATIONS_MERCHANT_CODE, null,
 						LocaleContextHolder.getLocale()),
 				messageSource.getMessage("matched-transactions.label.terminal.id", null,
 						LocaleContextHolder.getLocale()),

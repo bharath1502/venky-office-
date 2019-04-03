@@ -201,7 +201,7 @@ public class TransactionsController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_ADMIN_TRANSACTION_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getPaginationList(HttpServletRequest request, final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering :: TransactionsController :: getPaginationList method");
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_TRANSACTION_PAGE);
@@ -249,7 +249,7 @@ public class TransactionsController implements URLMappingConstants {
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
       @FormParam("downloadReportObject") final String downloadReportObject,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords, HttpSession session,
       Map model) {
     logger.info("Entering :: TransactionController ;; downloadTransactionReport method ");
@@ -660,7 +660,7 @@ public class TransactionsController implements URLMappingConstants {
   
   private List<String> getTransactionHeaderList() {
     String[] headerArr = {
-        messageSource.getMessage("reports.label.transactions.dateortime", null,
+        messageSource.getMessage(PGConstants.REPORT_LABEL_TRANSACTIONS_DATEORTIME, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("admin.common-deviceLocalTxnTime", null,
             LocaleContextHolder.getLocale()),
@@ -676,7 +676,7 @@ public class TransactionsController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-procTxnId", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transaction-report-batchID", null,
+        messageSource.getMessage(PGConstants.TRANSACTION_REPORT_BATCHID, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("reports.label.transactions.cardnumberField", null,
             LocaleContextHolder.getLocale()),

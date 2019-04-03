@@ -87,23 +87,14 @@
 															<span class="red-error" id="merchantIdErrorDiv">&nbsp;</span>
 														</div>
 													</fieldset>
-													<!-- <fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title="">Transaction ID<span
-															class="required-field">*</span></label> <input type="text"
-															class="form-control" id="refNumberDiv"
-															onblur="this.value=this.value.trim();validRefNumber('refNumberDiv','refNumberErrorDiv')" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error" id="refNumberErrorDiv">&nbsp;</span>
-														</div>
-													</fieldset> -->
+													
 													
 													<!--Panel Action Button Start -->
 													<div class="col-sm-12 form-action-buttons" id="hideSearchButton">
 														<div class="col-sm-5"></div>
 														<div class="col-sm-7">
 															<input type="button" class="form-control button pull-right fetch-button" value='<spring:message code="accounts-manual-credit.label.searchbutton"/>' onClick="return validateAccMerchantCode()">
-															<input type="button" class="form-control button pull-right close-fetch-details" onclick="resetValues()" value='<spring:message code="accounts-manual-credit.label.resetbutton"/>' ><!-- onClick="return resetPreAuthFetch()" -->
-														</div>
+															<input type="button" class="form-control button pull-right close-fetch-details" onclick="resetValues()" value='<spring:message code="accounts-manual-credit.label.resetbutton"/>' >														</div>
 													</div>
 													<!--Panel Action Button End -->
 												</fieldset>

@@ -33,27 +33,9 @@
 	<div id="wrapper">
 		<!--Container block Start -->
 		<div class="container-fluid">
-			<!--Header Block Start -->
-			<!-- 			<header class="col-sm-12 all-page-header"> -->
-			<!-- 				Header Logo Start				 -->
-			<!-- 				<div class="col-sm-4">  -->
-			<!-- 					<img src="../images/chatak_logo.jpg" height="35px" alt="Logo"/> -->
-			<!-- 				</div> -->
-			<!-- 				Header Logo End	 -->
-			<!-- 				Header Welcome Text and Logout button Start -->
-			<!-- 				<div class="col-sm-5 col-xs-offset-3"> -->
-			<!-- 					<div class="pull-right user-settings"> -->
-			<!-- 						<table> -->
-			<!-- 							<tr> -->
-			<!-- 								<td><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></td> -->
-			<!-- 							</tr> -->
-			<!-- 						</table> -->
-			<!-- 					</div> -->
-			<!-- 				</div> -->
-			<!-- 				Header Welcome Text and Logout button End	 -->
-			<!-- 			</header> -->
-			<!--Header Block End -->
+		
 			<!--Navigation Block Start -->
+			
 			<%@include file="navigation-panel.jsp"%>
 			<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 			<!--Navigation Block Start -->
@@ -108,8 +90,8 @@
 								<form:form action="editRole" name="editRoleForm" method="post">
 									<input type="hidden" id="roleIdData" name="roleIdData" />
 									<input type="hidden" name="CSRFToken" value="${tokenval}">
-									<!-- <input type="hidden" id="roleNameData" name="roleNameData" /> 
-									<input type="hidden" id="statusData" name="statusData" /> -->
+									
+									
 
 								</form:form>
 
@@ -302,7 +284,7 @@
 								</c:when>
 								<c:otherwise>
 									<tr>
-										<td colspan="3" style="color: red;"><spring:message code="access-role-search.label.norolesfound"/></td>
+									   <td colspan="3" style="color: red;"><spring:message code="access-role-search.label.norolesfound"/></td>
 									</tr>
 								</c:otherwise>
 
@@ -310,26 +292,8 @@
 							</table>
 							<table class="table table-striped table-bordered table-condensed">
 
-							<!-- 							<tr> -->
-							<!-- 								<td>Paying Admin</td>																 -->
-							<!-- 								<td>Paying Administrator</td>								 -->
-							<!-- 								<td>Active</td> -->
-							<!-- 								<td>									 -->
-							<!-- 									<a href="access-role-edit.html"><span class="glyphicon glyphicon-pencil"></span></a>									 -->
-							<!-- 								</td> -->
-							<!-- 							</tr> -->
-							<!-- 							<tr> -->
-							<!-- 								<td>Super Admin</td>																 -->
-							<!-- 								<td>Paying Administrator</td>								 -->
-							<!-- 								<td>Active</td> -->
-							<!-- 								<td>									 -->
-							<!-- 									<a href="access-role-edit.html"><span class="glyphicon glyphicon-pencil"></span></a>									 -->
-							<!-- 								</td> -->
-							<!-- 							</tr> -->
 							<tr class="table-footer-main">
 								<td colspan="10" class="search-table-header-column">
-
-
 									<div class="col-sm-12">
 										<c:if test="${!(fn:length(roleList) eq 0) }">
 											<div class="col-sm-3">
@@ -353,10 +317,6 @@
 													</div>
 												</div>
 											</div>
-
-
-
-
 											<div class="col-sm-9">
 												<ul class="pagination custom-table-footer-pagination">
 													<c:if test="${portalListPageNumber gt 1}">

@@ -201,7 +201,7 @@
 	<!--Body Wrapper block End -->
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<!-- 	<script src="../js/common-lib.min.js"></script> -->
+	
 	<script type="text/javascript" src="../js/backbutton.js"></script>
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>

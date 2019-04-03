@@ -50,10 +50,7 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first">
-						<a href="switch-search">Search
-						</a>
-					</div> -->
+					
 					<c:if test="${fn:contains(existingFeatures,exchangeRateCreate)||
 					fn:contains(existingFeatures,exchangeRateEdit)||fn:contains(existingFeatures,exchangeRateDelete)}">
 					<div class="tab-header-container-first active-background">

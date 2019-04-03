@@ -82,7 +82,7 @@
 						<input type="hidden" id="downloadPageNumberId" name="downLoadPageNumber" />  
 						<input type="hidden" id="downloadTypeId" name="downloadType" />
 						<input type="hidden" id="totalRecords" name="totalRecords" />
-						<!-- <input type="hidden" id="downloadAllRecords" name="downloadAllRecords" /> -->
+						
 						<input type="hidden" name="CSRFToken" value="${tokenval}">
 					</form:form>
 					<form:form action="process-bulk-litle-eft-action" method="post"name="litleBulkEFT">
@@ -119,7 +119,7 @@
 								<th style="width: 150px;"><spring:message code="dash-board-litle-eft-transactions-search.label.merchantcode"/></th>
 								<th style="width: 200px;"><spring:message code="dash-board-litle-eft-transactions-search.label.amount"/></th>
 								<th style="width: 150px;" class="sorter-false tablesorter-header tablesorter-headerUnSorted"><input type="checkbox" id="selectall"/><spring:message code="dash-board-litle-eft-transactions-search.label.selectall" /> &nbsp;</th>
-								<!-- <th>Action</th> -->
+								
 							</tr>
 							</thead>
 							<c:choose>
@@ -161,10 +161,6 @@
 																<img src="../images/pdf.png">
 															</button>
 														</a>
-														<!-- <a>
-															<input type="checkbox" class="autoCheck check" id="totalRecordsDownload">
-															Download All 
-														</a> -->
 													</div>
 												</div>
 											</div>

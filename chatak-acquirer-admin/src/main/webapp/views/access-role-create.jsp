@@ -22,9 +22,7 @@
 <link rel="icon" href="../images/favicon.png" type="image/png">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
-<!-- <link href="../css/jquery.datetimepicker.css" rel="stylesheet"
-	type="text/css" /> -->
-	 <link href="../css/rome.css" rel="stylesheet">
+ <link href="../css/rome.css" rel="stylesheet">
 <script src="../js/jquery.min.js"></script>	
 <link href="../css/font-awesome.css" rel="stylesheet" type="text/css" />
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -56,8 +54,7 @@
 					<form:form action="adminRoleName" name="roleTypeForm" method="post">
 				      <input type="hidden" id="rolesType" name="rolesType" />
 				      <input type="hidden" name="CSRFToken" value="${tokenval}">
-				      <!-- <input type="hidden" id="rolesName" name="roleName" />
-				      <input type="hidden" id="roleDiscription" name="description" /> --> 
+				      
 			        </form:form>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->

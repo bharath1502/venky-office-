@@ -49,9 +49,7 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first active-background">
-						<a href="merchant-search">Specific User</a>
-					</div> -->
+					
 					<!-- Tab Buttons End -->
 					<!-- Content Block Start -->
 					<div class="col-sm-12">
@@ -113,8 +111,7 @@
 												<div class="col-sm-10 form-action-buttons" style="width: 100%;">
 											<div class="col-sm-5"></div>
 											<div class="col-sm-7">
-												<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
+												
 													<a type="button" onclick="submitGlobalExecutedDateRange()" class="form-control button pull-right"><spring:message code="reports.label.generatebutton"/></a>
 													<a type="button" href="home" class="form-control button pull-right"><spring:message code="reports.label.backbutton"/></a>
 											</div>
@@ -133,11 +130,11 @@
 										<th style="width: 83px;"><spring:message code="reports.label.balancereports.accounttype"/></th>
 										<th style="width: 85px;"><spring:message code="reports.label.balancereports.manualtransactions.transactionID"/></th>
 										<th style="width: 135px;"><spring:message code="reports.label.balancereports.manualtransactions.transactiondescription"/></th>
-										<!-- <th>Card Type</th> -->
+										
 										<th style="width: 58px;"><spring:message code="reports.label.balancereports.manualtransactions.currency"/></th>
 										<th style="width: 50px;"><spring:message code="reports.label.balancereports.manualtransactions.credit"/></th>
 										<th style="width: 50px;"><spring:message code="reports.label.balancereports.manualtransactions.debit"/></th>
-										<!-- <th>Credit</th> -->
+										
 									</tr>
 								</thead>
 								<c:choose>
@@ -209,8 +206,7 @@
 							<div class="col-sm-8 form-action-buttons" style="width: 96%;">
 									<div class="col-sm-5"></div>
 									<div class="col-sm-7">
-										<!-- <input type="button" class="form-control button pull-right"
-													value="Search">  -->
+										
 										<a type="button"
 											href="all-accounts-executed-transactions_date"
 											class="form-control button pull-right"><spring:message code="reports.label.backbutton"/></a>

@@ -26,10 +26,10 @@
 			<!--Header Block Start -->
 			<!--Header Block End -->
 			<!--Navigation Block Start -->
-			<!-- <nav class="col-sm-12 nav-bar" id="main-navigation"> -->
+			
 				<%-- <jsp:include page="header.jsp"></jsp:include> --%>
 				<%@include file="navigation-panel.jsp"%>
-			<!-- </nav> -->
+			
 			<!--Navigation Block Start -->
 			<!--Article Block Start-->
 			<article>
@@ -45,9 +45,7 @@
 					</div>
 					<!-- Breadcrumb End -->
 					<!-- Tab Buttons Start -->
-					<!-- <div class="tab-header-container-first">
-						<a href="merchant-search">Search</a>
-					</div> -->
+					
 					<div class="tab-header-container-first">
 						<a href="dcc-markup-search"><spring:message code="common.label.search"/></a>
 					</div>

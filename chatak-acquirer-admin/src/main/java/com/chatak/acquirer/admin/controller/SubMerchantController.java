@@ -383,7 +383,7 @@ public class SubMerchantController implements URLMappingConstants {
         modelAndView.addObject(Constants.MERCHANT, merchant);
         processorNames = merchantValidateService.getProcessorNames();
         List<Option> bankOptions = bankService.getBankData();
-        modelAndView.addObject("bankList", bankOptions);
+        modelAndView.addObject(PGConstants.BANKLIST, bankOptions);
         List<Option> resellerOptions = resellerService.getResellerData();
         modelAndView.addObject("resellerList", resellerOptions);
         List<String> mccList = merchantCategoryCodeService.getAllMCC();
@@ -425,20 +425,20 @@ public class SubMerchantController implements URLMappingConstants {
 				option.setLabel(programManagerResponse.getProgramManagerName());
 				options.add(option);
 				programManagerResponse.setResponseList(options);
-				model.put("selectedEntityList", selectedCurrencyList.getProgramManagerRequests());
+				model.put(PGConstants.SELECTED_ENTITY_LIST, selectedCurrencyList.getProgramManagerRequests());
 			} else{
 				programManagerResponse = isoService.findIsoNameAndIdByEntityId(loginResponse.getEntityId());
-				model.put("selectedEntityList", selectedCurrencyList.getIsoRequests());
+				model.put(PGConstants.SELECTED_ENTITY_LIST, selectedCurrencyList.getIsoRequests());
 			}
 		} else {
 			if (merchant.getAssociatedTo() != null && merchant.getAssociatedTo().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
 				programManagerResponse = programManagerService
 						.findProgramManagerNameByCurrencyAndId(merchant.getId(), merchant.getLocalCurrency());
-				model.put("selectedEntityList", selectedCurrencyList.getProgramManagerRequests());
+				model.put(PGConstants.SELECTED_ENTITY_LIST, selectedCurrencyList.getProgramManagerRequests());
 			} else {
 				programManagerResponse = isoService.findIsoNameByCurrencyAndId(merchant.getId(),
 						merchant.getLocalCurrency());
-				model.put("selectedEntityList", selectedCurrencyList.getIsoRequests());
+				model.put(PGConstants.SELECTED_ENTITY_LIST, selectedCurrencyList.getIsoRequests());
 			}
 		}
 		model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
@@ -534,7 +534,7 @@ public class SubMerchantController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant.label.merchantname", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("currency-search-page.label.currencycode", null,
+        messageSource.getMessage(PGConstants.CURRENCY_SEARCH_PAGE_LABEL_CURRENCY_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant-file-exportutil-email", null,
             LocaleContextHolder.getLocale()),

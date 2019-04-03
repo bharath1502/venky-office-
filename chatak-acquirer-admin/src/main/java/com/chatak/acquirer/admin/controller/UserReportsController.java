@@ -288,7 +288,7 @@ public class UserReportsController implements URLMappingConstants {
   public ModelAndView downloadSpecificUserStatementReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType, HttpServletResponse response,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering:: ReportsController:: downloadSpecificUserStatementReport method");
     ModelAndView modelAndView = new ModelAndView(SPECIFIC_USER_STATEMENT_REPORTS_SHOW);

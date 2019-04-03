@@ -34,6 +34,7 @@ import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.bean.RoleResponse;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.RoleLevel;
 import com.chatak.pg.model.FeatureDTO;
 import com.chatak.pg.model.UserRoleDTO;
@@ -111,14 +112,14 @@ public class RoleValidateController implements URLMappingConstants {
         modelAndView = roleController.getRolePagination(session,
             StringUtil.isNull((Integer) session.getAttribute(Constants.PAGE_NUMBER)) ? 1
                 : (Integer) session.getAttribute(Constants.PAGE_NUMBER),
-            (Integer) session.getAttribute("totalRecords"), model);
+            (Integer) session.getAttribute(PGConstants.TOTAL_RECORDS), model);
         model.put(Constants.SUCESS, messageSource.getMessage("prepaid.role.sucess.activate.message",
             null, LocaleContextHolder.getLocale()));
       } else {
         modelAndView = roleController.getRolePagination(session,
             StringUtil.isNull((Integer) session.getAttribute(Constants.PAGE_NUMBER)) ? 1
                 : (Integer) session.getAttribute(Constants.PAGE_NUMBER),
-            (Integer) session.getAttribute("totalRecords"), model);
+            (Integer) session.getAttribute(PGConstants.TOTAL_RECORDS), model);
         model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null,
             LocaleContextHolder.getLocale()));
       }

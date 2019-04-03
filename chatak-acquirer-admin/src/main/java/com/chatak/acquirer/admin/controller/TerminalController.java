@@ -33,6 +33,7 @@ import com.chatak.acquirer.admin.service.MerchantUpdateService;
 import com.chatak.acquirer.admin.service.TerminalService;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.user.bean.AddTerminalRequest;
 import com.chatak.pg.user.bean.AddTerminalResponse;
 import com.chatak.pg.user.bean.Terminal;
@@ -52,6 +53,10 @@ import com.chatak.pg.util.Constants;
 public class TerminalController implements URLMappingConstants {
 
   private static Logger logger = Logger.getLogger(TerminalController.class);
+  
+  private static final String MERCHANT_OPTIONS = "merchantOptions";
+  
+  private static final String TERMINAL = "terminal";
 
   @Autowired
   private MerchantUpdateService merchantUpdateService;
@@ -77,13 +82,13 @@ public class TerminalController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       List<Option> options = merchantUpdateService.getActiveMerchants();
-      session.setAttribute("merchantOptions", new ArrayList(options));
-      modelAndView.addObject("merchantOptions", options);
+      session.setAttribute(MERCHANT_OPTIONS, new ArrayList(options));
+      modelAndView.addObject(MERCHANT_OPTIONS, options);
     } catch (ChatakAdminException e) {
       logger.error("Error :: TerminalController:: showCreateTerminalPage method", e);
     }
     logger.info("Exiting:: TerminalController:: showCreateTerminalPage method");
-    model.put("terminal", new AddTerminalRequest());
+    model.put(TERMINAL, new AddTerminalRequest());
     return modelAndView;
   }
 
@@ -103,8 +108,8 @@ public class TerminalController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       List<Option> options = merchantUpdateService.getActiveMerchants();
-      session.setAttribute("merchantOptions", new ArrayList(options));
-      modelAndView.addObject("merchantOptions", options);
+      session.setAttribute(MERCHANT_OPTIONS, new ArrayList(options));
+      modelAndView.addObject(MERCHANT_OPTIONS, options);
       AddTerminalResponse addTerminalResponse = terminalService.addTerminal(terminal);
       if (null != addTerminalResponse) {
         if (addTerminalResponse.getErrorCode().equals(Constants.STATUS_CODE_SUCCESS)) {
@@ -123,7 +128,7 @@ public class TerminalController implements URLMappingConstants {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
-    model.put("terminal", terminal);
+    model.put(TERMINAL, terminal);
     logger.info("Exiting:: TerminalController:: createTerminal method");
     return modelAndView;
   }
@@ -148,8 +153,8 @@ public class TerminalController implements URLMappingConstants {
     session.setAttribute(Constants.TERMINALS_MODEL, terminal);
     try {
       List<Option> options = merchantUpdateService.getActiveMerchants();
-      session.setAttribute("merchantOptions", new ArrayList(options));
-      modelAndView.addObject("merchantOptions", options);
+      session.setAttribute(MERCHANT_OPTIONS, new ArrayList(options));
+      modelAndView.addObject(MERCHANT_OPTIONS, options);
       TerminalSearchResponse searchResponse = terminalService.searchTerminal(terminal);
       List<Terminals> terminalList = new ArrayList<Terminals>();
       if (null != searchResponse && !CollectionUtils.isEmpty(searchResponse.getTerminalList())) {
@@ -163,7 +168,7 @@ public class TerminalController implements URLMappingConstants {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
-    model.put("terminal", terminal);
+    model.put(TERMINAL, terminal);
     logger.info("Exiting:: TerminalController:: showSearchTerminalPage method");
     return modelAndView;
   }
@@ -184,7 +189,7 @@ public class TerminalController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     model.put("search", "show");
     try {
-      modelAndView.addObject("merchantOptions", session.getAttribute("merchantOptions"));
+      modelAndView.addObject(MERCHANT_OPTIONS, session.getAttribute(MERCHANT_OPTIONS));
       TerminalSearchResponse searchResponse = terminalService.searchTerminal(terminal);
       List<Terminals> terminalList = new ArrayList<Terminals>();
       if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getTerminalList())) {
@@ -198,7 +203,7 @@ public class TerminalController implements URLMappingConstants {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
-    model.put("terminal", terminal);
+    model.put(TERMINAL, terminal);
     logger.info("Exiting:: TerminalController:: searchTerminal method");
     return modelAndView;
   }
@@ -214,7 +219,7 @@ public class TerminalController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_ADMIN_TERMINALS_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: TerminalController:: getPaginationList method");
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_TERMINAL_PAGE);
@@ -222,7 +227,7 @@ public class TerminalController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       TerminalData terminal = (TerminalData) session.getAttribute(Constants.TERMINALS_MODEL);
-      model.put("terminal", terminal);
+      model.put(TERMINAL, terminal);
       terminal.setPageIndex(pageNumber);
       terminal.setNoOfRecords(totalRecords);
       terminal.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
@@ -272,14 +277,14 @@ public class TerminalController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       List<Option> options = merchantUpdateService.getActiveMerchants();
-      session.setAttribute("merchantOptions", new ArrayList(options));
-      modelAndView.addObject("merchantOptions", options);
+      session.setAttribute(MERCHANT_OPTIONS, new ArrayList(options));
+      modelAndView.addObject(MERCHANT_OPTIONS, options);
       Terminal terminalrequest = terminalService.getTerminal(getTerminalId);
       if (null == terminalrequest)
         modelAndView.addObject(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR,
             null, LocaleContextHolder.getLocale()));
       else
-        modelAndView.addObject("terminal", terminalrequest);
+        modelAndView.addObject(TERMINAL, terminalrequest);
     } catch (Exception e) {
       logger.error("ERROR:: TerminalController:: showEditTerminal method", e);
       modelAndView.addObject(Constants.ERROR,
@@ -314,11 +319,11 @@ public class TerminalController implements URLMappingConstants {
             model, session);
         modelAndView.addObject(Constants.SUCESS, messageSource
             .getMessage("chatak.terminal.update.success", null, LocaleContextHolder.getLocale()));
-        modelAndView.addObject("terminal", terminalData);
+        modelAndView.addObject(TERMINAL, terminalData);
 
       } else {
         modelAndView.setViewName(CHATAK_ADMIN_EDIT_TERMINAL_PAGE);
-        modelAndView.addObject("terminal", updateTerminalRequest);
+        modelAndView.addObject(TERMINAL, updateTerminalRequest);
         modelAndView.addObject(Constants.ERROR, messageSource
             .getMessage(ActionErrorCode.ERROR_CODE_Z5, null, LocaleContextHolder.getLocale()));
       }

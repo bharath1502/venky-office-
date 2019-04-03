@@ -197,7 +197,7 @@ public class LoginController implements URLMappingConstants {
           modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse,
               loginDetails, userAgent);
           processSettlement(session, loginResponse);
-          session.setAttribute("adminId", loginResponse.getUserId());
+          session.setAttribute(PGConstants.ADMIN_ID, loginResponse.getUserId());
           List<Merchant> merchants = getMerchantsList(loginResponse);
           validateMerchantList(session, merchants);
           
@@ -671,7 +671,7 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
     try {
       Long userId = (Long) session.getAttribute(Constants.LOGIN_USER_ID);
       List<UserRolesDTO> userRoleList = roleService.getRoleList();
-      session.setAttribute("userRoleListData", userRoleList);
+      session.setAttribute(PGConstants.USER_ROLE_LIST_DATA, userRoleList);
       UserProfileRequest userProfileRequest = loginService.getUserProfile(userId);
       model.put(Constants.USER_PROFILE_REQUEST, userProfileRequest);
     } catch (Exception e) {

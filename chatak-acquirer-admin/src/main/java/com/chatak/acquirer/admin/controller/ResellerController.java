@@ -36,6 +36,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.ResellerData;
 import com.chatak.pg.user.bean.AddResellerResponse;
@@ -377,7 +378,7 @@ public class ResellerController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_ADMIN_RESELLER_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: ResellerController:: getPaginationList method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_SEARCH_RESELLER);
     try {
@@ -422,7 +423,7 @@ public class ResellerController implements URLMappingConstants {
   public ModelAndView downloadResellerReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       HttpServletResponse response,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     String downloadType=request.getParameter("downloadType");
     logger.info("Entering:: ResellerController:: downloadResellerReport method");

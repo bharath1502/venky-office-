@@ -39,6 +39,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.Bank;
 import com.chatak.pg.user.bean.BankResponse;
@@ -73,7 +74,7 @@ public class BankController implements URLMappingConstants {
       modelAndView.addObject(Constants.STATE_LIST, "");
 
       List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
-      modelAndView.addObject("currencyList", currencyList);
+      modelAndView.addObject(PGConstants.CURRENCY_LIST, currencyList);
 
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR, messageSource
@@ -135,7 +136,7 @@ public class BankController implements URLMappingConstants {
 	    modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(ActionErrorCode.DUPLICATE_BANK_CODE, null, LocaleContextHolder.getLocale()));
 	    List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
-	    modelAndView.addObject("currencyList", currencyList);
+	    modelAndView.addObject(PGConstants.CURRENCY_LIST, currencyList);
         model.put("bank", bank);
       }
     } catch (Exception e) {
@@ -189,7 +190,7 @@ public class BankController implements URLMappingConstants {
       List<Bank> banks = new ArrayList<>();
       if (searchResponse != null) {
         banks = searchResponse.getBanks();
-        modelAndView.addObject("pageSize", bank.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, bank.getPageSize());
         modelAndView =
             PaginationUtil.getPagenationModel(modelAndView, searchResponse.getTotalNoOfRows());
         session.setAttribute(Constants.PAGE_NUMBER, Constants.ONE);
@@ -208,7 +209,7 @@ public class BankController implements URLMappingConstants {
   @RequestMapping(value = BANK_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: BankController:: getPaginationList method");
     ModelAndView modelAndView = new ModelAndView(BANK_SEARCH);
     try {
@@ -221,11 +222,11 @@ public class BankController implements URLMappingConstants {
       List<Bank> banks = new ArrayList<>();
       if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getBanks())) {
         banks = searchResponse.getBanks();
-        modelAndView.addObject("pageSize", bank.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, bank.getPageSize());
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             searchResponse.getTotalNoOfRows());
         session.setAttribute("pageNumber", pageNumber);
-        session.setAttribute("totalRecords", totalRecords);
+        session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
       }
       modelAndView.addObject("banks", banks);
 
@@ -445,7 +446,7 @@ public class BankController implements URLMappingConstants {
       HttpServletResponse response,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering:: BankController:: downloadBankList method");
     BankSearchResponse bankSearchResponse = null;
@@ -483,7 +484,7 @@ public class BankController implements URLMappingConstants {
   
   private void setExportDetailsDataForDownloadRoleReport(List<Bank> bankList,
       ExportDetails exportDetails) {
-    exportDetails.setReportName("BankList");
+    exportDetails.setReportName(PGConstants.BANKLIST);
     exportDetails.setHeaderMessageProperty("chatak.header.bank.messages");
 
     exportDetails.setHeaderList(getRoleHeaderList());
@@ -513,7 +514,7 @@ public class BankController implements URLMappingConstants {
       modelAndView = getPaginationList(session,
           StringUtil.isNull((Integer) session.getAttribute(Constants.PAGE_NUMBER)) ? 1
               : (Integer) session.getAttribute("pageNumber"),
-          (Integer) session.getAttribute("totalRecords"), model);
+          (Integer) session.getAttribute(PGConstants.TOTAL_RECORDS), model);
       if (ActionErrorCode.ERROR_CODE_00.equals(bankResponse.getErrorCode())) {
         model.put(Constants.SUCESS, bankResponse.getErrorMessage());
       } else {
@@ -535,7 +536,7 @@ public class BankController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("bank-file-exportutil-bankCode", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("currency-search-page.label.currencycode", null,
+        messageSource.getMessage(PGConstants.CURRENCY_SEARCH_PAGE_LABEL_CURRENCY_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("bank-file-exportutil-emailAddress", null,
             LocaleContextHolder.getLocale()),

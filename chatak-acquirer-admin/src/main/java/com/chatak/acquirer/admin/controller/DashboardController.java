@@ -455,7 +455,7 @@ private void validateMerchant(Map model, Merchant merchant) {
     return modelAndView;
   }
   
-	@PostMapping(value = FETCH_SETTLEMENT_DATA_BY_PMID)
+    @RequestMapping(value = FETCH_SETTLEMENT_DATA_BY_PMID)
 	public ModelAndView showViewSettlementDetails(HttpServletRequest request, HttpServletResponse response,
 			@FormParam("programViewId") final Long programViewId, @FormParam("batchDate") final Timestamp batchDate, HttpSession session, Map model) {
 	    logger.info("Entering :: DashboardController :: showViewSettlementDetails :: Acquirer Programa manager id : " + programViewId);

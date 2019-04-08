@@ -43,6 +43,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.enums.RoleLevel;
 import com.chatak.pg.model.GenericUserDTO;
@@ -63,6 +64,12 @@ import com.chatak.pg.util.StringUtils;
 public class UserManagementController implements URLMappingConstants {
 
   private static Logger logger = Logger.getLogger(UserManagementController.class);
+  
+  private static final String USER_DATA_DTO = "userDataDto";
+  
+  private static final String REQUEST_TYPE = "requestType";
+  
+  private static final String USER_DATA = "userData";
 
   @Autowired
   MessageSource messageSource;
@@ -107,15 +114,15 @@ public class UserManagementController implements URLMappingConstants {
     try {
       roleController.getRoleListForRoles(session, model);
       List<UserRolesDTO> userRoleList = roleService.getRoleList();
-      session.setAttribute("userRoleListData", userRoleList);
+      session.setAttribute(PGConstants.USER_ROLE_LIST_DATA, userRoleList);
       GenericUserDTO genericUserDTO = new GenericUserDTO();
       genericUserDTO.setPageSize(Constants.INITIAL_ENTITIES_PORTAL_DISPLAY_SIZE);
       genericUserDTO.setPageIndex(Constants.ONE);
-      Long adminUserId = (Long) session.getAttribute("adminId");
+      Long adminUserId = (Long) session.getAttribute(PGConstants.ADMIN_ID);
       if (adminUserId != null) {
         genericUserDTO.setAdminUserId(adminUserId);
       }
-      model.put("userDataDto", genericUserDTO);
+      model.put(USER_DATA_DTO, genericUserDTO);
       session.setAttribute(Constants.USER_SEARCH_REQUEST, genericUserDTO);
     } catch (Exception e) {
       logger.error("ERROR:: UserManagementController:: showUser method", e);
@@ -156,11 +163,11 @@ public class UserManagementController implements URLMappingConstants {
     	roleController.getRoleListForRoles(session, model);
     	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       List<UserRolesDTO> userRoleList = roleService.getRoleList();
-      session.setAttribute("userRoleListData", userRoleList);
+      session.setAttribute(PGConstants.USER_ROLE_LIST_DATA, userRoleList);
       userDataDto.setPageIndex(Constants.ONE);
       int pageSize = userDataDto.getPageSize();
-      model.put("userDataDto", userDataDto);
-      Long adminUserId = (Long) session.getAttribute("adminId");
+      model.put(USER_DATA_DTO, userDataDto);
+      Long adminUserId = (Long) session.getAttribute(PGConstants.ADMIN_ID);
       if (adminUserId != null) {
         userDataDto.setAdminUserId(adminUserId);
       }
@@ -199,7 +206,7 @@ public class UserManagementController implements URLMappingConstants {
       userDataDto.setPageSize(pageSize);
       session.setAttribute(Constants.USER_SEARCH_REQUEST, userDataDto);
       if (StringUtils.isListNotNullNEmpty(sortedList)) {
-        modelAndView.addObject("pageSize", pageSize);
+        modelAndView.addObject(PGConstants.PAGE_SIZE, pageSize);
         modelAndView = PaginationUtil.getPagenationModel(modelAndView,
             userDataDto.getNoOfRecords().intValue());
         session.setAttribute("pageNumber", Constants.ONE);
@@ -238,9 +245,9 @@ public class UserManagementController implements URLMappingConstants {
     try {
     	roleController.getRoleListForRoles(session, model);
       List<UserRolesDTO> userRoleList = roleService.getRoleList();
-      session.setAttribute("userRoleListData", userRoleList);
+      session.setAttribute(PGConstants.USER_ROLE_LIST_DATA, userRoleList);
       UserData userData = new UserData();
-      final String requestType = request.getParameter("requestType");
+      final String requestType = request.getParameter(REQUEST_TYPE);
       if (requestType != null && requestType.equalsIgnoreCase(Constants.USERS_GROUP_ADMIN)) {
         userData.setRequestType(Constants.USERS_GROUP_ADMIN);
       } else if (requestType != null
@@ -251,12 +258,12 @@ public class UserManagementController implements URLMappingConstants {
       String isUserMailUnique = Properties.getProperty("prepaid.email.unique.enable");
       model.put("isUserMailUnique", isUserMailUnique);
       session.setAttribute("isUserMailUnique", isUserMailUnique);
-      model.put("userData", userData);
+      model.put(USER_DATA, userData);
       Map<String, String> merchantsMap = null;
       merchantsMap = merchantUpdateService
           .getMerchantNameAndMerchantCodeAsMapByMerchantType(Constants.TYPE_MERCHANT);
-      session.setAttribute("merchantList", new HashMap(merchantsMap));
-      modelAndView.addObject("merchantList", merchantsMap);
+      session.setAttribute(PGConstants.MERCHANT_LIST, new HashMap(merchantsMap));
+      modelAndView.addObject(PGConstants.MERCHANT_LIST, merchantsMap);
     } catch (Exception e) {
       logger.error("ERROR:: UserManagementController:: searchUser method", e);
       model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE , null,
@@ -287,7 +294,7 @@ public class UserManagementController implements URLMappingConstants {
     }
     try {
     	roleController.getRoleListForRoles(session, model);
-      model.put("userData", userData);
+      model.put(USER_DATA, userData);
       String url = request.getRequestURL().toString();
       String uri = request.getRequestURI();
       if (Constants.TYPE_MERCHANT.equals(userData.getRoleType())) {
@@ -332,7 +339,7 @@ public class UserManagementController implements URLMappingConstants {
   public ModelAndView getUserPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
       @FormParam(Constants.TOTAL_RECORDS) final Integer totalRecords,
-      @FormParam("requestType") final String requestType, Map model) {
+      @FormParam(REQUEST_TYPE) final String requestType, Map model) {
     logger.info("Entering:: UserManagementController:: getUserPagination method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_USER_SEARCH);
     GenericUserDTO userDataDto = null;
@@ -340,12 +347,12 @@ public class UserManagementController implements URLMappingConstants {
     try {
     	roleController.getRoleListForRoles(session, model);
       userDataDto = (GenericUserDTO) session.getAttribute(Constants.USER_SEARCH_REQUEST);
-      model.put("userDataDto", userDataDto);
+      model.put(USER_DATA_DTO, userDataDto);
       userDataDto.setPageIndex(pageNumber);
       userList3 = new ArrayList<>();
       int pageSize = userDataDto.getPageSize();
       // Don't fetch the currently logged in user
-      Long adminUserId = (Long) session.getAttribute("adminId");
+      Long adminUserId = (Long) session.getAttribute(PGConstants.ADMIN_ID);
       if (adminUserId != null) {
         userDataDto.setAdminUserId(adminUserId);
       }
@@ -368,7 +375,7 @@ public class UserManagementController implements URLMappingConstants {
       userDataDto.setPageSize(pageSize);
       userDataDto.setNoOfRecords(totalRecords);
       if (StringUtil.isListNotNullNEmpty(userList3)) {
-        modelAndView.addObject("pageSize", pageSize);
+        modelAndView.addObject(PGConstants.PAGE_SIZE, pageSize);
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             userDataDto.getNoOfRecords().intValue());
         session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
@@ -572,22 +579,22 @@ public class UserManagementController implements URLMappingConstants {
 
   private void validateSessionAttribute(HttpSession session, ModelAndView modelAndView) {
 	Map<String, String> merchantsMap = null;
-      if (null != session.getAttribute("merchantList")) {
-        merchantsMap = (HashMap<String, String>) session.getAttribute("merchantList");
+      if (null != session.getAttribute(PGConstants.MERCHANT_LIST)) {
+        merchantsMap = (HashMap<String, String>) session.getAttribute(PGConstants.MERCHANT_LIST);
       } else {
         merchantsMap = merchantUpdateService
             .getMerchantNameAndMerchantCodeAsMapByMerchantType(Constants.TYPE_MERCHANT);
       }
-      modelAndView.addObject("merchantList", merchantsMap);
+      modelAndView.addObject(PGConstants.MERCHANT_LIST, merchantsMap);
   }
 
   private UserData validateUserRoleList(HttpServletRequest request, HttpSession session, final Long userIdData,
 		final String usersGroupType,Map model) throws ChatakAdminException {
 	LoginResponse loginResponse = (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
 	List<UserRoleDTO> userRoleList = roleService.getRoleListByType(usersGroupType);
-    session.setAttribute("userRoleListData", userRoleList);
+    session.setAttribute(PGConstants.USER_ROLE_LIST_DATA, userRoleList);
     UserData userData = userService.getUserDataOnUsersGroupType(userIdData, usersGroupType);
-    final String requestType = request.getParameter("requestType");
+    final String requestType = request.getParameter(REQUEST_TYPE);
     if (requestType != null && requestType.equalsIgnoreCase(Constants.USERS_GROUP_ADMIN)) {
       userData.setRequestType(Constants.USERS_GROUP_ADMIN);
     } else if (requestType != null
@@ -713,7 +720,7 @@ public class UserManagementController implements URLMappingConstants {
     }
     try {
       UserData userData = new UserData();
-      model.put("userData", userData);
+      model.put(USER_DATA, userData);
       userData = userService.deleteMerchantUser(getMerchantUserId, usersGroupTypes);
       if (null != userData && "00".equals(userData.getErrorCode())) {
         model.put(Constants.SUCESS, "User deleted successfully!");
@@ -743,7 +750,7 @@ public class UserManagementController implements URLMappingConstants {
     try {
     	roleController.getRoleListForRoles(session, model);
       List<UserRoleDTO> userRoleList = roleService.getRoleListByType(rolesType);
-      session.setAttribute("userRoleListData", userRoleList);
+      session.setAttribute(PGConstants.USER_ROLE_LIST_DATA, userRoleList);
       List<MposFeatures> mposFeature = null;
       if(rolesType.equals(Constants.MPOS_MERCHANT)){
     	  mposFeature = roleService.getMposeFeatures();
@@ -768,7 +775,7 @@ public class UserManagementController implements URLMappingConstants {
       model.put("entityList", entityMap);
       UserData userData = new UserData();
       userData.setRoleType(rolesType);
-      model.put("userData", userData);
+      model.put(USER_DATA, userData);
     } catch (Exception e) {
       logger.error("ERROR:: UserManagementController:: searchUser method", e);
       model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE , null,
@@ -818,7 +825,7 @@ public class UserManagementController implements URLMappingConstants {
           StringUtil.isNull((Integer) session.getAttribute(Constants.PAGE_NUMBER)) ? 1
               : (Integer) session.getAttribute(Constants.PAGE_NUMBER),
           (Integer) session.getAttribute(Constants.TOTAL_RECORDS),
-          (String) session.getAttribute("requestType"), model);
+          (String) session.getAttribute(REQUEST_TYPE), model);
       if (ActionErrorCode.ERROR_CODE_00.equals(userResponse.getErrorCode())) {
         model.put(Constants.SUCESS, userResponse.getErrorMessage());
       } else {

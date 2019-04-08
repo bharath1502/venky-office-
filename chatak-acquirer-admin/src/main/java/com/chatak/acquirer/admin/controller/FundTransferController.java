@@ -189,7 +189,7 @@ public class FundTransferController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_ADMIN_FUND_TRANSFER_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("transferMode") final String transferMode,
       @FormParam("status") final String status, Map model) {
     logger.info("Entering:: MerchantController:: getPaginationList method");
@@ -371,7 +371,7 @@ public class FundTransferController implements URLMappingConstants {
     String[] headerArr = {
         messageSource.getMessage("dash-board-litle-eft-transactions-search.label.datetime", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("reports.label.transactions.merchantcode", null,
+        messageSource.getMessage(PGConstants.REPORTS_LABEL_TRANSATIONS_MERCHANT_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("reports.label.transactions.amount", null,
             LocaleContextHolder.getLocale()),

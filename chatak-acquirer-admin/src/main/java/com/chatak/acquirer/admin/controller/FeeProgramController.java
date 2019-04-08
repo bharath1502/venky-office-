@@ -40,6 +40,7 @@ import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.FeeprogramNameResponse;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.FeeCodeDTO;
 import com.chatak.pg.model.FeeProgramDTO;
@@ -61,6 +62,8 @@ public class FeeProgramController implements URLMappingConstants {
   MessageSource messageSource;
 
   private static Logger logger = Logger.getLogger(FeeProgramController.class);
+  
+  private static final String FEE_PROGRAM_DTO = "feeProgramDTO";
 
   @Autowired
   FeeCodeService feeCodeService;
@@ -88,7 +91,7 @@ public class FeeProgramController implements URLMappingConstants {
     }
     try {
       FeeProgramDTO feeProgramDTO = new FeeProgramDTO();
-      model.put("feeProgramDTO", feeProgramDTO);
+      model.put(FEE_PROGRAM_DTO, feeProgramDTO);
       LoginResponse loginResponse =
           (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       feeProgramDTO.setCreatedBy(loginResponse.getUserId().toString());
@@ -126,7 +129,7 @@ public class FeeProgramController implements URLMappingConstants {
       LoginResponse loginResponse =
           (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       FeeProgramDTO feeProgramDTO = new FeeProgramDTO();
-      model.put("feeProgramDTO", feeProgramDTO);
+      model.put(FEE_PROGRAM_DTO, feeProgramDTO);
       FeeCodeResponseDetails codeResponse = feeCodeService.getAllFeeCodeList();
       managerRequest.setLoginuserType(loginResponse.getUserType());
       ProgramManagerResponse managerResponse=programManagerServices.getAllProgramManagers(managerRequest);
@@ -164,7 +167,7 @@ public class FeeProgramController implements URLMappingConstants {
       LoginResponse loginResponse =
           (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       feeProgramDTO.setCreatedBy(loginResponse.getUserId().toString());
-      model.put("feeProgramDTO", feeProgramDTO);
+      model.put(FEE_PROGRAM_DTO, feeProgramDTO);
       Response feeprogramResponse = feeProgramService.createFeeProgram(feeProgramDTO);
       if (feeprogramResponse.getErrorMessage().equals(Constants.SUCESS)) {
         modelAndView.setViewName(FEE_PROGRAM_SEARCH_PAGE);
@@ -177,7 +180,7 @@ public class FeeProgramController implements URLMappingConstants {
         modelAndView = showFeeProgramCreate(request, response, model, session);
         modelAndView.addObject(Constants.ERROR, messageSource
             .getMessage(feeprogramResponse.getErrorCode(), null, LocaleContextHolder.getLocale()));
-        model.put("feeProgramDTO", feeProgramDTO);
+        model.put(FEE_PROGRAM_DTO, feeProgramDTO);
       }
     } catch (ChatakAdminException e) {
       logger.error("ERROR:: FeeProgramController:: createFeeProgram method", e);
@@ -279,7 +282,7 @@ public class FeeProgramController implements URLMappingConstants {
     try {
       LoginResponse loginResponse =
           (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
-      model.put("feeProgramDTO", feeProgramDTO);
+      model.put(PGConstants.PROGRAM_MANAGER_LIST, feeProgramDTO);
       session.setAttribute(Constants.FEECODE_PROGRAM_REQUEST_LIST_EXPORTDATA, feeProgramDTO);
       feeProgramDTO.setCreatedBy(loginResponse.getUserId().toString());
       feeProgramDTO.setEntityId(loginResponse.getEntityId());
@@ -290,7 +293,7 @@ public class FeeProgramController implements URLMappingConstants {
       List<FeeProgramDTO> searchList = feeProgramResponse.getFeeCodeList();
       session.setAttribute(Constants.SEARCH_LIST, searchList);
       if (StringUtil.isListNotNullNEmpty(searchList)) {
-        modelAndView.addObject("pageSize", feeProgramDTO.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, feeProgramDTO.getPageSize());
         modelAndView =
             PaginationUtil.getPagenationModel(modelAndView, feeProgramResponse.getTotalNoOfRows());
         session.setAttribute(Constants.PAGE_NUMBER, Constants.ONE);
@@ -344,7 +347,7 @@ public class FeeProgramController implements URLMappingConstants {
       model.put(Constants.ERROR, exp.getMessage());
     } catch (Exception e) {
       logger.error("ERROR:: FeeProgramController:: showFeeProgramEdit method2", e);
-      model.put(Constants.ERROR, Properties.getProperty("prepaid.admin.general.error.message"));
+      model.put(Constants.ERROR, Properties.getProperty(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE));
     }
     logger.info("Exiting:: FeeProgramController:: showFeeProgramEdit method");
     return modelAndView;
@@ -353,7 +356,7 @@ public class FeeProgramController implements URLMappingConstants {
   private void validateFeeProgramResponseDetails(Map model, HttpSession session, final Long getFeeProgramId,
 		ModelAndView modelAndView) throws ChatakAdminException {
 	  FeeProgramDTO feeProgramDTO = new FeeProgramDTO();
-      model.put("feeProgramDTO", feeProgramDTO);
+      model.put(FEE_PROGRAM_DTO, feeProgramDTO);
       LoginResponse loginResponse =
           (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       feeProgramDTO.setFeeProgramId(getFeeProgramId);
@@ -378,7 +381,7 @@ public class FeeProgramController implements URLMappingConstants {
           feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());
       session.setAttribute("acquirerFeeValueList",
           feeProgramResponse.getFeeCodeList().get(0).getFeeValueList());
-      modelAndView.addObject("feeProgramDTO", feeProgramDTO);
+      modelAndView.addObject(FEE_PROGRAM_DTO, feeProgramDTO);
   }
 
   @RequestMapping(value = SHOW_FEE_PROGRAM_VIEW, method = RequestMethod.POST)
@@ -401,7 +404,7 @@ public class FeeProgramController implements URLMappingConstants {
       model.put(Constants.ERROR, e.getMessage());
     } catch (Exception e) {
       logger.error("ERROR:: FeeProgramController:: showFeeProgramEdit method2", e);
-      model.put(Constants.ERROR, Properties.getProperty("prepaid.admin.general.error.message"));
+      model.put(Constants.ERROR, Properties.getProperty(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE));
     }
     logger.info("Exiting:: FeeProgramController:: showFeeProgramEdit method");
     return modelAndView;
@@ -411,12 +414,12 @@ public class FeeProgramController implements URLMappingConstants {
   @RequestMapping(value = FEE_PROGRAM_PAGINATION_ACTION, method = RequestMethod.POST)
   public ModelAndView getfeeProgramPagination(final HttpSession session,
       @FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: FeeProgramController:: getfeeProgramPagination method");
     ModelAndView modelAndView = new ModelAndView(FEE_PROGRAM_SEARCH_PAGE);
     try {
       FeeProgramDTO feeProgramDTO = new FeeProgramDTO();
-      model.put("feeProgramDTO", feeProgramDTO);
+      model.put(FEE_PROGRAM_DTO, feeProgramDTO);
       LoginResponse loginResponse =
           (LoginResponse) session.getAttribute(Constants.LOGIN_RESPONSE_DATA);
       feeProgramDTO =
@@ -429,11 +432,11 @@ public class FeeProgramController implements URLMappingConstants {
       List<FeeProgramDTO> feeProgramRequestList = feeProgramResponse.getFeeCodeList();
 
       if (StringUtil.isListNotNullNEmpty(feeProgramRequestList)) {
-        modelAndView.addObject("pageSize", feeProgramDTO.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, feeProgramDTO.getPageSize());
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             feeProgramResponse.getTotalNoOfRows());
         session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
-        session.setAttribute("totalRecords", totalRecords);
+        session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
         modelAndView.addObject(Constants.SEARCH_LIST, feeProgramRequestList);
       }
     } catch (Exception e) {
@@ -450,7 +453,7 @@ public class FeeProgramController implements URLMappingConstants {
       HttpServletResponse response, HttpSession session, Map model,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering:: FeeCodeController:: downloadFeeCodeReport method");
     List<FeeProgramDTO> exportList = null;
@@ -593,7 +596,7 @@ public class FeeProgramController implements URLMappingConstants {
       modelAndView = getfeeProgramPagination(session,
           StringUtil.isNull((Integer) session.getAttribute(Constants.PAGE_NUMBER)) ? 1
               : (Integer) session.getAttribute(Constants.PAGE_NUMBER),
-          (Integer) session.getAttribute("totalRecords"), model);
+          (Integer) session.getAttribute(PGConstants.TOTAL_RECORDS), model);
 			if (ActionErrorCode.ERROR_CODE_00.equals(responseDetails.getErrorCode())) {
 				feeProgramDTO.setPageIndex(Constants.ONE);
 			      FeeProgramResponseDetails feeProgramResponse =

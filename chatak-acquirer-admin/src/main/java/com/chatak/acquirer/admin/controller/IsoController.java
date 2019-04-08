@@ -58,6 +58,8 @@ public class IsoController implements URLMappingConstants{
 
 	  private static Logger logger = Logger.getLogger(IsoController.class);
 	  
+	  private static final String ISO_CREATE = "isoCreate";
+	  
 	  @Autowired
 	  private IsoService isoService;
 	  
@@ -90,13 +92,13 @@ public class IsoController implements URLMappingConstants{
 			List<Option> countryList = bankService.getCountries();
 			modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
 			List<Option> currencyList = currencyConfigService.getCurrencyConfigCode();
-			modelAndView.addObject("currencyList", currencyList);
+			modelAndView.addObject(PGConstants.CURRENCY_LIST, currencyList);
 	    } catch (Exception e) {
 	      modelAndView.addObject(Constants.ERROR, messageSource
 	          .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
 	      logger.error("Error :: IsoController :: showIsoCreate : " + e.getMessage(), e);
 	    }
-	    model.put("isoCreate", new IsoRequest());
+	    model.put(ISO_CREATE, new IsoRequest());
 	    logger.info("Exiting :: IsoController :: showIsoCreate");
 	    return modelAndView;
 
@@ -138,14 +140,14 @@ public class IsoController implements URLMappingConstants{
 		    logger.error("Error :: IsoController :: processCreateIso :: ChatakAdminException :: " + ex.getMessage(), ex);
 			modelAndView = showIsoCreate(model, session);
 			modelAndView.addObject(Constants.ERROR, ex.getErrorMessage());
-			model.put("isoCreate", isoRequest);
+			model.put(ISO_CREATE, isoRequest);
 		} catch (Exception e) {
 		  logger.error("Error :: IsoController :: processCreateIso : " + e.getMessage(), e);
 			modelAndView = showIsoCreate(model, session);
 			modelAndView.addObject(Constants.ERROR, messageSource.getMessage(
 					Constants.CHATAK_GENERAL_ERROR, null,
 					LocaleContextHolder.getLocale()));
-			model.put("isoCreate", isoRequest);
+			model.put(ISO_CREATE, isoRequest);
 		}
 		logger.info("Exiting :: IsoController :: processCreateIso");
 		return modelAndView;
@@ -159,14 +161,14 @@ public class IsoController implements URLMappingConstants{
 
 		try {
 			setEnumValuesForSearchPage(model);
-			model.put("searchList", "yes");
+			model.put(PGConstants.SEARCH_LIST, "yes");
 		} catch (Exception e) {
 			modelAndView.addObject(Constants.ERROR, messageSource.getMessage(
 					Constants.CHATAK_GENERAL_ERROR, null,
 					LocaleContextHolder.getLocale()));
 			logger.error("Error :: IsoController :: showIsoSearch : " + e.getMessage(), e);
 		}
-		model.put("isoCreate", new IsoRequest());
+		model.put(ISO_CREATE, new IsoRequest());
 		logger.info("Exiting :: IsoController :: showIsoSearch");
 		return modelAndView;
 	}
@@ -215,7 +217,7 @@ public class IsoController implements URLMappingConstants{
 			session.setAttribute(Constants.ISO_REQUEST_EXPORT_DATA,
 					isoRequest);
 			IsoResponse isoResponse = isoService.searchIso(isoRequest);
-			model.put("searchList", isoResponse.getIsoRequest());
+			model.put(PGConstants.SEARCH_LIST, isoResponse.getIsoRequest());
 			model.put(Constants.TOTAL_RECORDS, isoResponse.getTotalNoOfRows());
 			 modelAndView = PaginationUtil.getPagenationModel(modelAndView,
 					 isoResponse.getTotalNoOfRows(), isoRequest.getPageSize());
@@ -226,7 +228,7 @@ public class IsoController implements URLMappingConstants{
 					LocaleContextHolder.getLocale()));
 			logger.error("Error :: IsoController :: processIsoSearch : " + e.getMessage(), e);
 		}
-		model.put("isoCreate", isoRequest);
+		model.put(ISO_CREATE, isoRequest);
 		logger.info("Exiting :: IsoController :: processIsoSearch");
 		return modelAndView;
 
@@ -321,8 +323,8 @@ public class IsoController implements URLMappingConstants{
 					LocaleContextHolder.getLocale()));
 			logger.error("Error :: IsoController :: updateIso : " + e.getMessage(), e);
 		}
-		model.put("isoCreate", new IsoRequest());
-		model.put("searchList", "yes");
+		model.put(ISO_CREATE, new IsoRequest());
+		model.put(PGConstants.SEARCH_LIST, "yes");
 		logger.info("Exiting :: IsoController :: updateIso");
 		return modelAndView;
 	}
@@ -381,13 +383,13 @@ public class IsoController implements URLMappingConstants{
 	@RequestMapping(value = PREPAID_ADMIN_ISO_PAGINATION_ACTION, method = RequestMethod.POST)
 	public ModelAndView isoPagination(HttpSession session, ModelMap model,
 			@FormParam("programManagerPageData") final Integer programManagerPageData,
-			@FormParam("totalRecords") final Integer totalRecords) {
+			@FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords) {
 		logger.info("Entering :: IsoController :: isoPagination");
 		ModelAndView modelAndView = new ModelAndView(VIEW_ISO_SEARCH);
 		try {
 			setEnumValuesForSearchPage(model);
 			IsoRequest isoRequest = new IsoRequest();
-			model.put("isoCreate", isoRequest);
+			model.put(ISO_CREATE, isoRequest);
 			isoRequest.setCreatedBy(session.getAttribute(Constants.LOGIN_USER_TYPE).toString());
 			isoRequest.setPageIndex(programManagerPageData);
 			isoRequest.setNoOfRecords(totalRecords);
@@ -417,8 +419,8 @@ public class IsoController implements URLMappingConstants{
 			if (StringUtil.isListNotNullNEmpty(isoResponseList)) {
 				modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, programManagerPageData,
 						isoResponse.getTotalNoOfRows(), sessionSearchList.getPageSize());
-				model.put("programManagerRequest", sessionSearchList);
-				modelAndView.addObject("searchList", isoResponseList);
+				model.put(PGConstants.PROGRAM_MANAGER_REQUEST, sessionSearchList);
+				modelAndView.addObject(PGConstants.SEARCH_LIST, isoResponseList);
 			}
 		}
 		logger.info("Exiting :: IsoController :: getIsoPaginationList");
@@ -427,7 +429,7 @@ public class IsoController implements URLMappingConstants{
 	@RequestMapping(value = GET_ISO_REPORT, method = RequestMethod.POST)
 	public ModelAndView downloadIsoList(HttpSession session, HttpServletRequest request, HttpServletResponse response,
 			@FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
+			@FormParam("downloadType") final String downloadType, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
 			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
 		logger.info("Entering :: IsoController :: downloadIsoList");
 		try {
@@ -508,7 +510,7 @@ public class IsoController implements URLMappingConstants{
 			IsoRequest isoRequest = new IsoRequest();
 			ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
 			programManagerRequest.setStatus(manageProgramManagerStatus);
-			model.put("isoCreate", isoRequest);
+			model.put(ISO_CREATE, isoRequest);
 			isoRequest.setId(manageProgramManagerId);
 
 			isoRequest.setProgramManagerRequest(programManagerRequest);
@@ -531,7 +533,7 @@ public class IsoController implements URLMappingConstants{
 		} catch (Exception e) {
 			logger.error("Error :: IsoController :: changeIsoStatus : " + e.getMessage(), e);
 			modelAndView = showIsoSearch(request, response, model, session);
-			model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message", null,
+			model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE, null,
 					LocaleContextHolder.getLocale()));
 		}
 		logger.info("Exiting :: IsoController :: changeIsoStatus");

@@ -106,7 +106,7 @@
 									<input type="submit" class="form-control button pull-right" value="Add" onclick="return validateAcquirerFeeCode()"> 
 									<a type="button" class="form-control button pull-right" href="chatak-partner-fee-show"><spring:message code="fee-program-edit.label.cancelbutton"/></a>
 								</div>
-								<!-- onclick="return validateFeeAcquirerEdit()" -->
+								
 							</div>
 										<!--Panel Action Button End -->
 									</div>

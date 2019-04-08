@@ -38,6 +38,7 @@ import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.acq.dao.model.PGCaPublicKeys;
 import com.chatak.pg.bean.PublickeyNameResponse;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.CAPublicKeysDTO;
 import com.chatak.pg.util.Constants;
@@ -130,7 +131,7 @@ public class CAPublicKeysController implements URLMappingConstants {
   @RequestMapping(value = CA_PUBLIC_KEYS_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getPaginationList(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: CAPublicKeysController:: getPaginationList method");
     ModelAndView modelAndView = new ModelAndView(CA_PUBLIC_KEYS_SEARCH_PAGE);
     try {
@@ -139,7 +140,7 @@ public class CAPublicKeysController implements URLMappingConstants {
       model.put(Constants.CAPUBLIC_KEYSDTO, caPublicKeysDTO);
       caPublicKeysDTO.setPageIndex(pageNumber);
       caPublicKeysDTO.setNoOfRecords(totalRecords);
-      modelAndView.addObject("pageSize", caPublicKeysDTO.getPageSize());
+      modelAndView.addObject(PGConstants.PAGE_SIZE, caPublicKeysDTO.getPageSize());
       CAPublicKeysResponse caPublicKeysResponse =
           caPublicKeysService.searchCAPublicKeys(caPublicKeysDTO);
       List<CAPublicKeysDTO> searchList = caPublicKeysResponse.getCaPublicKeysList();
@@ -148,7 +149,7 @@ public class CAPublicKeysController implements URLMappingConstants {
             caPublicKeysDTO.getNoOfRecords());
         session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
         session.setAttribute(Constants.TOTAL_RECORDS, totalRecords);
-        modelAndView.addObject("searchList", searchList);
+        modelAndView.addObject(PGConstants.SEARCH_LIST, searchList);
       }
     } catch (Exception e) {
       logger.error("ERROR:: CAPublicKeysController:: getPaginationList method", e);
@@ -338,7 +339,7 @@ public class CAPublicKeysController implements URLMappingConstants {
       modelAndView.addObject(Constants.CAPUBLIC_KEYSDTO, caPublicKeysDTO);
     } catch (Exception e) {
       logger.error("ERROR:: CAPublicKeysController:: showCAPublicKeysEdit method2", e);
-      model.put(Constants.ERROR, Properties.getProperty("prepaid.admin.general.error.message"));
+      model.put(Constants.ERROR, Properties.getProperty(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE));
     }
     return modelAndView;
   }

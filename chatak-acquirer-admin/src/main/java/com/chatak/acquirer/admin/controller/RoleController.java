@@ -34,6 +34,7 @@ import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.FeatureDataResponse;
 import com.chatak.pg.bean.Response;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.enums.RoleLevel;
 import com.chatak.pg.model.EditRoleResponse;
@@ -119,7 +120,7 @@ public class RoleController implements URLMappingConstants {
   @RequestMapping(value = ROLE_PAGINATION_ACTION, method = RequestMethod.POST)
   public ModelAndView getRolePagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: RoleController:: getRolePagination method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_ACCESS_ROLE_SEARCH);
     UserRolesDTO userRoleDTO = null;
@@ -131,11 +132,11 @@ public class RoleController implements URLMappingConstants {
       userRoleDTO.setNoOfRecords(totalRecords);
       List<UserRolesDTO> roleList = roleService.roleList(userRoleDTO);
       model.put(Constants.USER_ROLE_DTO, userRoleDTO);
-      modelAndView.addObject("pageSize", userRoleDTO.getPageSize());
+      modelAndView.addObject(PGConstants.PAGE_SIZE, userRoleDTO.getPageSize());
       modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
           userRoleDTO.getNoOfRecords().intValue());
       session.setAttribute("pageNumber", pageNumber);
-      session.setAttribute("totalRecords", totalRecords);
+      session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
       List responseList = new ArrayList();
       setAdminUserRoleList(modelAndView, roleList, responseList); 
     } catch (Exception e) {
@@ -168,11 +169,11 @@ public class RoleController implements URLMappingConstants {
       userRolesDTO.setPageIndex(Constants.ONE);
       session.setAttribute(Constants.SEARCH_ROLE_REQUEST, userRolesDTO);
       List<UserRolesDTO> roleList = roleService.roleList(userRolesDTO);
-      modelAndView.addObject("pageSize", userRolesDTO.getPageSize());
+      modelAndView.addObject(PGConstants.PAGE_SIZE, userRolesDTO.getPageSize());
       modelAndView =
           PaginationUtil.getPagenationModel(modelAndView, userRolesDTO.getNoOfRecords().intValue());
       session.setAttribute("pageNumber", Constants.ONE);
-      session.setAttribute("totalRecords", userRolesDTO.getNoOfRecords());
+      session.setAttribute(PGConstants.TOTAL_RECORDS, userRolesDTO.getNoOfRecords());
       List responseList = new ArrayList();
       setAdminUserRoleList(modelAndView, roleList, responseList);
     } catch (ChatakAdminException e) {
@@ -236,7 +237,7 @@ public class RoleController implements URLMappingConstants {
   public ModelAndView downloadRoleReport(HttpSession session, Map model, HttpServletRequest request,
       HttpServletResponse response,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     String downloadType=request.getParameter("downloadType");
     logger.info("Entering:: RoleController:: downloadRoleReport method");

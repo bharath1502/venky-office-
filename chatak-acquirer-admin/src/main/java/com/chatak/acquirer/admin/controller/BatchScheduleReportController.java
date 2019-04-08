@@ -289,7 +289,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
   @RequestMapping(value = CHATA_ADMIN_BATCH_TRANSACTION_EXPORT, method = RequestMethod.POST)
   public ModelAndView downloadBatchReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      HttpServletResponse response, @FormParam("totalRecords") final Integer totalRecords,
+      HttpServletResponse response, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering :: BatchScheduleReportController :: downloadBatchReport method");
 
@@ -381,7 +381,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
   @RequestMapping(value = CHATA_ADMIN_FUNDING_REPORT_EXPORT, method = RequestMethod.POST)
   public ModelAndView downloadFundingReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      HttpServletResponse response, @FormParam("totalRecords") final Integer totalRecords,
+      HttpServletResponse response, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering :: BatchScheduleReportController :: downloadFundingReport method");
 
@@ -513,7 +513,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_MERCHANT_TXN_HISTORY_REPORT, method = RequestMethod.POST)
   public ModelAndView downloadTxnsHistoryReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      HttpServletResponse response, @FormParam("totalRecords") final Integer totalRecords,
+      HttpServletResponse response, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering :: BatchScheduleReportController :: downloadBatchReport method");
 
@@ -601,11 +601,11 @@ public class BatchScheduleReportController implements URLMappingConstants {
   
   private List<String> getBatchHeaderList() {
     String[] headerArr = {
-        messageSource.getMessage("transaction-report-batchID", null,
+        messageSource.getMessage(PGConstants.TRANSACTION_REPORT_BATCHID, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("home.label.batch.date.time", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("reports.label.transactions.dateortime", null,
+        messageSource.getMessage(PGConstants.REPORT_LABEL_TRANSACTIONS_DATEORTIME, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("admin.common-deviceLocalTxnTime", null,
             LocaleContextHolder.getLocale()),
@@ -619,7 +619,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-description", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("currency-search-page.label.currencycode", null,
+        messageSource.getMessage(PGConstants.CURRENCY_SEARCH_PAGE_LABEL_CURRENCY_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-amount", null,
             LocaleContextHolder.getLocale()),
@@ -662,7 +662,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
 
   private List<String> getTransactionHistoryHeaderList() {
     String[] headerArr = {
-        messageSource.getMessage("reports.label.transactions.dateortime", null,
+        messageSource.getMessage(PGConstants.REPORT_LABEL_TRANSACTIONS_DATEORTIME, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("admin.common-deviceLocalTxnTime", null,
             LocaleContextHolder.getLocale()),
@@ -680,7 +680,7 @@ public class BatchScheduleReportController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-procTxnId", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transaction-report-batchID", null,
+        messageSource.getMessage(PGConstants.TRANSACTION_REPORT_BATCHID, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("reports.label.transactions.cardnumberField", null,
             LocaleContextHolder.getLocale()),
@@ -728,11 +728,11 @@ public class BatchScheduleReportController implements URLMappingConstants {
 
   private List<String> getFundingHeaderList() {
     String[] headerArr = {
-        messageSource.getMessage("reports.label.transactions.dateortime", null,
+        messageSource.getMessage(PGConstants.REPORT_LABEL_TRANSACTIONS_DATEORTIME, null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("transaction-report-batchID", null,
+        messageSource.getMessage(PGConstants.TRANSACTION_REPORT_BATCHID, null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("reports.label.transactions.merchantcode", null,
+        messageSource.getMessage(PGConstants.REPORTS_LABEL_TRANSATIONS_MERCHANT_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("merchant.label.merchantname", null,
             LocaleContextHolder.getLocale()),

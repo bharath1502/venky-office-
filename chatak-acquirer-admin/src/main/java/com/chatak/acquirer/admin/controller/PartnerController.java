@@ -39,6 +39,7 @@ import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.pg.bean.Request;
 import com.chatak.pg.bean.Response;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.exception.PrepaidException;
@@ -56,6 +57,12 @@ import com.chatak.pg.util.Constants;
 public class PartnerController implements URLMappingConstants {
   private static Logger logger = Logger.getLogger(PartnerController.class);
 
+  private static final String PARTNER_REQUEST = "partnerRequest";
+  
+  private static final String PARTNER = "Partner";
+  
+  private static final String PARTNER_RESPONSE = "partnerResponse";
+  
   @Autowired
   MessageSource messageSource;
 
@@ -103,7 +110,7 @@ public class PartnerController implements URLMappingConstants {
       programManagerRequest.setStatuses(Arrays.asList(Constants.ACTIVE));
       programManagerResponse = programManagerService.getAllProgramManagers(programManagerRequest);
       if (!StringUtil.isNull(programManagerResponse)) {
-        model.put("programManagersList", programManagerResponse.getProgramManagersList());
+        model.put(PGConstants.PROGRAM_MANAGER_LIST, programManagerResponse.getProgramManagersList());
       }
 
       //there can be no default program manager into the system
@@ -114,7 +121,7 @@ public class PartnerController implements URLMappingConstants {
       BankResponse bankResponse =
           programManagerService.findBankByProgramManagerId(programManagerRequest);
       if (null != bankResponse && StringUtil.isListNotNullNEmpty(bankResponse.getBankRequests())) {
-        model.put("bankList", bankResponse.getBankRequests());
+        model.put(PGConstants.BANKLIST, bankResponse.getBankRequests());
       }
 
       //Get the currency for the default Program Manager
@@ -124,7 +131,7 @@ public class PartnerController implements URLMappingConstants {
       //To get countries
       logger.info("Entering:: getCountryForCreate method");
       getCountryForCreate(model);
-      model.put("partnerRequest", partnerRequest);
+      model.put(PARTNER_REQUEST, partnerRequest);
     } catch (Exception e) {
       logger.error("ERROR:: PartnerController:: showCreatePartner method", e);
     }
@@ -178,7 +185,7 @@ public class PartnerController implements URLMappingConstants {
       partnerRequest.setPartnerType(Constants.NORMAL_PARTNER);
       partnerRequest.setCreatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
       partnerRequest.setPartnerLogo(bytes);
-      setAuditData(partnerRequest, session, "Partner", "Create");
+      setAuditData(partnerRequest, session, PARTNER , "Create");
       Response partnerCreateResponse = partnerService.createPartner(partnerRequest);
       if (partnerCreateResponse != null
           && partnerCreateResponse.getErrorCode().equals(Constants.STATUS_CODE_SUCCESS)) {
@@ -195,7 +202,7 @@ public class PartnerController implements URLMappingConstants {
 
     } catch (Exception e) {
       logger.error("ERROR:: PartnerController:: processCreatePartner method3", e);
-      model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
+      model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
 
@@ -234,15 +241,15 @@ public class PartnerController implements URLMappingConstants {
       programManagerRequest.setStatuses(Arrays.asList(Constants.ACTIVE, Constants.ACC_SUSPENDED));
       getPmAndBankList(programManagerRequest, model);
       model.put("userType", loginResponse.getUserType());
-      model.put("partnerRequest", partnerRequest);
-      model.put("partnerResponse", "yes");
+      model.put(PARTNER_REQUEST, partnerRequest);
+      model.put(PARTNER_RESPONSE, "yes");
 
     } catch (PrepaidException e) {
       logger.error("ERROR:: PartnerController:: showPartner method1", e);
       model.put(Constants.ERROR, e.getMessage());
     } catch (Exception e) {
       logger.error("ERROR:: PartnerController:: showPartner method2", e);
-      model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
+      model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exit:: PartnerController:: showPartner method");
@@ -297,7 +304,7 @@ public class PartnerController implements URLMappingConstants {
       model.put(Constants.ERROR, e.getMessage());
     } catch (Exception e) {
       logger.error("ERROR:: PartnerController:: searchPartner method2", e);
-      model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
+      model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exit:: PartnerController:: searchPartner method");
@@ -333,7 +340,7 @@ public class PartnerController implements URLMappingConstants {
       ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
       programManagerRequest.setId(managerId);
       partnerRequest.setPartnerId(partnerId);
-      setAuditData(partnerRequest, session, "Partner", "View");
+      setAuditData(partnerRequest, session, PARTNER, "View");
       PartnerResponse partnerResponse = partnerService.findByPartnerId(partnerRequest);
       PartnerRequest partner = partnerResponse.getPartnerList().get(0);
       if (partner.getWhiteListIPAddress() != null) {
@@ -355,12 +362,12 @@ public class PartnerController implements URLMappingConstants {
               partnerList.get(0).getProgramManagerRequest().getProgramManagerName()));
       partnerList.get(0).setPartnerName(com.chatak.acquirer.admin.util.StringUtil
           .escapeHTMLChars(partnerList.get(0).getPartnerName()));
-      model.put("partnerRequest", partnerList.get(0));
+      model.put(PARTNER_REQUEST, partnerList.get(0));
 
       // to get the list of currencycurrencyList
       List<Option> currencyCodeList = currencyConfigService.getCurrencyConfigCode();
-      modelAndView.addObject("currencyList", currencyCodeList);
-      session.setAttribute("currencyList",new ArrayList(currencyCodeList));
+      modelAndView.addObject(PGConstants.CURRENCY_LIST, currencyCodeList);
+      session.setAttribute(PGConstants.CURRENCY_LIST,new ArrayList(currencyCodeList));
 
       List<Option> countryList = merchantUpdateService.getCountries();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
@@ -440,7 +447,7 @@ public class PartnerController implements URLMappingConstants {
       partnerRequest.setBankPartnerMapRequests(bankRequestList);
       partnerRequest.setProgramManagerRequest(programManagerRequest);
       partnerRequest.setPartnerType(Constants.NORMAL_PARTNER);
-      setAuditData(partnerRequest, session, "Partner", "Update");
+      setAuditData(partnerRequest, session, PARTNER, "Update");
       partnerRequest.setUpdatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
       Response partnerUpdateResponse = partnerService.updatePartner(partnerRequest);
 
@@ -475,7 +482,7 @@ public class PartnerController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(PREPAID_ADMIN_SEARCH_PARTNER_PAGE);
 
     try {
-      model.put("partnerRequest", new PartnerRequest());
+      model.put(PARTNER_REQUEST, new PartnerRequest());
       setEnumValuesForSearchPage(model);
       PartnerRequest partnerRequest = new PartnerRequest();
       partnerRequest.setPartnerId(managePartnerId);
@@ -484,7 +491,7 @@ public class PartnerController implements URLMappingConstants {
       partnerRequest.setReason(reason);
       partnerRequest.setUpdatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
 
-      setAuditData(partnerRequest, session, "Partner", "Update");
+      setAuditData(partnerRequest, session, PARTNER, "Update");
       Response status = partnerService.changePartnerStatus(partnerRequest);
 
       if (status != null && status.getErrorCode().equals(Constants.STATUS_CODE_SUCCESS)) {
@@ -497,7 +504,7 @@ public class PartnerController implements URLMappingConstants {
 
       }
       List<PartnerRequest> partnerList =
-          (List<PartnerRequest>) modelAndView.getModel().get("partnerResponse");
+          (List<PartnerRequest>) modelAndView.getModel().get(PARTNER_RESPONSE);
       if (!StringUtil.isListNotNullNEmpty(partnerList)) {
         partnerRequest =
             (PartnerRequest) session.getAttribute(Constants.PARTNER_REQUEST_LIST_EXPORTDATA);
@@ -506,7 +513,7 @@ public class PartnerController implements URLMappingConstants {
 
     } catch (Exception e) {
       logger.error("ERROR:: PartnerController :: changePartnerStatus method2", e);
-      model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
+      model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting :: PartnerController :: changePartnerStatus method");
@@ -525,7 +532,7 @@ public class PartnerController implements URLMappingConstants {
   @RequestMapping(value = PARTNER_PAGINATION_ACTION, method = RequestMethod.POST)
   public ModelAndView getPartnerPagination(final HttpSession session,PartnerRequest partnerRequest,
       @FormParam("partnerPageData") final Integer partnerPageData,
-      @FormParam("totalRecords") final Integer totalRecords, Map<String, Object> model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map<String, Object> model) {
     logger.info("Entering:: PartnerController:: getPartnerPagination method");
 
     ModelAndView modelAndView = new ModelAndView(PREPAID_ADMIN_SEARCH_PARTNER_PAGE);
@@ -533,10 +540,10 @@ public class PartnerController implements URLMappingConstants {
 
     try {
       session.setAttribute("pageNumber", partnerPageData);
-      session.setAttribute("totalRecords", totalRecords);
+      session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
       setEnumValuesForSearchPage(model);
       List<Option> bankOptions = bankService.getBankData();
-      modelAndView.addObject("bankList", bankOptions);
+      modelAndView.addObject(PGConstants.BANKLIST, bankOptions);
 
       PartnerRequest searchlist =
           (PartnerRequest) session.getAttribute(Constants.PARTNER_REQUEST_LIST_EXPORTDATA);
@@ -603,11 +610,11 @@ public class PartnerController implements URLMappingConstants {
     BankRequest bankRequest = new BankRequest();
     programManagerResponse = programManagerService.getAllProgramManagers(programManagerRequest);
     if (!StringUtil.isNull(programManagerResponse)) {
-      model.put("programManagersList", programManagerResponse.getProgramManagersList());
+      model.put(PGConstants.PROGRAM_MANAGER_LIST, programManagerResponse.getProgramManagersList());
     }
     bankRequest.setStatusList(Arrays.asList(Constants.ACTIVE, Constants.ACC_SUSPENDED));
     List<Option> bankOptions = bankService.getBankData();
-    model.put("bankList", bankOptions);
+    model.put(PGConstants.BANKLIST, bankOptions);
     logger.info("Exiting:: PartnerController:: getPmAndBankList method");
   }
 
@@ -615,7 +622,7 @@ public class PartnerController implements URLMappingConstants {
       Map<String, Object> model) throws ChatakAdminException {
     logger.info("Entering:: PartnerController:: addPartnerList method");
     ModelAndView modelAndView = new ModelAndView(PREPAID_ADMIN_SEARCH_PARTNER_PAGE);
-    setAuditData(partnerRequest, session, "Partner", "Search");
+    setAuditData(partnerRequest, session, PARTNER, "Search");
     partnerRequest.setPartnerType(Constants.NORMAL_PARTNER);
     PartnerResponse partnerResponse = partnerService.searchPartner(partnerRequest);
     modelAndView = PaginationUtil.getPagenationModel(modelAndView,
@@ -625,7 +632,7 @@ public class PartnerController implements URLMappingConstants {
         partnerRequest1.setPartnerName(com.chatak.acquirer.admin.util.StringUtil
             .escapeHTMLChars(partnerRequest1.getPartnerName()));
       }
-      model.put("partnerResponse", partnerResponse.getPartnerList());
+      model.put(PARTNER_RESPONSE, partnerResponse.getPartnerList());
     }
     logger.info("Exiting:: PartnerController:: addPartnerList method");
     return modelAndView;
@@ -643,7 +650,7 @@ public class PartnerController implements URLMappingConstants {
       }
       modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, partnerPageData,
           totalRecords, partnerRequest.getPageSize());
-      modelAndView.addObject("partnerResponse", partnerRequestList);
+      modelAndView.addObject(PARTNER_RESPONSE, partnerRequestList);
     }
     logger.info("Exiting:: PartnerController:: addPartnerListForPagination method");
   }
@@ -703,7 +710,7 @@ public class PartnerController implements URLMappingConstants {
   public ModelAndView downloadPartnerReport(HttpSession session, Map<?, ?> model,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords, HttpServletRequest request,
       HttpServletResponse response) {
     logger.info("Entering:: PartnerController:: downloadPartnerReport method");

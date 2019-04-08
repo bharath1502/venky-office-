@@ -61,7 +61,7 @@ public class ReportsController implements URLMappingConstants {
   @RequestMapping(value = GLOBAL_MANUAL_TRANSFER_DOWNLOAD, method = RequestMethod.POST)
   public ModelAndView downloadManualTransferReport(HttpSession session, Map model,
       HttpServletRequest request, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords,
       HttpServletResponse response) {
     String downloadType = request.getParameter(Constants.DOWNLOAD_TYPE);
@@ -110,7 +110,7 @@ public class ReportsController implements URLMappingConstants {
 
   private List<String> getRoleHeaderLists() {
     String[] headerArr = {
-        messageSource.getMessage("reports.label.transactions.dateortime", null,
+        messageSource.getMessage(PGConstants.REPORT_LABEL_TRANSACTIONS_DATEORTIME, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("admin.common-deviceLocalTxnTime", null,
             LocaleContextHolder.getLocale()),
@@ -120,7 +120,7 @@ public class ReportsController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("home.label.accounttransactionid",
             null, LocaleContextHolder.getLocale()),
-        messageSource.getMessage("currency-search-page.label.currencycode", null,
+        messageSource.getMessage(PGConstants.CURRENCY_SEARCH_PAGE_LABEL_CURRENCY_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("show-account-transfer.label.availablebalance", null,
             LocaleContextHolder.getLocale()),
@@ -162,7 +162,7 @@ public class ReportsController implements URLMappingConstants {
   @RequestMapping(value = GLOBAL_PENDING_TRANSACTION_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getTransactionPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: PaymentSchemeController:: getPaginationList method");
     ModelAndView modelAndView = new ModelAndView(SHOW_GLOBAL_PENDING_TRANS_REPORT);
     try {
@@ -272,7 +272,7 @@ public class ReportsController implements URLMappingConstants {
   public ModelAndView downloadSystemOverviewReport(HttpSession session, Map model,
       HttpServletRequest request,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords,
       HttpServletResponse response) {
     String downloadType=request.getParameter(Constants.DOWNLOAD_TYPE);
@@ -319,7 +319,7 @@ public class ReportsController implements URLMappingConstants {
 	            LocaleContextHolder.getLocale()),
 	        messageSource.getMessage("reports-file-exportutil-activeAndBlockedAccounts", null,
 		            LocaleContextHolder.getLocale()),
-	        messageSource.getMessage("currency-search-page.label.currencycode", null,
+	        messageSource.getMessage(PGConstants.CURRENCY_SEARCH_PAGE_LABEL_CURRENCY_CODE, null,
 		            LocaleContextHolder.getLocale()),
 	        messageSource.getMessage("reports-file-exportutil-totalBalances", null,
 		            LocaleContextHolder.getLocale())};
@@ -372,7 +372,7 @@ public class ReportsController implements URLMappingConstants {
   @RequestMapping(value = MANNUAL_TRXN_PAGINATION, method = RequestMethod.POST)
   public ModelAndView getManualTransactionPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: ReportsController:: showGlobalManualTransactionReport method");
     ModelAndView modelAndView = new ModelAndView(SHOW_GLOBAL_MANUAL_TRANSACTION_REPORT);
     GetTransactionsListRequest transactionsListRequest;
@@ -401,7 +401,7 @@ public class ReportsController implements URLMappingConstants {
         session.setAttribute(Constants.MANUAL_TRANSACTIONS_REPORT_LIST,
             manualTransactionsReportList.getAccountTransactionList());
         modelAndView.addObject(Constants.TRANSACTION_DIV, Boolean.TRUE);
-        modelAndView.addObject("totalRecords", totalRecords);
+        modelAndView.addObject(PGConstants.TOTAL_RECORDS, totalRecords);
         modelAndView =
             PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber, totalRecords);
         modelAndView.addObject(Constants.MANUAL_TRANSACTIONS_REPORT_LIST,
@@ -520,7 +520,7 @@ public class ReportsController implements URLMappingConstants {
   @RequestMapping(value = GLOBAL_BALANCE_PAGINATION_REPORTS, method = RequestMethod.POST)
   public ModelAndView showGlobalSystemBalancesReportPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: ReportsController:: showGlobalSystemBalancesreport method");
     ModelAndView modelAndView = new ModelAndView(GLOBAL_BALANCE_REPORTS_SHOW);
     try {
@@ -563,7 +563,7 @@ public class ReportsController implements URLMappingConstants {
   public ModelAndView downloadGlobalBalanceReport(HttpSession session, Map model,
       HttpServletRequest request,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords,
       HttpServletResponse response) {
     String downloadType=request.getParameter(Constants.DOWNLOAD_TYPE);
@@ -689,7 +689,7 @@ public class ReportsController implements URLMappingConstants {
         session.setAttribute(Constants.MANUAL_TRANSACTIONS_REPORT_LIST,
             manualTransactionsReportList.getAccountTransactionList());
         modelAndView.addObject(Constants.TRANSACTION_DIV, Boolean.TRUE);
-        modelAndView.addObject("totalRecords", totalRecords);
+        modelAndView.addObject(PGConstants.TOTAL_RECORDS, totalRecords);
         PaginationUtil.getPagenationModel(modelAndView, totalRecords);
         modelAndView.addObject(Constants.MANUAL_TRANSACTIONS_REPORT_LIST,
             manualTransactionsReportList.getAccountTransactionList());
@@ -738,7 +738,7 @@ public class ReportsController implements URLMappingConstants {
   public ModelAndView downloadPendingTransReport(HttpSession session, Map model,
       HttpServletRequest request,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords,
       HttpServletResponse response) {
     String downloadType=request.getParameter(Constants.DOWNLOAD_TYPE);
@@ -781,7 +781,7 @@ public class ReportsController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("reports-file-exportutil-accountType", null,
             LocaleContextHolder.getLocale()),
-        messageSource.getMessage("currency-search-page.label.currencycode", null,
+        messageSource.getMessage(PGConstants.CURRENCY_SEARCH_PAGE_LABEL_CURRENCY_CODE, null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("reports-file-exportutil-availableBalance", null,
             LocaleContextHolder.getLocale()),

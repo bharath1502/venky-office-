@@ -45,6 +45,7 @@ import com.chatak.pg.bean.Request;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.bean.TimeZoneRequest;
 import com.chatak.pg.bean.TimeZoneResponse;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.user.bean.CardProgramRequest;
 import com.chatak.pg.user.bean.CardProgramResponse;
@@ -108,18 +109,18 @@ public class ProgramManagerController implements URLMappingConstants {
       // suspend or activate feature
       ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
       List<Option> bankOptions = bankService.getBankData();
-      modelAndView.addObject("bankList", bankOptions);
+      modelAndView.addObject(PGConstants.BANKLIST, bankOptions);
       programManagerRequest.setPageIndex(Constants.ONE);
       programManagerRequest.setPageSize(Constants.MAX_ENTITIES_PAGINATION_DISPLAY_SIZE);
 
-      model.put("programManagerRequest", programManagerRequest);
-      model.put("searchList", "yes");
+      model.put(PGConstants.PROGRAM_MANAGER_REQUEST, programManagerRequest);
+      model.put(PGConstants.SEARCH_LIST, "yes");
     } catch (ChatakAdminException e) {
       logger.error("ERROR:: ProgramManagerController:: showSearchProgramManager method1", e);
       model.put(Constants.ERROR, e.getMessage());
     } catch (Exception e) {
       logger.error("ERROR:: ProgramManagerController:: showSearchProgramManager method2", e);
-      model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
+      model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exit:: ProgramManagerController:: showSearchProgramManager method");
@@ -146,15 +147,15 @@ public class ProgramManagerController implements URLMappingConstants {
         return modelAndView;
       }
       ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
-      model.put("programManagerRequest", programManagerRequest);
+      model.put(PGConstants.PROGRAM_MANAGER_REQUEST, programManagerRequest);
 
       List<Option> bankOptions = bankService.getBankData();
-      modelAndView.addObject("bankList", bankOptions);
+      modelAndView.addObject(PGConstants.BANKLIST, bankOptions);
 
       // to get the list of currencycurrencyList
       List<Option> currencyCodeList = currencyConfigService.getCurrencyConfigCode();
-      modelAndView.addObject("currencyList", currencyCodeList);
-      session.setAttribute("currencyList",new ArrayList(currencyCodeList));
+      modelAndView.addObject(PGConstants.CURRENCY_LIST, currencyCodeList);
+      session.setAttribute(PGConstants.CURRENCY_LIST,new ArrayList(currencyCodeList));
    // to get the list of program manager Countries
       List<Option> countryList = bankService.getCountry();
       modelAndView.addObject(Constants.COUNTRY_LIST, countryList);
@@ -197,7 +198,7 @@ public class ProgramManagerController implements URLMappingConstants {
       logger.info("Entering:: getLogo method");
         getLogo(programManagerRequest, file);
       programManagerRequest.setCreatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
-      setAuditData(programManagerRequest, session, "ProgramManager", "Create");
+      setAuditData(programManagerRequest, session, PGConstants.PROGRAM_MANAGER, "Create");
       
       com.chatak.pg.bean.Response programManagerCreateResponse =
           programManagerService.createProgramManager(programManagerRequest);
@@ -227,11 +228,11 @@ public class ProgramManagerController implements URLMappingConstants {
     } catch (ChatakAdminException e) {
       logger.error("ERROR:: ProgramManagerController:: processCreateProgramManager method2", e);
       modelAndView = showCreateProgramManager(request, response, model, session);
-      model.put("programManagerRequest", programManagerRequest);
+      model.put(PGConstants.PROGRAM_MANAGER_REQUEST, programManagerRequest);
       modelAndView.addObject(Constants.ERROR, e.getErrorMessage());
     } catch (Exception e) {
       logger.error("ERROR:: ProgramManagerController:: processCreateProgramManager method3", e);
-      model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
+      model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting  :: ProgramManagerController:: processCreateProgramManager method");
@@ -264,7 +265,7 @@ public class ProgramManagerController implements URLMappingConstants {
     	if(loginResponse.getUserType().equalsIgnoreCase(Constants.PM_USER_TYPE)) {
     		programManagerRequest.setId(loginResponse.getEntityId());
 		}
-      model.put("programManagerRequest", programManagerRequest);
+      model.put(PGConstants.PROGRAM_MANAGER_REQUEST, programManagerRequest);
       programManagerRequest.setCreatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
       programManagerRequest.setPageIndex(Constants.ONE);
       if (programManagerRequest.getPageSize() != null) {
@@ -275,8 +276,8 @@ public class ProgramManagerController implements URLMappingConstants {
       session.setAttribute(Constants.PROGRAM_MANAGER_REQUEST_LIST_EXPORTDATA,
           programManagerRequest);
       List<Option> bankOptions = bankService.getBankData();
-      modelAndView.addObject("bankList", bankOptions);
-      setAuditData(programManagerRequest, session, "ProgramManager", "Search");
+      modelAndView.addObject(PGConstants.BANKLIST, bankOptions);
+      setAuditData(programManagerRequest, session, PGConstants.PROGRAM_MANAGER, "Search");
       ProgramManagerResponse programManagerResponse =
           programManagerService.searchProgramManagerDetails(programManagerRequest);
       modelAndView = PaginationUtil.getPagenationModel(modelAndView,
@@ -288,11 +289,11 @@ public class ProgramManagerController implements URLMappingConstants {
           programManagerRequest1.setProgramManagerName(
               StringUtil.escapeHTMLChars(programManagerRequest1.getProgramManagerName()));
 
-          modelAndView.addObject("searchList", searchList);
+          modelAndView.addObject(PGConstants.SEARCH_LIST, searchList);
 
         }
       } else {
-        modelAndView.addObject("searchList", new ArrayList<ProgramManagerRequest>());
+        modelAndView.addObject(PGConstants.SEARCH_LIST, new ArrayList<ProgramManagerRequest>());
         session.setAttribute(Constants.SEARCH_LIST, new ArrayList<ProgramManagerRequest>());
       }
       session.setAttribute(Constants.TOTAL_RECORDS, programManagerResponse.getTotalNoOfRows());
@@ -340,19 +341,19 @@ public class ProgramManagerController implements URLMappingConstants {
       method = RequestMethod.POST)
   public ModelAndView getProgramManagerPagination(final HttpSession session,
       @FormParam("programManagerPageData") final Integer programManagerPageData,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: ProgramManagerController:: getProgramManagerPagination method");
     ModelAndView modelAndView = new ModelAndView(PREPAID_ADMIN_SEARCH_PROGRAM_MANAGER_PAGE);
 
     try {
       setEnumValuesForSearchPage(model);
       ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
-      model.put("programManagerRequest", programManagerRequest);
+      model.put(PGConstants.PROGRAM_MANAGER_REQUEST, programManagerRequest);
       programManagerRequest.setCreatedBy(session.getAttribute(Constants.LOGIN_USER_ID).toString());
       programManagerRequest.setPageIndex(programManagerPageData);
       programManagerRequest.setNoOfRecords(totalRecords);
       List<Option> bankOptions = bankService.getBankData();
-      modelAndView.addObject("bankList", bankOptions);
+      modelAndView.addObject(PGConstants.BANKLIST, bankOptions);
       ProgramManagerRequest sessionSearchList = (ProgramManagerRequest) session
           .getAttribute(Constants.PROGRAM_MANAGER_REQUEST_LIST_EXPORTDATA);
       programManagerRequest.setPageSize(sessionSearchList.getPageSize());
@@ -382,7 +383,7 @@ public class ProgramManagerController implements URLMappingConstants {
   public ModelAndView downloadProgramManagerReport(HttpSession session, Map model,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords, HttpServletRequest request,
       HttpServletResponse response) {
     logger.info("Entering:: ProgramManagerController:: downloadProgramManagerReport method");
@@ -442,7 +443,7 @@ public class ProgramManagerController implements URLMappingConstants {
     try {
       List<CardProgramRequest> unselectedCardPrograms;
       programManagerRequest.setId(programManagerId);
-      setAuditData(programManagerRequest, session, "ProgramManager", "View");
+      setAuditData(programManagerRequest, session, PGConstants.PROGRAM_MANAGER, "View");
       ProgramManagerResponse programManagerResponse =
           programManagerService.editProgramManager(programManagerRequest);
       List<ProgramManagerRequest> programManagerList =
@@ -459,7 +460,7 @@ public class ProgramManagerController implements URLMappingConstants {
         unselectedCardPrograms = programManagerService.getUnselectedCpForIndependentPm(programManagerId, programManagerList.get(0).getAccountCurrency());
       }
       modelAndView.addObject("unselectedCardProgramList", unselectedCardPrograms);
-      model.put("programManagerRequest", programManagerList.get(0));
+      model.put(PGConstants.PROGRAM_MANAGER_REQUEST, programManagerList.get(0));
       byte[] image = programManagerList.get(0).getProgramManagerLogo();
       session.setAttribute("programManagerImage",
           programManagerList.get(0).getProgramManagerLogo());
@@ -471,8 +472,8 @@ public class ProgramManagerController implements URLMappingConstants {
       
       // to get the list of currencycurrencyList
       List<Option> currencyCodeList = currencyConfigService.getCurrencyConfigCode();
-      modelAndView.addObject("currencyList", currencyCodeList);
-      session.setAttribute("currencyList",new ArrayList(currencyCodeList));
+      modelAndView.addObject(PGConstants.CURRENCY_LIST, currencyCodeList);
+      session.setAttribute(PGConstants.CURRENCY_LIST,new ArrayList(currencyCodeList));
       
       // to get the list of program manager Countries
       List<Option> countryList = bankService.getCountry();
@@ -517,7 +518,7 @@ public class ProgramManagerController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(PREPAID_ADMIN_SEARCH_PROGRAM_MANAGER_PAGE);
 
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
-    setAuditData(programManagerRequest, session, "ProgramManager", "Update");
+    setAuditData(programManagerRequest, session, PGConstants.PROGRAM_MANAGER, "Update");
     if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_PM_EDIT_FEATURE_ID)) {
       session.invalidate();
       modelAndView.setViewName(INVALID_REQUEST_PAGE);
@@ -555,7 +556,7 @@ public class ProgramManagerController implements URLMappingConstants {
       model.put(Constants.ERROR, e.getMessage());
     } catch (Exception e) {
       modelAndView = processException(request, response, model, session, e, "updateProgramManager");
-      model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
+      model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting  :: ProgramManagerController:: updateProgramManager method");
@@ -587,7 +588,7 @@ public class ProgramManagerController implements URLMappingConstants {
     try {
       setEnumValuesForSearchPage(model);
       ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
-      model.put("programManagerRequest", programManagerRequest);
+      model.put(PGConstants.PROGRAM_MANAGER_REQUEST, programManagerRequest);
       programManagerRequest.setId(manageProgramManagerId);
       programManagerRequest.setStatus(manageProgramManagerStatus);
       programManagerRequest.setReason(reason);
@@ -615,7 +616,7 @@ public class ProgramManagerController implements URLMappingConstants {
     } catch (Exception e) {
       modelAndView =
           processException(request, response, model, session, e, "changeProgramManagerStatus");
-      model.put(Constants.ERROR, messageSource.getMessage("prepaid.admin.general.error.message",
+      model.put(Constants.ERROR, messageSource.getMessage(PGConstants.PREPAID_ADMIN_GENERAL_ERROR_MESSAGE,
           null, LocaleContextHolder.getLocale()));
     }
     logger.info("Exiting  :: ProgramManagerController:: changeProgramManagerStatus method");
@@ -708,8 +709,8 @@ public class ProgramManagerController implements URLMappingConstants {
         modelAndView =
             PaginationUtil.getPagenationModelSuccessive(modelAndView, programManagerPageData,
                 programMgrResponse.getTotalNoOfRows(), sessionSearchList.getPageSize());
-        model.put("programManagerRequest", sessionSearchList);
-        modelAndView.addObject("searchList", programManagerResponse);
+        model.put(PGConstants.PROGRAM_MANAGER_REQUEST, sessionSearchList);
+        modelAndView.addObject(PGConstants.SEARCH_LIST, programManagerResponse);
       }
     }
     logger.info("Exiting:: ProgramManagerController:: getPmPaginationList method");
@@ -858,7 +859,7 @@ public class ProgramManagerController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_CREATE_MERCHANT_PAGE);
     modelAndView.addObject(Constants.ERROR, null);
     logger.info("Entering :: ProgramManagerController :: getBankDetailsByCurrency method");
-    String currency = request.getParameter("currency");
+    String currency = request.getParameter(PGConstants.CURRENCY);
     Response currencyCodes = currencyConfigService.getCurrencyCodeNumeric(currency);
     Long currencyId = currencyCodes.getCurrencyId();
     try {
@@ -882,7 +883,7 @@ public class ProgramManagerController implements URLMappingConstants {
     ModelAndView modelAndView = new ModelAndView(CHATAK_ADMIN_CREATE_MERCHANT_PAGE);
     modelAndView.addObject(Constants.ERROR, null);
     logger.info("Entering :: ProgramManagerController :: getCardProgramsByCurrency");
-    String currency =request.getParameter("currency");
+    String currency =request.getParameter(PGConstants.CURRENCY);
     try {
     	Response responseVal	= cardProgramServices.getCardProgramsByCurrency(currency);
       if (responseVal != null) {
@@ -955,7 +956,7 @@ public class ProgramManagerController implements URLMappingConstants {
     logger.info("Entering :: ProgramManagerController :: getIssuanceCardProgramsByPmId method");
     String issuancePmId = request.getParameter("issuancePmId");
     String acquirerPmId = request.getParameter("acquirerPmId");
-    String currency = request.getParameter("currency"); 
+    String currency = request.getParameter(PGConstants.CURRENCY); 
    List<Long> programManagerReq = new ArrayList<>();
    programManagerReq.add(Long.parseLong(issuancePmId));
     try {

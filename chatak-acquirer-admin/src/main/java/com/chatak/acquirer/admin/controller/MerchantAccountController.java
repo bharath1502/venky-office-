@@ -77,7 +77,7 @@ public class MerchantAccountController implements URLMappingConstants {
   public ModelAndView showMerchantAccountInitialCreatePage(HttpServletRequest request,
       HttpServletResponse response, Merchant merchant, BindingResult bindingResult, Map model,
       HttpSession session) {
-    logger.info("Entering:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Entering:: MerchantController:: showMerchantAccountInitialCreatePage method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE);
 
     String entityType = request.getParameter("entityType");
@@ -95,7 +95,7 @@ public class MerchantAccountController implements URLMappingConstants {
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", e);
+      logger.error("ERROR:: MerchantController:: showMerchantAccountInitialCreatePage method", e);
     }
     modelAndView.addObject(Constants.MERCHANT, merchant);
     session.setAttribute(Constants.MERCHANTS_MODEL, merchant);
@@ -143,7 +143,7 @@ public class MerchantAccountController implements URLMappingConstants {
   public ModelAndView createMerchantAccount(HttpServletRequest request,
       HttpServletResponse response, Merchant merchant, BindingResult bindingResult, Map model,
       HttpSession session) {
-    logger.info("Entering:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Entering:: MerchantController:: createMerchantAccount method");
 
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
@@ -185,9 +185,9 @@ public class MerchantAccountController implements URLMappingConstants {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       modelAndView.addObject(Constants.MERCHANT, merchant);
-      logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", e);
+      logger.error("ERROR:: MerchantController:: createMerchantAccount method", e);
     }
-    logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Exiting:: MerchantController:: createMerchantAccount method");
     return modelAndView;
   }
 
@@ -212,14 +212,14 @@ public class MerchantAccountController implements URLMappingConstants {
     try {
       MerchantAccountSearchResponse searchResponse =
           merchantAccountService.searchMerchantAccount(merchantAccountSearchDto, null);
-      modelAndView.addObject("searchResponse", searchResponse);
+      modelAndView.addObject(PGConstants.SEARCH_RESPONSE, searchResponse);
       validateMerchantAccountSearchResponse(merchantAccountSearchDto, modelAndView, searchResponse);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", e);
     }
-    modelAndView.addObject("merchantAccountSearchDto", merchantAccountSearchDto);
+    modelAndView.addObject(PGConstants.MERCHANT_ACCOUNT_SEARCH_DTO, merchantAccountSearchDto);
     logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
     return modelAndView;
   }
@@ -228,7 +228,7 @@ public class MerchantAccountController implements URLMappingConstants {
   public ModelAndView merchantAccountSearch(HttpServletRequest request,
       HttpServletResponse response, MerchantAccountSearchDto merchantAccountSearchDto,
       BindingResult bindingResult, Map model, HttpSession session) {
-    logger.info("Entering:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Entering:: MerchantController:: merchantAccountSearch method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
     if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_MERCHANT_ACCOUNT_FEATURE_ID)) {
@@ -243,24 +243,24 @@ public class MerchantAccountController implements URLMappingConstants {
     try {
       MerchantAccountSearchResponse searchResponse =
           merchantAccountService.searchMerchantAccount(merchantAccountSearchDto, null);
-      modelAndView.addObject("searchResponse", searchResponse);
+      modelAndView.addObject(PGConstants.SEARCH_RESPONSE, searchResponse);
       validateMerchantAccountSearchResponse(merchantAccountSearchDto, modelAndView, searchResponse);
     } catch (Exception exp) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", exp);
+      logger.error("ERROR:: MerchantController:: merchantAccountSearch method", exp);
     }
-    modelAndView.addObject("merchantAccountSearchDto", merchantAccountSearchDto);
-    logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
+    modelAndView.addObject(PGConstants.MERCHANT_ACCOUNT_SEARCH_DTO, merchantAccountSearchDto);
+    logger.info("Exiting:: MerchantController:: merchantAccountSearch method");
     return modelAndView;
   }
 
   @RequestMapping(value = CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGINATION, method = RequestMethod.POST)
   public ModelAndView merchantAccountSearchPagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("sortProperty") final String sortProperty, Map model) {
-    logger.info("Entering:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Entering:: MerchantController:: merchantAccountSearchPagination method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE);
     MerchantAccountSearchDto merchantAccountSearchDto =
         (MerchantAccountSearchDto) session.getAttribute(Constants.MERCHANT_ACCOUNT_SEARCH_MODEL);
@@ -272,9 +272,9 @@ public class MerchantAccountController implements URLMappingConstants {
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", e);
+      logger.error("ERROR:: MerchantController:: merchantAccountSearchPagination method", e);
     }
-    logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Exiting:: MerchantController:: merchantAccountSearchPagination method");
     return modelAndView;
   }
 
@@ -282,7 +282,7 @@ public class MerchantAccountController implements URLMappingConstants {
 		ModelAndView modelAndView, MerchantAccountSearchDto merchantAccountSearchDto) {
 	MerchantAccountSearchResponse searchResponse =
           merchantAccountService.searchMerchantAccount(merchantAccountSearchDto, null);
-      modelAndView.addObject("searchResponse", searchResponse);
+      modelAndView.addObject(PGConstants.SEARCH_RESPONSE, searchResponse);
       modelAndView.addObject("sortProperty", (null != sortProperty) ? sortProperty : "");
       if (searchResponse != null
           && !CollectionUtils.isEmpty(searchResponse.getMerchantAccountSearchDtoList())) {
@@ -290,7 +290,7 @@ public class MerchantAccountController implements URLMappingConstants {
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             searchResponse.getTotalNoOfRows());
       }
-      modelAndView.addObject("merchantAccountSearchDto", merchantAccountSearchDto);
+      modelAndView.addObject(PGConstants.MERCHANT_ACCOUNT_SEARCH_DTO, merchantAccountSearchDto);
   }
 
 
@@ -298,7 +298,7 @@ public class MerchantAccountController implements URLMappingConstants {
   public ModelAndView merchantDetailsSearchForAccountCreation(HttpServletRequest request,
       HttpServletResponse response, Merchant merchant, BindingResult bindingResult, Map model,
       HttpSession session) {
-    logger.info("Entering:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Entering:: MerchantController:: merchantDetailsSearchForAccountCreation method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE);
 
     if (request.getHeader(Constants.REFERER) == null) {
@@ -312,11 +312,11 @@ public class MerchantAccountController implements URLMappingConstants {
     } catch (Exception exp) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", exp);
+      logger.error("ERROR:: MerchantController:: merchantDetailsSearchForAccountCreation method", exp);
     }
     modelAndView.addObject(Constants.MERCHANT, merchant);
     session.setAttribute(Constants.MERCHANTS_MODEL, merchant);
-    logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Exiting:: MerchantController:: merchantDetailsSearchForAccountCreation method");
     return modelAndView;
   }
 
@@ -336,8 +336,8 @@ public class MerchantAccountController implements URLMappingConstants {
       method = RequestMethod.POST)
   public ModelAndView getMerchantDetailsPaginationListForMerchantAccountCreate(
       final HttpSession session, @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
-    logger.info("Entering:: MerchantController:: getPaginationList method");
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
+    logger.info("Entering:: MerchantController:: getMerchantDetailsPaginationListForMerchantAccountCreate method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_INITIAL_CREATE_PAGE);
     try {
       Merchant merchant = (Merchant) session.getAttribute(Constants.MERCHANTS_MODEL);
@@ -357,11 +357,11 @@ public class MerchantAccountController implements URLMappingConstants {
       }
       modelAndView.addObject(Constants.MERCHANTS_MODEL, merchant);
     } catch (Exception e) {
-      logger.error("ERROR:: MerchantController:: getPaginationList method", e);
+      logger.error("ERROR:: MerchantController:: getMerchantDetailsPaginationListForMerchantAccountCreate method", e);
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
-    logger.info("Exiting:: MerchantController:: getPaginationList method");
+    logger.info("Exiting:: MerchantController:: getMerchantDetailsPaginationListForMerchantAccountCreate method");
     return modelAndView;
   }
 
@@ -393,9 +393,9 @@ public class MerchantAccountController implements URLMappingConstants {
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR:: MerchantController:: downloadMerchantReport method", e);
+      logger.error("ERROR:: MerchantController:: changeAccountStatus method", e);
     }
-    logger.info("Exiting:: MerchantController:: downloadMerchantReport method");
+    logger.info("Exiting:: MerchantController:: changeAccountStatus method");
     return modelAndView;
 
   }
@@ -404,7 +404,7 @@ public class MerchantAccountController implements URLMappingConstants {
   public ModelAndView updateMerchantAccount(HttpServletRequest request,
       HttpServletResponse response, Merchant merchant, BindingResult bindingResult, Map model,
       HttpSession session) {
-    logger.info("Entering:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Entering:: MerchantController:: updateMerchantAccount method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_EDIT);
 
     if (request.getHeader(Constants.REFERER) == null) {
@@ -429,10 +429,10 @@ public class MerchantAccountController implements URLMappingConstants {
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", e);
+      logger.error("ERROR:: MerchantController:: updateMerchantAccount method", e);
     }
     modelAndView.addObject(Constants.MERCHANT, merchant);
-    logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Exiting:: MerchantController:: updateMerchantAccount method");
     return modelAndView;
   }
 
@@ -440,7 +440,7 @@ public class MerchantAccountController implements URLMappingConstants {
   public ModelAndView merchantAccountEditPage(HttpServletRequest request,
       HttpServletResponse response, Merchant merchant, BindingResult bindingResult, Map model,
       HttpSession session) {
-    logger.info("Entering:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Entering:: MerchantController:: merchantAccountEditPage method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_EDIT);
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
     if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_SUB_MERCHANT_EDIT_FEATURE_ID)) {
@@ -469,10 +469,10 @@ public class MerchantAccountController implements URLMappingConstants {
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", e);
+      logger.error("ERROR:: MerchantController:: merchantAccountEditPage method", e);
     }
     modelAndView.addObject(Constants.MERCHANT, merchant);
-    logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Exiting:: MerchantController:: merchantAccountEditPage method");
     return modelAndView;
   }
 
@@ -491,7 +491,7 @@ public class MerchantAccountController implements URLMappingConstants {
       HttpServletRequest request, HttpServletResponse response,
       @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
       @FormParam("downloadType") final String downloadType,
-      @FormParam("totalRecords") final Integer totalRecords,
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
       @FormParam("downloadAllRecords") final boolean downloadAllRecords) {
     logger.info("Entering:: MerchantController:: downloadMerchantReport method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_MERCHANT_ACCOUNT_SEARCH_PAGE);
@@ -542,7 +542,7 @@ public class MerchantAccountController implements URLMappingConstants {
   public void downloadPendingNmas(HttpSession session, HttpServletRequest request,
       @FormParam("merchantDownloadId") final Integer merchantDownloadId,
       HttpServletResponse response) {
-    logger.info("Entering:: MerchantController:: downloadMerchantReport method");
+    logger.info("Entering:: MerchantController:: downloadPendingNmas method");
     try {
       byte[] bFile = new byte[1];
       OutputStream out = response.getOutputStream();
@@ -552,15 +552,15 @@ public class MerchantAccountController implements URLMappingConstants {
       out.flush();
       out.close();
     } catch (Exception e) {
-      logger.error("ERROR:: MerchantController:: downloadMerchantReport method", e);
+      logger.error("ERROR:: MerchantController:: downloadPendingNmas method", e);
     }
-    logger.info("Exiting:: MerchantController:: downloadMerchantReport method");
+    logger.info("Exiting:: MerchantController:: downloadPendingNmas method");
   }
 
   @RequestMapping(value = SHOW_ALL_PENDING_MERCHANTS, method = RequestMethod.GET)
   public ModelAndView showAllPendingMerchants(HttpServletRequest request,
       HttpServletResponse response, HttpSession session,
-      @FormParam("totalRecords") final Integer totalRecords) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords) {
     logger.info("Entering:: MerchantController:: showAllPendingMerchants method");
     ModelAndView modelAndView = new ModelAndView(SHOW_ALL_PENDING_MERCHANTS);
     LoginResponse loginResponse = (LoginResponse) session.getAttribute("loginResponse");
@@ -571,7 +571,7 @@ public class MerchantAccountController implements URLMappingConstants {
     	merchants = merchantUpdateService.getPmMerchantByEntityIdandEntityType(loginResponse.getEntityId(), loginResponse.getUserType());
 	}
     modelAndView.addObject("pendingMerchants", merchants);
-    session.setAttribute("totalRecords", merchants.size());
+    session.setAttribute(PGConstants.TOTAL_RECORDS, merchants.size());
     return modelAndView;
   }
 
@@ -596,18 +596,18 @@ public class MerchantAccountController implements URLMappingConstants {
     try {
       Map<String, String> merchantDataMap =
           merchantAccountService.getMerchantMapByMerchantType(PGConstants.MERCHANT);
-      modelAndView.addObject("merchantDataMap", merchantDataMap);
-      session.setAttribute("merchantDataMap", new HashMap(merchantDataMap));
+      modelAndView.addObject(PGConstants.MERCHANT_DATA_MAP, merchantDataMap);
+      session.setAttribute(PGConstants.MERCHANT_DATA_MAP, new HashMap(merchantDataMap));
       MerchantAccountSearchResponse searchResponse =
           merchantAccountService.searchMerchantAccount(merchantAccountSearchDto, merchantDataMap);
-      modelAndView.addObject("searchResponse", searchResponse);
+      modelAndView.addObject(PGConstants.SEARCH_RESPONSE, searchResponse);
       validateMerchantAccountSearchResponse(merchantAccountSearchDto, modelAndView, searchResponse);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", e);
     }
-    modelAndView.addObject("merchantAccountSearchDto", merchantAccountSearchDto);
+    modelAndView.addObject(PGConstants.MERCHANT_ACCOUNT_SEARCH_DTO, merchantAccountSearchDto);
     logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
     return modelAndView;
   }
@@ -616,7 +616,7 @@ public class MerchantAccountController implements URLMappingConstants {
   public ModelAndView searchSubMerchantAccount(HttpServletRequest request,
       HttpServletResponse response, MerchantAccountSearchDto merchantAccountSearchDto,
       BindingResult bindingResult, Map model, HttpSession session) {
-    logger.info("Entering:: MerchantController:: showMerchantAccountSearchPage method");
+    logger.info("Entering:: MerchantController:: searchSubMerchantAccount method");
     String existingFeature = (String) session.getAttribute(Constants.EXISTING_FEATURES);
     ModelAndView modelAndView = new ModelAndView(CHATAK_SUB_MERCHANT_ACCOUNT_SEARCH_PAGE);
     if (!existingFeature.contains(FeatureConstants.ADMIN_SERVICE_SUB_MERCHANT_ACCOUNT_FEATURE_ID)) {
@@ -632,26 +632,26 @@ public class MerchantAccountController implements URLMappingConstants {
     try {
 
       Map<String, String> merchantDataMap =
-          (Map<String, String>) session.getAttribute("merchantDataMap");
+          (Map<String, String>) session.getAttribute(PGConstants.MERCHANT_DATA_MAP);
 
       if (null == merchantDataMap) {
         merchantDataMap = merchantAccountService.getMerchantMapByMerchantType(PGConstants.MERCHANT);
-        session.setAttribute("merchantDataMap", new HashMap(merchantDataMap));
+        session.setAttribute(PGConstants.MERCHANT_DATA_MAP, new HashMap(merchantDataMap));
       }
 
-      modelAndView.addObject("merchantDataMap", merchantDataMap);
+      modelAndView.addObject(PGConstants.MERCHANT_DATA_MAP, merchantDataMap);
 
       MerchantAccountSearchResponse searchResponse =
           merchantAccountService.searchMerchantAccount(merchantAccountSearchDto, merchantDataMap);
-      modelAndView.addObject("searchResponse", searchResponse);
+      modelAndView.addObject(PGConstants.SEARCH_RESPONSE, searchResponse);
       validateMerchantAccountSearchResponse(merchantAccountSearchDto, modelAndView, searchResponse);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
-      logger.error("ERROR:: MerchantController:: showMerchantAccountSearchPage method", e);
+      logger.error("ERROR:: MerchantController:: searchSubMerchantAccount method", e);
     }
-    modelAndView.addObject("merchantAccountSearchDto", merchantAccountSearchDto);
-    logger.info("Exiting:: MerchantController:: showMerchantAccountSearchPage method");
+    modelAndView.addObject(PGConstants.MERCHANT_ACCOUNT_SEARCH_DTO, merchantAccountSearchDto);
+    logger.info("Exiting:: MerchantController:: searchSubMerchantAccount method");
     return modelAndView;
   }
 

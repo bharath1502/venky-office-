@@ -188,8 +188,8 @@ public class DashboardController implements URLMappingConstants {
                 : executedTxnList.getAccountTransactionList().subList(0, Constants.TEN));
         transactionList = transactionResponse.getAccountTxnList() != null
             ? transactionResponse.getAccountTxnList() : new ArrayList<AccountTransactionDTO>();
-        modelAndView.addObject("executedListSize", listSize);
-        session.setAttribute("executedListSize", listSize);
+        modelAndView.addObject(PGConstants.EXECUTED_LIST_SIZE, listSize);
+        session.setAttribute(PGConstants.EXECUTED_LIST_SIZE, listSize);
         modelAndView.addObject(Constants.EXECUTED_TXN_LIST, transactionList);
         session.setAttribute(Constants.EXECUTED_TXN_LIST, transactionList);
       }
@@ -284,7 +284,7 @@ public class DashboardController implements URLMappingConstants {
         modelAndView.addObject("merchant", merchant);
         processorNames = merchantValidateService.getProcessorNames();
         List<Option> bankOptions = bankService.getBankData();
-        modelAndView.addObject("bankList", bankOptions);
+        modelAndView.addObject(PGConstants.BANKLIST, bankOptions);
         List<Option> resellerOptions = resellerService.getResellerData();
         modelAndView.addObject("resellerList", resellerOptions);
       }
@@ -310,13 +310,13 @@ private void validateMerchant(Map model, Merchant merchant) {
 					&& merchant.getAssociatedTo().equals(PGConstants.PROGRAM_MANAGER_NAME)) {
 				 Response  programManagerResponse = programManagerService.findProgramManagerNameByCurrencyAndId(merchant.getId(),merchant.getLocalCurrency());
 				model.put("selectedCardProgramList", selectedCurrencyList.getCardProgramRequests());
-				model.put("selectedEntityList", selectedCurrencyList.getProgramManagerRequests());
+				model.put(PGConstants.SELECTED_ENTITY_LIST, selectedCurrencyList.getProgramManagerRequests());
 				model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
 				model.put("EntityList", programManagerResponse.getResponseList());
 			} else {
 				Response  programManagerResponse = isoService.findIsoNameByCurrencyAndId(merchant.getId(), merchant.getLocalCurrency());
 				model.put("selectedCardProgramList", selectedCurrencyList.getCardProgramRequests());
-				model.put("selectedEntityList", selectedCurrencyList.getIsoRequests());
+				model.put(PGConstants.SELECTED_ENTITY_LIST, selectedCurrencyList.getIsoRequests());
 				model.put(Constants.MERCHANT, selectedCurrencyList.getMerchant());
 				model.put("EntityList", programManagerResponse.getResponseList());
 			}
@@ -384,7 +384,7 @@ private void validateMerchant(Map model, Merchant merchant) {
       }
       if (null != adminUserList) {
         modelAndView.addObject("blockedUserList", adminUserList);
-        modelAndView.addObject("totalRecords", adminUserList.size());
+        modelAndView.addObject(PGConstants.TOTAL_RECORDS, adminUserList.size());
         session.setAttribute("blockedUserList", adminUserList);
       } else {
         model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE,
@@ -497,7 +497,7 @@ private void validateMerchant(Map model, Merchant merchant) {
 
 	@RequestMapping(value = SHOW_ALL_PENDING_SETTLEMENT_DATA, method = RequestMethod.GET)
 	public ModelAndView showAllPendingSettlementDetails(HttpServletRequest request, HttpServletResponse response,
-			HttpSession session, @FormParam("totalRecords") final Integer totalRecords) {
+			HttpSession session, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords) {
 		logger.info("Entering:: DashboardController:: showAllPendingSettlementDetails method");
 		ModelAndView modelAndView = new ModelAndView(SHOW_ALL_PENDING_SETTLEMENT_DATA);
 		List<PGIssSettlementData> list = null;
@@ -526,7 +526,7 @@ private void validateMerchant(Map model, Merchant merchant) {
 				settlementData.add(settlementDataRequest);
 			}
 			modelAndView.addObject("settlementDataList", settlementData);
-			session.setAttribute("totalRecords", settlementData.size());
+			session.setAttribute(PGConstants.TOTAL_RECORDS, settlementData.size());
 		}
 	}
 }

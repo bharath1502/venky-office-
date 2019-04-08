@@ -32,6 +32,7 @@ import com.chatak.pg.acq.dao.model.PGAcquirerFeeCode;
 import com.chatak.pg.acq.dao.model.PGMerchant;
 import com.chatak.pg.acq.dao.model.PGPartnerFeeCode;
 import com.chatak.pg.acq.dao.repository.AcquirerFeeCodeRepository;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.model.AcquirerFeeCodeDTO;
 import com.chatak.pg.model.Merchant;
 import com.chatak.pg.model.PartnerFeeCodeDTO;
@@ -54,6 +55,12 @@ public class FeeCodeController implements URLMappingConstants {
   private MessageSource messageSource;
 
   private static Logger logger = Logger.getLogger(FeeCodeController.class);
+  
+  private static final String PG_ACQUIRER_FREE_CODE = "pgAcquirerFeeCode";
+  
+  private static final String PARTNER_FEE_CODE_DTO = "partnerFeeCodeDTO";
+  
+  private static final String PARTNER_FEE_LIST = "partnerFeeList";
 
   @RequestMapping(value = CHATAK_ACQUIRER_FEE_SHOW, method = RequestMethod.GET)
   public ModelAndView showAcquirerFeePage(Map model, HttpSession session,
@@ -72,7 +79,7 @@ public class FeeCodeController implements URLMappingConstants {
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       logger.error("ERROR:: FeeCodeController:: showCreateAcquirerPage method", e);
     }
-    modelAndView.addObject("pgAcquirerFeeCode", pgAcquirerFeeCode);
+    modelAndView.addObject(PG_ACQUIRER_FREE_CODE, pgAcquirerFeeCode);
     logger.info("Exiting:: FeeCodeController:: showCreateAcquirerPage method");
     return modelAndView;
   }
@@ -91,7 +98,7 @@ public class FeeCodeController implements URLMappingConstants {
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       logger.info("ERROR:: FeeCodeController:: showEditParnerFeePage method",e);
     }
-    modelAndView.addObject("partnerFeeCodeDTO", partnerFeeCodeDTO);
+    modelAndView.addObject(PARTNER_FEE_CODE_DTO, partnerFeeCodeDTO);
     logger.info("Exiting:: FeeCodeController:: showEditParnerFeePage method");
     return modelAndView;
   }
@@ -131,7 +138,7 @@ public class FeeCodeController implements URLMappingConstants {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
-    modelAndView.addObject("pgAcquirerFeeCode", pgAcquirerFeeCode);
+    modelAndView.addObject(PG_ACQUIRER_FREE_CODE, pgAcquirerFeeCode);
     logger.info("Exiting:: FeeCodeController:: showEditAcquirerFeePage method");
     return modelAndView;
   }
@@ -145,13 +152,13 @@ public class FeeCodeController implements URLMappingConstants {
     session.setAttribute(Constants.PARTNER_FEE_CODES_MODEL, merchant);
     merchant.setPageSize(Constants.MAX_ENTITIES_PORTAL_DISPLAY_SIZE);
     merchant.setPageIndex(Constants.ONE);
-    modelAndView.addObject("partnerFeeCodeDTO", partnerFeeCodeDTO);
+    modelAndView.addObject(PARTNER_FEE_CODE_DTO, partnerFeeCodeDTO);
     modelAndView.addObject("flag", false);
     try {
       MerchantSearchResponse searchResponse = merchantUpdateService.searchAllMerchant(merchant);
       if (searchResponse.getMerchants() != null) {
-        modelAndView.addObject("partnerFeeList", searchResponse.getMerchants());
-        modelAndView.addObject("pageSize", merchant.getPageSize());
+        modelAndView.addObject(PARTNER_FEE_LIST, searchResponse.getMerchants());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, merchant.getPageSize());
         modelAndView =
             PaginationUtil.getPagenationModel(modelAndView, searchResponse.getTotalNoOfRows());
       }
@@ -159,7 +166,7 @@ public class FeeCodeController implements URLMappingConstants {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
       logger.info("ERROR:: FeeCodeController:: showPartnerFeePage method",e);
-      modelAndView.addObject("partnerFeeList", new ArrayList<PartnerFeeCodeDTO>());
+      modelAndView.addObject(PARTNER_FEE_LIST, new ArrayList<PartnerFeeCodeDTO>());
     }
     logger.info("Exiting:: FeeCodeController:: showPartnerFeePage method");
     return modelAndView;
@@ -192,7 +199,7 @@ public class FeeCodeController implements URLMappingConstants {
       modelAndView.addObject("flag", false);
       return modelAndView;
     }
-    modelAndView.addObject("partnerFeeCodeDTO", partnerFeeCodeDTO);
+    modelAndView.addObject(PARTNER_FEE_CODE_DTO, partnerFeeCodeDTO);
     modelAndView.addObject("flag", true);
     logger.info("Exiting:: FeeCodeController:: showCreatePartnerFeePage method");
     return modelAndView;
@@ -222,7 +229,7 @@ public class FeeCodeController implements URLMappingConstants {
   @RequestMapping(value = CHATAK_PARTNER_FEE_PAGINATION_ACTION, method = RequestMethod.POST)
   public ModelAndView getFeeCodePagination(final HttpSession session,
       @FormParam("pageNumber") final Integer pageNumber,
-      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
     logger.info("Entering:: FeeCodeController:: getFeeCodePagination method");
     Merchant merchant = new Merchant();
     ModelAndView modelAndView = new ModelAndView(CHATAK_PARTNER_FEE_SHOW);
@@ -246,11 +253,11 @@ public class FeeCodeController implements URLMappingConstants {
       List<MerchantData> merchants = new ArrayList<>();
       if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMerchants())) {
         merchants = searchResponse.getMerchants();
-        modelAndView.addObject("pageSize", merchant.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, merchant.getPageSize());
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             searchResponse.getTotalNoOfRows());
       }
-      modelAndView.addObject("partnerFeeList", merchants);
+      modelAndView.addObject(PARTNER_FEE_LIST, merchants);
     } catch (Exception e) {
       modelAndView.addObject(Constants.ERROR, messageSource
           .getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
@@ -302,7 +309,7 @@ public class FeeCodeController implements URLMappingConstants {
           feeAcquirerCodeSearch.add(merchant);
         }
         if (!feeAcquirerCodeSearch.isEmpty()) {
-          modelAndView.addObject("partnerFeeList", feeAcquirerCodeSearch);
+          modelAndView.addObject(PARTNER_FEE_LIST, feeAcquirerCodeSearch);
           modelAndView =
               PaginationUtil.getPagenationModel(modelAndView, feeAcquirerCodeSearch.size());
         }
@@ -316,7 +323,7 @@ public class FeeCodeController implements URLMappingConstants {
       modelAndView.addObject("flag", false);
       return modelAndView;
     }
-    modelAndView.addObject("partnerFeeCodeDTO", partnerFeeCodeDTO);
+    modelAndView.addObject(PARTNER_FEE_CODE_DTO, partnerFeeCodeDTO);
     modelAndView.addObject("flag", false);
     logger.info("Exiting:: FeeCodeController:: searchPartnerFeePage method");
     return modelAndView;
@@ -328,7 +335,7 @@ public class FeeCodeController implements URLMappingConstants {
     logger.info("Entering:: FeeCodeController:: getPartnerFeePage method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_PARTNER_FEE_CREATE);
     PartnerFeeCodeDTO partnerFeeCodeDTO = new PartnerFeeCodeDTO();
-    modelAndView.addObject("partnerFeeCodeDTO", partnerFeeCodeDTO);
+    modelAndView.addObject(PARTNER_FEE_CODE_DTO, partnerFeeCodeDTO);
     modelAndView.addObject("flag", false);
     logger.info("Exiting:: FeeCodeController:: getPartnerFeePage method");
     return modelAndView;
@@ -339,7 +346,7 @@ public class FeeCodeController implements URLMappingConstants {
     logger.info("Entering:: FeeCodeController:: showCreateAcquirerFeePage method");
     ModelAndView modelAndView = new ModelAndView(CHATAK_ACQUIRER_FEE_CREATE_SHOW);
     AcquirerFeeCodeDTO pgAcquirerFeeCode = new AcquirerFeeCodeDTO();
-    modelAndView.addObject("pgAcquirerFeeCode", pgAcquirerFeeCode);
+    modelAndView.addObject(PG_ACQUIRER_FREE_CODE, pgAcquirerFeeCode);
     logger.info("Exiting:: FeeCodeController:: showCreateAcquirerFeePage method");
     return modelAndView;
   }
@@ -366,7 +373,7 @@ public class FeeCodeController implements URLMappingConstants {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage(Constants.CHATAK_GENERAL_ERROR, null, LocaleContextHolder.getLocale()));
     }
-    modelAndView.addObject("pgAcquirerFeeCode", pgAcquirerFeeCode);
+    modelAndView.addObject(PG_ACQUIRER_FREE_CODE, pgAcquirerFeeCode);
     logger.info("Exiting:: FeeCodeController:: processCreateAcquirerFeePage method");
     return modelAndView;
   }
@@ -375,7 +382,7 @@ public class FeeCodeController implements URLMappingConstants {
 			List<AcquirerFeeCodeDTO> list) {
 		for (AcquirerFeeCodeDTO pgFee : list) {
 			if (pgFee.getAcquirerName().equals(pgAcquirerFeeCode.getAcquirerName())) {
-				modelAndView.addObject("pgAcquirerFeeCode", pgAcquirerFeeCode);
+				modelAndView.addObject(PG_ACQUIRER_FREE_CODE, pgAcquirerFeeCode);
 				modelAndView.addObject(Constants.ERROR, messageSource
 						.getMessage("chatak.admin.duplicate.acquirer.fee.code", null, LocaleContextHolder.getLocale()));
 			}

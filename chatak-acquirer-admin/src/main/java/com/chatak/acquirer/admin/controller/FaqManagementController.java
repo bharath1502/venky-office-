@@ -30,6 +30,7 @@ import com.chatak.acquirer.admin.util.CommonUtil;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.pg.bean.Response;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.exception.PrepaidException;
 import com.chatak.pg.model.FaqManagementRequest;
 import com.chatak.pg.user.bean.FaqManagementResponse;
@@ -60,7 +61,7 @@ public class FaqManagementController implements URLMappingConstants {
 		}
 		modelAndView.addObject(Constants.ERROR, null);
 		session.setAttribute(Constants.ERROR, null);
-		modelAndView.addObject("searchList", Constants.YES);
+		modelAndView.addObject(PGConstants.SEARCH_LIST, Constants.YES);
 		modelAndView.addObject(Constants.FAQ_MANAGEMENT_MODEL, faqManagementRequest);
 		getCategory(model);
 		logger.info("Exiting:: FaqManagementController:: showFaqManagementSearch method");
@@ -88,7 +89,7 @@ public class FaqManagementController implements URLMappingConstants {
 		session.setAttribute(Constants.ERROR, null);
 		getCategory(model);
 		FaqManagementRequest faqManagementRequest = new FaqManagementRequest();
-		modelAndView.addObject("faqManagementRequest", faqManagementRequest);
+		modelAndView.addObject(PGConstants.FAQ_MANAGEMENT_REQUEST, faqManagementRequest);
 		logger.info("Exiting:: FaqManagementController:: showFaqManagementCreate method");
 		return modelAndView;
 	}
@@ -155,13 +156,13 @@ public class FaqManagementController implements URLMappingConstants {
 			List<FaqManagementRequest> faqManagementRequestList = faqManagementResponse.getFaqManagementList();
 			if (CommonUtil.isListNotNullAndEmpty(faqManagementRequestList)) {
 				model.put("faqManagementRequestLists", faqManagementRequestList);
-				model.put("totalRecords", faqManagementResponse.getTotalNoOfRows());
+				model.put(PGConstants.TOTAL_RECORDS, faqManagementResponse.getTotalNoOfRows());
 			}
 		} catch (Exception e) {
 			logger.error("ERROR:: FaqManagementController:: processFaqManagementSearch method", e);
 		}
 
-		model.put("faqManagementRequest", faqManagementRequest);
+		model.put(PGConstants.FAQ_MANAGEMENT_REQUEST, faqManagementRequest);
 		logger.info("Exiting:: FaqManagementController:: processFaqManagementSearch method");
 		return modelAndView;
 	}
@@ -186,8 +187,8 @@ public class FaqManagementController implements URLMappingConstants {
 				List<FaqManagementRequest> faqManagementRequestList = faqManagementResponse.getFaqManagementList();
 				faqManagementRequest = faqManagementRequestList.get(0);
 				if (CommonUtil.isListNotNullAndEmpty(faqManagementRequestList)) {
-					modelAndView.addObject("pageSize", faqManagementRequest.getPageSize());
-					model.put("faqManagementRequest", faqManagementRequest);
+					modelAndView.addObject(PGConstants.PAGE_SIZE, faqManagementRequest.getPageSize());
+					model.put(PGConstants.FAQ_MANAGEMENT_REQUEST, faqManagementRequest);
 				}
 			}
 		} catch (Exception e) {
@@ -224,7 +225,7 @@ public class FaqManagementController implements URLMappingConstants {
 
 	@RequestMapping(value = FAQ_PAGINATION_ACTION, method = RequestMethod.POST)
 	public ModelAndView getPaginationList(final HttpSession session, @FormParam("pageNumber") final Integer pageNumber,
-			@FormParam("totalRecords") final Integer totalRecords, Map<String, Object> model) {
+			@FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map<String, Object> model) {
 		logger.info("Entering:: FaqManagementController:: getPaginationList method");
 		ModelAndView modelAndView = new ModelAndView(FAQ_MANAGEMENT_SEARCH_PAGE);
 		try {
@@ -240,9 +241,9 @@ public class FaqManagementController implements URLMappingConstants {
 			List<FaqManagementRequest> faqManagementRequestList = faqManagementResponse.getFaqManagementList();
 			if (CommonUtil.isListNotNullAndEmpty(faqManagementRequestList)) {
 				model.put("faqManagementRequestList", faqManagementRequestList);
-				model.put("totalRecords", faqManagementResponse.getTotalNoOfRows());
+				model.put(PGConstants.TOTAL_RECORDS, faqManagementResponse.getTotalNoOfRows());
 			}
-			model.put("faqManagementRequest", faqManagementRequest);
+			model.put(PGConstants.FAQ_MANAGEMENT_REQUEST, faqManagementRequest);
 		} catch (Exception e) {
 			logger.error("ERROR:: FaqManagementController:: getPaginationList method", e);
 			modelAndView.addObject(Constants.ERROR,

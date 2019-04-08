@@ -27,6 +27,7 @@ import com.chatak.pg.bean.ExchangeRate;
 import com.chatak.pg.bean.ExchangeRateResponse;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.util.Constants;
 
 
@@ -59,12 +60,12 @@ public class ExchangeRateController implements URLMappingConstants {
     String succMsg = request.getParameter("succMsg");
     try {
       List<Option> currencyList = merchantUpdateService.getCurrencies();
-      modelAndView.addObject("currencyList", currencyList);
+      modelAndView.addObject(PGConstants.CURRENCY_LIST, currencyList);
       ExchangeRateResponse searchExchangeResponse =
           exchangeRateService.searchExchangeRateInfo(exchangeInfo);
       if (searchExchangeResponse != null) {
         List<ExchangeRate> searchExchangeList = searchExchangeResponse.getExchangeRateInfo();
-        modelAndView.addObject("pageSize", exchangeInfo.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, exchangeInfo.getPageSize());
         modelAndView = PaginationUtil.getPagenationModel(modelAndView,
             searchExchangeResponse.getTotalNoOfRows());
         modelAndView.addObject(Constants.EXCHANGE_RATE_INFO, searchExchangeList);

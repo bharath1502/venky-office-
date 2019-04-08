@@ -37,6 +37,7 @@ import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.pg.acq.dao.model.Iso;
 import com.chatak.pg.bean.settlement.SettlementEntity;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.dao.util.StringUtil;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.Bank;
@@ -55,6 +56,14 @@ import com.chatak.pg.util.Constants;
 public class FeeReportController implements URLMappingConstants {
 
 	private static Logger logger = Logger.getLogger(FeeReportController.class);
+	
+	private static final String FEE_REPORT_LABEL_FEE_REPORT_MERCHANTID = "fee-report.label.fee.report.merchantid";
+	
+	private static final String ISO_REQUESTS_LIST = "isoRequestsList";
+	
+	private static final String HOME_LABEL_ACQSALEAMUNT = "home.label.acqsaleamunt";
+	
+	private static final String HOME_LABEL_ISSUNCE_AMUNT = "home.label.issunceAmunt";
 
 	  @Autowired
 	  MessageSource messageSource;
@@ -88,7 +97,7 @@ public class FeeReportController implements URLMappingConstants {
 			ProgramManagerResponse programManagerResponse = programManagerService
 					.getAllProgramManagers(programManagerRequest);
 			if (!StringUtil.isNull(programManagerResponse)) {
-				model.put("programManagersList", programManagerResponse.getProgramManagersList());
+				model.put(PGConstants.PROGRAM_MANAGER_LIST, programManagerResponse.getProgramManagersList());
 			}
 		} catch (ChatakAdminException e) {
 		    logger.error("Error :: FeeReportController :: showFeeReport :: ChatakAdminException :: " + e.getMessage(), e);
@@ -170,7 +179,7 @@ public class FeeReportController implements URLMappingConstants {
 			FeeReportResponse feeReportResponse = feeReportService.fetchISOFeeTransactions(feeReportRequest);
 			if(!StringUtil.isNull(feeReportResponse) && StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put("isoFeeList", feeReportResponse.getSettlementEntity());
-				model.put("totalRecords", feeReportResponse.getSettlementEntity().size());
+				model.put(PGConstants.TOTAL_RECORDS, feeReportResponse.getSettlementEntity().size());
 			}
 		} catch (ChatakAdminException e) {
 		    logger.error("Error :: FeeReportController :: showISOFeeReport :: ChatakAdminException :: " + e.getMessage(), e);
@@ -182,7 +191,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = PREPAID_FEE_REPORT_PAGINATION, method = RequestMethod.POST)
 	  public ModelAndView getFeeReportPagination(final HttpSession session,
 	      @FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
-	      @FormParam("totalRecords") final Integer totalRecords, Map model) {
+	      @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
 		logger.info("Entering :: FeeReportController :: getFeeReportPagination");
 	    ModelAndView modelAndView = new ModelAndView(PREPAID_FEE_REPORT_PAGE);
 	    try {
@@ -202,7 +211,7 @@ public class FeeReportController implements URLMappingConstants {
 	        modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
 	        		feeReportResponse.getTotalNoOfRows());
 	        session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
-	        session.setAttribute("totalRecords", totalRecords);
+	        session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
 			}
 	    } catch (Exception e) {
 	      modelAndView.addObject(Constants.ERROR,
@@ -216,7 +225,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = DOWNLOAD_FEE_TXN_REPORT, method = RequestMethod.POST)
 	public ModelAndView downloadFeeTxnReport(HttpServletRequest request, HttpServletResponse response,
 			HttpSession session, Map model, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
+			@FormParam("downloadType") final String downloadType, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
 			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
 		logger.info("Entering :: FeeReportController :: downloadFeeTxnReport");
 		try {
@@ -297,16 +306,16 @@ public class FeeReportController implements URLMappingConstants {
 				feeReportRequest.setProgramManagerId(programManagerRequest.getId().toString());
 				feeReportRequest.setProgramManagerName(programManagerRequest.getProgramManagerName());
 				List<IsoRequest> isoRequestList = isoService.findIsoByProgramaManagerId(Long.valueOf(feeReportRequest.getProgramManagerId()));
-		            modelAndView.addObject("isoRequestsList", isoRequestList);
-		            session.setAttribute("isoRequestsList", isoRequestList);
-		            model.put("programManagersList", programManagerRequest);
+		            modelAndView.addObject(ISO_REQUESTS_LIST, isoRequestList);
+		            session.setAttribute(ISO_REQUESTS_LIST, isoRequestList);
+		            model.put(PGConstants.PROGRAM_MANAGER_LIST, programManagerRequest);
 			} else {
 				ProgramManagerRequest programManagerRequest = new ProgramManagerRequest();
 				programManagerRequest.setLoginuserType(userType);
 				ProgramManagerResponse programManagerResponse = programManagerService
 						.getAllProgramManagers(programManagerRequest);
 				if (!StringUtil.isNull(programManagerResponse)) {
-					model.put("programManagersList", programManagerResponse.getProgramManagersList());
+					model.put(PGConstants.PROGRAM_MANAGER_LIST, programManagerResponse.getProgramManagersList());
 				}
 			}
 			feeReportRequest.setEntityType(userType);
@@ -340,14 +349,14 @@ public class FeeReportController implements URLMappingConstants {
 					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
 			}
-			modelAndView.addObject("pageSize", feeReportRequest.getPageSize());
+			modelAndView.addObject(PGConstants.PAGE_SIZE, feeReportRequest.getPageSize());
 			modelAndView = PaginationUtil.getPagenationModel(modelAndView,
 					feeReportRequest.getNoOfRecords().intValue());
 			showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 			List<IsoRequest> isoRequestList = isoService
                 .findIsoByProgramaManagerId(Long.valueOf(feeReportRequest.getProgramManagerId()));
-            modelAndView.addObject("isoRequestsList", isoRequestList);
-            session.setAttribute("isoRequestsList", isoRequestList);
+            modelAndView.addObject(ISO_REQUESTS_LIST, isoRequestList);
+            session.setAttribute(ISO_REQUESTS_LIST, isoRequestList);
 		} catch (Exception e) {
 			showIsoRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 			logger.error("Error :: FeeReportController :: processIsoRevenueReport : " + e.getMessage(), e);
@@ -436,13 +445,13 @@ public class FeeReportController implements URLMappingConstants {
 
 	private List<String> getSettlementReportHeaderList() {
 		String[] headerArr = {
-				messageSource.getMessage("fee-report.label.fee.report.merchantid", null,
+				messageSource.getMessage(FEE_REPORT_LABEL_FEE_REPORT_MERCHANTID, null,
 						LocaleContextHolder.getLocale()),
 				messageSource.getMessage("matched-transactions.label.terminal.id", null,
 						LocaleContextHolder.getLocale()),
 				messageSource.getMessage("home.label.transactionid", null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("fundtransferfile.proc.txn.id", null, LocaleContextHolder.getLocale()),
-				messageSource.getMessage("transaction-report-batchID", null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage(PGConstants.TRANSACTION_REPORT_BATCHID, null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("admin.label.pmamount", null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("admin.label.isoamount", null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("admin.label.merchantamount", null, LocaleContextHolder.getLocale()),
@@ -532,7 +541,7 @@ public class FeeReportController implements URLMappingConstants {
 				ProgramManagerResponse programManagerResponse = programManagerService
 						.getAllProgramManagers(programManagerRequest);
 				if (!StringUtil.isNull(programManagerResponse)) {
-					model.put("programManagersList", programManagerResponse.getProgramManagersList());
+					model.put(PGConstants.PROGRAM_MANAGER_LIST, programManagerResponse.getProgramManagersList());
 				}
 			}
 			feeReportRequest.setEntityType(userType);
@@ -571,8 +580,8 @@ public class FeeReportController implements URLMappingConstants {
 			showMerchantRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 			List<IsoRequest> isoRequestList = isoService
                 .findIsoByProgramaManagerId(Long.valueOf(feeReportRequest.getProgramManagerId()));
-            modelAndView.addObject("isoRequestsList", isoRequestList);
-            session.setAttribute("isoRequestsList", isoRequestList);
+            modelAndView.addObject(ISO_REQUESTS_LIST, isoRequestList);
+            session.setAttribute(ISO_REQUESTS_LIST, isoRequestList);
 		} catch (Exception e) {
 		    showMerchantRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
 			logger.error("Error :: FeeReportController :: processMerchantRevenueReport : " + e.getMessage(), e);
@@ -595,7 +604,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = PREPAID_MERCHANT_REPORT_PAGINATION, method = RequestMethod.POST)
 	public ModelAndView getMerchantReportPagination(final HttpSession session,
 			@FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
-			@FormParam("totalRecords") final Integer totalRecords, Map model) {
+			@FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
 		logger.info("Entering :: FeeReportController :: getMerchantReportPagination");
 		ModelAndView modelAndView = new ModelAndView(MERCHANT_REVENUE_REPORT_PAGE);
 		try {
@@ -610,7 +619,7 @@ public class FeeReportController implements URLMappingConstants {
 				modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
 						feeReportResponse.getTotalNoOfRows());
 				session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
-				session.setAttribute("totalRecords", totalRecords);
+				session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
 			}
 		} catch (Exception e) {
 			modelAndView.addObject(Constants.ERROR,
@@ -624,7 +633,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = PREPAID_ISO_REPORT_PAGINATION, method = RequestMethod.POST)
 	public ModelAndView getISOReportPagination(final HttpSession session,
 			@FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
-			@FormParam("totalRecords") final Integer totalRecords, Map model) {
+			@FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
 		logger.info("Entering :: FeeReportController :: getISOReportPagination");
 		ModelAndView modelAndView = new ModelAndView(ISO_REVENUE_REPORT_PAGE);
 		try {
@@ -638,11 +647,11 @@ public class FeeReportController implements URLMappingConstants {
 			if (!StringUtil.isNull(feeReportResponse)
 					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
-				modelAndView.addObject("pageSize", feeReportRequest.getPageSize());
+				modelAndView.addObject(PGConstants.PAGE_SIZE, feeReportRequest.getPageSize());
 				modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
 						feeReportResponse.getTotalNoOfRows());
 				session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
-				session.setAttribute("totalRecords", totalRecords);
+				session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
 			}
 		} catch (Exception e) {
 			modelAndView.addObject(Constants.ERROR,
@@ -656,7 +665,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = DOWNLOAD_ISO_REPORT, method = RequestMethod.POST)
 	public ModelAndView downloadISORevenueReport(HttpServletRequest request, HttpServletResponse response,
 			HttpSession session, Map model, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
+			@FormParam("downloadType") final String downloadType, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
 			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
 		logger.info("Entering :: FeeReportController :: downloadISORevenueReport");
 		try {
@@ -699,12 +708,12 @@ public class FeeReportController implements URLMappingConstants {
 
 	private List<String> getIsoReportHeaderList() {
 		String[] headerArr = {
-				messageSource.getMessage("fee-report.label.fee.report.merchantid", null,
+				messageSource.getMessage(FEE_REPORT_LABEL_FEE_REPORT_MERCHANTID, null,
 						LocaleContextHolder.getLocale()),
-				messageSource.getMessage("home.label.acqsaleamunt", null, LocaleContextHolder.getLocale()),
-				messageSource.getMessage("home.label.issunceAmunt", null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage(HOME_LABEL_ACQSALEAMUNT, null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage(HOME_LABEL_ISSUNCE_AMUNT, null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("admin.label.isoamount", null, LocaleContextHolder.getLocale()),
-				messageSource.getMessage("transaction-report-batchID", null, LocaleContextHolder.getLocale()) };
+				messageSource.getMessage(PGConstants.TRANSACTION_REPORT_BATCHID, null, LocaleContextHolder.getLocale()) };
 		return new ArrayList<>(Arrays.asList(headerArr));
 	}
 
@@ -721,7 +730,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = DOWNLOAD_MERCHANT_REPORT, method = RequestMethod.POST)
 	public ModelAndView downloadMerchantRevenueReport(HttpServletRequest request, HttpServletResponse response,
 			HttpSession session, Map model, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
+			@FormParam("downloadType") final String downloadType, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
 			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
 		logger.info("Entering :: FeeReportController :: downloadMerchantRevenueReport");
 		try {
@@ -764,12 +773,12 @@ public class FeeReportController implements URLMappingConstants {
 
 	private List<String> getMerchantReportHeaderList() {
 		String[] headerArr = {
-				messageSource.getMessage("fee-report.label.fee.report.merchantid", null,
+				messageSource.getMessage(FEE_REPORT_LABEL_FEE_REPORT_MERCHANTID, null,
 						LocaleContextHolder.getLocale()),
-				messageSource.getMessage("home.label.acqsaleamunt", null, LocaleContextHolder.getLocale()),
-				messageSource.getMessage("home.label.issunceAmunt", null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage(HOME_LABEL_ACQSALEAMUNT, null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage(HOME_LABEL_ISSUNCE_AMUNT, null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("admin.label.merchantamount", null, LocaleContextHolder.getLocale()),
-				messageSource.getMessage("transaction-report-batchID", null, LocaleContextHolder.getLocale()) };
+				messageSource.getMessage(PGConstants.TRANSACTION_REPORT_BATCHID, null, LocaleContextHolder.getLocale()) };
 		return new ArrayList<>(Arrays.asList(headerArr));
 	}
 
@@ -805,7 +814,7 @@ public class FeeReportController implements URLMappingConstants {
 			ProgramManagerResponse programManagerResponse = programManagerService
 					.getAllProgramManagers(programManagerRequest);
 			if (!StringUtil.isNull(programManagerResponse)) {
-				model.put("programManagersList", programManagerResponse.getProgramManagersList());
+				model.put(PGConstants.PROGRAM_MANAGER_LIST, programManagerResponse.getProgramManagersList());
 			}
 		} catch (ChatakAdminException e) {
 		  logger.error("Error :: FeeReportController :: showPmRevenueReport :: ChatakAdminException :: " + e.getMessage(), e);
@@ -835,7 +844,7 @@ public class FeeReportController implements URLMappingConstants {
 					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
 			}
-			modelAndView.addObject("pageSize", feeReportRequest.getPageSize());
+			modelAndView.addObject(PGConstants.PAGE_SIZE, feeReportRequest.getPageSize());
 			modelAndView = PaginationUtil.getPagenationModel(modelAndView,
 					feeReportRequest.getNoOfRecords().intValue());
 			showPmRevenueReport(request, response, feeReportRequest, bindingResult, model, session);
@@ -865,7 +874,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = DOWNLOAD_PM_REVENUE_REPORT, method = RequestMethod.POST)
 	public ModelAndView downloadPmRevenueReport(HttpServletRequest request, HttpServletResponse response,
 			HttpSession session, Map model, @FormParam("downLoadPageNumber") final Integer downLoadPageNumber,
-			@FormParam("downloadType") final String downloadType, @FormParam("totalRecords") final Integer totalRecords,
+			@FormParam("downloadType") final String downloadType, @FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords,
 			@FormParam("downloadAllRecords") final boolean downloadAllRecords) {
 		logger.info("Entering :: FeeReportController :: downloadPmRevenueReport");
 		try {
@@ -908,12 +917,12 @@ public class FeeReportController implements URLMappingConstants {
 
 	private List<String> getPmReportHeaderList() {
 		String[] headerArr = {
-				messageSource.getMessage("fee-report.label.fee.report.merchantid", null,
+				messageSource.getMessage(FEE_REPORT_LABEL_FEE_REPORT_MERCHANTID, null,
 						LocaleContextHolder.getLocale()),
-				messageSource.getMessage("home.label.acqsaleamunt", null, LocaleContextHolder.getLocale()),
-				messageSource.getMessage("home.label.issunceAmunt", null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage(HOME_LABEL_ACQSALEAMUNT, null, LocaleContextHolder.getLocale()),
+				messageSource.getMessage(HOME_LABEL_ISSUNCE_AMUNT, null, LocaleContextHolder.getLocale()),
 				messageSource.getMessage("admin.label.pmamount", null, LocaleContextHolder.getLocale()),
-				messageSource.getMessage("transaction-report-batchID", null, LocaleContextHolder.getLocale()) };
+				messageSource.getMessage(PGConstants.TRANSACTION_REPORT_BATCHID, null, LocaleContextHolder.getLocale()) };
 		return new ArrayList<>(Arrays.asList(headerArr));
 	}
 
@@ -930,7 +939,7 @@ public class FeeReportController implements URLMappingConstants {
 	@RequestMapping(value = PREPAID_PM_REPORT_PAGINATION, method = RequestMethod.POST)
 	public ModelAndView getPMReportPagination(final HttpSession session,
 			@FormParam(Constants.PAGE_NUMBER) final Integer pageNumber,
-			@FormParam("totalRecords") final Integer totalRecords, Map model) {
+			@FormParam(PGConstants.TOTAL_RECORDS) final Integer totalRecords, Map model) {
 		logger.info("Entering :: FeeReportController :: getPMReportPagination");
 		ModelAndView modelAndView = new ModelAndView(PM_REVENUE_REPORT_PAGE);
 		try {
@@ -944,11 +953,11 @@ public class FeeReportController implements URLMappingConstants {
 			if (!StringUtil.isNull(feeReportResponse)
 					&& StringUtil.isListNotNullNEmpty(feeReportResponse.getSettlementEntity())) {
 				model.put(Constants.FEE_TRANSACTIONS_SEARCH_LIST, feeReportResponse.getSettlementEntity());
-				modelAndView.addObject("pageSize", feeReportRequest.getPageSize());
+				modelAndView.addObject(PGConstants.PAGE_SIZE, feeReportRequest.getPageSize());
 				modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
 						feeReportResponse.getTotalNoOfRows());
 				session.setAttribute(Constants.PAGE_NUMBER, pageNumber);
-				session.setAttribute("totalRecords", totalRecords);
+				session.setAttribute(PGConstants.TOTAL_RECORDS, totalRecords);
 			}
 		} catch (Exception e) {
 			modelAndView.addObject(Constants.ERROR,

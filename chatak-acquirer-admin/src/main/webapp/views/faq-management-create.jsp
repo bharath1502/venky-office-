@@ -140,7 +140,7 @@
 													</div>
 												</fieldset>
 												
-												<!-- <fieldset class="col-sm-12"></fieldset> -->
+												
 												<fieldset class="col-md-4 col-sm-6">
 													<label><spring:message code="prepaid-admin-label-faq-management-create-Answer"/><span class="required-field">*</span></label>
 													<form:textarea id="questionAnswer" path="questionAnswer" onblur="return clientValidation('questionAnswer','questionAnswer','questionAnswerErrorDiv')" cols="50" rows="15"

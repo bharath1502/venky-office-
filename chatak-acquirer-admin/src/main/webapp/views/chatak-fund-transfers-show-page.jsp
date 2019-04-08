@@ -98,13 +98,7 @@
 									</c:if>
 								</tr>
 							</table>
-						</span> <!-- <img src="../images/dashboard.png" width="100%" height="400px"
-							class="col-xs-12 content-wrapper"> <span
-							class="col-xs-6 dashboard-image-description"> <label data-toggle="tooltip" data-placement="top" title="">Transaction
-								by Card Program</label>
-						</span> <span class="col-xs-6 dashboard-image-description"> <label data-toggle="tooltip" data-placement="top" title="">Transaction
-								Percentage by Card Program</label>
-						</span> -->
+						</span> 
 						<div class="col-sm-12 form-action-buttons">
 						<div class="col-sm-5"></div>
 						<div class="col-sm-7">

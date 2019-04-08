@@ -132,7 +132,7 @@ public class LoginController implements URLMappingConstants {
     model.put(Constants.LOGIN_DETAILS, new LoginDetails());
     String token = CSRFTokenManager.getTokenForSession(session);
     logger.info("Genarated CSRF token before login : " + token);
-    session.setAttribute("tokenval", token);
+    session.setAttribute(PGConstants.TOKENVAL, token);
     logger.info("Exiting:: LoginController:: showLogin method");
     return modelAndView;
   }
@@ -197,7 +197,7 @@ public class LoginController implements URLMappingConstants {
           modelAndView = setLoginSuccessResponse(response, session, modelAndView, loginResponse,
               loginDetails, userAgent);
           processSettlement(session, loginResponse);
-          session.setAttribute("adminId", loginResponse.getUserId());
+          session.setAttribute(PGConstants.ADMIN_ID, loginResponse.getUserId());
           List<Merchant> merchants = getMerchantsList(loginResponse);
           validateMerchantList(session, merchants);
           
@@ -438,8 +438,8 @@ private void loginProcess(HttpSession session, ModelAndView modelAndView, Transa
                 : executedTxnList.getAccountTransactionList().subList(0, Constants.MAX_ENTITY_DISPLAY_SIZE));
         List<AccountTransactionDTO> transactionList = transactionResponse.getAccountTxnList() != null
             ? transactionResponse.getAccountTxnList() : new ArrayList<AccountTransactionDTO>();
-        modelAndView.addObject("executedListSize", listSize);
-        session.setAttribute("executedListSize", listSize);
+        modelAndView.addObject(PGConstants.EXECUTED_LIST_SIZE, listSize);
+        session.setAttribute(PGConstants.EXECUTED_LIST_SIZE, listSize);
         modelAndView.addObject(Constants.EXECUTED_TXN_LIST, transactionList);
         session.setAttribute(Constants.EXECUTED_TXN_LIST, transactionList);
         modelAndView.addObject(Constants.MODEL_ATTRIBUTE_PORTAL_TOTAL_RECORDS_PAGE_NUM, executedTxnList.getTotalResultCount());
@@ -671,7 +671,7 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
     try {
       Long userId = (Long) session.getAttribute(Constants.LOGIN_USER_ID);
       List<UserRolesDTO> userRoleList = roleService.getRoleList();
-      session.setAttribute("userRoleListData", userRoleList);
+      session.setAttribute(PGConstants.USER_ROLE_LIST_DATA, userRoleList);
       UserProfileRequest userProfileRequest = loginService.getUserProfile(userId);
       model.put(Constants.USER_PROFILE_REQUEST, userProfileRequest);
     } catch (Exception e) {
@@ -792,10 +792,10 @@ private ModelAndView setModel(HttpServletRequest request, Map model, HttpSession
       model.put(Constants.SUCESS, messageSource.getMessage("chatak.admin.reset.password.message",
           null, LocaleContextHolder.getLocale()));
       model.put(Constants.LOGIN_DETAILS, new LoginDetails());
-      session.removeAttribute("tokenval");
+      session.removeAttribute(PGConstants.TOKENVAL);
       session = request.getSession();
       String token = CSRFTokenManager.getTokenForSession(session);
-      session.setAttribute("tokenval", token);
+      session.setAttribute(PGConstants.TOKENVAL, token);
     } catch (ChatakAdminException e) {
       logger.error("Error:: LoginController:: resetPassword method1" + e);
       modelAndView = new ModelAndView(RESET_PSWD);

@@ -47,6 +47,8 @@ public class SwitchController implements URLMappingConstants {
   private SwitchService switchService;
 
   private static Logger logger = Logger.getLogger(SwitchController.class);
+  
+  private static final String SWITCH = "switch";
 
   @RequestMapping(value = CHATAK_ADMIN_SWITCH_CREATE_PAGE, method = RequestMethod.GET)
   public ModelAndView showCreateSwitchPage(Map model, HttpSession session) {
@@ -61,7 +63,7 @@ public class SwitchController implements URLMappingConstants {
     modelAndView.addObject(Constants.ERROR, null);
     session.setAttribute(Constants.ERROR, null);
     Switch switchInfo = new Switch();
-    model.put("switch", switchInfo);
+    model.put(SWITCH, switchInfo);
     logger.info("Exiting:: SwitchController:: showCreateSwitchPage method");
     return modelAndView;
   }
@@ -92,7 +94,7 @@ public class SwitchController implements URLMappingConstants {
 
       } else if (null != addSwitchResponse
           && addSwitchResponse.getErrorCode().equals(ActionErrorCode.ERROR_CODE_Z11)) {
-        model.put("switch", switchInfo);
+        model.put(SWITCH, switchInfo);
         modelAndView.addObject(Constants.ERROR, messageSource
             .getMessage("chatak.duplicate.switch.name", null, LocaleContextHolder.getLocale()));
         return modelAndView;
@@ -105,7 +107,7 @@ public class SwitchController implements URLMappingConstants {
       modelAndView.addObject(Constants.ERROR,
           messageSource.getMessage("chatak.general.error", null, LocaleContextHolder.getLocale()));
     }
-    model.put("switch", new Switch());
+    model.put(SWITCH, new Switch());
     logger.info("Exiting:: SwitchController:: createSwitch method");
     return modelAndView;
   }
@@ -143,7 +145,7 @@ public class SwitchController implements URLMappingConstants {
       logger.error("ERROR:: SwitchController:: showSearchSwitchPage method", e);
     }
     modelAndView.addObject("flag", false);
-    model.put("switch", searchSwitchRequest);
+    model.put(SWITCH, searchSwitchRequest);
     logger.info("Exiting:: SwitchController:: showSearchSwitchPage method");
     return modelAndView;
   }
@@ -188,7 +190,7 @@ public class SwitchController implements URLMappingConstants {
       logger.error("ERROR:: SwitchController:: searchSwitchInfo method", e);
     }
     modelAndView.addObject("flag", true);
-    model.put("switch", searchSwitchRequest);
+    model.put(SWITCH, searchSwitchRequest);
     logger.info("Exiting:: SwitchController:: searchSwitchInfo method");
     return modelAndView;
   }
@@ -218,7 +220,7 @@ public class SwitchController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       SwitchRequest switchInfo = switchService.getSwtichInformationById(getSwitchId);
-      model.put("switch", switchInfo);
+      model.put(SWITCH, switchInfo);
     } catch (Exception e) {
       logger.error("ERROR:: SwitchController:: showEditSwitch method", e);
       modelAndView.addObject(Constants.ERROR,
@@ -282,7 +284,7 @@ public class SwitchController implements URLMappingConstants {
     modelAndView.addObject(Constants.SUCESS, null);
     try {
       SwitchRequest switchInfo = switchService.getSwtichInformationById(switchViewId);
-      model.put("switch", switchInfo);
+      model.put(SWITCH, switchInfo);
     } catch (Exception e) {
       logger.error("ERROR:: SwitchController:: showViewSwitch method", e);
       modelAndView.addObject(Constants.ERROR,
@@ -301,7 +303,7 @@ public class SwitchController implements URLMappingConstants {
     List<SwitchRequest> switchSearchList = null;
     try {
       SwitchRequest switchInfo = (SwitchRequest) session.getAttribute(Constants.SWITCH_INFO);
-      model.put("switch", switchInfo);
+      model.put(SWITCH, switchInfo);
       switchInfo.setPageIndex(pageNumber);
       switchInfo.setNoOfRecords(totalRecords);
       modelAndView = validateSwitchResponse(session, pageNumber, totalRecords, modelAndView,

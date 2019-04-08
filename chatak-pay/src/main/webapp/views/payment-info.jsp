@@ -92,66 +92,6 @@
 													<fieldset class="col-sm-6 middle-content">
 														<fieldset class="col-sm-12 content content1 padding0">
 														Internet Banking is not available at this moment!
-															<!-- <fieldset class="col-sm-12 padding0">
-																<fieldset class="col-sm-12"> 
-																	<label>Select Bank<span class="required-field">*</span></label>
-																	<select class="form-control">
-																		<option>..:Select:..</option>
-																	</select>
-																	<div class="discriptionErrorMsg">
-																		<span class="red-error">&nbsp;</span>
-																	</div> 
-																</fieldset>
-																<fieldset class="col-sm-4"> 
-																	<label>Expiration Date<span class="required-field">*</span></label>
-																	<select class="form-control">
-																		<option value="Month">Month</option>
-																		<option value="01">01 (Jan)</option>
-																		<option value="02">02 (Feb)</option>
-																		<option value="03">03 (Mar)</option>
-																		<option value="04">04 (Apr)</option>
-																		<option value="05">05 (May)</option>
-																		<option value="06">06 (Jun)</option>
-																		<option value="07">07 (Jul)</option>
-																		<option value="08">08 (Aug)</option>
-																		<option value="09">09 (Sep)</option>
-																		<option value="10">10 (Oct)</option>
-																		<option value="11">11 (Nov)</option>
-																		<option value="12">12 (Dec)</option>
-																	</select>
-																	<div class="discriptionErrorMsg">
-																		<span class="red-error">&nbsp;</span>
-																	</div> 
-																</fieldset>
-																<fieldset class="col-sm-4"> 
-																	<label>&nbsp;</label>
-																	<select class="form-control">
-																		<option>Year</option>
-																	</select>
-																	<div class="discriptionErrorMsg">
-																		<span class="red-error">&nbsp;</span>
-																	</div> 
-																</fieldset>
-																<fieldset class="col-sm-4"> 
-																	<label>CVV / CVC<span class="required-field">*</span></label>
-																	<input type="text" class="form-control" placeholder="CVV/CVS Number"/>
-																	<div class="discriptionErrorMsg">
-																		<span class="red-error">&nbsp;</span>
-																	</div> 
-																</fieldset>
-																<fieldset class="col-sm-12"> 
-																	<label>Card Holder Name<span class="required-field">*</span></label>
-																	<input type="text" class="form-control" placeholder="Enter card holder name"/>
-																	<div class="discriptionErrorMsg">
-																		<span class="red-error">&nbsp;</span>
-																	</div> 
-																</fieldset>
-															</fieldset>
-															Panel Action Button Start
-															<div class="col-sm-12">
-																<input type="button" class="form-control button pay-button" value="PAY NOW">
-															</div>
-															Panel Action Button End -->
 														</fieldset>
 														<fieldset class="col-sm-12 content content2 padding0">
 														<form id="creditFormId" name="creditForm">

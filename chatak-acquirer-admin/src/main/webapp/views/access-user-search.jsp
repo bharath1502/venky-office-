@@ -323,10 +323,10 @@
 											<tr>
 												<td class="tbl-text-align-left">${userData.userType}</td>
 												<td class="tbl-text-align-left">${userData.userRoleName}</td>
-												<td style="text-align: left;"><!-- <div class="feeDescDiv"> -->${userData.userName}<!-- </div> --></td>
+												<td style="text-align: left;">${userData.userName}</td>
 												<td style="text-align: left;"><div class="feeDescDiv">${userData.firstName}</div></td>
 												<td style="text-align: left;"><div class="feeDescDiv">${userData.lastName}</div></td>
-												<td style="text-align: left;"><div><!-- class="feeDescDiv" -->${userData.email}</div></td>
+												<td style="text-align: left;"><div>${userData.email}</div></td>
 												<td class="tbl-text-align-left">
 													<c:if test="${userData.status == '1'}">
 														<span><spring:message code="common.label.pending" /></span>

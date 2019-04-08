@@ -83,15 +83,7 @@
 															<span class="red-error" id="merchantIdErrorDiv">&nbsp;</span>
 														</div>
 													</fieldset>
-													<!-- <fieldset class="col-sm-3">
-														<label data-toggle="tooltip" data-placement="top" title="">Transaction ID<span
-															class="required-field">*</span></label> <input type="text"
-															class="form-control" id="refNumberDiv"
-															onblur="this.value=this.value.trim();validRefNumber('refNumberDiv','refNumberErrorDiv')" />
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
-															<span class="red-error" id="refNumberErrorDiv">&nbsp;</span>
-														</div>
-													</fieldset> -->
+													
 													
 													<!--Panel Action Button Start -->
 													<div class="col-sm-12 form-action-buttons" id="hideSearchButton">
@@ -168,7 +160,7 @@
 													<div class="col-sm-12 button-content">
 														<fieldset class="col-sm-7 pull-right">
 															<input type="submit" class="form-control button pull-right pos-next" id="processBtn" onclick="return validateCredit();amountFmt()" value="Process"> 
-															<input type="button" class="form-control button pull-right marginL10 pos-prev close-fetch-details" value="Back"> <!-- onclick="showEditPage()"  -->
+															<input type="button" class="form-control button pull-right marginL10 pos-prev close-fetch-details" value="Back"> 
 														</fieldset>
 													</div>
 													<!--Panel Action Button End -->

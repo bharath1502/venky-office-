@@ -34,6 +34,7 @@ import com.chatak.acquirer.admin.util.ExportUtil;
 import com.chatak.acquirer.admin.util.PaginationUtil;
 import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.MerchantCategoryCode;
 import com.chatak.pg.user.bean.MerchantCategoryCodeResponse;
@@ -177,7 +178,7 @@ public class MerchantCategoryCodeController implements URLMappingConstants {
       List<MerchantCategoryCode> mccs = new ArrayList<>();
       if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMccs())) {
         mccs = searchResponse.getMccs();
-        modelAndView.addObject("pageSize", mcc.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, mcc.getPageSize());
         modelAndView =
             PaginationUtil.getPagenationModel(modelAndView, searchResponse.getTotalNoOfRows());
         session.setAttribute(Constants.PAGE_NUMBER, Constants.ONE);
@@ -430,7 +431,7 @@ public class MerchantCategoryCodeController implements URLMappingConstants {
       List<MerchantCategoryCode> mccs = new ArrayList<>();
       if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getMccs())) {
         mccs = searchResponse.getMccs();
-        modelAndView.addObject("pageSize", mcc.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, mcc.getPageSize());
         modelAndView = PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             searchResponse.getTotalNoOfRows());
         session.setAttribute(Constants.PAGE_NUMBER, pageNumber);

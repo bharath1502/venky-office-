@@ -56,8 +56,7 @@
 					<form:form action="getRoleCategory" name="roleTypeForm" method="post">
 				      <input type="hidden" id="rolesType" name="rolesType" />
 				      <input type="hidden" name="CSRFToken" value="${tokenval}">
-				      <!-- <input type="hidden" id="rolesName" name="roleName" />
-				      <input type="hidden" id="roleDiscription" name="description" /> -->
+				       
 			        </form:form>
 			        
 					<!-- Breadcrumb End -->
@@ -313,7 +312,7 @@
 	<script src="../js/common-lib.js"></script>
 	<script src="../js/jquery.cookie.js"></script>
 	<script src="../js/jquery-checktree.js"></script>
-	 <!-- <script src="../js/prepaid-lib.js" type="text/javascript"></script> -->
+	  
     <script src="../js/messages.js"></script>
 	<script src="../js/role.js" type="text/javascript"></script>
 	<script src="../js/validation.js" type="text/javascript"></script>
@@ -321,7 +320,7 @@
 	<script src="../js/jquery.popupoverlay.js"></script>
 	<script type="text/javascript" src="../js/browser-close.js"></script>
 	
-	<!-- <script src="../js/bootstrap.js" type="text/javascript"></script> -->
+	 
 	<script>
 		var APP_SERVICE_BASE_URL="<%=request.getContextPath()%>";
 		/* Common Navigation Include Start */

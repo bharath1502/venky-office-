@@ -36,6 +36,7 @@ import com.chatak.acquirer.admin.util.StringUtil;
 import com.chatak.pg.bean.PaymentSchemeNameResponse;
 import com.chatak.pg.bean.Response;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.ExportType;
 import com.chatak.pg.model.PaymentScheme;
 import com.chatak.pg.user.bean.PaymentSchemeRequest;
@@ -170,7 +171,7 @@ public class PaymentSchemeController implements URLMappingConstants {
       if (paymentschemesearchResponse != null
           && !CollectionUtils.isEmpty(paymentschemesearchResponse.getPaymentSchemesRequest())) {
         searchPaymentRequestList = paymentschemesearchResponse.getPaymentSchemesRequest();
-        modelAndView.addObject("pageSize", paymentSchemeDto.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, paymentSchemeDto.getPageSize());
         modelAndView.addObject(Constants.TOTAL_RECORDS, paymentSchemeDto.getNoOfRecords());
         modelAndView = PaginationUtil.getPagenationModel(modelAndView,
             paymentschemesearchResponse.getTotalNoOfRows());
@@ -429,7 +430,7 @@ public class PaymentSchemeController implements URLMappingConstants {
       if (paymentSchemeResponse != null
           && !CollectionUtils.isEmpty(paymentSchemeResponse.getPaymentSchemesRequest())) {
         paymentShemeSearchList = paymentSchemeResponse.getPaymentSchemesRequest();
-        modelAndView.addObject("pageSize", paymentSchemeSearchData.getPageSize());
+        modelAndView.addObject(PGConstants.PAGE_SIZE, paymentSchemeSearchData.getPageSize());
         PaginationUtil.getPagenationModelSuccessive(modelAndView, pageNumber,
             paymentSchemeResponse.getTotalNoOfRows());
         session.setAttribute(Constants.PAGE_NUMBER, pageNumber);

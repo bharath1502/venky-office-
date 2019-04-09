@@ -432,8 +432,9 @@ private void validateMerchant(Map model, Merchant merchant) {
       if (userName != null && entityType.equals(PGConstants.ADMIN)
     		  || entityType.equals(Constants.PM_USER_TYPE)
     		  || entityType.equals(Constants.ISO_USER_TYPE)) {
-      } else {
     	  responseval = userService.unblockAdminUser(userName);
+      } else {
+    	 
         responseval = userService.unblockMerchantUser(userName);
       }
       if (responseval != null && responseval.getErrorCode().equals("00")) {

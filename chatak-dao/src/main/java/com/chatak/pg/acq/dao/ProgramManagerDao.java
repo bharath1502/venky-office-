@@ -112,4 +112,6 @@ public interface ProgramManagerDao {
   
   public List<PanRangeRequest> getPanListForIso(Long isoId);
   
+  public List<ProgramManagerRequest> fetchProgramManagerNameByAccountCurrency(String currency);
+  
 }

@@ -998,4 +998,24 @@ public class ProgramManagerDaoImpl implements ProgramManagerDao {
 		}
 		return panRangeRequests;
 	}
+
+	/**
+	 * @param currency
+	 * @return
+	 */
+	@Override
+	public List<ProgramManagerRequest> fetchProgramManagerNameByAccountCurrency(String currency) {
+		List<ProgramManager> managers = programManagerRepository.findByAccountCurrencyAndStatusLike(currency,
+				PGConstants.S_STATUS_ACTIVE);
+		List<ProgramManagerRequest> request = new ArrayList<>();
+		if (StringUtil.isListNotNullNEmpty(managers)) {
+			for (ProgramManager programManager : managers) {
+				ProgramManagerRequest managerRequest = new ProgramManagerRequest();
+				managerRequest.setId(programManager.getId());
+				managerRequest.setProgramManagerName(programManager.getProgramManagerName());
+				request.add(managerRequest);
+			}
+		}
+		return request;
+	}
 }

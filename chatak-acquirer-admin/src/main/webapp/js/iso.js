@@ -115,7 +115,9 @@ function validateCreateIso(){
 			| !validateCountry()
 			| !validateState()
 			| !validateZip()
-			| !readPartnerLogo(imageData,'isoLogoErrorDiv')) {
+			| !readPartnerLogo(imageData,'isoLogoErrorDiv')
+			| !panRangeNotEmpty('panRangeList[0].panLow')
+			| !panRangeNotEmpty('panRangeList[0].panHigh')) {
 		clearValidationType();
 		flag = false;
 		return flag;
@@ -154,7 +156,9 @@ function validateUpdateIso(){
 			| !validateCountry()
 			| !validateState()
 			| !zipCodeNotEmpty('zip')
-			| !readPartnerLogo(imageData,'isoLogoErrorDiv')) {
+			| !readPartnerLogo(imageData,'isoLogoErrorDiv')
+			| !panRangeNotEmpty('panRangeRequests[0].panLow')
+			| !panRangeNotEmpty('panRangeRequests[0].panHigh')) {
 		clearValidationType();
 		flag = false;
 		return flag;
@@ -275,4 +279,26 @@ function validateSpecialCharactersISO() {
 		return false;
 	}
 	return true;
+}
+function panRangeNotEmpty(id) {
+	var panRange = getVal(id);
+	var regex = /^[A-Za-z0-9 ]+$/;
+	if (isEmpty(panRange)) {
+		setError(get(id), webMessages.validationthisfieldismandatory);
+		loadMsgTitleText();
+		return false;
+	}else if ((panRange.length < 3) || (panRange.length > 10) || !(panRange != 0)) {
+		setError(get(id), webMessages.pleaseEnterPan);
+		loadMsgTitleText();
+		return false;
+	}
+	else if (!regex.test(panRange)) {
+		setError(get(id), webMessages.pleaseEnterPan);
+		loadMsgTitleText();
+		return false;
+	}
+	else {
+		setError(get(id), '');
+		return true;
+	} 
 }

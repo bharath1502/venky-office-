@@ -371,7 +371,8 @@ var C_MERCHANT_MSG = {
 		InvalidBankCode : "Invalid Bank Code",
 		InvalidBankRoutingNumber : "Invalid bank routing number",
 		InvalidBankAccountNumber : "Invalid bank account number",
-		BlacklistedCardValid : "Please enter valid BlacklistedCard Number"
+		BlacklistedCardValid : "Please enter valid BlacklistedCard Number",
+		pleaseEnterPan : "Please Enter valid Pan Range"
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",

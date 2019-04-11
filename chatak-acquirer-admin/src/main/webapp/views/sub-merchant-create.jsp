@@ -443,7 +443,7 @@
 															path="bankRoutingNumber"
 															onkeypress="return amountValidate(this,event)"
 															id="bankRoutingNumber" maxlength="9"
-															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr');validSettlRoutingNumber()" />
+															onblur="this.value=this.value.trim();return clientValidation('bankRoutingNumber', 'routing_number','bankRoutingNumberEr'),validSettlRoutingNumber()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankRoutingNumberEr" class="red-error">&nbsp;</span>
 														</div>
@@ -455,7 +455,7 @@
 														<form:input cssClass="form-control"
 															path="bankAccountNumber" id="bankAccountNumber"
 															maxlength="50"
-															onblur="this.value=this.value.trim();return clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv');validSettlAccountNumber()" />
+															onblur="this.value=this.value.trim();return clientValidation('bankAccountNumber', 'account_numberBank','bankAccountNumberErrorDiv'),validSettlAccountNumber()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankAccountNumberErrorDiv" class="red-error">&nbsp;</span>
 														</div>

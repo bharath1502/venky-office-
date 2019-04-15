@@ -114,7 +114,7 @@ function validateCreateIso(){
 			| !validateCity()
 			| !validateCountry()
 			| !validateState()
-			| !validateZip()
+			| !zipCodeNotEmpty('zip')
 			| !readPartnerLogo(imageData,'isoLogoErrorDiv')
 			| !panRangeNotEmpty('panRangeList[0].panLow')
 			| !panRangeNotEmpty('panRangeList[0].panHigh')) {
@@ -251,17 +251,25 @@ function fetchPmListByCurrency(currencyName){
 }
 
 function validateAddress() {
+    var regex = /^[A-Za-z0-9 ]+$/;
 	var address1 = get('address1').value.trim();
 
 	if (isEmpty(address1)) {
 		setError(get('address1'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
-	} else if (address1.length < 5) {
+	}
+	else if (!regex.test(address1)) {
+		setError(get('address1'), webMessages.invalidAddress);
+		loadMsgTitleText();
+		return false;
+	}
+	else if (address1.length < 5) {
 		setError(get('address1'), webMessages.invalidAddressLength);
 		loadMsgTitleText();
 		return false;
-	} else {
+	} 
+	else {
 		setError(get('address1'), '');
 		setLable('confirmMaddress1', address1);
 		return true;

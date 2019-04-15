@@ -388,7 +388,7 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       }
     }
     if (null == merchantDb.getParentMerchantId()
-        && (!PGConstants.STATUS_SUCCESS.equals(updateMerchantRequest.getStatus()))) {
+        && (!updateMerchantRequest.getStatus().equals(PGConstants.STATUS_SUCCESS))) {
       validateParentMerchantId(updateMerchantRequest, merchantDb);
     }
     PGAccount pgAccount = accountRepository.findByEntityIdAndCategory(merchantDb.getMerchantCode(),
@@ -515,10 +515,6 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
       pgMerchantBank.setState(updateMerchantRequest.getBankState());
       pgMerchantBank.setCountry(updateMerchantRequest.getBankCountry());
       pgMerchantBank.setPin(updateMerchantRequest.getBankPin());
-      
-		if (!updateMerchantRequest.getMerchantType().equals(PGConstants.SUB_MERCHANT)
-				&& updateMerchantRequest.getProcess().equals(PGConstants.UPDATE)) {
-		}
 		merchantRepository.save(merchantDb);
 		accountRepository.save(pgAccount);
 		validateStatus(updateMerchantResponse, merchantDb);
@@ -616,8 +612,8 @@ public class MerchantUpdateDaoImpl implements MerchantUpdateDao {
 
   private void validatePGMerchant(UpdateMerchantRequest updateMerchantRequest, PGMerchant merchantDb,
 		PGMerchant subMerchant, PGAccount pgSubMerchantAccount) {
-	if (!PGConstants.STATUS_DELETED.equals(subMerchant.getStatus())
-	    && !PGConstants.STATUS_INACTIVE.equals(subMerchant.getStatus())) {
+	if (!subMerchant.getStatus().equals(PGConstants.STATUS_DELETED )
+	    && !subMerchant.getStatus().equals(PGConstants.STATUS_INACTIVE)) {
 	  subMerchant.setStatus(updateMerchantRequest.getStatus());
 	  subMerchant.setUpdatedDate(DateUtil.getCurrentTimestamp());
 	  subMerchant.getPgMerchantUsers().get(0)

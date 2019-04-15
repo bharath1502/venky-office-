@@ -611,6 +611,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				request.setCurrencyCode(transactionRequest.getCurrencyCode());
 				request.setTimeZoneOffset(transactionRequest.getTimeZoneOffset());
 				request.setTimeZoneRegion(transactionRequest.getTimeZoneRegion());
+				request.setIsoId(pgTransaction.getIsoId());
 				PGMerchant pgMerchant = merchantUpdateDao.getMerchantByCode(transactionRequest.getMerchantCode());
 				request.setMerchantId(pgMerchant.getId());
 				getMerchantDetails(pgMerchant, request);

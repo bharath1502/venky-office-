@@ -250,7 +250,7 @@ function validateAddress() {
 	var address1 = get('address1').value.trim();
 
 	if (isEmpty(address1)) {
-		setError(get('address1'), webMessages.pleaseEnterAddress);
+		setError(get('address1'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
 	} else if (address1.length < 5) {

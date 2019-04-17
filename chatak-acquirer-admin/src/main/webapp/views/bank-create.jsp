@@ -275,8 +275,7 @@
 													<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 															code="common.label.contactmobilenumber" /></label>
 													<form:input path="contactPersonCell" id="bankMobile"
-														cssClass="form-control" onkeypress="return numbersonly(this, event)"
-														 onblur="this.value=this.value.trim();validContactPersonCell()"
+														cssClass="form-control" onblur="this.value=this.value.trim();validContactPersonCell()"
 														maxlength="<%=Constants.PHONE.toString()%>" />
 													<div class="discriptionErrorMsg" data-toggle="tooltip"
 														data-placement="top" title="">

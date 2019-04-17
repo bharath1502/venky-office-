@@ -243,7 +243,7 @@
 														class="required-field">*</span></label>
 													<form:input path="programManagerRequest.contactPhone" maxlength="10"
 														cssClass="form-control" id="contactPhone"
-<%-- 														onblur="clientValidation('contactPhone','partner_phone','isocontactphoneerrormsg');validateContactPhone()" --%>
+														onblur="clientValidation('contactPhone','partner_phone','isocontactphoneerrormsg');validateContactPhone()"
 														onclick="clearErrorMsg(''isocontactphoneerrormsg'');" />
 													<div class="discriptionErrorMsg">
 														<span id="isocontactphoneerrormsg" class="red-error">&nbsp;</span>

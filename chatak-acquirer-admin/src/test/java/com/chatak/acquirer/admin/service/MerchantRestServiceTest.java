@@ -18,6 +18,7 @@ import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.acquirer.admin.service.impl.MerchantValidateServiceImpl;
 import com.chatak.acquirer.admin.util.JsonUtil;
 import com.chatak.acquirer.admin.util.ProcessorConfig;
+import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.CIEntityDetailsResponse;
 import com.chatak.pg.model.VirtualAccGetAgentsRequest;
 import com.chatak.pg.util.Constants;
@@ -40,13 +41,13 @@ public class MerchantRestServiceTest {
   CIEntityDetailsResponse ciEntityDetailsResponse;
 
   @Test
-  public void getPartnerList() throws ChatakAdminException, IOException {
+  public void getPartnerList() throws ChatakAdminException, IOException, HttpClientException {
     String live = null;
     PowerMockito.mockStatic(JsonUtil.class);
     PowerMockito.mockStatic(ProcessorConfig.class);
     PowerMockito.when(ProcessorConfig.get("FEE_SERVICE_LIVE")).thenReturn(live);
     PowerMockito.when(JsonUtil.sendToIssuance(Matchers.any(VirtualAccGetAgentsRequest.class),
-        Matchers.anyString(), Matchers.anyString())).thenReturn(clientResponse);
+        Matchers.anyString(), Matchers.anyString(), null)).thenReturn(clientResponse);
     Mockito.when(clientResponse.getStatus()).thenReturn(Constants.TWO_HUNDRED);
     Mockito.when(clientResponse.getEntity(String.class)).thenReturn("responseMessage");
     Mockito.when(mapper.readValue("responseMessage", CIEntityDetailsResponse.class))

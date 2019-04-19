@@ -1,6 +1,6 @@
 package com.chatak.acquirer.admin.util;
 
-import java.io.IOException;
+
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectWriter;
@@ -12,6 +12,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.pg.exception.HttpClientException;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonUtilTest {

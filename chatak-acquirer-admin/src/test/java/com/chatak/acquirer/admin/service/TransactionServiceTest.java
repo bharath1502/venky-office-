@@ -98,9 +98,9 @@ public class TransactionServiceTest {
   @Test
   public void testSearchTransactions() throws ChatakAdminException {
 
-    Mockito.when(transactionDao.getTransactions(getTransactionsListRequest))
+    Mockito.when(transactionDao.getTransactions(getTransactionsListRequest, Constants.ONE_NINE_NINE_LONG))
         .thenReturn(Arrays.asList(transactions));
-    response = transactionServiceImpl.searchTransactions(getTransactionsListRequest);
+    response = transactionServiceImpl.searchTransactions(getTransactionsListRequest, Constants.ONE_NINE_NINE_LONG);
     Assert.assertNotNull(response);
   }
 
@@ -122,7 +122,7 @@ public class TransactionServiceTest {
     PGTransaction pgTransactions = Mockito.mock(PGTransaction.class);
     PGAccount account = Mockito.mock(PGAccount.class);
     PGMerchant merchant = Mockito.mock(PGMerchant.class);
-    Mockito.when(transactionDao.getTransactions(getTransactionsListRequest))
+    Mockito.when(transactionDao.getTransactions(getTransactionsListRequest, Constants.ONE_NINE_NINE_LONG))
         .thenReturn(Arrays.asList(transactions));
     Mockito.when(transactionDao.getAllTransactions()).thenReturn(Arrays.asList(pgTransactions));
     Mockito.when(pgTransactions.getMerchantId()).thenReturn("111");
@@ -132,7 +132,7 @@ public class TransactionServiceTest {
     Mockito.when(pgTransactions.getTerminalId()).thenReturn("6");
     Mockito.when(account.getAccountNum()).thenReturn(Constants.ONE_NINE_NINE_LONG);
     Mockito.when(pgTransactions.getPosEntryMode()).thenReturn("00");
-    response = transactionServiceImpl.getAllTransactions(getTransactionsListRequest);
+    response = transactionServiceImpl.getAllTransactions(getTransactionsListRequest,Constants.ONE_NINE_NINE_LONG );
     Assert.assertNotNull(response);
 
   }

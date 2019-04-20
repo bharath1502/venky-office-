@@ -509,7 +509,7 @@
 															</label>
 														<form:input cssClass="form-control" path="bankCity"
 															id="bankCity" maxlength="50"
-															onblur="this.value=this.value.trim();validateBankCity()" />
+															onblur="this.value=this.value.trim()" />
 														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
 															<span id="bankCityEr" class="red-error">&nbsp;</span>
 														</div>

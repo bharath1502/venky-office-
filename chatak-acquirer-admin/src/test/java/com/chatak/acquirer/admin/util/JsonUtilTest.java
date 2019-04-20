@@ -8,12 +8,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.chatak.acquirer.admin.exception.ChatakAdminException;
 import com.chatak.pg.exception.HttpClientException;
+import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.HttpClient;
 
-
+@SuppressWarnings("static-access")
 @RunWith(MockitoJUnitRunner.class)
 public class JsonUtilTest {
 
@@ -22,8 +25,11 @@ public class JsonUtilTest {
 	@InjectMocks
 	JsonUtil jsonUtil;
 
-	@Mock
 	ObjectWriter objectWriter;
+
+	HttpClient httpClient;
+
+	String output;
 
 	@Test(expected = ChatakAdminException.class)
 	public void testConvertObjectToJSON() throws ChatakAdminException {
@@ -31,43 +37,24 @@ public class JsonUtilTest {
 		jsonUtil.convertObjectToJSON(object);
 	}
 
-	@Test(expected = NullPointerException.class)
+	
+	@Test
 	public void testConvertJSONToObject() throws ChatakAdminException {
-		Class<?> c = null;
-		jsonUtil.convertJSONToObject("jsonData", c);
+		Class<?> c = String.class;
+		jsonUtil.convertJSONToObject("111", c);
 	}
 
 	@Test
-	public void testPostRequest() {
+	public void testSendToIssuance() throws ChatakAdminException {
 		Object request = new Object();
 		try {
-			jsonUtil.postRequest(request,String.class, "serviceEndPoint");
+			Mockito.when(httpClient.invokePost(request, String.class, Constants.ACC_ACTIVE)).thenReturn(Constants.ACC_TERMINATED);
+			jsonUtil.sendToIssuance(request, "123", "543", String.class);
 		} catch (Exception e) {
-			logger.error("JsonUtilTest | testPostRequest | Exception ", e);
+			logger.error("ERROR:: JsonUtilTest:: testSendToIssuance method", e);
 
 		}
 	}
 
-	@Test
-	public void testPostDCCRequest() {
-		Object request = new Object();
-		try {
-			jsonUtil.postDCCRequest(request, "serviceEndPoint",String.class);
-		} catch (Exception e) {
-			logger.error("JsonUtilTest | testPostDCCRequest | Exception ", e);
-
-		}
-	}
-
-	@Test
-	public void testPostIssuanceRequest() {
-		Object request = new Object();
-		try {
-			jsonUtil.postIssuanceRequest(request, "435435",String.class);
-		} catch (Exception e) {
-			logger.error("JsonUtilTest | testPostIssuanceRequest | Exception ", e);
-
-		}
-	}
-
+	
 }

@@ -94,6 +94,9 @@ public class TransactionServiceTest {
 
   @Mock
   TransactionReportDao transactionReportDao;
+  
+  @Mock
+  LitleEFTDTOsList litleEFTDTOsList;
 
   @Test
   public void testSearchTransactions() throws ChatakAdminException {
@@ -148,7 +151,6 @@ public class TransactionServiceTest {
 
   @Test
   public void testGetAllTransactionsOnMerchantCode() {
-    PowerMockito.mockStatic(JsonUtil.class);
     ReportsDTO reportsDTOList = Mockito.mock(ReportsDTO.class);
     Mockito.when(transactionReportDao.getAllTransactionsReport(getTransactionsListRequest))
         .thenReturn(Arrays.asList(reportsDTOList));
@@ -159,7 +161,6 @@ public class TransactionServiceTest {
 
   @Test
   public void testSearchTransactionsReport() throws ChatakAdminException {
-    PowerMockito.mockStatic(JsonUtil.class);
     ReportsDTO reportList = Mockito.mock(ReportsDTO.class);
     Mockito.when(transactionReportDao.getTransactionListReport(getTransactionsListRequest))
         .thenReturn(Arrays.asList(reportList));
@@ -216,7 +217,7 @@ public class TransactionServiceTest {
 
   @Test(expected = ChatakAdminException.class)
   public void testConfigureReqObj() throws ChatakAdminException {
-    PowerMockito.mockStatic(JsonUtil.class);
+   
     SettlementActionDTOList actionDTOList = Mockito.mock(SettlementActionDTOList.class);
     HttpSession session = Mockito.mock(HttpSession.class);
     HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -234,29 +235,9 @@ public class TransactionServiceTest {
         removedTxns);
   }
 
-  @Test(expected = ChatakAdminException.class)
-  public void testConfigureLitleReqObj() throws ChatakAdminException {
-    PowerMockito.mockStatic(JsonUtil.class);
-    PowerMockito.mockStatic(PGConstants.class);
-    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-    HttpSession session = Mockito.mock(HttpSession.class);
-    LitleEFTDTOsList litleEFTDTOsList = Mockito.mock(LitleEFTDTOsList.class);
-    String requestObject = "abc";
-    String[] removedTxns = {"abc", "def"};
-    String jsonRequest = "{\"litleEFTDTOs\":[" + requestObject + "]}";
-    Mockito.when(session.getAttribute(PGConstants.BULK_SETTLEMENT_LIST_OBJ))
-        .thenReturn("selected_bulk_settlement_list_obj");
-    Mockito.when(session.getAttribute(PGConstants.BULK_SETTLEMENT_LIST_OBJ))
-        .thenReturn(litleEFTDTOsList);
-    Mockito.when(JsonUtil.convertJSONToObject(jsonRequest, LitleEFTDTOsList.class))
-        .thenReturn(litleEFTDTOsList);
-    transactionServiceImpl.configureLitleReqObj(request, session, litleEFTDTOsList, requestObject,
-        removedTxns);
-  }
 
   @Test
   public void testPrepareAndBindTxnPopupData() throws ChatakAdminException {
-    PowerMockito.mockStatic(JsonUtil.class);
     Transaction transactionList = Mockito.mock(Transaction.class);
     transactionServiceImpl.prepareAndBindTxnPopupData(Arrays.asList(transactionList));
   }

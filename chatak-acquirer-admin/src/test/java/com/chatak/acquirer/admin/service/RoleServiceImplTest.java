@@ -264,6 +264,7 @@ public class RoleServiceImplTest {
 	@Test
 	public void testValidateRolenameElse() throws ChatakAdminException {
 		PGUserRoles pgRoleData = new PGUserRoles();
+		pgRoleData.setStatus(0);
 		Mockito.when(usersRoleDao.getRoleOnRoleName(Matchers.anyString())).thenReturn(pgRoleData);
 		roleServiceImpl.validateRolename("abcde");
 	}

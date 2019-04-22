@@ -163,6 +163,7 @@ public class MerchantUpdateServiceImplTest {
 		List<PGMerchant> pgMerchants = new ArrayList<>();
 		PGMerchant pgMerchant = new PGMerchant();
 		getMerchantListResponse.setSubMerchants(pgMerchants);
+		pgMerchant.setStatus(0);
 		pgMerchants.add(pgMerchant);
 		Mockito.when(subMerchantDao.getSubMerchantListOnMerchantId(Matchers.any(GetMerchantListRequest.class)))
 				.thenReturn(getMerchantListResponse);
@@ -176,6 +177,7 @@ public class MerchantUpdateServiceImplTest {
 		List<PGMerchant> pgMerchants = new ArrayList<>();
 		PGMerchant pgMerchant = new PGMerchant();
 		getMerchantListResponse.setMerchants(pgMerchants);
+		pgMerchant.setStatus(0);
 		pgMerchants.add(pgMerchant);
 		Mockito.when(merchantProfileDao.getAllMerchantlist(Matchers.any(GetMerchantListRequest.class)))
 				.thenReturn(getMerchantListResponse);

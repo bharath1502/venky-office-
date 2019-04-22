@@ -91,6 +91,7 @@ public class PaymentSchemeServiceImplTest {
 	@Test
 	public void testValidatePaymentSchemeNameElse() throws ChatakAdminException {
 		PGPaymentScheme paymentScheme = new PGPaymentScheme();
+		paymentScheme.setStatus(0);
 		paymentScheme.setId(Long.parseLong("5345"));
 		Mockito.when(paymentSchemeDao.getPaymentSchemeName(Matchers.anyString())).thenReturn(paymentScheme);
 		paymentSchemeServiceImpl.validatePaymentSchemeName("423");

@@ -40,9 +40,9 @@ public class JsonUtilTest {
 		jsonUtil.convertObjectToJSON(object);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testConvertJSONToObject() throws ServiceException {
-		Class<?> c = null;
+		Class<?> c = String.class;
 		jsonUtil.convertJSONToObject("111", c);
 	}
 

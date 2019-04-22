@@ -302,3 +302,16 @@ function panRangeNotEmpty(id) {
 		return true;
 	} 
 }
+function validateContactPhone(){
+	var contactPhone = get('contactPhone').value.trim();
+	var contactPhonespaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})?[-. ]?([0-9]{4})$/;
+	 if (!contactPhonespaceRegx.test(contactPhone) ||!(contactPhone != 0)) {
+		setDiv('isocontactphoneerrormsg', webMessages.invalidContactPhoneNumber);
+		loadMsgTitleText();
+		return false;
+	}
+	 else {
+			setDiv('isocontactphoneerrormsg', '');
+			return true;
+		}
+}

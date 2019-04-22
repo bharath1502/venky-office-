@@ -307,30 +307,6 @@ public class SettlementServiceImplTest {
 	}
 
 	@Test
-	public void testPostVirtualAccFee() throws ChatakMerchantException, IOException {
-		PGAccountFeeLog pgAccountFeeLog = new PGAccountFeeLog();
-		pgAccountFeeLog.setTxnAmount(Long.parseLong("567"));
-		pgAccountFeeLog.setChatakFee(Long.parseLong("356"));
-		pgAccountFeeLog.setMerchantFee(Long.parseLong("342"));
-		Assert.assertNotNull(settlementServiceImpl.postVirtualAccFee(pgAccountFeeLog, "a", "b", "c", "d"));
-
-	}
-
-	@Test
-	public void testPostVirtualAccFeeReversal() throws IOException, HttpClientException, ChatakMerchantException {
-		PGAccountFeeLog pgAccountFeeLog = new PGAccountFeeLog();
-		Assert.assertNotNull(settlementServiceImpl.postVirtualAccFeeReversal(pgAccountFeeLog, "a", "b", "c"));
-
-	}
-
-	@Test
-	public void testPostVirtualAccFeeReversalElse() throws IOException,HttpClientException, ChatakMerchantException {
-		PGAccountFeeLog pgAccountFeeLog = new PGAccountFeeLog();
-		Assert.assertNotNull(settlementServiceImpl.postVirtualAccFeeReversal(pgAccountFeeLog, "a", "b", "c"));
-
-	}
-
-	@Test
 	public void testUpdateAccountCCTransactionsRejected() {
 		List<PGAccountTransactions> accountTxns = new ArrayList<>();
 		PGAccountTransactions pGAccountTransactions = new PGAccountTransactions();

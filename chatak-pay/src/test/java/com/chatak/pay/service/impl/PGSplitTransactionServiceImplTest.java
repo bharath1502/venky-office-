@@ -2,6 +2,7 @@ package com.chatak.pay.service.impl;
 
 import java.sql.Timestamp;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,6 +32,8 @@ import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PGSplitTransactionServiceImplTest {
+	
+	private static Logger logger = Logger.getLogger(PGTransactionServiceImpl.class);
 
 	@InjectMocks
 	PGSplitTransactionServiceImpl pgSplitTransactionServiceImpl = new PGSplitTransactionServiceImpl();
@@ -101,8 +104,7 @@ public class PGSplitTransactionServiceImplTest {
 		try {
 			pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGSplitTransactionServiceImplTest:: testGetSplitTxnStatus method", e);
 		}
 	}
 
@@ -121,8 +123,7 @@ public class PGSplitTransactionServiceImplTest {
 		try {
 			pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGSplitTransactionServiceImplTest:: testGetSplitTxnStatusElse method", e);
 		}
 	}
 
@@ -132,9 +133,7 @@ public class PGSplitTransactionServiceImplTest {
 		try {
 			pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			logger.info("Error:: PGSplitTransactionServiceImplTest:: testGetSplitTxnStatusNull method", e);		}
 	}
 
 	@Test(expected = SplitTransactionException.class)

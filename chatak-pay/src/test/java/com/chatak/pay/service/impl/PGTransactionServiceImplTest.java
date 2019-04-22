@@ -146,8 +146,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionAuth method", e);
 		}
 	}
 
@@ -177,8 +176,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionCapture method", e);
 		}
 	}
 
@@ -188,8 +186,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionElse method", e);
 		}
 	}
 
@@ -220,8 +217,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionMerchantElse method", e);
 		}
 	}
 
@@ -250,8 +246,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionRefundStatus method", e);
 		}
 	}
 
@@ -285,8 +280,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionRefund method", e);
 		}
 	}
 
@@ -300,8 +294,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionVoid method", e);
 		}
 	}
 
@@ -324,8 +317,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionSplitAccept method", e);
 		}
 	}
 
@@ -352,8 +344,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionMerchantElse method", e);
 		}
 	}
 
@@ -384,8 +375,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionMerchantElse method", e);
 		}
 	}
 
@@ -417,8 +407,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionBalance method", e);
 		}
 	}
 
@@ -430,8 +419,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionMerchant method", e);
 		}
 	}
 
@@ -454,8 +442,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionMerchantNotNull method", e);
 		}
 	}
 
@@ -466,8 +453,7 @@ public class PGTransactionServiceImplTest {
 		try {
 			pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
 		} catch (ChatakInvalidTransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("Error:: PGTransactionServiceImplTest:: testProcessTransactionMerchantElse method", e);
 		}
 	}
 

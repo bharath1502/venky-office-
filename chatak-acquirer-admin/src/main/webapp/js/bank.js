@@ -104,9 +104,9 @@ function validContactPersonName() {
 
 function validContactPersonCell() {
 	var bankMobile = get('bankMobile').value.trim();
-	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-    
-	if (!spaceRegx.test(bankMobile)) {
+	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})?[-. ]?([0-9]{4})$/;
+	
+   if (!spaceRegx.test(bankMobile) || !(bankMobile != 0) || !(bankMobile.length != 1)) {
 		setError(get('bankMobile'), webMessages.invalidContactMobileNumber);
 		loadMsgTitleText();
 		return false;

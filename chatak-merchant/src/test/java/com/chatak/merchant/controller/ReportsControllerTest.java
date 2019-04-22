@@ -176,10 +176,10 @@ public class ReportsControllerTest {
           .thenReturn(revenueGeneratedReportList);
       Mockito.when(merchantInfoService.getMerchantOnId(Matchers.anyLong())).thenReturn(pgMerchant);
       Mockito.when(merchantInfoService.getParentMerchantCode(Matchers.anyString()))
-          .thenReturn(Matchers.anyString());
+          .thenReturn(pgMerchant.toString());
       mockMvc
           .perform(get("/" + URLMappingConstants.GLOBAL_REVENUE_GENERATED_REPORT)
-              .param("revenueType", "MERCHANT_WEB").sessionAttr(Constants.EXISTING_FEATURES, "exist")
+              .sessionAttr(Constants.EXISTING_FEATURES, "exist")
               .sessionAttr("loginUserMerchantId", Long.parseLong("1234")))
           .andExpect(view().name(URLMappingConstants.SHOW_GLOBAL_REVENUE_GENERATED_REPORT));
     } catch (Exception e) {
@@ -224,8 +224,9 @@ public class ReportsControllerTest {
           .thenReturn(revenueGeneratedReportList);
       Mockito.when(merchantInfoService.getMerchantOnId(Matchers.anyLong())).thenReturn(pgMerchant);
       Mockito.when(merchantInfoService.getParentMerchantCode(Matchers.anyString()))
-          .thenReturn(Matchers.anyString());
+          .thenReturn(pgMerchant.toString());
       mockMvc
+      
           .perform(get("/" + URLMappingConstants.GLOBAL_REVENUE_GENERATED_REPORT)
               .sessionAttr(Constants.EXISTING_FEATURES, "exist")
               .sessionAttr("loginUserMerchantId", Long.parseLong("1234")))

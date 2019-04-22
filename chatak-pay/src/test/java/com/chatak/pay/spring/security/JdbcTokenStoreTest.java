@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
@@ -58,22 +59,22 @@ public class JdbcTokenStoreTest {
 		jdbcTokenStore.storeAccessToken(token, authentication);
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testReadAccessToken() {
 		jdbcTokenStore.readAccessToken("243");
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testRemoveAccessToken() {
 		jdbcTokenStore.removeAccessToken(token);
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testReadAuthentication() {
 		jdbcTokenStore.readAuthentication(token);
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testReadAuthenticationString() {
 		jdbcTokenStore.readAuthentication("123");
 	}
@@ -83,47 +84,47 @@ public class JdbcTokenStoreTest {
 		jdbcTokenStore.storeRefreshToken(refreshToken, authentication);
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testReadRefreshToken() {
 		jdbcTokenStore.readRefreshToken("abcd");
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testRemoveRefreshToken() {
 		jdbcTokenStore.removeRefreshToken(refreshToken);
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testRemoveRefreshTokenString() {
 		jdbcTokenStore.removeRefreshToken("12345");
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testReadAuthenticationForRefreshToken() {
 		jdbcTokenStore.readAuthenticationForRefreshToken(refreshToken);
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testReadAuthenticationForRefreshTokenString() {
 		jdbcTokenStore.readAuthenticationForRefreshToken("1234");
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testRemoveAccessTokenUsingRefreshToken() {
 		jdbcTokenStore.removeAccessTokenUsingRefreshToken(refreshToken);
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testRemoveAccessTokenUsingRefreshTokenString() {
 		jdbcTokenStore.removeAccessTokenUsingRefreshToken("abcde");
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testFindTokensByClientId() {
 		jdbcTokenStore.findTokensByClientId("123");
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=CannotGetJdbcConnectionException.class)
 	public void testFindTokensByUserName() {
 		jdbcTokenStore.findTokensByUserName("abcde");
 	}

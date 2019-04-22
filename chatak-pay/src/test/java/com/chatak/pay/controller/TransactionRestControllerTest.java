@@ -45,6 +45,7 @@ import com.chatak.pg.enums.OriginalChannelEnum;
 import com.chatak.pg.enums.ShareModeEnum;
 import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.util.Properties;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
 import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -125,7 +126,7 @@ public class TransactionRestControllerTest {
 	}
 
 	@Test
-	public void testProcessShareMode() {
+	public void testProcessShareMode() throws ChatakInvalidTransactionException {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		SplitTxnData splitTxnData = new SplitTxnData();
 		CardData cardData = new CardData();
@@ -165,7 +166,7 @@ public class TransactionRestControllerTest {
 	}
 
 	@Test
-	public void testProcessShareModeSplitAmount() {
+	public void testProcessShareModeSplitAmount() throws ChatakInvalidTransactionException {
 	  TransactionRequest transactionRequest = new TransactionRequest();
       CardData cardData = new CardData();
       TSMResponse tsmResponse = new TSMResponse();

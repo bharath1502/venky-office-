@@ -50,6 +50,7 @@ import com.chatak.pg.bean.BillingData;
 import com.chatak.pg.bean.CardTokenData;
 import com.chatak.pg.enums.EntryModeEnum;
 import com.chatak.pg.enums.TransactionType;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
 import com.chatak.switches.sb.exception.ServiceException;
 import com.litle.sdk.generate.MethodOfPaymentTypeEnum;
 
@@ -142,7 +143,12 @@ public class PGTransactionServiceImplTest {
 		cardData.setCardType(MethodOfPaymentTypeEnum.VI);
 		transactionRequest.setCardData(cardData);
 		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any((PGOnlineTxnLog.class)))).thenReturn(pgOnlineTxnLog);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -168,13 +174,23 @@ public class PGTransactionServiceImplTest {
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgTransaction);
 		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any((PGOnlineTxnLog.class)))).thenReturn(pgOnlineTxnLog);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testProcessTransactionElse() {
 		TransactionRequest transactionRequest = new TransactionRequest();
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -201,7 +217,12 @@ public class PGTransactionServiceImplTest {
 		transactionRequest.setTotalTxnAmount(Long.parseLong("54354"));
 		feeValues.add(acquirerFeeValue);
 		Mockito.when(merchantUpdateDao.getMerchantByCode(Matchers.anyString())).thenReturn(pgMerchant);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -226,7 +247,12 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any((PGOnlineTxnLog.class)))).thenReturn(pgOnlineTxnLog);
 		Mockito.when(refundTransactionDao.findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId(
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(pgTransaction);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -256,7 +282,12 @@ public class PGTransactionServiceImplTest {
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(pgTransaction);
 		Mockito.when(refundTransactionDao.getRefundedAmountOnTxnId(Matchers.anyString()))
 				.thenReturn(Long.parseLong("543"));
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -266,7 +297,12 @@ public class PGTransactionServiceImplTest {
 		transactionRequest.setTransactionType(TransactionType.VOID);
 		Mockito.when(refundTransactionDao.findTransactionToRefundByPGTxnIdAndIssuerTxnIdAndMerchantId(
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(pgTransaction);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -285,7 +321,12 @@ public class PGTransactionServiceImplTest {
 		transactionRequest.setCardTokenData(cardTokenData);
 		cardData.setCardType(MethodOfPaymentTypeEnum.VI);
 		transactionRequest.setCardData(cardData);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -308,7 +349,12 @@ public class PGTransactionServiceImplTest {
 		pgTransaction.setPosEntryMode("abc");
 		transactionRequest.setCardData(cardData);
 		Mockito.when(onlineTxnLogDao.logRequest(Matchers.any((PGOnlineTxnLog.class)))).thenReturn(pgOnlineTxnLog);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -335,7 +381,12 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(refundTransactionDao.findRefundTransactionToVoidByPGTxnIdAndIssuerTxnIdAndMerchantIdAndTerminalId(
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgTransaction);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -363,7 +414,12 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(merchantUpdateDao.getMerchant(Matchers.anyString())).thenReturn(merchantData);
 		Mockito.when(currencyConfigRepository.findByCurrencyCodeAlpha(Matchers.anyString()))
 				.thenReturn(currencyDetails);
-		pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest,merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -371,7 +427,12 @@ public class PGTransactionServiceImplTest {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		merchant = new PGMerchant();
 		transactionRequest.setTransactionType(TransactionType.AUTH);
-		pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -390,14 +451,24 @@ public class PGTransactionServiceImplTest {
 		transactionResponse.setTransactionDTO(dtos);
 		transactionRequest.setTotalTxnAmount(Long.parseLong("34"));
 		dtos.add(transactionDTO);
-		pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testProcessTransactionMerchantElse() {
 		TransactionRequest transactionRequest = new TransactionRequest();
 		merchant = new PGMerchant();
-		pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
+		try {
+			pgTransactionServiceImpl.processTransaction(transactionRequest, merchant);
+		} catch (ChatakInvalidTransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -523,7 +594,7 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(onlineTxnLogDao.getTransactionOnPgTxnIdAndMerchantId(Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgOnlineTxnLog);
 		try {
-			pgTransactionServiceImpl.updateSettlementStatus("1", "2", "3", "4", "5", "6", Long.parseLong("654"),"7");
+			pgTransactionServiceImpl.updateSettlementStatus("1", "2", "3", "4", "5", "6", Long.parseLong("654"),"7", pgOnlineTxnLog);
 		} catch (Exception e) {
 			logger.info("Error:: PGTransactionServiceImplTest:: testUpdateSettlementStatus method", e);
 
@@ -539,7 +610,7 @@ public class PGTransactionServiceImplTest {
 		Mockito.when(onlineTxnLogDao.getTransactionOnPgTxnIdAndMerchantId(Matchers.anyString(), Matchers.anyString()))
 				.thenReturn(pgOnlineTxnLog);
 		try {
-			pgTransactionServiceImpl.updateSettlementStatus("1", "2", "3", "4", "Executed", "6", Long.parseLong("654"),"7");
+			pgTransactionServiceImpl.updateSettlementStatus("1", "2", "3", "4", "Executed", "6", Long.parseLong("654"),"7", pgOnlineTxnLog);
 		} catch (Exception e) {
 			logger.info("Error:: PGTransactionServiceImplTest:: testUpdateSettlementStatusException method", e);
 
@@ -560,93 +631,6 @@ public class PGTransactionServiceImplTest {
 			logger.info("Error:: PGTransactionServiceImplTest:: testGetProcessingFee method", e);
 
 		}
-	}
-
-	@Test
-	public void testUpdateAccountCCTransactionsCcAmountCredit() {
-		List<PGAccountTransactions> accountTxns = new ArrayList<>();
-		PGAccount account = new PGAccount();
-		PGAccountTransactions accountTransactions = new PGAccountTransactions();
-		accountTransactions.setTransactionCode("CC_AMOUNT_CREDIT");
-		account.setAvailableBalance(Long.parseLong("534"));
-		accountTransactions.setCredit(Long.parseLong("34"));
-		account.setCurrentBalance(Long.parseLong("434"));
-		accountTxns.add(accountTransactions);
-		Mockito.when(accountTransactionsDao
-				.getAccountTransactionsOnTransactionIdAndTransactionType(Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(accountTxns);
-		Mockito.when(accountDao.getPgAccount(Matchers.anyString())).thenReturn(account);
-		pgTransactionServiceImpl.updateAccountCCTransactions("1", "2", "abc");
-	}
-
-	@Test
-	public void testUpdateAccountCCTransactionsCcFeeDebit() {
-		List<PGAccountTransactions> accountTxns = new ArrayList<>();
-		PGAccount account = new PGAccount();
-		PGAccountTransactions accountTransactions = new PGAccountTransactions();
-		accountTransactions.setTransactionCode("CC_FEE_DEBIT");
-		account.setAvailableBalance(Long.parseLong("534"));
-		accountTransactions.setDebit(Long.parseLong("34"));
-		account.setCurrentBalance(Long.parseLong("434"));
-		accountTxns.add(accountTransactions);
-		Mockito.when(accountTransactionsDao
-				.getAccountTransactionsOnTransactionIdAndTransactionType(Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(accountTxns);
-		Mockito.when(accountDao.getPgAccount(Matchers.anyString())).thenReturn(account);
-		pgTransactionServiceImpl.updateAccountCCTransactions("1", "2", "abc");
-	}
-
-	@Test
-	public void testUpdateAccountCCTransactionsCcMerchantFeeCredit() {
-		List<PGAccountTransactions> accountTxns = new ArrayList<>();
-		PGAccount account = new PGAccount();
-		PGAccountTransactions accountTransactions = new PGAccountTransactions();
-		accountTransactions.setTransactionCode("CC_MERCHANT_FEE_CREDIT");
-		account.setAvailableBalance(Long.parseLong("534"));
-		accountTransactions.setCredit(Long.parseLong("34"));
-		account.setCurrentBalance(Long.parseLong("434"));
-		accountTxns.add(accountTransactions);
-		Mockito.when(accountTransactionsDao
-				.getAccountTransactionsOnTransactionIdAndTransactionType(Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(accountTxns);
-		Mockito.when(accountDao.getPgAccount(Matchers.anyString())).thenReturn(account);
-		pgTransactionServiceImpl.updateAccountCCTransactions("1", "2", "abc");
-	}
-
-	@Test
-	public void testUpdateAccountCCTransactionsCcAcquirerFeeCredit() {
-		List<PGAccountTransactions> accountTxns = new ArrayList<>();
-		List<PGTransaction> transactions = new ArrayList<>();
-		PGTransaction pgTransaction = new PGTransaction();
-		PGCurrencyConfig currencyConfig = new PGCurrencyConfig();
-		PGAccount account = new PGAccount();
-		PGAccountTransactions accountTransactions = new PGAccountTransactions();
-		accountTransactions.setTransactionCode("CC_ACQUIRER_FEE_CREDIT");
-		account.setAvailableBalance(Long.parseLong("534"));
-		accountTransactions.setCredit(Long.parseLong("34"));
-		account.setCurrentBalance(Long.parseLong("434"));
-		accountTxns.add(accountTransactions);
-		transactions.add(pgTransaction);
-		Mockito.when(accountTransactionsDao
-				.getAccountTransactionsOnTransactionIdAndTransactionType(Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(accountTxns);
-		Mockito.when(accountDao.getPgAccount(Matchers.anyString())).thenReturn(account);
-		Mockito.when(transactionRepository.findByTransactionId(Matchers.anyString())).thenReturn(transactions);
-		Mockito.when(currencyConfigDao.getcurrencyCodeAlpha(Matchers.anyString())).thenReturn(currencyConfig);
-		Mockito.when(accountRepository.findByEntityTypeAndCurrencyAndStatus(Matchers.anyString(), Matchers.anyString(),
-				Matchers.anyString())).thenReturn(account);
-		pgTransactionServiceImpl.updateAccountCCTransactions("1", "2", "abc");
-	}
-
-	@Test
-	public void testUpdateAccountCCTransactionsRejected() {
-		List<PGAccountTransactions> accountTxns = new ArrayList<>();
-		PGAccountTransactions accountTransactions = new PGAccountTransactions();
-		accountTxns.add(accountTransactions);
-		Mockito.when(accountTransactionsDao
-				.getAccountTransactionsOnTransactionIdAndTransactionType(Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(accountTxns);
-		pgTransactionServiceImpl.updateAccountCCTransactions("1", "2", "Rejected");
 	}
 
 	@Test

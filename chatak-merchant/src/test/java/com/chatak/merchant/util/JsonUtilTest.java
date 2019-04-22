@@ -5,10 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.chatak.merchant.exception.ChatakMerchantException;
 import com.chatak.pg.exception.HttpClientException;
+import com.chatak.pg.util.Constants;
+import com.chatak.pg.util.HttpClient;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonUtilTest {
@@ -20,50 +23,29 @@ public class JsonUtilTest {
 
 	@Mock
 	Object object;
+	
+	HttpClient httpClient;
 
 	@Test(expected = ChatakMerchantException.class)
 	public void testConvertObjectToJSON() throws ChatakMerchantException {
 		jsonUtil.convertObjectToJSON(object);
 	}
+	
+	@Test
+	public void testConvertJSONToObject() throws ChatakMerchantException {
+		Class<?> c = String.class;
+		jsonUtil.convertJSONToObject("111", c);
+	}
 
 	@Test
-	public void testPostRequest() {
+	public void testSendToIssuance() throws ChatakMerchantException {
+		Object request = new Object();
 		try {
-			jsonUtil.postRequest(object, "serviceEndPoint",String.class);
+			Mockito.when(httpClient.invokePost(request, String.class, Constants.ACC_ACTIVE)).thenReturn(Constants.ACC_TERMINATED);
+			jsonUtil.sendToIssuance(request, "123", "543", String.class);
 		} catch (Exception e) {
-			logger.error("ERROR:: JsonUtil::testPostRequest ", e);
+			logger.error("ERROR:: JsonUtilTest:: testSendToIssuance method", e);
 
 		}
 	}
-
-	@Test
-	public void testPostRequestString() {
-		try {
-		jsonUtil.postRequest("serviceEndPoint",String.class);
-		} catch (Exception e) {
-				logger.error("ERROR:: JsonUtil::testPostRequestString ", e);
-
-			}
-	}
-
-	@Test
-	public void testSendToIssuance() {
-		try {
-		jsonUtil.sendToIssuance(object, "serviceEndPoint", "mode", String.class);
-		} catch (Exception e) {
-			logger.error("ERROR:: JsonUtil::testSendToIssuance ", e);
-
-		}
-	}
-
-	@Test
-	public void testPostIssuanceRequest() {
-		try {
-			jsonUtil.postIssuanceRequest(object, "serviceEndPoint", String.class);
-		} catch (Exception e) {
-			logger.error("ERROR:: JsonUtil::testPostIssuanceRequest ", e);
-
-		}
-	}
-
 }

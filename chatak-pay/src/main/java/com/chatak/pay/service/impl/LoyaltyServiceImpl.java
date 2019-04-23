@@ -30,11 +30,12 @@ public class LoyaltyServiceImpl implements LoyaltyService {
 
 		LoyaltyProgramRequest loyaltyProgramAwardRequest = new LoyaltyProgramRequest();
 
-		loyaltyProgramAwardRequest.setTxnAmount(transactionRequest.getTxnAmount());
+		loyaltyProgramAwardRequest.setTxnAmount(request.getTotalTxnAmount());
 		loyaltyProgramAwardRequest.setMobileNumber(transactionRequest.getMobileNumber());
-		loyaltyProgramAwardRequest.setAccountNumber(transactionRequest.getAccountNumber());
+		loyaltyProgramAwardRequest.setAccountNumber(transactionRequest.getCardData().getCardNumber());
 		loyaltyProgramAwardRequest.setMerchantId(request.getMerchantId());
 		loyaltyProgramAwardRequest.setLoyaltyProgramType(PGConstants.MERCHANT);
+		loyaltyProgramAwardRequest.setOriginChannel(transactionRequest.getOriginChannel());
 		loyaltyProgramAwardRequest.setIsoId(request.getIsoId());
 		loyaltyProgramAwardRequest.setLoyaltyUrl(Properties.getProperty("loyalty.service.url"));
 		loyaltyProgramAwardRequest.setEmail(Properties.getProperty("loyalty.service.url.user.name"));
@@ -60,7 +61,7 @@ public class LoyaltyServiceImpl implements LoyaltyService {
 						loyaltyResponse.getValue());
 			}
 		} catch (Exception e) {
-			log.error(e + "Exit:: JsonUtil:: callRESTApi : call for loyalty account method2");
+			 log.error("ERROR :: LoyaltyServiceImpl :: invokeLoyalty ", e);
 		}
 		log.info("Exiting :: LoyaltyServiceImpl :: invokLoyalty :: Runnable");
 		return loyaltyResponse;

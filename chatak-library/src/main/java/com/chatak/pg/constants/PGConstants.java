@@ -527,9 +527,4 @@ public interface PGConstants {
    
    public static final String CHATAK_ADMIN_VIRTUAL_TERMINAL_INVALID_MERCHANT = "chatak.admin.virtual.terminal.invalid.merchant";
   
-   public static final String SCRIPT_INJECTED = "SCRIPT_INJECTED";
-  
-   public static final String INJECTED = "INJECTED";
-  
-   public static final String INJECTED_CHECKED = "INJECTED_CHECKED";
-}
+   }

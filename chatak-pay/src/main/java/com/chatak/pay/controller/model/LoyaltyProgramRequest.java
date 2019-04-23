@@ -25,6 +25,16 @@ public class LoyaltyProgramRequest extends Request{
 	
 	private String password;
 	
+	private String originChannel;
+	
+	public String getOriginChannel() {
+		return originChannel;
+	}
+
+	public void setOriginChannel(String originChannel) {
+		this.originChannel = originChannel;
+	}
+
 	public String getLoyaltyProgramType() {
 		return loyaltyProgramType;
 	}

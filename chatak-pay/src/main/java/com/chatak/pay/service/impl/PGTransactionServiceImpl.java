@@ -313,7 +313,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
 				feeAmount = feeAmount + feeValues.get(0).getFlatFee();
 
-				if (feeAmount.compareTo(transactionRequest.getTotalTxnAmount()) > 0) {
+				if (transactionRequest.getTotalTxnAmount().compareTo(feeAmount) > 0) {
 					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0117.name());
 					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0117.value());
 					return transactionResponse;
@@ -389,6 +389,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				
 				//Hitting to the Loyalty Service
 				LoyaltyResponse response = loyaltyService.invokeLoyalty(transactionRequest, request);
+				log.trace(" PGTransactionServiceImpl :: processAuthCapture :: LoyaltyResponse :: " + response.getErrorMessage());
 			
 				String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() !=null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "0";
 				if (autoSettlement != null && autoSettlement.equals("1")) {

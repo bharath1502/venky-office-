@@ -533,20 +533,9 @@ public class JsonUtil {
 					new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()) };
 			resultantObject = httpClient.invokePost(request, response, headers, false);
 			logger.info("Connecting to Gate way URL ::" + CHATAK_LOYALTY_SERVICE_URL + serviceEndPoint);
-			logger.info("Received response from Gate way URL :: response: " + response + ", refershRequestCount: "
-					+ refershRequestCount);
 		} catch (PrepaidAdminException e) {
 		    logger.error("ERROR: JsonUtil :: postRequest method" + e.getMessage(), e);
 			logger.info("Requesting oauth ::");
-			if (refershRequestCount < MAX_RETRY_COUNT) {
-				logger.info("Requesting oauth ::");
-				OAUTH_TOKEN_LOYALTY = null;
-				loyaltyTokenValidity = null;
-				getValidOAuthToken();
-				refershRequestCount++;
-				return postLoyaltyRequest(request, serviceEndPoint, response);
-			}
-			refershRequestCount = 0;
 			logger.info("Exiting JsonUtil :: postRequest");
 		} catch (Exception e) {
 			logger.info("Error:: JsonUtil:: postRequest method " + e);
@@ -556,53 +545,6 @@ public class JsonUtil {
 	}
     
 
-	private static String getValidOAuthToken() {
-		
-		if(isValidIssuanceToken()) {
-			logger.info("isValidIssuanceToken :: OAUTH_TOKEN_ISSUANCE : " + OAUTH_TOKEN_LOYALTY);
-			return OAUTH_TOKEN_LOYALTY;
-		} else {
-			logger.info("REquesting new auth token :: from refreshIssuanceOAuthToken");
-			return refreshOAuthToken();
-		}
-	}
-	
-	private static boolean isValidIssuanceToken() {
-
-		if (loyaltyTokenValidity == null || OAUTH_TOKEN_LOYALTY == null) {
-			return false;
-		} else if (System.currentTimeMillis() > loyaltyTokenValidity) {
-			OAUTH_TOKEN_LOYALTY = null;
-			return (null != refreshOAuthToken());
-		} else {
-			return true;
-		}
-	}
-	
-	private static String refreshOAuthToken() {
-		logger.info("Requesting for new auth token :: refreshIssuanceOAuthToken");
-		HttpClient httpClient = new HttpClient(CHATAK_LOYALTY_SERVICE_URL, BASE_LOYALTY_OAUTH_SERVICE_URL);
-		try {
-			Header[] headers = new Header[] { new BasicHeader(AUTH_HEADER, getBasicAuthTokenValue()),
-					new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()) };
-			OAuthToken apiResponse = httpClient.invokeGet(OAuthToken.class, headers);
-			logger.info("URL to generate token : " + (CHATAK_LOYALTY_SERVICE_URL + BASE_LOYALTY_OAUTH_SERVICE_URL));
-			OAUTH_TOKEN_LOYALTY = apiResponse.getAccess_token();
-			loyaltyTokenValidity = System.currentTimeMillis() + (apiResponse.getExpires_in() * 60);
-		} catch (Exception e) {
-			logger.info("Error:: JsonUtil:: refreshOAuthToken method " + e);
-		}
-		logger.info("refreshOAuthToken auth token :: OAUTH_TOKEN_LOYALTY : " + OAUTH_TOKEN_LOYALTY);
-		return OAUTH_TOKEN_LOYALTY;
-	}
-	
-	private static String getBasicAuthTokenValue() {
-
-		String basicAuth = Properties.getProperty("oauth.token.url.param.username") + ":"
-				+ Properties.getProperty("oauth.token.url.param.password");
-		basicAuth = TOKEN_TYPE_BASIC + new String(Base64.getEncoder().encode(basicAuth.getBytes()));
-		return basicAuth;
-	}
 	
 	public static Response awardLoyatyTransaction(LoyaltyProgramRequest loyaltyProgramAwardRequest, String loyaltyUrl,
 			String accessToken) throws ChatakPayException{
@@ -630,15 +572,6 @@ public class JsonUtil {
 			String accessToken, Class<T> response) throws HttpClientException {
 
 		T resultantObject = null;
-		RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-		ServletRequestAttributes attributes = (ServletRequestAttributes) requestAttributes;
-		HttpServletRequest requests = attributes.getRequest();
-		HttpSession httpSession = requests.getSession(true);
-		if (null != httpSession.getAttribute(PGConstants.SCRIPT_INJECTED)
-				&& httpSession.getAttribute(PGConstants.SCRIPT_INJECTED).equals(PGConstants.INJECTED)) {
-			httpSession.setAttribute(PGConstants.SCRIPT_INJECTED, PGConstants.INJECTED_CHECKED);
-			throw new HttpClientException("Invalid DATA", 1);
-		}
 		HttpClient httpClient = new HttpClient(loyaltyURL, serviceEndPoint);
 		Header[] headers = new Header[] { new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
 				new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + accessToken) };
@@ -653,7 +586,5 @@ public class JsonUtil {
 			logger.error("Error :: JsonUtil :: postRequestToLoyaltiyPlatform", e);
 		}
 		return resultantObject;
-
 	}
-
 }

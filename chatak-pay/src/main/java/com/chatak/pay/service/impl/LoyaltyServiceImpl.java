@@ -29,10 +29,6 @@ public class LoyaltyServiceImpl implements LoyaltyService {
 
 		LoyaltyProgramRequest loyaltyProgramAwardRequest = new LoyaltyProgramRequest();
 
-		/*loyaltyProgramAwardRequest.setTxnAmount("50000");
-		loyaltyProgramAwardRequest.setMobileNumber("9611493333");
-		loyaltyProgramAwardRequest.setAccountNumber("123456789123");
-		loyaltyProgramAwardRequest.setMerchantId(12l);*/
 		loyaltyProgramAwardRequest.setTxnAmount(transactionRequest.getTxnAmount());
 		loyaltyProgramAwardRequest.setMobileNumber(transactionRequest.getMobileNumber());
 		loyaltyProgramAwardRequest.setAccountNumber(transactionRequest.getAccountNumber());

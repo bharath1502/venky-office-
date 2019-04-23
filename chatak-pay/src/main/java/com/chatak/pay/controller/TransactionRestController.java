@@ -67,6 +67,7 @@ import com.chatak.pg.bean.ChangePasswordRequest;
 import com.chatak.pg.bean.ForgotPasswordRequest;
 import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.enums.EntryModeEnum;
+import com.chatak.pg.enums.OriginalChannelEnum;
 import com.chatak.pg.enums.TransactionType;
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.model.ApplicationClientDTO;
@@ -710,6 +711,9 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
       public Response clientProcess(HttpServletRequest request, HttpServletResponse response,
           HttpSession session, @RequestBody TransactionRequest transactionRequest) {
         try {
+			if (transactionRequest.getOriginChannel().equals(OriginalChannelEnum.HTT.value())) {
+				return process(request, response, session, transactionRequest);
+			}
           validateClientProcessRequest(transactionRequest);
           validateCustomerUserName(transactionRequest.getUserName());
           return process(request, response, session, transactionRequest);

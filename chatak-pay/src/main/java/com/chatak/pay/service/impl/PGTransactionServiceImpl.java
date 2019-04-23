@@ -6,8 +6,6 @@ package com.chatak.pay.service.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pay.constants.ChatakPayErrorCode;
 import com.chatak.pay.controller.model.CardData;
-import com.chatak.pay.controller.model.LoyaltyProgramRequest;
 import com.chatak.pay.controller.model.LoyaltyResponse;
 import com.chatak.pay.controller.model.Response;
 import com.chatak.pay.controller.model.SessionKeyRequest;

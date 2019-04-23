@@ -316,7 +316,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
 				feeAmount = feeAmount + feeValues.get(0).getFlatFee();
 
-				if (transactionRequest.getTotalTxnAmount().compareTo(feeAmount) > 0) {
+				if (feeAmount.compareTo(transactionRequest.getTotalTxnAmount()) > 0) {
 					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0117.name());
 					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0117.value());
 					return transactionResponse;

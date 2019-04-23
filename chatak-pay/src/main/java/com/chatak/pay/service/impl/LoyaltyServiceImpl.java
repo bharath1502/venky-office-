@@ -11,6 +11,7 @@ import com.chatak.pay.service.LoyaltyService;
 import com.chatak.pay.util.JsonUtil;
 import com.chatak.pay.util.StringUtil;
 import com.chatak.pg.bean.PurchaseRequest;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.util.Constants;
 import com.chatak.pg.util.Properties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +34,7 @@ public class LoyaltyServiceImpl implements LoyaltyService {
 		loyaltyProgramAwardRequest.setMobileNumber(transactionRequest.getMobileNumber());
 		loyaltyProgramAwardRequest.setAccountNumber(transactionRequest.getAccountNumber());
 		loyaltyProgramAwardRequest.setMerchantId(request.getMerchantId());
-		loyaltyProgramAwardRequest.setLoyaltyProgramType("merchant");
+		loyaltyProgramAwardRequest.setLoyaltyProgramType(PGConstants.MERCHANT);
 		loyaltyProgramAwardRequest.setIsoId(request.getIsoId());
 		loyaltyProgramAwardRequest.setLoyaltyUrl(Properties.getProperty("loyalty.service.url"));
 		loyaltyProgramAwardRequest.setEmail(Properties.getProperty("loyalty.service.url.user.name"));

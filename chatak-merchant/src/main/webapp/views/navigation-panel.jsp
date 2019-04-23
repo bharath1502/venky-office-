@@ -90,7 +90,6 @@
 <spring:message code="merchant.services.schedule.report.feature.id" var="scheduleReport"></spring:message>
 <spring:message code="merchant.services.funding.report.feature.id" var="dailyFundingReport"></spring:message>
 
-<spring:message code="merchant.services.faqManagement.feature.id" var="dailyFundingReport"></spring:message>
 
 <!--Header Block Start -->
 
@@ -216,15 +215,14 @@
 		</c:if>
 			<c:if test="${fn:contains(existingFeatures, scheduleReport)}">
 			<li id="navListId8" class="dropdown"><a href="#"
-				class="dropdown-toggle" data-toggle="dropdown">Schedule Report</a>
+				class="dropdown-toggle" data-toggle="dropdown"><spring:message code="chatak-report-lable-schedule-report"/></a>
 				<ul class="dropdown-menu" role="menu">
 						<li class="transperent-background"><a href="javascript:void(0)"></a></li>
-					
-						<li style="text-align:left;"><a href="merchant-daily-funding-report">Daily Funding Report</a></li>
-					
+						<c:if test="${fn:contains(existingFeatures,dailyFundingReport)}">
+							<li style="text-align:left;"><a href="merchant-daily-funding-report"><spring:message code="chatak-report-lable-daily-funding-report"/></a></li>
+						</c:if>
 				</ul>
 			</li>
-	
 	</c:if>
 		
 		<%-- <c:if test="${fn:contains(existingFeatures,adjustments)}">

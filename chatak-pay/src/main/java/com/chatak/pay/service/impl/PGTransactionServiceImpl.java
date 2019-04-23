@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.chatak.pay.constants.ChatakPayErrorCode;
 import com.chatak.pay.controller.model.CardData;
+import com.chatak.pay.controller.model.LoyaltyResponse;
 import com.chatak.pay.controller.model.Response;
 import com.chatak.pay.controller.model.SessionKeyRequest;
 import com.chatak.pay.controller.model.SessionKeyResponse;
@@ -34,6 +35,7 @@ import com.chatak.pay.exception.SplitTransactionException;
 import com.chatak.pay.model.TransactionDTO;
 import com.chatak.pay.model.TransactionDTOResponse;
 import com.chatak.pay.service.AsyncService;
+import com.chatak.pay.service.LoyaltyService;
 import com.chatak.pay.service.PGSplitTransactionService;
 import com.chatak.pay.service.PGTransactionService;
 import com.chatak.pay.util.JsonUtil;
@@ -207,6 +209,9 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 	
 	@Autowired
 	private MPosSessionKeyRepository mPosSessionKeyRepository;
+	
+	@Autowired
+	private LoyaltyService loyaltyService;
 
 	@Transactional
 	public Response processTransaction(TransactionRequest transactionRequest, PGMerchant merchant) throws ChatakInvalidTransactionException {
@@ -308,7 +313,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
 				feeAmount = feeAmount + feeValues.get(0).getFlatFee();
 
-				if (feeAmount.compareTo(transactionRequest.getTotalTxnAmount()) > 0) {
+				if (transactionRequest.getTotalTxnAmount().compareTo(feeAmount) > 0) {
 					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0117.name());
 					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0117.value());
 					return transactionResponse;
@@ -381,6 +386,11 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 					transactionResponse.getTxnRefNumber());
 	
 			if (purchaseResponse.getErrorCode().equals("00")) {
+				
+				//Hitting to the Loyalty Service
+				LoyaltyResponse response = loyaltyService.invokeLoyalty(transactionRequest, request);
+				log.trace(" PGTransactionServiceImpl :: processAuthCapture :: LoyaltyResponse :: " + response.getErrorMessage());
+			
 				String autoSettlement = pgMerchant.getMerchantConfig().getAutoSettlement() !=null ? pgMerchant.getMerchantConfig().getAutoSettlement().toString() : "0";
 				if (autoSettlement != null && autoSettlement.equals("1")) {
 					updateSettlementStatus(transactionRequest.getMerchantCode(), transactionRequest.getTerminalId(),
@@ -400,7 +410,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		return transactionResponse;
 
 	}
-
+	
 	public Response processAuth(TransactionRequest transactionRequest) {
 
 		log.info("RestService | PGTransactionServiceImpl | processAuth | Entering");

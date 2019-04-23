@@ -526,4 +526,5 @@ public interface PGConstants {
    public static final String ALREADY_EXIST = " already exist";
    
    public static final String CHATAK_ADMIN_VIRTUAL_TERMINAL_INVALID_MERCHANT = "chatak.admin.virtual.terminal.invalid.merchant";
-}
+  
+   }

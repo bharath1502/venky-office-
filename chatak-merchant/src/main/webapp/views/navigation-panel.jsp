@@ -216,14 +216,15 @@
 		</c:if>
 			<c:if test="${fn:contains(existingFeatures, scheduleReport)}">
 			<li id="navListId8" class="dropdown"><a href="#"
-				class="dropdown-toggle" data-toggle="dropdown"><spring:message code="chatak-report-lable-schedule-report"/></a>
+				class="dropdown-toggle" data-toggle="dropdown">Schedule Report</a>
 				<ul class="dropdown-menu" role="menu">
 						<li class="transperent-background"><a href="javascript:void(0)"></a></li>
-						<c:if test="${fn:contains(existingFeatures,dailyFundingReport)}">
-							<li style="text-align:left;"><a href="merchant-daily-funding-report"><spring:message code="chatak-report-lable-daily-funding-report"/></a></li>
-						</c:if>
+					
+						<li style="text-align:left;"><a href="merchant-daily-funding-report">Daily Funding Report</a></li>
+					
 				</ul>
 			</li>
+	
 	</c:if>
 		
 		<%-- <c:if test="${fn:contains(existingFeatures,adjustments)}">

@@ -1502,6 +1502,7 @@ pgOnlineTxnLog.setPgTxnId(pgTxnId);
 			
 			if (null != pmId) {
 			    log.info(" Program Manager ID "+pmId);
+			    request.setPmId(pmId);
 				ProgramManagerRequest programManagerRequest = programManagerDao.findStatusAndBatchPrefixByProgramManagerId(pmId);
 				log.info(" PM ID "+programManagerRequest.getId());
 				

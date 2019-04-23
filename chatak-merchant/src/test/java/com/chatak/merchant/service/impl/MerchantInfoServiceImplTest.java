@@ -200,6 +200,7 @@ public class MerchantInfoServiceImplTest {
 		List<PGMerchant> subMerchants = new ArrayList<PGMerchant>();
 		PGMerchant pgMerchant = new PGMerchant();
 		pgMerchant.setBusinessName("asdg");
+		pgMerchant.setStatus(0);
 		subMerchants.add(pgMerchant);
 		Merchant merchant = new Merchant();
 		GetMerchantListResponse getMerchantListResponse = new GetMerchantListResponse();

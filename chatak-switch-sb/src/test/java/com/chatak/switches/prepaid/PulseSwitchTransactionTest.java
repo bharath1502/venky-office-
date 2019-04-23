@@ -95,9 +95,4 @@ public class PulseSwitchTransactionTest {
 		pulseSwitchTransaction.networkAdvice(isoMsg);
 	}
 
-	@Test
-	public void testInitConfigP() throws ChatakSwitchException {
-		pulseSwitchTransaction.initConfig();
-	}
-
 }

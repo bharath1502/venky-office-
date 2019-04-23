@@ -240,7 +240,7 @@ public class BatchScheduleReportControllerTest {
         .thenReturn(getReportResponse);
     try {
       mockMvc
-          .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_GET_DAILY_FUNDING_REPORT)
+          .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_GET_DAILY_FUNDING_REPORT)
               .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
               .sessionAttr(TestConstants.DAILY_FUNDING_REQUEST_OBJECT, dailyFundingReport))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT));
@@ -258,7 +258,7 @@ public class BatchScheduleReportControllerTest {
         .thenThrow(chatakAdminException);
     try {
       mockMvc
-          .perform(get("/" + URLMappingConstants.CHATAK_ADMIN_GET_DAILY_FUNDING_REPORT)
+          .perform(post("/" + URLMappingConstants.CHATAK_ADMIN_GET_DAILY_FUNDING_REPORT)
               .sessionAttr(TestConstants.EXISTING_FEATURES, TestConstants.EXISTING_FEATURES)
               .sessionAttr(TestConstants.DAILY_FUNDING_REQUEST_OBJECT, dailyFundingReport))
           .andExpect(view().name(URLMappingConstants.CHATAK_ADMIN_SHOW_DAILY_FUNDING_REPORT));

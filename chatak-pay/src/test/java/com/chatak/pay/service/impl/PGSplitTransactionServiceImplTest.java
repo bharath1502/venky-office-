@@ -2,6 +2,7 @@ package com.chatak.pay.service.impl;
 
 import java.sql.Timestamp;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,9 +28,12 @@ import com.chatak.pg.acq.dao.model.PGTransaction;
 import com.chatak.pg.acq.dao.repository.SplitTransactionRepository;
 import com.chatak.pg.acq.dao.repository.TransactionRepository;
 import com.chatak.pg.enums.ShareModeEnum;
+import com.chatak.switches.sb.exception.ChatakInvalidTransactionException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PGSplitTransactionServiceImplTest {
+	
+	private static Logger logger = Logger.getLogger(PGTransactionServiceImpl.class);
 
 	@InjectMocks
 	PGSplitTransactionServiceImpl pgSplitTransactionServiceImpl = new PGSplitTransactionServiceImpl();
@@ -97,7 +101,11 @@ public class PGSplitTransactionServiceImplTest {
 		pgSplitTransaction.setStatus(Long.parseLong("0"));
 		Mockito.when(splitTransactionDao.getPGSplitTransactionByMerchantIdAndPgRefTransactionIdAndSplitAmount(
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyLong())).thenReturn(pgSplitTransaction);
-		pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
+		try {
+			pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
+		} catch (ChatakInvalidTransactionException e) {
+			logger.info("Error:: PGSplitTransactionServiceImplTest:: testGetSplitTxnStatus method", e);
+		}
 	}
 
 	@Test
@@ -112,13 +120,20 @@ public class PGSplitTransactionServiceImplTest {
 				Matchers.anyString(), Matchers.anyString(), Matchers.anyLong())).thenReturn(pgSplitTransaction);
 		Mockito.when(voidTransactionDao.findTransactionToReversalByMerchantIdAndPGTxnId(Matchers.anyString(),
 				Matchers.anyString())).thenReturn(txnToVoid);
-		pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
+		try {
+			pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
+		} catch (ChatakInvalidTransactionException e) {
+			logger.info("Error:: PGSplitTransactionServiceImplTest:: testGetSplitTxnStatusElse method", e);
+		}
 	}
 
 	@Test
 	public void testGetSplitTxnStatusNull() {
 		SplitStatusRequest splitStatusRequest = new SplitStatusRequest();
-		pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
+		try {
+			pgSplitTransactionServiceImpl.getSplitTxnStatus(splitStatusRequest);
+		} catch (ChatakInvalidTransactionException e) {
+			logger.info("Error:: PGSplitTransactionServiceImplTest:: testGetSplitTxnStatusNull method", e);		}
 	}
 
 	@Test(expected = SplitTransactionException.class)

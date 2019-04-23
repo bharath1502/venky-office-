@@ -104,9 +104,9 @@ function validContactPersonName() {
 
 function validContactPersonCell() {
 	var bankMobile = get('bankMobile').value.trim();
-	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-    
-	if (!spaceRegx.test(bankMobile)) {
+	var spaceRegx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})?[-. ]?([0-9]{4})$/;
+	
+   if (!spaceRegx.test(bankMobile) || !(bankMobile != 0) || !(bankMobile.length != 1)) {
 		setError(get('bankMobile'), webMessages.invalidContactMobileNumber);
 		loadMsgTitleText();
 		return false;
@@ -231,7 +231,7 @@ function validateState() {
 	var state = get('state').value.trim();
 
 	if (isEmpty(state)) {
-		setError(get('state'), webMessages.pleaseSelectState);
+		setError(get('state'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -245,7 +245,7 @@ function validateCountry() {
 	var country = get('country').value.trim();
 
 	if (isEmpty(country)) {
-		setError(get('country'), webMessages.pleaseSelectCountry);
+		setError(get('country'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
 	} else {
@@ -258,7 +258,7 @@ function validateCountry() {
 function validateZip() {
 	var zip = getVal('zip');
 	if (isEmpty(zip)) {
-		setError(get('zip'), webMessages.pleaseEnterZipCode);
+		setError(get('zip'), webMessages.validationthisfieldismandatory);
 		loadMsgTitleText();
 		return false;
 	} else if ((zip.length < 3) || (zip.length > 7)) {

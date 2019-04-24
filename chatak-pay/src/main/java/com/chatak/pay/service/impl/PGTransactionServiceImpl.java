@@ -295,7 +295,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				
 				List<PanRangeRequest> panRangesList = transactionDao.getPgPanRanges(transactionRequest.getMerchantCode());
 				Long panId = cardRangeValidation( panRangesList, transactionRequest, request);
-				if(panId == null) {
+				if(panId == 0l) {
 					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0115.name());
 					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0115.value());
 					return transactionResponse;

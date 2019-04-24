@@ -451,6 +451,9 @@ private void validateMerchant(Map model, Merchant merchant) {
                     + settlementDataRequest.getTotalTxnCount() + settlementDataRequest.getTotalAmount());
 			}
 			model.put("settlementDataRequest", settlementDataRequest);
+			model.put("totalSettlementEntityList",PGConstants.ZERO);
+			model.put("totalIssuanceTransactionNotfoundAcquiringList",PGConstants.ZERO);
+			model.put("totalAcquiringTransactionNotfoundIssuanceList",PGConstants.ZERO);
 		} catch (Exception e) {
 			logger.error("ERROR:: DashboardController:: showViewSettlementDetails method", e);
 			model.put(Constants.ERROR, messageSource.getMessage(Constants.CHATAK_NORMAL_ERROR_MESSAGE, null,

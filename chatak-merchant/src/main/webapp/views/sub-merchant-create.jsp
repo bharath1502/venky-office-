@@ -288,10 +288,8 @@
 															<span id="businessTypeEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
-												</fieldset>												
-												<fieldset class="col-sm-12">
 													<fieldset class="col-sm-3">
-													<legend></legend>
+														<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="manage.label.sub-merchant.merchantcode" /><span
 															class="required-field">*</span></label>
@@ -301,12 +299,13 @@
 																<option value="${mainMerchant.value}">${mainMerchant.label}</option>
 															</c:forEach>
 														</select>
-														<div class="discriptionErrorMsg" data-toggle="tooltip" data-placement="top" title="">
+														<div class="discriptionErrorMsg" data-toggle="tooltip"
+															data-placement="top" title="">
 															<span id="parentMerchantIdEr" class="red-error">&nbsp;</span>
 														</div>
 													</fieldset>
 													<fieldset class="col-sm-3">
-													<legend></legend>
+														<legend></legend>
 														<label data-toggle="tooltip" data-placement="top" title=""><spring:message
 																code="additional-information.label.username" /><span
 															class="required-field">*</span></label>
@@ -319,7 +318,7 @@
 																id="userNamegreenEr" class="green-error">&nbsp;</span>
 														</div>
 													</fieldset>
-												</fieldset>
+												</fieldset>												
 												<!--Panel Action Button Start -->
 												<div class="col-sm-12 button-content">
 													<fieldset class="col-sm-7 pull-right">

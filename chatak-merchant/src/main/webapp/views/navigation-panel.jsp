@@ -90,7 +90,6 @@
 <spring:message code="merchant.services.schedule.report.feature.id" var="scheduleReport"></spring:message>
 <spring:message code="merchant.services.funding.report.feature.id" var="dailyFundingReport"></spring:message>
 
-<spring:message code="merchant.services.faqManagement.feature.id" var="dailyFundingReport"></spring:message>
 
 <!--Header Block Start -->
 

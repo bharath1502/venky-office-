@@ -9,6 +9,9 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
 
 import org.apache.http.Header;
 import org.apache.http.entity.ContentType;
@@ -24,9 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.chatak.pay.controller.model.LoyaltyProgramRequest;
 import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pg.constants.ActionErrorCode;
+import com.chatak.pg.constants.PGConstants;
 import com.chatak.pg.exception.HttpClientException;
 import com.chatak.pg.exception.PrepaidAdminException;
 import com.chatak.pg.model.ApplicationClientDTO;
@@ -97,6 +105,14 @@ public class JsonUtil {
   private static final int MAX_RETRY_COUNT = 3;
 
   private static int refershRequestCount = 0;
+  
+  private static final String CHATAK_LOYALTY_SERVICE_URL = Properties.getProperty("loyalty.service.url");
+  
+  private static String OAUTH_TOKEN_LOYALTY = null;
+	
+  private static Long loyaltyTokenValidity = null;
+	
+  public static final String BASE_LOYALTY_OAUTH_SERVICE_URL = Properties.getProperty("oauth.token.generation.url");
 
   /**
    * Method to convert Java object to JSON
@@ -507,4 +523,68 @@ public class JsonUtil {
       }
       return apiResponse;
     }
+    
+    public static <T extends Object> T postLoyaltyRequest(Object request, String serviceEndPoint, Class<T> response)
+			throws Exception {
+		T resultantObject = null;
+		HttpClient httpClient = new HttpClient(CHATAK_LOYALTY_SERVICE_URL, serviceEndPoint);
+		try {
+			Header[] headers = new Header[] {
+					new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()) };
+			resultantObject = httpClient.invokePost(request, response, headers, false);
+			logger.info("Connecting to Gate way URL ::" + CHATAK_LOYALTY_SERVICE_URL + serviceEndPoint);
+		} catch (PrepaidAdminException e) {
+		    logger.error("ERROR: JsonUtil :: postRequest method" + e.getMessage(), e);
+			logger.info("Requesting oauth ::");
+			logger.info("Exiting JsonUtil :: postRequest");
+		} catch (Exception e) {
+			logger.info("Error:: JsonUtil:: postRequest method " + e);
+			throw new ChatakPayException("Unable to connect to API server,Please try again");
+		}
+		return resultantObject;
+	}
+    
+
+	
+	public static Response awardLoyatyTransaction(LoyaltyProgramRequest loyaltyProgramAwardRequest, String loyaltyUrl,
+			String accessToken) throws ChatakPayException{
+		try {
+			Response response = null;
+			String output = JsonUtil.postRequestToLoyaltiyPlatform(loyaltyProgramAwardRequest, loyaltyUrl, "/loyaltyService/loyalty/awardLoyatyTransaction", accessToken, String.class);
+			response = mapper.readValue(output, Response.class);
+			return response;
+		} catch(HttpClientException hce) {
+			logger.error("Error :: JsonUtil :: awardLoyatyTransaction :: HttpClientException" + hce.getMessage(), hce);
+			throw new ChatakPayException(Properties.getProperty("prepaid.agentadmin.general.error.message"));
+		}  catch (Exception e) {
+			logger.error("Error :: JsonUtil :: awardLoyatyTransaction : " + e.getMessage(), e);
+			try {
+				throw new ChatakPayException(Properties.getProperty("prepaid.agentadmin.general.error.message"));
+			} catch (Exception e1) {
+				logger.error("Error :: JsonUtil :: awardLoyatyTransaction : " + e1.getMessage(), e1);
+		        throw new ChatakPayException(e.getMessage());
+			}
+		}
+		
+	}
+	
+	public static <T> T postRequestToLoyaltiyPlatform(Object request, String loyaltyURL, String serviceEndPoint,
+			String accessToken, Class<T> response) throws HttpClientException {
+
+		T resultantObject = null;
+		HttpClient httpClient = new HttpClient(loyaltyURL, serviceEndPoint);
+		Header[] headers = new Header[] { new BasicHeader("content-type", ContentType.APPLICATION_JSON.getMimeType()),
+				new BasicHeader(AUTH_HEADER, TOKEN_TYPE_BEARER + accessToken) };
+		try {
+			resultantObject = httpClient.invokePost(request, response, headers, false);
+		} catch (HttpClientException hce) {
+			logger.error(
+					"Error :: JsonUtil :: postRequestToLoyaltiyPlatform" + hce.getHttpErrorCode() + hce.getMessage(),
+					hce);
+			throw hce;
+		} catch (Exception e) {
+			logger.error("Error :: JsonUtil :: postRequestToLoyaltiyPlatform", e);
+		}
+		return resultantObject;
+	}
 }

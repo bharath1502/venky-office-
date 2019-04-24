@@ -12,7 +12,8 @@ MERCHANT_WEB("MERCHANT_WEB"),
 ADMIN_WEB("ADMIN_WEB"),
 MOBILE("Mob"),
 POS("POS"),
-WEB("Web");
+WEB("Web"),
+HTT("HTT");  
 
 	private final String value;
 

@@ -2383,6 +2383,10 @@ function validatePopupDesc() {
 		setDiv("popDescError_div", "Please Enter Valid Text For Reason");
 		return false;
 	}
+	if(text.length < 3) {
+		setDiv("popDescError_div", webMessages.InvalidReasonLength);
+		return false;
+	}
 	if (text.length > 250) {
 		setDiv("popDescError_div", message.IN_POUP_REASON_LENGTH);
 		return false;

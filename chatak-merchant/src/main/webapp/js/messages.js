@@ -202,7 +202,8 @@ var C_MERCHANT_MSG = {
 		EnterValidMonth : "Enter Valid Month",
 		EnterValidDay : "Enter a valid Day",
 		EnterValidYear : "Enter a valid Year",
-		EnterFourDigit : "Enter Four Digit Number"
+		EnterFourDigit : "Enter Four Digit Number",
+		InvalidReasonLength : "Reason should not be less than 3 characters"
 
 	},
 	es : {
@@ -409,7 +410,8 @@ var C_MERCHANT_MSG = {
 		EnterValidMonth : "Enter Valid Month",
 		EnterValidDay : "Enter a valid Day",
 		EnterValidYear : "Enter a valid Year",
-		EnterFourDigit : "Ingrese el número de cuatro dígitos"
+		EnterFourDigit : "Ingrese el número de cuatro dígitos",
+		InvalidReasonLength : "La razón no debe ser inferior a 3 caracteres"
 	}
 };
 

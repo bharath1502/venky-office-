@@ -67,9 +67,69 @@ public class TransactionRequest extends Request implements Serializable {
 	private String email;
 
 	private String txnId;
+	
+	private String ticketNumber;
+	
+	private String transactionId;
+	
+	private String ticketDateTime;
+	
+	private String ticketFareAmount;
+	
+	private String ticketPaymentMode;
+	
+	private Boolean checkBoxRedeemPoint;
+	
+	public Boolean getCheckBoxRedeemPoint() {
+		return checkBoxRedeemPoint;
+	}
+
+	public void setCheckBoxRedeemPoint(Boolean checkBoxRedeemPoint) {
+		this.checkBoxRedeemPoint = checkBoxRedeemPoint;
+	}
 
 	public String getTxnId() {
 		return txnId;
+	}
+
+	public String getTicketNumber() {
+		return ticketNumber;
+	}
+
+	public void setTicketNumber(String ticketNumber) {
+		this.ticketNumber = ticketNumber;
+	}
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
+	}
+
+	public String getTicketDateTime() {
+		return ticketDateTime;
+	}
+
+	public void setTicketDateTime(String ticketDateTime) {
+		this.ticketDateTime = ticketDateTime;
+	}
+
+	public String getTicketFareAmount() {
+		return ticketFareAmount;
+	}
+
+	public void setTicketFareAmount(String ticketFareAmount) {
+		this.ticketFareAmount = ticketFareAmount;
+	}
+
+	public String getTicketPaymentMode() {
+		return ticketPaymentMode;
+	}
+
+	public void setTicketPaymentMode(String ticketPaymentMode) {
+		this.ticketPaymentMode = ticketPaymentMode;
 	}
 
 	public void setTxnId(String txnId) {

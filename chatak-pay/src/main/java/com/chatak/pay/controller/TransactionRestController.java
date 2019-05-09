@@ -116,7 +116,7 @@ public class TransactionRestController extends BaseController implements URLMapp
       
       getTxnRequest(transactionRequest);
 			
-      if(isvalidQrSaleEntryMode(transactionRequest)) {
+      if(isvalidQrSaleEntryMode(transactionRequest)) { 
     	  logger.info("Processing:: TransactionRestController:: process method :: Type QR_SALE");
     	  CardData card = transactionRequest.getCardData();
     	  String track2 = card.getTrack2();
@@ -711,7 +711,7 @@ private boolean isvalidQrSaleEntryMode(TransactionRequest transactionRequest) {
       public Response clientProcess(HttpServletRequest request, HttpServletResponse response,
           HttpSession session, @RequestBody TransactionRequest transactionRequest) {
         try {
-			if (transactionRequest.getOriginChannel().equals(OriginalChannelEnum.HTT.value())) {
+			if (null != transactionRequest.getOriginChannel() && transactionRequest.getOriginChannel().equals(OriginalChannelEnum.HTT.value())) {
 				return process(request, response, session, transactionRequest);
 			}
           validateClientProcessRequest(transactionRequest);

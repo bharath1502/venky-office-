@@ -208,13 +208,24 @@ public class PGTransaction implements Serializable {
   
   @Column(name = "ISS_PARTNER")
   private String issuancePartner;
+  
+  @Column(name = "REDEEMTXN_AMOUNT")
+  private Long redeemTxnAmount;
 
   public BigInteger getId() {
     return id;
   }
 
+  public Long getRedeemTxnAmount() {
+	  return redeemTxnAmount;
+  }
+
+  public void setRedeemTxnAmount(Long redeemTxnAmount) {
+	  this.redeemTxnAmount = redeemTxnAmount;
+  }
+
   public void setId(BigInteger id) {
-    this.id = id;
+	  this.id = id;
   }
 
   public String getTransactionId() {

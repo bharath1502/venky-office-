@@ -227,7 +227,7 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
             QPGTransaction.pGTransaction.processor, QPGTransaction.pGTransaction.txnMode,
             QPGTransaction.pGTransaction.refTransactionId, QPGMerchant.pGMerchant.merchantType,
             QPGMerchant.pGMerchant.businessName, QPGTransaction.pGTransaction.deviceLocalTxnTime,
-            QPGTransaction.pGTransaction.timeZoneOffset,QPGTransaction.pGTransaction.batchId);
+            QPGTransaction.pGTransaction.timeZoneOffset,QPGTransaction.pGTransaction.batchId,QPGTransaction.pGTransaction.redeemTxnAmount);
     if (!CollectionUtils.isEmpty(tupleList)) {
       Tuple tuple = tupleList.get(0);
       txnDto = new TransactionPopUpDataDto();
@@ -259,6 +259,8 @@ public class RefundTransactionDaoImpl extends TransactionDaoImpl implements Refu
 							Constants.HYPHEN_DATE_FORMAT), PGConstants.DATE_FORMAT));
       txnDto.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
       txnDto.setBatchId(tuple.get(QPGTransaction.pGTransaction.batchId));
+	  txnDto.setRedeemTxnAmount(tuple.get(QPGTransaction.pGTransaction.redeemTxnAmount) != null
+					? tuple.get(QPGTransaction.pGTransaction.redeemTxnAmount) : 0l);
       transactionStatusMessage(txnDto, tuple);
     }
     return txnDto;

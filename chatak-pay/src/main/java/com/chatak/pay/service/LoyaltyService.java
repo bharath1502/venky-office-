@@ -7,5 +7,7 @@ import com.chatak.pg.bean.PurchaseRequest;
 public interface LoyaltyService {
 	
 	public LoyaltyResponse invokeLoyalty(TransactionRequest transactionRequest, PurchaseRequest request);
+	
+	public LoyaltyResponse invokeRedeemLoyaltyTxn(TransactionRequest transactionRequest, PurchaseRequest request);
 
 }

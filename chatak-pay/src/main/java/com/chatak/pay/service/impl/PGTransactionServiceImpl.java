@@ -288,6 +288,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 		try {
 			PurchaseRequest request = new PurchaseRequest();
 			Long feeAmount = 0l;
+			
 			// Logging into Online txn log
 			pgOnlineTxnLog = logEntry(TransactionStatus.INITATE, transactionRequest);
 			// PERF >> Replaced with card program id
@@ -313,7 +314,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				feeAmount = PGUtils.calculateAmountByPercentage(totalTxnAmount, percentage);
 				feeAmount = feeAmount + feeValues.get(0).getFlatFee();
 
-				if (transactionRequest.getTotalTxnAmount().compareTo(feeAmount) > 0) {
+				if (feeAmount.compareTo(transactionRequest.getTotalTxnAmount()) > 0) {
 					transactionResponse.setErrorCode(ChatakPayErrorCode.TXN_0117.name());
 					transactionResponse.setErrorMessage(ChatakPayErrorCode.TXN_0117.value());
 					return transactionResponse;
@@ -358,7 +359,12 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			if (!transactionRequest.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
 				getMerchantBatchId(request, cardprogram, pgMerchant);
 			}
-
+			// Hitting redeemLoyaltyTxn API
+			if (transactionRequest.getCheckBoxRedeemPoint().equals(PGConstants.TRUE)) {
+				LoyaltyResponse loyaltyResponse = loyaltyService.invokeRedeemLoyaltyTxn(transactionRequest, request);
+				log.trace(" Redeem Loyalty LoyaltyResponse : " + loyaltyResponse);
+				request.setRedeemTxnAmount(loyaltyResponse.getDeductionAmt());
+			}
 			PurchaseResponse purchaseResponse = new SwitchServiceBroker().purchaseTransaction(request, pgMerchant);
 
 			transactionResponse.setErrorCode(purchaseResponse.getErrorCode());

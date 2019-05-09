@@ -66,6 +66,16 @@ public class TransactionPopUpDataDto implements Serializable {
   private String deviceLocalTxnTime;
   
   private String timeZoneOffset;
+  
+  private Long redeemTxnAmount;
+
+  public Long getRedeemTxnAmount() {
+    return redeemTxnAmount;
+  }
+
+  public void setRedeemTxnAmount(Long redeemTxnAmount) {
+    this.redeemTxnAmount = redeemTxnAmount;
+  }
 
   public String getTransaction_type() {
     return transaction_type;

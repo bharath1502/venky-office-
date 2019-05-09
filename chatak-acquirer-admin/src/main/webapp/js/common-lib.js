@@ -871,6 +871,7 @@ $(document).ready(function() {
 		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.transactionAmount+" :</b></label><span class='col-sm-6'> " + txnObj.transactionAmount + " </span></div>";
 		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.feeAmount+" :</b></label><span class='col-sm-6'> " + txnObj.fee_amount + " </span></div>";
 		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.transactionTotalAmount+" :</b></label><span class='col-sm-6'> " + txnObj.txn_total_amount + " </span></div>";
+		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.RedeemTXNAmt+" :</b></label><span class='col-sm-6'> " + txnObj.redeemTxnAmount + " </span></div>";
 		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.acquirerTransactionMode+" :</b></label><span class='col-sm-6'> " + txnObj.acqTxnMode.toUpperCase() + " </span></div>";
 		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.acquirerChannel+" :</b></label><span class='col-sm-6'> " + txnObj.acqChannel.toUpperCase() + " </span></div>";
 		popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.statusMessage+" :</b></label><span class='col-sm-6'> " + txnObj.statusMessage + " </span></div>";
@@ -929,6 +930,7 @@ $(document).ready(function() {
 							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.merchantAmount+" :</b></label><span class='col-sm-6'> " + txnObj.transactionAmount + " </span></div>";
 							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.feeAmount+" :</b></label><span class='col-sm-6'> " + txnObj.fee_amount + " </span></div>";
 							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.transactionTotalAmount+" :</b></label><span class='col-sm-6'> " + txnObj.txn_total_amount + " </span></div>";
+							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.RedeemTXNAmt+" :</b></label><span class='col-sm-6'> " + txnObj.redeemTxnAmount + " </span></div>";
 							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.processorType+" :</b></label><span class='col-sm-6'> " + txnObj.processor + " </span></div>";
 							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.acquirerTransactionMode+" :</b></label><span class='col-sm-6'> " + txnObj.acqTxnMode.toUpperCase() + " </span></div>";
 							popupData += "<div class='col-sm-12'><label class='col-sm-6'><b>"+webMessages.acquirerChannel+" :</b></label><span class='col-sm-6'> " + txnObj.acqChannel.toUpperCase() + " </span></div>";

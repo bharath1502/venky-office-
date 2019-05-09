@@ -688,6 +688,8 @@ public class TransactionsController implements URLMappingConstants {
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-totaltxnamt", null,
             LocaleContextHolder.getLocale()),
+        messageSource.getMessage("chatak.transaction.redeemAmt", null,
+                LocaleContextHolder.getLocale()),
         messageSource.getMessage("transaction-file-exportutil-txnType", null,
             LocaleContextHolder.getLocale()),
         messageSource.getMessage("reports.label.transactions.txnstatus", null,
@@ -713,7 +715,7 @@ public class TransactionsController implements URLMappingConstants {
           transaction.getTxnDescription(), transaction.getRef_transaction_id(),
           transaction.getBatchId(), Long.parseLong(transaction.getMaskCardNumber()), transaction.getLocalCurrency(),
           CommonUtil.toAmount(transaction.getTransactionAmount()), CommonUtil.toAmount(transaction.getFee_amount()),
-          CommonUtil.toAmount(transaction.getTxn_total_amount()),
+          CommonUtil.toAmount(transaction.getTxn_total_amount()), transaction.getRedeemTxnAmount(),
           transaction.getTransaction_type().toUpperCase(),
           transaction.getMerchantSettlementStatus(), transaction.getUserName()
 

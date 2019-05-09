@@ -566,7 +566,8 @@ public class TransactionDaoImpl implements TransactionDao {
               QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
               QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
               QPGMerchant.pGMerchant.localCurrency, QPGTransaction.pGTransaction.userName,
-              QPGTransaction.pGTransaction.deviceLocalTxnTime,QPGTransaction.pGTransaction.timeZoneOffset);
+			  QPGTransaction.pGTransaction.deviceLocalTxnTime,
+			  QPGTransaction.pGTransaction.timeZoneOffset, QPGTransaction.pGTransaction.redeemTxnAmount);
       if (!CollectionUtils.isEmpty(tupleList)) {
         transactions = new ArrayList<>();
         Transaction transactionResp = null;
@@ -681,6 +682,7 @@ public class TransactionDaoImpl implements TransactionDao {
     transactionResp.setUserName(tuple.get(QPGTransaction.pGTransaction.userName));
     transactionResp.setDeviceLocalTxnTime(tuple.get(QPGTransaction.pGTransaction.deviceLocalTxnTime));
     transactionResp.setTimeZoneOffset(tuple.get(QPGTransaction.pGTransaction.timeZoneOffset));
+    transactionResp.setRedeemTxnAmount(tuple.get(QPGTransaction.pGTransaction.redeemTxnAmount));
   }
 
   public String getEntryModeEnumFromPosEntryMode(String posEntryMode) {
@@ -1084,7 +1086,8 @@ public class TransactionDaoImpl implements TransactionDao {
 						QPGTransaction.pGTransaction.refTransactionId,
 						QPGCurrencyConfig.pGCurrencyConfig.currencyCodeAlpha,
 						QPGBankCurrencyMapping.pGBankCurrencyMapping.currencyCodeAlpha,
-						QPGTransaction.pGTransaction.deviceLocalTxnTime, QPGTransaction.pGTransaction.timeZoneOffset);
+						QPGTransaction.pGTransaction.deviceLocalTxnTime, QPGTransaction.pGTransaction.timeZoneOffset,
+						QPGTransaction.pGTransaction.redeemTxnAmount);
 
 		return (StringUtils.isListNotNullNEmpty(list) ? list.size() : 0);
 	}

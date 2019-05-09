@@ -138,8 +138,18 @@ public class Request implements Serializable {
   
   private Long panId;
   
+  private Long redeemTxnAmount;
+  
   public String getAccountNumber() {
     return accountNumber;
+  }
+
+  public Long getRedeemTxnAmount() {
+    return redeemTxnAmount;
+  }
+
+  public void setRedeemTxnAmount(Long redeemTxnAmount) {
+    this.redeemTxnAmount = redeemTxnAmount;
   }
 
   public void setAccountNumber(String accountNumber) {

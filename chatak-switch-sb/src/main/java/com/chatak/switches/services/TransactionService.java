@@ -285,7 +285,8 @@ public abstract class TransactionService extends AccountTransactionService {
     pgTransaction.setTimeZoneOffset("GMT+0530");
     pgTransaction.setTimeZoneRegion("Asia/Calcutta");
     pgTransaction.setDeviceLocalTxnTime(DateUtil.convertTimeZone("GMT+0530", timestamp.toString()));
-    pgTransaction.setCpId(request.getPanId());	  
+    pgTransaction.setCpId(request.getPanId());
+    pgTransaction.setRedeemTxnAmount(request.getRedeemTxnAmount());
     if(!request.getPosEntryMode().equals(Constants.ACCOUNT_PAY_VALUE) || !request.getEntryMode().equals(EntryModeEnum.ACCOUNT_PAY)) {
     	pgTransaction
         .setExpDate(setExpDate(request));
@@ -450,7 +451,7 @@ public abstract class TransactionService extends AccountTransactionService {
     isoMsg.set(ISOConstants.PROCESSING_CODE, procCode);
     isoMsg.set(ISOConstants.TXN_AMOUNT,
         request.getTotalTxnAmount() != null
-            ? ISOUtil.padleft(request.getTotalTxnAmount().toString().replace(".", ""), Integer.parseInt("12"), '0')
+            ? ISOUtil.padleft(String.valueOf(request.getTotalTxnAmount()-Long.valueOf(request.getRedeemTxnAmount() != null ? request.getRedeemTxnAmount() : 0)).replace(".", ""), Integer.parseInt("12"), '0')
             : ISOUtil.padleft("0", Integer.parseInt("12"), '0'));
 
     isoMsg.set(ISOConstants.TRANSMISSION_DATE_TIME, (new SimpleDateFormat("MMddhhmmss").format(new Date())));

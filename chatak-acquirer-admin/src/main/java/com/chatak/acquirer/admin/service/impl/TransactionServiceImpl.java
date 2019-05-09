@@ -576,6 +576,7 @@ public class TransactionServiceImpl implements TransactionService {
       txnDto.setBatchId(getTxnDtoData(txn.getBatchId()));
       txnDto.setDeviceLocalTxnTime(txn.getDeviceLocalTxnTime());
       txnDto.setTimeZoneOffset(txn.getTimeZoneOffset());
+      txnDto.setRedeemTxnAmount((txn.getRedeemTxnAmount() != null) ? txn.getRedeemTxnAmount() : 0l);
       txn.setTxnJsonString(JsonUtil.convertObjectToJSON(txnDto));
     }
   }

@@ -32,6 +32,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.chatak.pay.controller.model.LoyaltyProgramRequest;
+import com.chatak.pay.controller.model.LoyaltyResponse;
 import com.chatak.pay.exception.ChatakPayException;
 import com.chatak.pg.constants.ActionErrorCode;
 import com.chatak.pg.constants.PGConstants;
@@ -586,5 +587,26 @@ public class JsonUtil {
 			logger.error("Error :: JsonUtil :: postRequestToLoyaltiyPlatform", e);
 		}
 		return resultantObject;
+	}
+	
+	public static LoyaltyResponse redeemLoyaltyTransaction(LoyaltyProgramRequest loyaltyProgramAwardRequest, String loyaltyUrl,
+			String accessToken) throws ChatakPayException {
+		try {
+			String output = JsonUtil.postRequestToLoyaltiyPlatform(loyaltyProgramAwardRequest, loyaltyUrl,
+					"/loyaltyService/loyalty/redeemLoyaltyTransaction", accessToken, String.class);
+			return mapper.readValue(output, LoyaltyResponse.class);
+		} catch (HttpClientException hce) {
+			logger.error("Error :: JsonUtil :: redeemLoyaltyTransaction :: HttpClientException" + hce.getMessage(),
+					hce);
+			throw new ChatakPayException(Properties.getProperty("prepaid.agentadmin.general.error.message"));
+		} catch (Exception e) {
+			logger.error("Error :: JsonUtil :: redeemLoyaltyTransaction : " + e.getMessage(), e);
+			try {
+				throw new ChatakPayException(Properties.getProperty("prepaid.agentadmin.general.error.message"));
+			} catch (Exception e1) {
+				logger.error("Error :: JsonUtil :: redeemLoyaltyTransaction : " + e1.getMessage(), e1);
+				throw new ChatakPayException(e.getMessage());
+			}
+		}
 	}
 }

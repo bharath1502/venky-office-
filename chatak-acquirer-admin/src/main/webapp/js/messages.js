@@ -373,7 +373,8 @@ var C_MERCHANT_MSG = {
 		InvalidBankRoutingNumber : "Invalid bank routing number",
 		InvalidBankAccountNumber : "Invalid bank account number",
 		BlacklistedCardValid : "Please enter valid BlacklistedCard Number",
-		pleaseEnterPan : "Please Enter valid Pan Range"
+		pleaseEnterPan : "Please Enter valid Pan Range",
+		RedeemTXNAmt :    "RedeemTxnAmt" 
 	},
 	es : {
 		loginUsername : "Por favor, introduzca el nombre de usuario",
@@ -749,7 +750,8 @@ var C_MERCHANT_MSG = {
 		InvalidBankCode : "Código bancario inválido",
 		InvalidBankRoutingNumber : "Número de enrutamiento bancario inválido",
 		InvalidBankAccountNumber : "Número de cuenta bancaria inválido",
-		BlacklistedCardValid : "Por favor ingrese un número válido de BlacklistedCard"
+		BlacklistedCardValid : "Por favor ingrese un número válido de BlacklistedCard",
+		RedeemTXNAmt :    "RedeemTxnAmt"
 	}
 };
 

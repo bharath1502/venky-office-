@@ -103,13 +103,23 @@ public class Transaction implements Serializable {
   private String deviceLocalTxnTime;
   
   private String timeZoneOffset;
+  
+  private Long redeemTxnAmount;
 
   public String getTotalAmt() {
     return totalAmt;
   }
 
+  public Long getRedeemTxnAmount() {
+	  return redeemTxnAmount;
+  }
+
+  public void setRedeemTxnAmount(Long redeemTxnAmount) {
+	  this.redeemTxnAmount = redeemTxnAmount;
+  }
+
   public void setTotalAmt(String totalAmt) {
-    this.totalAmt = totalAmt;
+	  this.totalAmt = totalAmt;
   }
 
   public BigInteger getId() {

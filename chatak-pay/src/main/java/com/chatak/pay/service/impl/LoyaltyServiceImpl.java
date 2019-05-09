@@ -66,4 +66,46 @@ public class LoyaltyServiceImpl implements LoyaltyService {
 		log.info("Exiting :: LoyaltyServiceImpl :: invokLoyalty :: Runnable");
 		return loyaltyResponse;
 	}
+
+	@Override
+	public LoyaltyResponse invokeRedeemLoyaltyTxn(TransactionRequest transactionRequest, PurchaseRequest request) {
+		LoyaltyResponse loyaltyResponse = new LoyaltyResponse();
+		String acsToken = null;
+		LoyaltyProgramRequest loyaltyProgramAwardRequest = new LoyaltyProgramRequest();
+		loyaltyProgramAwardRequest.setTxnAmount(transactionRequest.getTotalTxnAmount());
+		loyaltyProgramAwardRequest.setMobileNumber(transactionRequest.getMobileNumber());
+		loyaltyProgramAwardRequest.setAccountNumber(transactionRequest.getCardData().getCardNumber());
+		loyaltyProgramAwardRequest.setMerchantId(request.getMerchantId());
+		loyaltyProgramAwardRequest.setLoyaltyProgramType(PGConstants.MERCHANT);
+		loyaltyProgramAwardRequest.setOriginChannel(transactionRequest.getOriginChannel());
+		loyaltyProgramAwardRequest.setIsoId(request.getIsoId());
+		loyaltyProgramAwardRequest.setLoyaltyUrl(Properties.getProperty("loyalty.service.url"));
+		loyaltyProgramAwardRequest.setEmail(Properties.getProperty("loyalty.service.url.user.name"));
+		loyaltyProgramAwardRequest.setPassword(Properties.getProperty("loyalty.service.url.user.password"));
+
+		try {
+			log.info("Calling JsonUtil To Get OAuth Token:: Calling postLoyaltyRequest Method");
+			String accessToken = JsonUtil.postLoyaltyRequest(loyaltyProgramAwardRequest, "/userService/user/login",
+					String.class);
+
+			if (!StringUtil.isNullEmpty(accessToken)) {
+				loyaltyResponse = mapper.readValue(accessToken, LoyaltyResponse.class);
+				acsToken = loyaltyResponse.getValue();
+			} else {
+				loyaltyResponse.setErrorCode(Constants.ERROR_CODE);
+				loyaltyResponse.setErrorMessage(Constants.TOKEN_ERROR);
+				return loyaltyResponse;
+			}
+			
+			log.info("Calling JsonUtil After  getting OAuth Token:: Oauth Token :" + accessToken);
+			LoyaltyResponse response = null;
+			response  = JsonUtil.redeemLoyaltyTransaction(loyaltyProgramAwardRequest, loyaltyProgramAwardRequest.getLoyaltyUrl(),
+					acsToken);
+			return response;
+ 		} catch (Exception e) {
+			log.error("ERROR :: LoyaltyServiceImpl :: invokeRedeemLoyaltyTxn ", e);
+		}
+		log.info("Exiting :: LoyaltyServiceImpl :: invokeRedeemLoyaltyTxn ");
+		return loyaltyResponse;
+	}
 }

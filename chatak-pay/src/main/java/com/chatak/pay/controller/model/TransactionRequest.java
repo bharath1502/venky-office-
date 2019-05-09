@@ -67,6 +67,16 @@ public class TransactionRequest extends Request implements Serializable {
 	private String email;
 
 	private String txnId;
+	
+	private Boolean checkBoxRedeemPoint;
+	
+	public Boolean getCheckBoxRedeemPoint() {
+		return checkBoxRedeemPoint;
+	}
+
+	public void setCheckBoxRedeemPoint(Boolean checkBoxRedeemPoint) {
+		this.checkBoxRedeemPoint = checkBoxRedeemPoint;
+	}
 
 	public String getTxnId() {
 		return txnId;

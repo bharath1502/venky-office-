@@ -360,7 +360,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 				getMerchantBatchId(request, cardprogram, pgMerchant);
 			}
 			// Hitting redeemLoyaltyTxn API
-			if (transactionRequest.getCheckBoxRedeemPoint().equals(PGConstants.TRUE)) {
+			if (transactionRequest.getCheckBoxRedeemPoint().equals(true)) {
 				LoyaltyResponse loyaltyResponse = loyaltyService.invokeRedeemLoyaltyTxn(transactionRequest, request);
 				log.trace(" Redeem Loyalty LoyaltyResponse : " + loyaltyResponse);
 				request.setRedeemTxnAmount(loyaltyResponse.getRedeemPointsAmount());

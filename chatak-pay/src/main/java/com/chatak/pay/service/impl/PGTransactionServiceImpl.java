@@ -363,7 +363,7 @@ public class PGTransactionServiceImpl implements PGTransactionService {
 			if (transactionRequest.getCheckBoxRedeemPoint().equals(PGConstants.TRUE)) {
 				LoyaltyResponse loyaltyResponse = loyaltyService.invokeRedeemLoyaltyTxn(transactionRequest, request);
 				log.trace(" Redeem Loyalty LoyaltyResponse : " + loyaltyResponse);
-				request.setRedeemTxnAmount(loyaltyResponse.getDeductionAmt());
+				request.setRedeemTxnAmount(loyaltyResponse.getRedeemPointsAmount());
 			}
 			PurchaseResponse purchaseResponse = new SwitchServiceBroker().purchaseTransaction(request, pgMerchant);
 

@@ -8,9 +8,17 @@ public class LoyaltyResponse extends Response {
 
 	private Long acc_holder_id;
 	
-	private Long deductionAmt;
+	private Long redeemPointsAmount;
 	
 	private String loyaltyBalance;
+
+	public Long getRedeemPointsAmount() {
+		return redeemPointsAmount;
+	}
+
+	public void setRedeemPointsAmount(Long redeemPointsAmount) {
+		this.redeemPointsAmount = redeemPointsAmount;
+	}
 
 	public String getLoyaltyBalance() {
 		return loyaltyBalance;
@@ -18,14 +26,6 @@ public class LoyaltyResponse extends Response {
 
 	public void setLoyaltyBalance(String loyaltyBalance) {
 		this.loyaltyBalance = loyaltyBalance;
-	}
-
-	public Long getDeductionAmt() {
-		return deductionAmt;
-	}
-
-	public void setDeductionAmt(Long deductionAmt) {
-		this.deductionAmt = deductionAmt;
 	}
 
 	public Long getAcc_holder_id() {

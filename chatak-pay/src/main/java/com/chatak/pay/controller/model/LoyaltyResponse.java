@@ -12,6 +12,16 @@ public class LoyaltyResponse extends Response {
 	
 	private String loyaltyBalance;
 	
+	private String txnId;
+	
+	public String getTxnId() {
+		return txnId;
+	}
+
+	public void setTxnId(String txnId) {
+		this.txnId = txnId;
+	}
+
 	public Long getAccountHolderId() {
 		return accountHolderId;
 	}

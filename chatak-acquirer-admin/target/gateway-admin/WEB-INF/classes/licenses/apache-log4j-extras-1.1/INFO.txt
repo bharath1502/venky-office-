@@ -1,0 +1,6 @@
+Project homepage: https://logging.apache.org/log4j/extras/
+
+Sources: https://github.com/apache/log4j-extras
+
+License:
+Licensed under Apache License 2.0

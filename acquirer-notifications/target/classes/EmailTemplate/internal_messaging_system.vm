@@ -1,0 +1,22 @@
+<html>
+<body>
+Dear <b>Prepaid Team</b>, <br/><br/>
+
+Message from <b>${user}</b> 
+<br/><br/>
+
+Title: <b>${Title}</b> 
+<br/><br/>
+
+Message Type : <b>${MessageType}</b> 
+<br/><br/>
+
+Priority Type : ${Priority}<br/><br/>
+
+Summary : ${Summary}<br/><br/>
+
+Thanks,<br/>
+<b>${user}</b>.
+
+</body>
+</html>

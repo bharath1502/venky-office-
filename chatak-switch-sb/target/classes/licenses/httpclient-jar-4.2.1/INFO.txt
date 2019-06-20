@@ -1,0 +1,7 @@
+Project homepage: https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient/4.2.1
+
+Sources: http://hc.apache.org/httpcomponents-client
+
+
+License:
+Licensed under Apache License 2.0

@@ -1,0 +1,6 @@
+Project homepage: https://mvnrepository.com/artifact/org.apache.geronimo.specs
+
+Sources: https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-servlet_3.0_spec
+
+License:
+Licensed under Apache License 2.0

@@ -1,0 +1,14 @@
+<html>
+<body>
+Hello <b>$firstName</b>, <br/><br/>
+
+We're sorry to inform you that your Chatak merchant user account has been declined for the following reason.<br/>
+<br/>
+Reason : <b>$declineReason</b><br/>
+
+<br/><br/>
+Regards,<br/><br/>
+Chatak Team.
+
+</body>
+</html>

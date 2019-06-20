@@ -1,0 +1,25 @@
+<html>
+<body>
+Dear <b>$agentName</b>, <br/><br/>
+
+The load card transaction is successful.
+
+Customer : <b>$custFirstName</b>
+<br/>
+Card/Account Number : <b>$cardOrAccountNumber</b>
+<br/>
+Transaction reference number : <b>$txnRefNumb</b>
+<br/>
+Amount : $<b>$txnAmount</b>
+<br/>
+Date : <b>$dateTime</b>
+<br/>
+
+
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

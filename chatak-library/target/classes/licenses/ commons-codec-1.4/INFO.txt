@@ -1,0 +1,6 @@
+Project homepage: 	http://commons.apache.org/codec/
+
+Sources: https://mvnrepository.com/artifact/commons-codec/commons-codec/1.4
+
+License:
+Licensed under Apache License 2.0

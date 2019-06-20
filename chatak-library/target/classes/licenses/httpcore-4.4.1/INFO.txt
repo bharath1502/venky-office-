@@ -1,0 +1,8 @@
+Project homepage: 	http://hc.apache.org/httpcomponents-core-ga
+
+
+
+Sources: https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore/4.4.1
+
+License:
+Licensed under Apache 2.0

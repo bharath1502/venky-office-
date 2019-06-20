@@ -1,0 +1,8 @@
+Project homepage: http://hibernate.org
+
+
+Sources: https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager/4.0.1.Final
+
+License:
+Licensed under LGPL 2.1
+

@@ -1,0 +1,18 @@
+<html>
+<body>
+Dear Admin, <br/><br/>
+
+<br/>
+New User registration request received ,below are the details<br/><br/>
+
+First Name    : $firstName <br/>
+Last Name     : $lastName <br/>
+Phone Number  : $pNumber <br/>
+Registered Merchant Id:  $mId <br/>
+<br/>
+<br/>
+Thanks,<br/>
+Chatak Team.
+
+</body>
+</html>

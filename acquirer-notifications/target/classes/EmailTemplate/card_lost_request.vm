@@ -1,0 +1,15 @@
+<html>
+<body>
+Welcome <b>$customerFirstName</b>, <br/><br/>
+
+Your Card Lost/Stolen request has been Initiated.<br/>
+Your card is put on hold and you will receive your new card at the address provided.<br/>
+Card Number : <b>$cardNumber</b><br/>
+Address : <b>$address</b>
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

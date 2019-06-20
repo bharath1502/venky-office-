@@ -1,0 +1,7 @@
+Project homepage: http://cxf.apache.org
+
+
+Sources:  https://mvnrepository.com/artifact/org.apache.cxf/cxf-rt-ws-addr/2.7.4
+
+License:
+Licensed under Apache License 2.0

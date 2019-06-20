@@ -1,0 +1,7 @@
+Project homepage: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.0-rc1
+
+
+Sources: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.0-rc1
+
+License:
+Licensed under Java Specifications

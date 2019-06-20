@@ -1,0 +1,18 @@
+<html>
+<body>
+Dear <b>$approverFirstName</b>, <br/><br/>
+
+The user <b>$initiatedFirstName</b> has raised the request for <b>$txnType</b> on <b>$dateTime</b>.
+
+The transaction amount is $<b>$txnAmount</b>.
+
+Your approval is pending.
+
+Please <a href="$agentUserUrl"> Click here </a> to login.
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

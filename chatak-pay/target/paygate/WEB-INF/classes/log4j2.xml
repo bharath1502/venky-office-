@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Properties>
+        <Property name="basePath">${catalina.home}/logs</Property>
+    </Properties>
+ 
+    <Appenders>
+        <RollingFile name="fileLogger" fileName="${basePath}/chatak-pay-online.log" filePattern="${basePath}/chatak-pay-online-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>%5p [%t] | %d | %F | %L | %X{invoiceNumber} %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+ 
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout   pattern="%5p [%t] | %d | %F | %L | %X{invoiceNumber} %m%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.chatak" level="info" additivity="true">
+            <appender-ref ref="fileLogger" level="info" />
+        </Logger>
+        <Root level="debug" additivity="false">
+            <appender-ref ref="console" />
+            <appender-ref ref="fileLogger" />
+        </Root>
+    </Loggers>
+</Configuration>

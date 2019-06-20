@@ -1,0 +1,6 @@
+Project homepage: http://dev.mysql.com/usingmysql/java/
+
+Sources: https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.18
+
+License:
+Licensed under GPL 2.0

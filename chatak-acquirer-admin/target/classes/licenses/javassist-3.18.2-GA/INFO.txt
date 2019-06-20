@@ -1,0 +1,7 @@
+Project homepage: http://www.javassist.org/
+
+
+Sources: https://mvnrepository.com/artifact/org.javassist/javassist/3.18.2-GA
+
+License:
+Licensed under Apache License 2.0

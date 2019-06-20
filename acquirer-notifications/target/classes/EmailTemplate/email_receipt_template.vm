@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<body>
+
+<h2>hi $Name</h2>
+
+<table>
+  <tr>
+    <th>Your Transaction Details are:</th>
+
+  </tr>
+  <tr>
+    <td>Card Number:</td>
+    <td>$PAN</td>
+  </tr>
+  <tr>
+    <td>Expiry Date:</td>
+    <td>$Exp</td>
+  </tr>
+  <tr>
+    <td>Amount Paid:</td>
+    <td>$TxnAmount</td>
+  </tr>
+  <tr>
+    <td>Transaction ID:</td>
+    <td>$TxnId</td>
+  </tr>
+  <tr>
+    <td>Date&Time:</td>
+    <td>$Date</td>
+  </tr>
+  <tr>
+    <td>Merchant:</td>
+    <td>$MerchantName</td>
+  </tr>
+  <tr>
+    <td>Invoice:</td>
+    <td>$InvoiceNumber</td>
+  </tr>
+</table>
+<br/>
+Thanks,<br/>
+Chatak Team.
+</body>
+</html>

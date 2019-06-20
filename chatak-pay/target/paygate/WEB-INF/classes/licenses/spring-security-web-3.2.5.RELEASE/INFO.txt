@@ -1,0 +1,7 @@
+Project homepage: http://spring.io/spring-security
+
+
+Sources: https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
+
+License:
+Licensed under Apache License 2.0

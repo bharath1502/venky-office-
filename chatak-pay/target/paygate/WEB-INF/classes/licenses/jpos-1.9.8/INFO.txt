@@ -1,0 +1,7 @@
+Project homepage: http://jpos.org
+
+
+Sources: https://mvnrepository.com/artifact/org.jpos/jpos/1.9.8
+
+License:
+Licensed under AGPL 3.0

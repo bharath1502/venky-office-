@@ -1,0 +1,7 @@
+Project homepage: 	http://commons.apache.org/lang/
+
+
+Sources: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3/3.0
+
+License:
+Licensed under Apache License 2.0

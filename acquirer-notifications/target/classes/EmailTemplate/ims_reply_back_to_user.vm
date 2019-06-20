@@ -1,0 +1,17 @@
+<html>
+<body>
+Dear <b>${user}</b>, <br/><br/>
+
+Message from <b>Prepaid Team</b> 
+<br/><br/>
+
+Title: <b>${Title}</b> 
+<br/><br/>
+
+Summary : ${Summary}<br/><br/>
+
+Thanks,<br/>
+<b>Prepaid Team</b>.
+
+</body>
+</html>

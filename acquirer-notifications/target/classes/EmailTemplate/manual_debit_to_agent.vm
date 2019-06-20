@@ -1,0 +1,20 @@
+<html>
+<body>
+Dear <b>$agentName</b>, <br/><br/>
+
+The debit transaction is successful.
+
+Transaction reference number : <b>$txnRefNumb</b>
+<br/>
+Amount : $<b>$txnAmount</b>
+<br/>
+Date : <b>$dateTime</b>
+
+
+<br/>
+<br/>
+Thanks,<br/>
+Prepaid Team.
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+Project homepage: https://github.com/spring-projects/spring-framework
+
+
+Sources: https://mvnrepository.com/artifact/org.springframework/spring-tx/4.1.1.RELEASE
+
+License:
+Licensed under Apache License 2.0

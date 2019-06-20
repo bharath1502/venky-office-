@@ -1,0 +1,7 @@
+Project homepage: http://coverity.com/security
+
+
+Sources: https://mvnrepository.com/artifact/com.coverity.security/coverity-escapers/1.1.1
+
+License:
+Licensed under Coverity

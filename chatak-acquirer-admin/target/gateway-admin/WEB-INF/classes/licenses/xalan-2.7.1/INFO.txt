@@ -1,0 +1,7 @@
+Project homepage: http://xml.apache.org/xalan-j/
+
+
+Sources: https://mvnrepository.com/artifact/xalan/xalan/2.7.1
+
+License:
+Licensed under Apache License 2.0
